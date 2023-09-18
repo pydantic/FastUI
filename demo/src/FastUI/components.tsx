@@ -1,5 +1,6 @@
-import {FC, useState} from 'react'
-import {ClassName, ClassNameGenerator} from './ClassName.ts'
+import {FC, useContext, useState} from 'react'
+import {ClassName, ClassNameGenerator} from './ClassName'
+import {ErrorContext} from './errorContext'
 
 
 interface Text {
@@ -85,18 +86,24 @@ const DivRender: FC<AnyDiv> = ({type, children, className}) => (
 )
 
 export const AnyCompRender: FC<AnyComp> = (props) => {
+  const {setError} = useContext(ErrorContext)
   const {type} = props
-  switch (type) {
-    case 'Text':
-      return TextRender(props)
-    case 'Div':
-    case 'Container':
-    case 'Row':
-    case 'Col':
-      return DivRender(props)
-    case 'FormField':
-      return FormFieldRender(props)
-    default:
-      throw new Error(`Unknown component type: ${type}`)
+  try {
+    switch (type) {
+      case 'Text':
+        return TextRender(props)
+      case 'Div':
+      case 'Container':
+      case 'Row':
+      case 'Col':
+        return DivRender(props)
+      case 'FormField':
+        return FormFieldRender(props)
+      default:
+        setError({title: 'Render Error', description: `Unknown component type: ${type}`})
+    }
+  } catch (e) {
+    const description = (e as any).message
+    setError({title: 'Render Error', description})
   }
 }
