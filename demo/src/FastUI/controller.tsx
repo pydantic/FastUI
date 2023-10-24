@@ -12,7 +12,7 @@ interface Request {
   headers?: Record<string, string>
 }
 
-type Props = Omit<FastProps, "defaultClassName">
+type Props = Omit<FastProps, "defaultClassName" | "OnError">
 
 const request = async ({url, method, headers, body}: Request): Promise<AnyComp> => {
   const init: RequestInit = {}
@@ -66,12 +66,11 @@ const request = async ({url, method, headers, body}: Request): Promise<AnyComp> 
   return data as AnyComp
 }
 
-export function FastUIController({rootUrl, pathSendMode, loading}: Props) {
+export function FastUIController({rootUrl, pathSendMode, loading, customRender}: Props) {
   const [viewData, setViewData] = useState<AnyComp | null>(null)
   const {fullPath} = useContext(LocationContext)
 
   const {setError} = useContext(ErrorContext)
-
 
   useEffect(() => {
     // setViewData(null)
@@ -99,6 +98,6 @@ export function FastUIController({rootUrl, pathSendMode, loading}: Props) {
       </>
     )
   } else {
-    return <AnyCompRender {...viewData} />
+    return AnyCompRender(viewData, customRender)
   }
 }

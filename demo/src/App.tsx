@@ -3,12 +3,12 @@ import {FastUI, ClassNameFunction} from './FastUI'
 export default function App() {
   return (
     <div className="app">
-      <FastUI rootUrl="/api" defaultClassName={bootstrap}/>
+      <FastUI rootUrl="/api" defaultClassName={bootstrapClassName}/>
     </div>
   )
 }
 
-const bootstrap: ClassNameFunction = (type) => {
+const bootstrapClassName: ClassNameFunction = (type) => {
   switch (type) {
     case 'Container':
       return 'container'

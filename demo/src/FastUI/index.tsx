@@ -3,8 +3,9 @@ import {LocationProvider} from './locationContext'
 import {FastUIController} from './controller'
 import {ClassNameContext, ClassNameFunction} from './ClassName'
 import {ErrorContextProvider, OnErrorType} from './errorContext'
+import {CustomRender} from './components'
 
-export type {ClassNameFunction}
+export type {ClassNameFunction, CustomRender, OnErrorType}
 
 export interface FastProps {
   rootUrl: string
@@ -13,6 +14,7 @@ export interface FastProps {
   loading?: () => ReactNode
   OnError?: OnErrorType
   defaultClassName?: ClassNameFunction
+  customRender?: CustomRender
 }
 
 export function FastUI(props: FastProps) {

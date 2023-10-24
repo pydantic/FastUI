@@ -66,6 +66,7 @@ def col(*children: AnyComp, class_name: ClassName | None = None) -> ColComp:
 
 AnyComp = Annotated[TextComp | DivComp | ContainerComp | RowComp | ColComp, Field(discriminator='type')]
 
+
 class FastUi(RootModel):
     model_config = ConfigDict(populate_by_name=True)
     root: AnyComp
