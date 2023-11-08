@@ -1,15 +1,15 @@
-import {createContext, useContext} from 'react'
-import type {CompTypes} from './components'
+import { createContext, useContext } from 'react'
+import type { FastProps } from '../components'
 
 export type ClassName = string | string[] | Record<string, boolean | null> | undefined
 
-export type ClassNameFunction = (type: CompTypes, nested?: string) => ClassName
+export type ClassNameFunction = (props: FastProps, nested?: string) => ClassName
 export const ClassNameContext = createContext<ClassNameFunction | null>(null)
 
-export function ClassNameGenerator(className: ClassName, type: CompTypes, nested?: string): string {
-  const defaultClassName = useContext(ClassNameContext)
-  if (defaultClassName !== null && generateDefault(className)) {
-    const dft = defaultClassName(type, nested)
+export function useClassNameGenerator(className: ClassName, props: FastProps, nested?: string): string {
+  const defaultClassNameFunction = useContext(ClassNameContext)
+  if (defaultClassNameFunction !== null && generateDefault(className)) {
+    const dft = defaultClassNameFunction(props, nested)
     return combine(dft, className)
   } else {
     return renderClassName(className)
@@ -26,13 +26,13 @@ export function ClassNameGenerator(className: ClassName, type: CompTypes, nested
 function generateDefault(className: ClassName): boolean {
   if (Array.isArray(className)) {
     // className is an array, check if it contains `+`
-    return className.some(c => c == '+')
+    return className.some((c) => c == '+')
   } else if (typeof className === 'string') {
     // className is a string, check if it starts with `+ `
     return /^\+ /.test(className)
   } else if (typeof className === 'object') {
     // className is an object, check if its keys contain `+`
-    return Object.keys(className).some(key => key === '+')
+    return Object.keys(className).some((key) => key === '+')
   } else {
     // className is undefined, return false
     return true
@@ -57,9 +57,12 @@ function renderClassName(className: ClassName): string {
   if (typeof className === 'string') {
     return className.replace(/^\+ /, '')
   } else if (Array.isArray(className)) {
-    return className.filter(c => c != '+') .join(' ')
+    return className.filter((c) => c != '+').join(' ')
   } else if (typeof className === 'object') {
-    return Object.entries(className).filter(([key, value]) => key !== '+' && !!value).map(([key]) => key).join(' ')
+    return Object.entries(className)
+      .filter(([key, value]) => key !== '+' && !!value)
+      .map(([key]) => key)
+      .join(' ')
   } else {
     return ''
   }

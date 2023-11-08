@@ -1,13 +1,19 @@
-import {ReactNode} from 'react'
-import {LocationProvider} from './locationContext'
-import {FastUIController} from './controller'
-import {ClassNameContext, ClassNameFunction} from './ClassName'
-import {ErrorContextProvider, OnErrorType} from './errorContext'
-import {CustomRender} from './components'
+import { ReactNode } from 'react'
+import { LocationProvider } from './hooks/locationContext.tsx'
+import { FastUIController } from './controller'
+import { ClassNameContext, ClassNameFunction } from './hooks/className'
+import { ErrorContextProvider, OnErrorType } from './hooks/error'
+import { CustomRender, CustomRenderContext } from './hooks/customRender'
+import { FastProps } from './components'
 
-export type {ClassNameFunction, CustomRender, OnErrorType}
+export type {
+  ClassNameFunction,
+  CustomRender,
+  OnErrorType,
+  FastProps
+}
 
-export interface FastProps {
+export interface FastUIProps {
   rootUrl: string
   // defaults to 'append'
   pathSendMode?: 'append' | 'query'
@@ -17,14 +23,16 @@ export interface FastProps {
   customRender?: CustomRender
 }
 
-export function FastUI(props: FastProps) {
-  const {defaultClassName, OnError, ...rest} = props
+export function FastUI(props: FastUIProps) {
+  const { defaultClassName, OnError, customRender, ...rest } = props
   return (
     <div className="fastui">
       <LocationProvider>
         <ErrorContextProvider OnError={OnError}>
           <ClassNameContext.Provider value={defaultClassName ?? null}>
-            <FastUIController {...rest} />
+            <CustomRenderContext.Provider value={customRender ?? null}>
+              <FastUIController {...rest} />
+            </CustomRenderContext.Provider>
           </ClassNameContext.Provider>
         </ErrorContextProvider>
       </LocationProvider>

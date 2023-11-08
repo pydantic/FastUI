@@ -1,10 +1,8 @@
-import {FC} from 'react'
+import { FC } from 'react'
 
-export interface Text {
+export interface TextProps {
   type: 'Text'
   text: string
 }
 
-export const TextRender: FC<Text> = ({text}) => (
-  <>{text}</>
-)
+export const TextComp: FC<TextProps> = ({ text }) => <>{text}</>

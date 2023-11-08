@@ -1,42 +1,44 @@
-import {ClassName, ClassNameGenerator} from '../ClassName'
-import {AnyComp, AnyCompRender} from '../components'
-import {FC} from 'react'
+import { ClassName, useClassNameGenerator } from '../hooks/className.ts'
+import { FastProps, AnyComp } from './index'
+import { FC } from 'react'
 
-interface Div {
+interface DivProps {
   type: 'Div'
-  children: AnyComp[]
+  children: FastProps[]
   className?: ClassName
 }
 
-interface Container {
+interface ContainerProps {
   type: 'Container'
-  children: AnyComp[]
+  children: FastProps[]
   className?: ClassName
 }
 
-interface Row {
+interface RowProps {
   type: 'Row'
-  children: AnyComp[]
+  children: FastProps[]
   className?: ClassName
 }
 
-interface Col {
+interface ColProps {
   type: 'Col'
-  children: AnyComp[]
+  children: FastProps[]
   className?: ClassName
 }
 
-export type DivComp = Div | Container | Row | Col
-export type DivTypes = 'Div' | 'Container' | 'Row' | 'Col'
+export type AllDivProps = DivProps | ContainerProps | RowProps | ColProps
+type AllDivTypes = 'Div' | 'Container' | 'Row' | 'Col'
 
-interface AnyDiv {
-  type: 'Div' | 'Container' | 'Row' | 'Col'
-  children: AnyComp[]
+interface Props {
+  type: AllDivTypes
+  children: FastProps[]
   className?: ClassName
 }
 
-export const DivRender: FC<AnyDiv> = ({type, children, className}) => (
-  <div className={ClassNameGenerator(className, type)}>
-    {children.map((child, i) => <AnyCompRender key={i} {...child} />)}
+export const DivComp: FC<Props> = (props) => (
+  <div className={useClassNameGenerator(props.className, props)}>
+    {props.children.map((child, i) => (
+      <AnyComp key={i} {...child} />
+    ))}
   </div>
 )

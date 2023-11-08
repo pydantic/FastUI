@@ -1,9 +1,9 @@
-import {useContext, useEffect, useState} from 'react'
-import {AnyComp, AnyCompRender} from './components'
-import {DefaultLoading} from './DefaultLoading'
-import type {FastProps} from './index'
-import {LocationContext} from './locationContext'
-import {ErrorContext} from './errorContext'
+import { useContext, useEffect, useState } from 'react'
+import { FastProps, AnyComp } from './components'
+import { DefaultLoading } from './DefaultLoading'
+import type { FastUIProps } from './index'
+import { LocationContext } from './hooks/locationContext.tsx'
+import { ErrorContext } from './hooks/error.tsx'
 
 interface Request {
   url: string
@@ -12,9 +12,9 @@ interface Request {
   headers?: Record<string, string>
 }
 
-type Props = Omit<FastProps, "defaultClassName" | "OnError">
+type Props = Omit<FastUIProps, 'defaultClassName' | 'OnError' | 'customRender'>
 
-const request = async ({url, method, headers, body}: Request): Promise<AnyComp> => {
+const request = async ({ url, method, headers, body }: Request): Promise<FastProps> => {
   const init: RequestInit = {}
   if (method) {
     init.method = method
@@ -51,7 +51,7 @@ const request = async ({url, method, headers, body}: Request): Promise<AnyComp> 
       console.warn(`${url} -> ${status} JSON:`, detail)
       detail = content
     }
-    const msg = `${detail ?? response.statusText} (${status})`
+    const msg = `${detail || response.statusText} (${status})`
     throw new Error(msg)
   }
 
@@ -63,14 +63,14 @@ const request = async ({url, method, headers, body}: Request): Promise<AnyComp> 
     throw new Error('Response not valid JSON')
   }
   console.debug(`${url} -> ${status} JSON:`, data)
-  return data as AnyComp
+  return data as FastProps
 }
 
-export function FastUIController({rootUrl, pathSendMode, loading, customRender}: Props) {
-  const [viewData, setViewData] = useState<AnyComp | null>(null)
-  const {fullPath} = useContext(LocationContext)
+export function FastUIController({ rootUrl, pathSendMode, loading }: Props) {
+  const [componentProps, setComponentProps] = useState<FastProps | null>(null)
+  const { fullPath } = useContext(LocationContext)
 
-  const {setError} = useContext(ErrorContext)
+  const { setError } = useContext(ErrorContext)
 
   useEffect(() => {
     // setViewData(null)
@@ -81,23 +81,21 @@ export function FastUIController({rootUrl, pathSendMode, loading, customRender}:
       url += fullPath
     }
 
-    const promise = request({url})
+    const promise = request({ url })
 
-    promise.then(data => setViewData(data)).catch(e => {
-      setError({title: 'Request Error', description: e.message})
-    })
+    promise
+      .then((data) => setComponentProps(data))
+      .catch((e) => {
+        setError({ title: 'Request Error', description: e.message })
+      })
     return () => {
       promise.then(() => null).catch(() => null)
     }
   }, [rootUrl, pathSendMode, fullPath, setError])
 
-  if (viewData === null) {
-    return (
-      <>
-        {loading ? loading() : <DefaultLoading/>}
-      </>
-    )
+  if (componentProps === null) {
+    return <>{loading ? loading() : <DefaultLoading />}</>
   } else {
-    return AnyCompRender(viewData, customRender)
+    return <AnyComp {...componentProps} />
   }
 }

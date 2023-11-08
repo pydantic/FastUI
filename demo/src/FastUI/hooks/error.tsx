@@ -1,6 +1,6 @@
-import {createContext, FC, ReactNode, useCallback, useContext, useState} from 'react'
+import { createContext, FC, ReactNode, useCallback, useContext, useState } from 'react'
 
-const DefaultErrorDisplay: FC<{ error: ErrorDetails, children: ReactNode }> = ({ error, children }) => (
+const DefaultErrorDisplay: FC<{ error: ErrorDetails; children: ReactNode }> = ({ error, children }) => (
   <>
     <div className="alert alert-danger m-3" role="alert">
       <h2>{error.title}</h2>
@@ -15,7 +15,7 @@ interface ErrorDetails {
   description: string
 }
 
-export type OnErrorType = FC<{error: ErrorDetails, children: ReactNode}>
+export type OnErrorType = FC<{ error: ErrorDetails; children: ReactNode }>
 
 interface ErrorContextType {
   error: ErrorDetails | null
@@ -27,9 +27,8 @@ export const ErrorContext = createContext<ErrorContextType>({
   setError: () => null,
 })
 
-
-const DisplayError: FC<{OnError?: OnErrorType, children: ReactNode}> = ({ OnError, children }) => {
-  const {error}  = useContext(ErrorContext)
+const DisplayError: FC<{ OnError?: OnErrorType; children: ReactNode }> = ({ OnError, children }) => {
+  const { error } = useContext(ErrorContext)
   if (error) {
     const ErrorDisplay = OnError ?? DefaultErrorDisplay
     return <ErrorDisplay error={error}>{children}</ErrorDisplay>
@@ -38,16 +37,19 @@ const DisplayError: FC<{OnError?: OnErrorType, children: ReactNode}> = ({ OnErro
   }
 }
 
-export const ErrorContextProvider: FC<{OnError?: OnErrorType, children: ReactNode}> = ({ OnError, children }) => {
+export const ErrorContextProvider: FC<{ OnError?: OnErrorType; children: ReactNode }> = ({ OnError, children }) => {
   const [error, setErrorState] = useState<ErrorDetails | null>(null)
 
-  const setError = useCallback((error: ErrorDetails | null) => {
-    console.warn('setting error:', error)
-    setErrorState(error)
-  }, [setErrorState])
+  const setError = useCallback(
+    (error: ErrorDetails | null) => {
+      console.warn('setting error:', error)
+      setErrorState(error)
+    },
+    [setErrorState],
+  )
 
   return (
-    <ErrorContext.Provider value={{error, setError}}>
+    <ErrorContext.Provider value={{ error, setError }}>
       <DisplayError OnError={OnError}>{children}</DisplayError>
     </ErrorContext.Provider>
   )

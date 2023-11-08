@@ -1,5 +1,1 @@
-export const DefaultLoading = () => (
-  <div>
-    loading...
-  </div>
-)
+export const DefaultLoading = () => <div>loading...</div>
