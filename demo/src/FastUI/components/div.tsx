@@ -1,4 +1,4 @@
-import { ClassName, useClassNameGenerator } from '../hooks/className.ts'
+import { ClassName, useClassNameGenerator } from '../hooks/className'
 import { FastProps, AnyComp } from './index'
 import { FC } from 'react'
 

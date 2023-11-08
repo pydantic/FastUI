@@ -1,9 +1,16 @@
+"""
+Component definitions.
+
+NOTE: all imports should be "simple" so name space of the module is polluted as little as possible.
+
+All CamelCase names in the namespace should be components.
+"""
 from __future__ import annotations as _annotations
 
 import typing
 import pydantic
 
-from . import extra
+from . import extra, events
 
 
 class Text(pydantic.BaseModel):
@@ -37,7 +44,7 @@ class Col(pydantic.BaseModel):
 
 class Button(pydantic.BaseModel):
     text: str
-    action: extra.Trigger | extra.Url | None = None
+    on_click: events.Event | None = pydantic.Field(None, serialization_alias='onClick')
     class_name: extra.ClassName | None = None
     type: typing.Literal['Button'] = 'Button'
 
@@ -45,7 +52,7 @@ class Button(pydantic.BaseModel):
 class Modal(pydantic.BaseModel):
     title: str
     children: list[AnyComponent]
-    open_trigger: extra.Trigger | None = None
+    open_trigger: events.PageEvent | None = None
     open: bool = False
     class_name: extra.ClassName | None = None
     type: typing.Literal['Modal'] = 'Modal'
