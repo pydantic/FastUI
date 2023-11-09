@@ -4,9 +4,10 @@ import { CustomRenderContext } from '../hooks/customRender'
 import { DivComp, AllDivProps } from './div'
 import { TextProps, TextComp } from './text'
 import { FormFieldComp, FormFieldProps } from './FormField'
-import {ButtonComp, ButtonProps} from './button.tsx'
+import { ButtonComp, ButtonProps } from './button'
+import { ModalComp, ModalProps } from './modal'
 
-export type FastProps = TextProps | AllDivProps | FormFieldProps | ButtonProps
+export type FastProps = TextProps | AllDivProps | FormFieldProps | ButtonProps | ModalProps
 
 export const AnyComp: FC<FastProps> = (props) => {
   const { setError, DisplayError } = useContext(ErrorContext)
@@ -20,9 +21,9 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <CustomRenderComp />
       }
     } catch (e) {
-    // TODO maybe we shouldn't catch this error (by default)?
+      // TODO maybe we shouldn't catch this error (by default)?
       const description = (e as any).message
-      setError({title: 'Custom Render Error', description})
+      setError({ title: 'Custom Render Error', description })
     }
   }
 
@@ -39,14 +40,10 @@ export const AnyComp: FC<FastProps> = (props) => {
         return ButtonComp(props)
       case 'FormField':
         return FormFieldComp(props)
+      case 'Modal':
+        return ModalComp(props)
       default:
-        // return <DisplayError error={error} />
-        return (
-          <div>
-            <h2>Invalid Server Response</h2>
-            <p>Unknown component type: "{type}"</p>
-          </div>
-        )
+        return <DisplayError title="Invalid Server Response" description={`Unknown component type: "${type}"`} />
     }
   } catch (e) {
     // TODO maybe we shouldn't catch this error (by default)?
@@ -54,3 +51,11 @@ export const AnyComp: FC<FastProps> = (props) => {
     return <DisplayError title="Render Error" description={description} />
   }
 }
+
+export const RenderChildren: FC<{ children: FastProps[] }> = ({ children }) => (
+  <>
+    {children.map((child, i) => (
+      <AnyComp key={i} {...child} />
+    ))}
+  </>
+)

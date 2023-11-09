@@ -1,5 +1,5 @@
 import { createContext, FC } from 'react'
-import {FastProps} from '../components'
+import { FastProps } from '../components'
 
 export type CustomRender = (props: FastProps) => FC | null
 

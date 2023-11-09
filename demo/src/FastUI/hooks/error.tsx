@@ -1,6 +1,5 @@
 import { createContext, FC, ReactNode, useCallback, useContext, useState } from 'react'
 
-
 interface ErrorDetails {
   title: string
   description: string

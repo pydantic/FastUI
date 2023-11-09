@@ -1,40 +1,49 @@
 import { createContext, useContext } from 'react'
 import type { FastProps } from '../components'
 
-export type ClassName = string | string[] | Record<string, boolean | null> | undefined
+export type ClassName = string | ClassName[] | Record<string, boolean | null> | undefined
 
-export type ClassNameFunction = (props: FastProps, nested?: string) => ClassName
-export const ClassNameContext = createContext<ClassNameFunction | null>(null)
+export type ClassNameGenerator = (props: FastProps) => ClassName
+export const ClassNameContext = createContext<ClassNameGenerator | null>(null)
 
-export function useClassNameGenerator(className: ClassName, props: FastProps, nested?: string): string {
-  const defaultClassNameFunction = useContext(ClassNameContext)
-  if (defaultClassNameFunction !== null && generateDefault(className)) {
-    const dft = defaultClassNameFunction(props, nested)
-    return combine(dft, className)
+/**
+ * Generates a `className` from a component.
+ *
+ * @param classNameProp The `className` taken from the props sent from the backend.
+ * @param props The full props object sent from the backend, this is passed to the class name generator.
+ * @param dft default className to use if the class name generator is not set or returns undefined.
+ */
+export function useClassNameGenerator(classNameProp: ClassName, props: FastProps, dft?: ClassName): string {
+  const classNameGenerator = useContext(ClassNameContext)
+  if (combineClassNameProp(classNameProp)) {
+    if (!dft && classNameGenerator) {
+      dft = classNameGenerator(props)
+    }
+    return combine(dft, classNameProp)
   } else {
-    return renderClassName(className)
+    return renderClassName(classNameProp)
   }
 }
 
 /**
- * Checks whether the default className should be generated.
+ * Decide whether we should generate combine the props class name with the generated or default, or not.
  *
  * e.g. if the ClassName contains a `+` if it's an Array or Record, or starts with `+ `
  * then we generate the default className and append the user's className to it.
- * @param className
+ * @param classNameProp
  */
-function generateDefault(className: ClassName): boolean {
-  if (Array.isArray(className)) {
-    // className is an array, check if it contains `+`
-    return className.some((c) => c == '+')
-  } else if (typeof className === 'string') {
-    // className is a string, check if it starts with `+ `
-    return /^\+ /.test(className)
-  } else if (typeof className === 'object') {
-    // className is an object, check if its keys contain `+`
-    return Object.keys(className).some((key) => key === '+')
+function combineClassNameProp(classNameProp: ClassName): boolean {
+  if (Array.isArray(classNameProp)) {
+    // classNameProp is an array, check if it contains `+`
+    return classNameProp.some((c) => c == '+')
+  } else if (typeof classNameProp === 'string') {
+    // classNameProp is a string, check if it starts with `+ `
+    return /^\+ /.test(classNameProp)
+  } else if (typeof classNameProp === 'object') {
+    // classNameProp is an object, check if its keys contain `+`
+    return Object.keys(classNameProp).some((key) => key === '+')
   } else {
-    // className is undefined, return false
+    // classNameProp is undefined, return true as we want to generate the default className
     return true
   }
 }
@@ -53,11 +62,14 @@ function combine(cn1: ClassName, cn2: ClassName): string {
  * Renders the className to a string, removing plus signs.
  * @param className
  */
-function renderClassName(className: ClassName): string {
+export function renderClassName(className: ClassName): string {
   if (typeof className === 'string') {
     return className.replace(/^\+ /, '')
   } else if (Array.isArray(className)) {
-    return className.filter((c) => c != '+').join(' ')
+    return className
+      .filter((c) => c != '+')
+      .map(renderClassName)
+      .join(' ')
   } else if (typeof className === 'object') {
     return Object.entries(className)
       .filter(([key, value]) => key !== '+' && !!value)

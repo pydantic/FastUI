@@ -51,11 +51,12 @@ class Button(pydantic.BaseModel):
 
 class Modal(pydantic.BaseModel):
     title: str
-    children: list[AnyComponent]
-    open_trigger: events.PageEvent | None = None
+    body: list[AnyComponent]
+    footer: list[AnyComponent] | None = None
+    open_trigger: events.PageEvent | None = pydantic.Field(None, serialization_alias='openTrigger')
     open: bool = False
     class_name: extra.ClassName | None = None
     type: typing.Literal['Modal'] = 'Modal'
 
 
-AnyComponent = typing.Annotated[Text | Div | Container | Row | Col | Button, pydantic.Field(discriminator='type')]
+AnyComponent = typing.Annotated[Text | Div | Container | Row | Col | Button | Modal, pydantic.Field(discriminator='type')]

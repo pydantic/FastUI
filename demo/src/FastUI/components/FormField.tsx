@@ -18,11 +18,8 @@ export const FormFieldComp: FC<FormFieldProps> = (props) => {
   const [value, setValue] = useState(props.initialValue ?? '')
   return (
     <div className={useClassNameGenerator(props.className, props)}>
-      <label className={useClassNameGenerator(props.labelClassName, props, 'label')} htmlFor={props.name}>
-        {props.label}
-      </label>
+      <label htmlFor={props.name}>{props.label}</label>
       <input
-        className={useClassNameGenerator(props.inputClassName, props, 'input')}
         type={props.htmlType ?? 'text'}
         value={value}
         onChange={(e) => setValue(e.target.value)}

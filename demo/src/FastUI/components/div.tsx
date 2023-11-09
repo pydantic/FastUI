@@ -1,5 +1,5 @@
 import { ClassName, useClassNameGenerator } from '../hooks/className'
-import { FastProps, AnyComp } from './index'
+import { FastProps, RenderChildren } from './index'
 import { FC } from 'react'
 
 interface DivProps {
@@ -37,8 +37,6 @@ interface Props {
 
 export const DivComp: FC<Props> = (props) => (
   <div className={useClassNameGenerator(props.className, props)}>
-    {props.children.map((child, i) => (
-      <AnyComp key={i} {...child} />
-    ))}
+    <RenderChildren children={props.children} />
   </div>
 )

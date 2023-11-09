@@ -1,22 +1,22 @@
-import { FastUI, ClassNameFunction, CustomRender } from './FastUI'
+import { FastUI, ClassNameGenerator, CustomRender } from './FastUI'
 
 export default function App() {
   return (
     <div className="app">
-      <FastUI rootUrl="/api" defaultClassName={bootstrapClassName} customRender={customRender} />
+      <FastUI rootUrl="/api" classNameGenerator={bootstrapClassName} customRender={customRender} />
     </div>
   )
 }
 
 const customRender: CustomRender = () => {
-  // const {type} = props
-  // if (type == 'Text') {
-  //   return () => <span style={{color: 'blue'}}>{props.text}</span>
+  // const { type } = props
+  // if (type == 'Modal') {
+  //   return () => <span style={{ color: 'blue' }}>modal</span>
   // }
   return null
 }
 
-const bootstrapClassName: ClassNameFunction = (props) => {
+const bootstrapClassName: ClassNameGenerator = (props) => {
   const { type } = props
   switch (type) {
     case 'Container':
@@ -25,5 +25,7 @@ const bootstrapClassName: ClassNameFunction = (props) => {
       return 'row'
     case 'Col':
       return 'col'
+    case 'Button':
+      return 'btn btn-primary'
   }
 }
