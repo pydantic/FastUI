@@ -1,7 +1,7 @@
 import { useContext, FC } from 'react'
 import { ErrorContext } from '../hooks/error'
 import { CustomRenderContext } from '../hooks/customRender'
-import { DivComp, AllDivProps } from './div'
+import { AllDivProps, DivComp } from './div'
 import { TextProps, TextComp } from './text'
 import { FormFieldComp, FormFieldProps } from './FormField'
 import { ButtonComp, ButtonProps } from './button'
@@ -30,18 +30,18 @@ export const AnyComp: FC<FastProps> = (props) => {
   try {
     switch (type) {
       case 'Text':
-        return TextComp(props)
+        return <TextComp {...props} />
       case 'Div':
       case 'Container':
       case 'Row':
       case 'Col':
-        return DivComp(props)
+        return renderWithChildren(DivComp, props)
       case 'Button':
-        return ButtonComp(props)
+        return <ButtonComp {...props} />
       case 'FormField':
-        return FormFieldComp(props)
+        return <FormFieldComp {...props} />
       case 'Modal':
-        return ModalComp(props)
+        return <ModalComp {...props} />
       default:
         return <DisplayError title="Invalid Server Response" description={`Unknown component type: "${type}"`} />
     }
@@ -50,6 +50,16 @@ export const AnyComp: FC<FastProps> = (props) => {
     const description = (e as any).message
     return <DisplayError title="Render Error" description={description} />
   }
+}
+
+interface WithChildren {
+  children: FastProps[]
+}
+
+function renderWithChildren<T extends WithChildren>(Component: FC<T>, props: T) {
+  const { children, ...rest } = props
+  // TODO  is there a way to make this type safe?
+  return <Component {...(rest as any)}>{children}</Component>
 }
 
 export const RenderChildren: FC<{ children: FastProps[] }> = ({ children }) => (

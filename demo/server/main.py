@@ -33,3 +33,13 @@ def read_root() -> AnyComponent:
         ],
         class_name='+ mt-4'
     )
+
+
+@app.get('/api/foo', response_model=FastUi, response_model_exclude_none=True)
+def read_foo() -> AnyComponent:
+    return components.Container(
+        children=[
+            components.Text(text='This is foo page'),
+            components.Button(text='go to /', on_click=GoToEvent(url='/')),
+        ]
+    )
