@@ -19,8 +19,8 @@ const customRender: CustomRender = () => {
 const bootstrapClassName: ClassNameGenerator = (props) => {
   const { type } = props
   switch (type) {
-    case 'Container':
-      return 'container'
+    case 'Page':
+      return 'container py-4'
     case 'Row':
       return 'row'
     case 'Col':

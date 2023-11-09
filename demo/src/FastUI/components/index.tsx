@@ -3,11 +3,12 @@ import { ErrorContext } from '../hooks/error'
 import { CustomRenderContext } from '../hooks/customRender'
 import { AllDivProps, DivComp } from './div'
 import { TextProps, TextComp } from './text'
+import { HeadingComp, HeadingProps} from './heading.tsx'
 import { FormFieldComp, FormFieldProps } from './FormField'
 import { ButtonComp, ButtonProps } from './button'
 import { ModalComp, ModalProps } from './modal'
 
-export type FastProps = TextProps | AllDivProps | FormFieldProps | ButtonProps | ModalProps
+export type FastProps = TextProps | AllDivProps | HeadingProps | FormFieldProps | ButtonProps | ModalProps
 
 export const AnyComp: FC<FastProps> = (props) => {
   const { setError, DisplayError } = useContext(ErrorContext)
@@ -32,10 +33,12 @@ export const AnyComp: FC<FastProps> = (props) => {
       case 'Text':
         return <TextComp {...props} />
       case 'Div':
-      case 'Container':
+      case 'Page':
       case 'Row':
       case 'Col':
         return renderWithChildren(DivComp, props)
+      case 'Heading':
+        return <HeadingComp {...props} />
       case 'Button':
         return <ButtonComp {...props} />
       case 'FormField':

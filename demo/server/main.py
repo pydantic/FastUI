@@ -16,11 +16,11 @@ class FastUi(RootModel):
 
 @app.get('/api/', response_model=FastUi, response_model_exclude_none=True)
 def read_root() -> AnyComponent:
-    return components.Container(
+    return components.Page(
         children=[
+            components.Heading(text='Hello World'),
             components.Row(children=[
-                components.Col(children=[components.Text(text='Hello')]),
-                components.Col(children=[components.Text(text='World')]),
+                components.Col(children=[components.Text(text='Hello World')]),
                 components.Col(children=[components.Button(text='Show Modal', on_click=PageEvent(name='modal'))]),
                 components.Col(children=[components.Button(text='go to /foo', on_click=GoToEvent(url='/foo'))]),
             ]),
@@ -37,7 +37,7 @@ def read_root() -> AnyComponent:
 
 @app.get('/api/foo', response_model=FastUi, response_model_exclude_none=True)
 def read_foo() -> AnyComponent:
-    return components.Container(
+    return components.Page(
         children=[
             components.Text(text='This is foo page'),
             components.Button(text='go to /', on_click=GoToEvent(url='/')),

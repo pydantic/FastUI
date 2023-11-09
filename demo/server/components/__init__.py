@@ -24,10 +24,20 @@ class Div(pydantic.BaseModel):
     type: typing.Literal['Div'] = 'Div'
 
 
-class Container(pydantic.BaseModel):
+class Page(pydantic.BaseModel):
+    """
+    Similar to `container` in many UI frameworks, this should be a reasonable root component for most pages.
+    """
     children: list[AnyComponent]
     class_name: extra.ClassName | None = None
-    type: typing.Literal['Container'] = 'Container'
+    type: typing.Literal['Page'] = 'Page'
+
+
+class Heading(pydantic.BaseModel):
+    text: str
+    level: typing.Literal[1, 2, 3, 4, 5, 6] = 1
+    class_name: extra.ClassName | None = None
+    type: typing.Literal['Heading'] = 'Heading'
 
 
 class Row(pydantic.BaseModel):
@@ -59,4 +69,4 @@ class Modal(pydantic.BaseModel):
     type: typing.Literal['Modal'] = 'Modal'
 
 
-AnyComponent = typing.Annotated[Text | Div | Container | Row | Col | Button | Modal, pydantic.Field(discriminator='type')]
+AnyComponent = typing.Annotated[Text | Div | Page | Heading | Row | Col | Button | Modal, pydantic.Field(discriminator='type')]

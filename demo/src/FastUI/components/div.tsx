@@ -8,8 +8,8 @@ interface DivProps {
   className?: ClassName
 }
 
-interface ContainerProps {
-  type: 'Container'
+interface PageProps {
+  type: 'Page'
   children: FastProps[]
   className?: ClassName
 }
@@ -26,8 +26,8 @@ interface ColProps {
   className?: ClassName
 }
 
-export type AllDivProps = DivProps | ContainerProps | RowProps | ColProps
-type AllDivTypes = 'Div' | 'Container' | 'Row' | 'Col'
+export type AllDivProps = DivProps | PageProps | RowProps | ColProps
+type AllDivTypes = 'Div' | 'Page' | 'Row' | 'Col'
 
 interface Props {
   type: AllDivTypes
