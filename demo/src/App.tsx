@@ -27,5 +27,7 @@ const bootstrapClassName: ClassNameGenerator = (props) => {
       return 'col'
     case 'Button':
       return 'btn btn-primary'
+    case 'Table':
+      return 'table table-striped'
   }
 }

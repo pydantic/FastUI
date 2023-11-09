@@ -1,9 +1,11 @@
 from __future__ import annotations as _annotations
 
-from fastapi import FastAPI
-from pydantic import RootModel
+from datetime import date
 
-import components
+from fastapi import FastAPI
+from pydantic import RootModel, BaseModel, Field
+
+import components as c
 from components import AnyComponent
 from components.events import PageEvent, GoToEvent
 
@@ -16,18 +18,18 @@ class FastUi(RootModel):
 
 @app.get('/api/', response_model=FastUi, response_model_exclude_none=True)
 def read_root() -> AnyComponent:
-    return components.Page(
+    return c.Page(
         children=[
-            components.Heading(text='Hello World'),
-            components.Row(children=[
-                components.Col(children=[components.Text(text='Hello World')]),
-                components.Col(children=[components.Button(text='Show Modal', on_click=PageEvent(name='modal'))]),
-                components.Col(children=[components.Button(text='go to /foo', on_click=GoToEvent(url='/foo'))]),
+            c.Heading(text='Hello World'),
+            c.Row(children=[
+                c.Col(children=[c.Text(text='Hello World')]),
+                c.Col(children=[c.Button(text='Show Modal', on_click=PageEvent(name='modal'))]),
+                c.Col(children=[c.Button(text='View Table', on_click=GoToEvent(url='/table'))]),
             ]),
-            components.Modal(
+            c.Modal(
                 title='Modal Title',
-                body=[components.Text(text='Modal Content')],
-                footer=[components.Button(text='Close', on_click=PageEvent(name='modal'))],
+                body=[c.Text(text='Modal Content')],
+                footer=[c.Button(text='Close', on_click=PageEvent(name='modal'))],
                 open_trigger=PageEvent(name='modal'),
             ),
         ],
@@ -35,11 +37,21 @@ def read_root() -> AnyComponent:
     )
 
 
-@app.get('/api/foo', response_model=FastUi, response_model_exclude_none=True)
+class TableRow(BaseModel):
+    name: str = Field(title='Name')
+    dob: date = Field(title='Date of Birth')
+
+
+@app.get('/api/table', response_model=FastUi, response_model_exclude_none=True)
 def read_foo() -> AnyComponent:
-    return components.Page(
+    return c.Page(
         children=[
-            components.Text(text='This is foo page'),
-            components.Button(text='go to /', on_click=GoToEvent(url='/')),
+            c.Heading(text='Table'),
+            c.Table[TableRow](
+                rows=[
+                    TableRow(name='John', dob=date(1990, 1, 1)),
+                    TableRow(name='Jane', dob=date(1991, 1, 1)),
+                ]
+            )
         ]
     )

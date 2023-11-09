@@ -7,8 +7,9 @@ import { HeadingComp, HeadingProps} from './heading.tsx'
 import { FormFieldComp, FormFieldProps } from './FormField'
 import { ButtonComp, ButtonProps } from './button'
 import { ModalComp, ModalProps } from './modal'
+import { TableComp, TableProps} from './table'
 
-export type FastProps = TextProps | AllDivProps | HeadingProps | FormFieldProps | ButtonProps | ModalProps
+export type FastProps = TextProps | AllDivProps | HeadingProps | FormFieldProps | ButtonProps | ModalProps | TableProps
 
 export const AnyComp: FC<FastProps> = (props) => {
   const { setError, DisplayError } = useContext(ErrorContext)
@@ -45,6 +46,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <FormFieldComp {...props} />
       case 'Modal':
         return <ModalComp {...props} />
+      case 'Table':
+        return <TableComp {...props} />
       default:
         return <DisplayError title="Invalid Server Response" description={`Unknown component type: "${type}"`} />
     }

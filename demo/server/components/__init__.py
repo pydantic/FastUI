@@ -12,6 +12,9 @@ import pydantic
 
 from . import extra, events
 
+if typing.TYPE_CHECKING:
+    import pydantic.fields
+
 
 class Text(pydantic.BaseModel):
     text: str
@@ -69,4 +72,31 @@ class Modal(pydantic.BaseModel):
     type: typing.Literal['Modal'] = 'Modal'
 
 
-AnyComponent = typing.Annotated[Text | Div | Page | Heading | Row | Col | Button | Modal, pydantic.Field(discriminator='type')]
+PydanticModel = typing.TypeVar('PydanticModel', bound=pydantic.BaseModel)
+
+
+class Table(pydantic.BaseModel, typing.Generic[PydanticModel]):
+    rows: list[PydanticModel]
+    headings_model: typing.Type[PydanticModel] | None = pydantic.Field(None, serialization_alias=None)
+    # TODO column customisation
+    # TODO pagination
+    class_name: extra.ClassName | None = None
+    type: typing.Literal['Table'] = 'Table'
+
+    @pydantic.computed_field
+    def headings(self) -> list[str]:
+        if self.headings_model:
+            model_type = self.headings_model
+        else:
+            try:
+                model_type = self.rows[0].__class__
+            except IndexError:
+                raise ValueError('Cannot determine headings for empty table with no `headings_model`')
+        fields: dict[str, pydantic.fields.FieldInfo] = model_type.model_fields
+        return [(field.title or name.title()) for name, field in fields.items()]
+
+
+AnyComponent = typing.Annotated[
+    Text | Div | Page | Heading | Row | Col | Button | Modal | Table,
+    pydantic.Field(discriminator='type')
+]
