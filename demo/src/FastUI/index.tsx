@@ -22,15 +22,15 @@ export function FastUI(props: FastUIProps) {
   const { classNameGenerator, DisplayError, customRender, ...rest } = props
   return (
     <div className="fastui">
-      <LocationProvider>
-        <ErrorContextProvider DisplayError={DisplayError}>
+      <ErrorContextProvider DisplayError={DisplayError}>
+        <LocationProvider>
           <ClassNameContext.Provider value={classNameGenerator ?? null}>
             <CustomRenderContext.Provider value={customRender ?? null}>
               <FastUIController {...rest} />
             </CustomRenderContext.Provider>
           </ClassNameContext.Provider>
-        </ErrorContextProvider>
-      </LocationProvider>
+        </LocationProvider>
+      </ErrorContextProvider>
     </div>
   )
 }

@@ -37,9 +37,11 @@ def read_root() -> AnyComponent:
     )
 
 
-class TableRow(BaseModel):
+class MyTableRow(BaseModel):
+    id: int = Field(title='ID')
     name: str = Field(title='Name')
     dob: date = Field(title='Date of Birth')
+    enabled: bool | None = None
 
 
 @app.get('/api/table', response_model=FastUi, response_model_exclude_none=True)
@@ -47,10 +49,16 @@ def read_foo() -> AnyComponent:
     return c.Page(
         children=[
             c.Heading(text='Table'),
-            c.Table[TableRow](
-                rows=[
-                    TableRow(name='John', dob=date(1990, 1, 1)),
-                    TableRow(name='Jane', dob=date(1991, 1, 1)),
+            c.Table[MyTableRow](
+                data=[
+                    MyTableRow(id=1, name='John', dob=date(1990, 1, 1), enabled=True),
+                    MyTableRow(id=2, name='Jane', dob=date(1991, 1, 1), enabled=False),
+                    MyTableRow(id=3, name='Jack', dob=date(1992, 1, 1)),
+                ],
+                columns=[
+                    c.Column(field='name', on_click=GoToEvent(url='/api/more/{id}/')),
+                    c.Column(field='dob', display=c.Display.date),
+                    c.Column(field='enabled'),
                 ]
             )
         ]

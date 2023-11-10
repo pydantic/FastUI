@@ -33,7 +33,7 @@ class Column(pydantic.BaseModel):
     field: str
     display: Display | None = None
     title: str | None = None
-    event: events.Event | None = None
+    on_click: events.Event | None = pydantic.Field(None, serialization_alias='onClick')
     class_name: extra.ClassName | None = None
 
 
@@ -44,20 +44,19 @@ class Table(pydantic.BaseModel, typing.Generic[DataModel]):
     class_name: extra.ClassName | None = None
     type: typing.Literal['Table'] = 'Table'
 
-    @pydantic.field_validator('columns')
-    def fill_columns(cls, columns: list[Column] | None, info: pydantic.ValidationInfo) -> list[Column] | None:
-        data = info.data.get('data', [])
+    @pydantic.model_validator(mode='after')
+    def fill_columns(self) -> typing.Self:
         try:
-            data_model_0 = data[0]
+            data_model_0 = self.data[0]
         except IndexError:
-            return columns
+            return self
 
-        if columns is None:
-            return [Column(field=name, title=field.title) for name, field in data_model_0.model_fields.items()]
+        if self.columns is None:
+            self.columns = [Column(field=name, title=field.title) for name, field in data_model_0.model_fields.items()]
         else:
             # add pydantic titles to columns that don't have them
-            for column in (c for c in columns if c.title is None):
+            for column in (c for c in self.columns if c.title is None):
                 field = data_model_0.model_fields.get(column.field)
                 if field and field.title:
                     column.title = field.title
-            return columns
+        return self

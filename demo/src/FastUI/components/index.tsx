@@ -1,34 +1,34 @@
 import { useContext, FC } from 'react'
 import { ErrorContext } from '../hooks/error'
-import { CustomRenderContext } from '../hooks/customRender'
+import { useCustomRender } from '../hooks/customRender'
 import { AllDivProps, DivComp } from './div'
 import { TextProps, TextComp } from './text'
-import { HeadingComp, HeadingProps} from './heading.tsx'
+import { HeadingComp, HeadingProps } from './heading.tsx'
 import { FormFieldComp, FormFieldProps } from './FormField'
 import { ButtonComp, ButtonProps } from './button'
+import { LinkComp, LinkProps } from './link'
 import { ModalComp, ModalProps } from './modal'
-import { TableComp, TableProps} from './table'
+import { TableComp, TableProps } from './table'
 
-export type FastProps = TextProps | AllDivProps | HeadingProps | FormFieldProps | ButtonProps | ModalProps | TableProps
+export type FastProps =
+  | TextProps
+  | AllDivProps
+  | HeadingProps
+  | FormFieldProps
+  | ButtonProps
+  | ModalProps
+  | TableProps
+  | LinkProps
 
 export const AnyComp: FC<FastProps> = (props) => {
-  const { setError, DisplayError } = useContext(ErrorContext)
-  const customRender = useContext(CustomRenderContext)
-  const { type } = props
+  const { DisplayError } = useContext(ErrorContext)
 
-  if (customRender) {
-    try {
-      const CustomRenderComp = customRender(props)
-      if (CustomRenderComp) {
-        return <CustomRenderComp />
-      }
-    } catch (e) {
-      // TODO maybe we shouldn't catch this error (by default)?
-      const description = (e as any).message
-      setError({ title: 'Custom Render Error', description })
-    }
+  const CustomRenderComp = useCustomRender(props)
+  if (CustomRenderComp) {
+    return <CustomRenderComp />
   }
 
+  const { type } = props
   try {
     switch (type) {
       case 'Text':
@@ -42,6 +42,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <HeadingComp {...props} />
       case 'Button':
         return <ButtonComp {...props} />
+      case 'Link':
+        return renderWithChildren(LinkComp, props)
       case 'FormField':
         return <FormFieldComp {...props} />
       case 'Modal':
@@ -49,6 +51,7 @@ export const AnyComp: FC<FastProps> = (props) => {
       case 'Table':
         return <TableComp {...props} />
       default:
+        console.log('unknown component type:', type, props)
         return <DisplayError title="Invalid Server Response" description={`Unknown component type: "${type}"`} />
     }
   } catch (e) {
