@@ -48,7 +48,7 @@ const request = async ({ url, method, headers, body }: Request): Promise<FastPro
         detail = jsonData.detail
       }
     } catch (e) {
-      console.warn(`${url} -> ${status} JSON:`, detail)
+      console.warn(`${url} -> ${status} content:`, content)
       detail = content
     }
     const msg = `${detail || response.statusText} (${status})`
@@ -70,7 +70,7 @@ export function FastUIController({ rootUrl, pathSendMode, loading }: Props) {
   const [componentProps, setComponentProps] = useState<FastProps | null>(null)
   const { fullPath } = useContext(LocationContext)
 
-  const { setError } = useContext(ErrorContext)
+  const { error, setError } = useContext(ErrorContext)
 
   useEffect(() => {
     // setViewData(null)
@@ -94,7 +94,11 @@ export function FastUIController({ rootUrl, pathSendMode, loading }: Props) {
   }, [rootUrl, pathSendMode, fullPath, setError])
 
   if (componentProps === null) {
-    return <>{loading ? loading() : <DefaultLoading />}</>
+    if (error) {
+      return <></>
+    } else {
+      return <>{loading ? loading() : <DefaultLoading />}</>
+    }
   } else {
     return <AnyComp {...componentProps} />
   }
