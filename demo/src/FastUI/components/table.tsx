@@ -10,17 +10,6 @@ export interface TableProps {
   className?: ClassName
 }
 
-// const DisplayValue: FC<{value: JSON}> = ({value}) => {
-//   if (value === null) {
-//     return <>&mdash;</>
-//   } else if (Array.isArray(value)) {
-//     const joined = value..join(', ')
-//     return <td>{value.map((v, i) => )}</td>
-//   } else {
-//     return <td>{value.toString()}</td>
-//   }
-// }
-
 const Cell: FC<{ value: JSON }> = ({ value }) => {
   if (value === null) {
     return <td>&mdash;</td>
