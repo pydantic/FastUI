@@ -5,8 +5,9 @@ import { ClassNameContext, ClassNameGenerator } from './hooks/className'
 import { ErrorContextProvider, ErrorDisplayType } from './hooks/error'
 import { CustomRender, CustomRenderContext } from './hooks/customRender'
 import { FastProps } from './components'
+import { DisplayChoices } from './components/display'
 
-export type { ClassNameGenerator, CustomRender, ErrorDisplayType, FastProps }
+export type { ClassNameGenerator, CustomRender, ErrorDisplayType, FastProps, DisplayChoices }
 
 export interface FastUIProps {
   rootUrl: string

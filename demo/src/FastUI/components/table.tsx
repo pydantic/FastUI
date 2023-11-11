@@ -1,9 +1,9 @@
 import { FC } from 'react'
 import { ClassName, useClassNameGenerator } from '../hooks/className'
 import { PageEvent, GoToEvent } from '../hooks/event'
-import {as_title, DisplayChoices, DisplayComp} from './display'
+import {as_title, DisplayChoices, DisplayComp } from './display'
 import { LinkRender } from './link'
-import type { JSON } from './display'
+import type { JSON } from './Json'
 
 interface ColumnProps {
   field: string
@@ -72,14 +72,14 @@ const Cell: FC<CellProps> = ({ row, column }) => {
     return (
       <td>
         <LinkRender onClick={event}>
-          <DisplayComp display={display} value={value} />
+          <DisplayComp type="Display" display={display} value={value} />
         </LinkRender>
       </td>
     )
   } else {
     return (
       <td>
-        <DisplayComp display={display} value={value} />
+        <DisplayComp type="Display" display={display} value={value} />
       </td>
     )
   }

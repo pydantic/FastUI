@@ -1,6 +1,6 @@
 import { FC } from 'react'
-
-export type JSON = string | number | boolean | null | JSON[] | { [key: string]: JSON }
+import {JsonComp, JSON} from './Json'
+import {useCustomRender} from '../hooks/customRender'
 
 // eslint-disable-next-line react-refresh/only-export-components
 export enum DisplayChoices {
@@ -15,21 +15,95 @@ export enum DisplayChoices {
   inline_code = 'inline_code',
 }
 
-export interface DisplayProps {
+interface DisplayProps {
   display?: DisplayChoices
   value?: JSON
+  type: 'Display'
 }
 
-export const DisplayComp: FC<DisplayProps> = ({ value, display }) => {
-  display = display ?? DisplayChoices.auto
-  value = value ?? null
-  if (display == DisplayChoices.json) {
-    return <DisplayJsonComp value={value} />
-  } else if (Array.isArray(value)) {
-    return <DisplayArray display={display} value={value} />
-  } else if (typeof value === 'object' && value !== null) {
-    return <DisplayObject display={display} value={value} />
+export type AllDisplayProps = DisplayProps | DisplayArrayProps | DisplayObjectProps | DisplayPrimitiveProps
+
+export const DisplayComp: FC<DisplayProps> = (props) => {
+  const CustomRenderComp = useCustomRender(props)
+  if (CustomRenderComp) {
+    return <CustomRenderComp />
   }
+
+  const display = props.display ?? DisplayChoices.auto
+  const value = props.value ?? null
+  if (display == DisplayChoices.json) {
+    return <JsonComp type="JSON" value={value} />
+  } else if (Array.isArray(value)) {
+    return <DisplayArray type="DisplayArray" display={display} value={value} />
+  } else if (typeof value === 'object' && value !== null) {
+    return <DisplayObject type="DisplayObject" display={display} value={value} />
+  } else {
+    return <DisplayPrimitive type="DisplayPrimitive" display={display} value={value} />
+  }
+}
+
+interface DisplayArrayProps {
+  value: JSON[]
+  display?: DisplayChoices
+  type: 'DisplayArray'
+}
+
+export const DisplayArray: FC<DisplayArrayProps> = (props) => {
+  const CustomRenderComp = useCustomRender(props)
+  if (CustomRenderComp) {
+    return <CustomRenderComp />
+  }
+  const { display, value } = props
+
+  return (
+    <>
+      {value.map((v, i) => (
+        <span key={i}>
+          <DisplayComp type="Display" display={display} value={v} />,{' '}
+        </span>
+      ))}
+    </>
+  )
+}
+
+interface DisplayObjectProps {
+  value: { [key: string]: JSON }
+  display?: DisplayChoices
+  type: 'DisplayObject'
+}
+
+export const DisplayObject: FC<DisplayObjectProps> = (props) => {
+  const CustomRenderComp = useCustomRender(props)
+  if (CustomRenderComp) {
+    return <CustomRenderComp />
+  }
+  const { display, value } = props
+
+  return (
+    <>
+      {Object.entries(value).map(([key, v], i) => (
+        <span key={key}>
+          {key}: <DisplayComp type="Display" display={display} key={i} value={v} />,{' '}
+        </span>
+      ))}
+    </>
+  )
+}
+
+type JSONPrimitive = string | number | boolean | null
+
+interface DisplayPrimitiveProps {
+  value: JSONPrimitive
+  display: DisplayChoices
+  type: 'DisplayPrimitive'
+}
+
+export const DisplayPrimitive: FC<DisplayPrimitiveProps> = (props) => {
+  const CustomRenderComp = useCustomRender(props)
+  if (CustomRenderComp) {
+    return <CustomRenderComp />
+  }
+  const { display, value } = props
 
   switch (display) {
     case DisplayChoices.auto:
@@ -50,42 +124,6 @@ export const DisplayComp: FC<DisplayProps> = ({ value, display }) => {
       return <DisplayInlineCode value={value} />
   }
 }
-
-const DisplayJsonComp: FC<{ value: JSON }> = ({ value }) => {
-  // if the value is a string, we assume it's already JSON, and parse it
-  if (typeof value === 'string') {
-    value = JSON.parse(value)
-  }
-  return (
-    <div className="code-block">
-      <pre>
-        <code>{JSON.stringify(value, null, 2)}</code>
-      </pre>
-    </div>
-  )
-}
-
-const DisplayArray: FC<{ display?: DisplayChoices; value: JSON[] }> = ({ display, value }) => (
-  <>
-    {value.map((v, i) => (
-      <span key={i}>
-        <DisplayComp display={display} value={v} />,{' '}
-      </span>
-    ))}
-  </>
-)
-
-const DisplayObject: FC<{ display?: DisplayChoices; value: { [key: string]: JSON } }> = ({ display, value }) => (
-  <>
-    {Object.entries(value).map(([key, v], i) => (
-      <span key={key}>
-        {key}: <DisplayComp display={display} key={i} value={v} />,{' '}
-      </span>
-    ))}
-  </>
-)
-
-type JSONPrimitive = string | number | boolean | null
 
 const DisplayNull: FC = () => {
   return <span className="fu-null">&mdash;</span>
@@ -144,7 +182,7 @@ const DisplayDuration: FC<{ value: JSONPrimitive }> = ({ value }) => {
 
 // usage as_title('what_ever') > 'What Ever'
 // eslint-disable-next-line react-refresh/only-export-components
-export const as_title = (s: string): string => s.replace(/(_|-)/g, ' ').replace(/(_|\b)\w/g, (l) => l.toUpperCase())
+export const as_title = (s: string): string => s.replace(/[_-]/g, ' ').replace(/(_|\b)\w/g, (l) => l.toUpperCase())
 
 const DisplayAsTitle: FC<{ value: JSONPrimitive }> = ({ value }) => {
   if (value === null) {

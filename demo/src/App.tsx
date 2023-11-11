@@ -8,12 +8,14 @@ export default function App() {
   )
 }
 
-const customRender: CustomRender = () => {
-  // const { type } = props
-  // if (type == 'Modal') {
-  //   return () => <span style={{ color: 'blue' }}>modal</span>
-  // }
-  return null
+const customRender: CustomRender = (props) => {
+  const { type } = props
+  if (type == 'DisplayPrimitive') {
+    const { value } = props
+    if (typeof value == 'boolean') {
+      return () => <>{value ? '👍' : '👎'}</>
+    }
+  }
 }
 
 const bootstrapClassName: ClassNameGenerator = (props) => {

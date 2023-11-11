@@ -9,6 +9,8 @@ import { ButtonComp, ButtonProps } from './button'
 import { LinkComp, LinkProps } from './link'
 import { ModalComp, ModalProps } from './modal'
 import { TableComp, TableProps } from './table'
+import {AllDisplayProps, DisplayArray, DisplayComp, DisplayObject, DisplayPrimitive} from './display'
+import {JsonComp, JsonProps} from './Json'
 
 export type FastProps =
   | TextProps
@@ -19,6 +21,8 @@ export type FastProps =
   | ModalProps
   | TableProps
   | LinkProps
+  | AllDisplayProps
+  | JsonProps
 
 export const AnyComp: FC<FastProps> = (props) => {
   const { DisplayError } = useContext(ErrorContext)
@@ -50,6 +54,16 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <ModalComp {...props} />
       case 'Table':
         return <TableComp {...props} />
+      case 'Display':
+        return <DisplayComp {...props} />
+      case 'DisplayArray':
+        return <DisplayArray {...props} />
+      case 'DisplayObject':
+        return <DisplayObject {...props} />
+      case 'DisplayPrimitive':
+        return <DisplayPrimitive {...props} />
+      case 'JSON':
+        return <JsonComp {...props} />
       default:
         console.log('unknown component type:', type, props)
         return <DisplayError title="Invalid Server Response" description={`Unknown component type: "${type}"`} />
