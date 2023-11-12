@@ -20,7 +20,7 @@ export interface FastUIProps {
   customRender?: CustomRender
 }
 
-export function FastUI (props: FastUIProps) {
+export function FastUI(props: FastUIProps) {
   const { classNameGenerator, DisplayError, customRender, ...rest } = props
   return (
     <div className="fastui">

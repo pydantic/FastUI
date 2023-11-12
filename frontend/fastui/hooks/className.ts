@@ -14,7 +14,7 @@ export const ClassNameContext = createContext<ClassNameGenerator | null>(null)
  * @param props The full props object sent from the backend, this is passed to the class name generator.
  * @param dft default className to use if the class name generator is not set or returns undefined.
  */
-export function useClassNameGenerator (classNameProp: ClassName, props: FastProps, dft?: ClassName): string {
+export function useClassNameGenerator(classNameProp: ClassName, props: FastProps, dft?: ClassName): string {
   const classNameGenerator = useContext(ClassNameContext)
   if (combineClassNameProp(classNameProp)) {
     if (!dft && classNameGenerator) {
@@ -33,7 +33,7 @@ export function useClassNameGenerator (classNameProp: ClassName, props: FastProp
  * then we generate the default className and append the user's className to it.
  * @param classNameProp
  */
-function combineClassNameProp (classNameProp: ClassName): boolean {
+function combineClassNameProp(classNameProp: ClassName): boolean {
   if (Array.isArray(classNameProp)) {
     // classNameProp is an array, check if it contains `+`
     return classNameProp.some((c) => c === '+')
@@ -49,7 +49,7 @@ function combineClassNameProp (classNameProp: ClassName): boolean {
   }
 }
 
-function combine (cn1: ClassName, cn2: ClassName): string {
+function combine(cn1: ClassName, cn2: ClassName): string {
   if (!cn1) {
     return renderClassName(cn2)
   } else if (!cn2) {
@@ -63,7 +63,7 @@ function combine (cn1: ClassName, cn2: ClassName): string {
  * Renders the className to a string, removing plus signs.
  * @param className
  */
-export function renderClassName (className: ClassName): string {
+export function renderClassName(className: ClassName): string {
   if (typeof className === 'string') {
     return className.replace(/^\+ /, '')
   } else if (Array.isArray(className)) {

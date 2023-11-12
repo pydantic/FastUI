@@ -68,7 +68,7 @@ const request = async ({ url, method, headers, body }: Request): Promise<FastPro
   return data as FastProps
 }
 
-export function FastUIController ({ rootUrl, pathSendMode, loading }: Props) {
+export function FastUIController({ rootUrl, pathSendMode, loading }: Props) {
   const [componentProps, setComponentProps] = useState<FastProps | null>(null)
   const { fullPath } = useContext(LocationContext)
 

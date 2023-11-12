@@ -2,7 +2,7 @@ import { createContext, ReactNode, useEffect, useState, useCallback, useContext 
 
 import { ErrorContext } from './error'
 
-function parseLocation (): string {
+function parseLocation(): string {
   const { href, origin } = window.location
   // remove origin from the beginning of href
   return href.slice(origin.length)
@@ -17,12 +17,12 @@ const initialPath = parseLocation()
 
 const initialState = {
   fullPath: initialPath,
-  goto: () => null
+  goto: () => null,
 }
 
 export const LocationContext = createContext<LocationState>(initialState)
 
-export function LocationProvider ({ children }: { children: ReactNode }) {
+export function LocationProvider({ children }: { children: ReactNode }) {
   const [fullPath, setFullPath] = useState(initialPath)
   const { setError } = useContext(ErrorContext)
 
@@ -66,8 +66,8 @@ export function LocationProvider ({ children }: { children: ReactNode }) {
         setError(null)
         setFullPath(newPath)
       },
-      [setError]
-    )
+      [setError],
+    ),
   }
 
   return <LocationContext.Provider value={value}>{children}</LocationContext.Provider>

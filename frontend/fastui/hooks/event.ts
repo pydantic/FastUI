@@ -12,14 +12,14 @@ export interface GoToEvent {
   url: string
 }
 
-function pageEventType (event: PageEvent): string {
+function pageEventType(event: PageEvent): string {
   return `fastui:${event.name}`
 }
 
-export function useFireEvent (): { fireEvent: (event?: PageEvent | GoToEvent) => void } {
+export function useFireEvent(): { fireEvent: (event?: PageEvent | GoToEvent) => void } {
   const location = useContext(LocationContext)
 
-  function fireEvent (event?: PageEvent | GoToEvent) {
+  function fireEvent(event?: PageEvent | GoToEvent) {
     if (!event) {
       return
     }
@@ -38,7 +38,7 @@ export function useFireEvent (): { fireEvent: (event?: PageEvent | GoToEvent) =>
   return { fireEvent }
 }
 
-export function useEventListenerToggle (event?: PageEvent, initialState = false): [boolean, () => void] {
+export function useEventListenerToggle(event?: PageEvent, initialState = false): [boolean, () => void] {
   const [state, setState] = useState(initialState)
 
   const toggle = useCallback(() => setState((state) => !state), [])
