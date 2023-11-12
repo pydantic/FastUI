@@ -1,7 +1,9 @@
 import { FC, MouseEventHandler, ReactNode } from 'react'
+
 import { ClassName, useClassNameGenerator } from '../hooks/className'
 import { useFireEvent, PageEvent, GoToEvent } from '../hooks/event'
-import { FastProps, RenderChildren } from './index.tsx'
+
+import { FastProps, RenderChildren } from './index'
 
 export interface LinkProps {
   type: 'Link'

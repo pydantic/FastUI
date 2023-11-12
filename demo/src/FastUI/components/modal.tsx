@@ -1,7 +1,9 @@
 import { FC } from 'react'
+
 import { ClassName, renderClassName, useClassNameGenerator } from '../hooks/className'
-import { FastProps, RenderChildren } from './index'
 import { PageEvent, useEventListenerToggle } from '../hooks/event'
+
+import { FastProps, RenderChildren } from './index'
 import './modal.css'
 
 export interface ModalProps {
@@ -20,7 +22,7 @@ export const ModalComp: FC<ModalProps> = (props) => {
   const [open, toggle] = useEventListenerToggle(openTrigger, props.open)
 
   return (
-    <div className={renderClassName({ 'fu-modal-overlay': true, open: open })}>
+    <div className={renderClassName({ 'fu-modal-overlay': true, open })}>
       <div className={useClassNameGenerator(className, props, 'fu-modal-content')}>
         <div className="fu-model-header">
           <h2>{title}</h2>

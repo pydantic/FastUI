@@ -1,4 +1,5 @@
 import { createContext, FC, useContext } from 'react'
+
 import { FastProps } from '../components'
 
 export type CustomRender = (props: FastProps) => FC | void

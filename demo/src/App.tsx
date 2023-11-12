@@ -1,6 +1,6 @@
 import { FastUI, ClassNameGenerator, CustomRender } from './FastUI'
 
-export default function App() {
+export default function App () {
   return (
     <div className="app">
       <FastUI rootUrl="/api" classNameGenerator={bootstrapClassName} customRender={customRender} />
@@ -10,9 +10,9 @@ export default function App() {
 
 const customRender: CustomRender = (props) => {
   const { type } = props
-  if (type == 'DisplayPrimitive') {
+  if (type === 'DisplayPrimitive') {
     const { value } = props
-    if (typeof value == 'boolean') {
+    if (typeof value === 'boolean') {
       return () => <>{value ? '👍' : '👎'}</>
     }
   }

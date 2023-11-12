@@ -1,16 +1,18 @@
 import { useContext, FC } from 'react'
+
 import { ErrorContext } from '../hooks/error'
 import { useCustomRender } from '../hooks/customRender'
+
 import { AllDivProps, DivComp } from './div'
 import { TextProps, TextComp } from './text'
-import { HeadingComp, HeadingProps } from './heading.tsx'
+import { HeadingComp, HeadingProps } from './heading'
 import { FormFieldComp, FormFieldProps } from './FormField'
 import { ButtonComp, ButtonProps } from './button'
 import { LinkComp, LinkProps } from './link'
 import { ModalComp, ModalProps } from './modal'
 import { TableComp, TableProps } from './table'
-import {AllDisplayProps, DisplayArray, DisplayComp, DisplayObject, DisplayPrimitive} from './display'
-import {JsonComp, JsonProps} from './Json'
+import { AllDisplayProps, DisplayArray, DisplayComp, DisplayObject, DisplayPrimitive } from './display'
+import { JsonComp, JsonProps } from './Json'
 
 export type FastProps =
   | TextProps
@@ -79,7 +81,7 @@ interface WithChildren {
   children: FastProps[]
 }
 
-function renderWithChildren<T extends WithChildren>(Component: FC<T>, props: T) {
+function renderWithChildren<T extends WithChildren> (Component: FC<T>, props: T) {
   const { children, ...rest } = props
   // TODO  is there a way to make this type safe?
   return <Component {...(rest as any)}>{children}</Component>

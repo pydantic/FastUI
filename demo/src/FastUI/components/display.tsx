@@ -1,27 +1,15 @@
 import { FC } from 'react'
-import {JsonComp, JSON} from './Json'
-import {useCustomRender} from '../hooks/customRender'
 
-// eslint-disable-next-line react-refresh/only-export-components
-export enum DisplayChoices {
-  auto = 'auto',
-  plain = 'plain',
-  datetime = 'datetime',
-  date = 'date',
-  duration = 'duration',
-  as_title = 'as_title',
-  markdown = 'markdown',
-  json = 'json',
-  inline_code = 'inline_code',
-}
+import { useCustomRender } from '../hooks/customRender'
+import { DisplayChoices, asTitle } from '../display'
+
+import { JsonComp, JSON } from './Json'
 
 interface DisplayProps {
   display?: DisplayChoices
   value?: JSON
   type: 'Display'
 }
-
-export type AllDisplayProps = DisplayProps | DisplayArrayProps | DisplayObjectProps | DisplayPrimitiveProps
 
 export const DisplayComp: FC<DisplayProps> = (props) => {
   const CustomRenderComp = useCustomRender(props)
@@ -31,7 +19,7 @@ export const DisplayComp: FC<DisplayProps> = (props) => {
 
   const display = props.display ?? DisplayChoices.auto
   const value = props.value ?? null
-  if (display == DisplayChoices.json) {
+  if (display === DisplayChoices.json) {
     return <JsonComp type="JSON" value={value} />
   } else if (Array.isArray(value)) {
     return <DisplayArray type="DisplayArray" display={display} value={value} />
@@ -125,6 +113,8 @@ export const DisplayPrimitive: FC<DisplayPrimitiveProps> = (props) => {
   }
 }
 
+export type AllDisplayProps = DisplayProps | DisplayArrayProps | DisplayObjectProps | DisplayPrimitiveProps
+
 const DisplayNull: FC = () => {
   return <span className="fu-null">&mdash;</span>
 }
@@ -180,15 +170,11 @@ const DisplayDuration: FC<{ value: JSONPrimitive }> = ({ value }) => {
   }
 }
 
-// usage as_title('what_ever') > 'What Ever'
-// eslint-disable-next-line react-refresh/only-export-components
-export const as_title = (s: string): string => s.replace(/[_-]/g, ' ').replace(/(_|\b)\w/g, (l) => l.toUpperCase())
-
 const DisplayAsTitle: FC<{ value: JSONPrimitive }> = ({ value }) => {
   if (value === null) {
     return <DisplayNull />
   } else {
-    return <>{as_title(value.toString())}</>
+    return <>{asTitle(value.toString())}</>
   }
 }
 

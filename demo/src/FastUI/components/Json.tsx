@@ -1,4 +1,4 @@
-import {FC} from 'react'
+import { FC } from 'react'
 
 export type JSON = string | number | boolean | null | JSON[] | { [key: string]: JSON }
 

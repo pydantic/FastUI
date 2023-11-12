@@ -1,5 +1,6 @@
 import { FC, useState } from 'react'
-import { ClassName, useClassNameGenerator } from '../hooks/className.ts'
+
+import { ClassName, useClassNameGenerator } from '../hooks/className'
 
 export interface FormFieldProps {
   type: 'FormField'

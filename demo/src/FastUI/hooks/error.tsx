@@ -30,7 +30,7 @@ const DefaultErrorDisplay: ErrorDisplayType = ({ title, description, children })
 export const ErrorContext = createContext<ErrorContextType>({
   error: null,
   setError: () => null,
-  DisplayError: DefaultErrorDisplay,
+  DisplayError: DefaultErrorDisplay
 })
 
 const MaybeError: FC<{ children: ReactNode }> = ({ children }) => {
@@ -55,7 +55,7 @@ export const ErrorContextProvider: FC<Props> = ({ DisplayError, children }) => {
       console.warn('setting error:', error)
       setErrorState(error)
     },
-    [setErrorState],
+    [setErrorState]
   )
   const contextValue: ErrorContextType = { error, setError, DisplayError: DisplayError ?? DefaultErrorDisplay }
 

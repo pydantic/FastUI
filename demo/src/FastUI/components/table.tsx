@@ -1,9 +1,13 @@
 import { FC } from 'react'
+
+import type { JSON } from './Json'
+
+import { DisplayChoices, asTitle } from '../display'
 import { ClassName, useClassNameGenerator } from '../hooks/className'
 import { PageEvent, GoToEvent } from '../hooks/event'
-import {as_title, DisplayChoices, DisplayComp } from './display'
+
+import { DisplayComp } from './display'
 import { LinkRender } from './link'
-import type { JSON } from './Json'
 
 interface ColumnProps {
   field: string
@@ -30,15 +34,15 @@ export const TableComp: FC<TableProps> = (props) => {
       <thead>
         <tr>
           {columns.map((col, id) => (
-            <th key={id}>{col.title ?? as_title(col.field)}</th>
+            <th key={id}>{col.title ?? asTitle(col.field)}</th>
           ))}
         </tr>
       </thead>
       <tbody>
-        {data.map((row, row_id) => (
-          <tr key={row_id}>
+        {data.map((row, rowId) => (
+          <tr key={rowId}>
             {columns.map((column, id) => (
-              <Cell key={id} row_id={row_id} row={row} column={column} />
+              <Cell key={id} rowId={rowId} row={row} column={column} />
             ))}
           </tr>
         ))}
@@ -50,7 +54,7 @@ export const TableComp: FC<TableProps> = (props) => {
 interface CellProps {
   row: Row
   column: ColumnProps
-  row_id: number
+  rowId: number
 }
 
 const Cell: FC<CellProps> = ({ row, column }) => {
@@ -60,7 +64,7 @@ const Cell: FC<CellProps> = ({ row, column }) => {
   if (event) {
     if (event.type === 'go-to') {
       // for go-to events, substitute the row values into the url
-      const url = sub_keys(event.url, row)
+      const url = subKeys(event.url, row)
       if (url === null) {
         event = null
       } else {
@@ -85,20 +89,20 @@ const Cell: FC<CellProps> = ({ row, column }) => {
   }
 }
 
-const sub_keys = (template: string, row: Row): string | null => {
-  let return_null = false
+const subKeys = (template: string, row: Row): string | null => {
+  let returnNull = false
   const r = template.replace(/{(.+?)}/g, (_, key: string): string => {
     const v: JSON | undefined = row[key]
     if (v === undefined) {
       throw new Error(`field "${key}" not found in ${JSON.stringify(row)}`)
     } else if (v === null) {
-      return_null = true
+      returnNull = true
       return 'null'
     } else {
       return v.toString()
     }
   })
-  if (return_null) {
+  if (returnNull) {
     return null
   } else {
     return r

@@ -1,11 +1,12 @@
 import { ReactNode } from 'react'
-import { LocationProvider } from './hooks/locationContext.tsx'
+
+import { LocationProvider } from './hooks/locationContext'
 import { FastUIController } from './controller'
 import { ClassNameContext, ClassNameGenerator } from './hooks/className'
 import { ErrorContextProvider, ErrorDisplayType } from './hooks/error'
 import { CustomRender, CustomRenderContext } from './hooks/customRender'
 import { FastProps } from './components'
-import { DisplayChoices } from './components/display'
+import { DisplayChoices } from './display'
 
 export type { ClassNameGenerator, CustomRender, ErrorDisplayType, FastProps, DisplayChoices }
 
@@ -19,7 +20,7 @@ export interface FastUIProps {
   customRender?: CustomRender
 }
 
-export function FastUI(props: FastUIProps) {
+export function FastUI (props: FastUIProps) {
   const { classNameGenerator, DisplayError, customRender, ...rest } = props
   return (
     <div className="fastui">

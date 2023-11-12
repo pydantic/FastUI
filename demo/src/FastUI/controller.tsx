@@ -1,9 +1,11 @@
 import { useContext, useEffect, useState } from 'react'
+
+import type { FastUIProps } from './index'
+
 import { FastProps, AnyComp } from './components'
 import { DefaultLoading } from './DefaultLoading'
-import type { FastUIProps } from './index'
-import { LocationContext } from './hooks/locationContext.tsx'
-import { ErrorContext } from './hooks/error.tsx'
+import { LocationContext } from './hooks/locationContext'
+import { ErrorContext } from './hooks/error'
 
 interface Request {
   url: string
@@ -66,7 +68,7 @@ const request = async ({ url, method, headers, body }: Request): Promise<FastPro
   return data as FastProps
 }
 
-export function FastUIController({ rootUrl, pathSendMode, loading }: Props) {
+export function FastUIController ({ rootUrl, pathSendMode, loading }: Props) {
   const [componentProps, setComponentProps] = useState<FastProps | null>(null)
   const { fullPath } = useContext(LocationContext)
 
@@ -75,7 +77,7 @@ export function FastUIController({ rootUrl, pathSendMode, loading }: Props) {
   useEffect(() => {
     // setViewData(null)
     let url = rootUrl
-    if (pathSendMode == 'query') {
+    if (pathSendMode === 'query') {
       url += `?path=${encodeURIComponent(fullPath)}`
     } else {
       url += fullPath

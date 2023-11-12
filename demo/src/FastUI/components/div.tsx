@@ -1,6 +1,8 @@
-import { ClassName, useClassNameGenerator } from '../hooks/className'
-import { FastProps, RenderChildren } from './index'
 import { FC } from 'react'
+
+import { ClassName, useClassNameGenerator } from '../hooks/className'
+
+import { FastProps, RenderChildren } from './index'
 
 interface DivProps {
   type: 'Div'
