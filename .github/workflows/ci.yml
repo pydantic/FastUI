@@ -31,6 +31,8 @@ jobs:
     - uses: pre-commit/action@v3.0.0
       with:
         extra_args: --all-files
+      env:
+        SKIP: no-commit-to-branch
 
   check:  # This job does nothing and is only used for the branch protection
     if: always()
