@@ -39,7 +39,7 @@ dependencies = [
 dynamic = ["version"]
 
 [project.urls]
-Homepage = "https://github.com/samuelcolvin/fastui"
+Homepage = "https://github.com/samuelcolvin/FastUI"
 
 
 [tool.ruff]
