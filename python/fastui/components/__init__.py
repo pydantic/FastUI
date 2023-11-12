@@ -8,10 +8,11 @@ All CamelCase names in the namespace should be components.
 from __future__ import annotations as _annotations
 
 import typing
+
 import pydantic
 
-from . import extra, events
-from .table import Table, Column, Display
+from . import events, extra
+from .table import Table
 
 if typing.TYPE_CHECKING:
     import pydantic.fields
@@ -32,6 +33,7 @@ class Page(pydantic.BaseModel):
     """
     Similar to `container` in many UI frameworks, this should be a reasonable root component for most pages.
     """
+
     children: list[AnyComponent]
     class_name: extra.ClassName | None = None
     type: typing.Literal['Page'] = 'Page'
@@ -77,6 +79,5 @@ PydanticModel = typing.TypeVar('PydanticModel', bound=pydantic.BaseModel)
 
 
 AnyComponent = typing.Annotated[
-    Text | Div | Page | Heading | Row | Col | Button | Modal | Table,
-    pydantic.Field(discriminator='type')
+    Text | Div | Page | Heading | Row | Col | Button | Modal | Table, pydantic.Field(discriminator='type')
 ]

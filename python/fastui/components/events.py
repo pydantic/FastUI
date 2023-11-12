@@ -1,5 +1,6 @@
 from typing import Annotated, Literal
-from pydantic import Field, BaseModel
+
+from pydantic import BaseModel, Field
 
 
 class PageEvent(BaseModel):
