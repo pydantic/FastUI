@@ -13,19 +13,18 @@ repos:
     hooks:
       - id: frontend-prettier
         name: frontend-prettier
-        types_or: [javascript, jsx, ts, tsx]
+        types_or: [javascript, jsx, ts, tsx, css, json, markdown]
         entry: npm run prettier
         language: system
-        pass_filenames: false
       - id: frontend-lint
         name: frontend-lint
-        types_or: [javascript, jsx, ts, tsx]
+        types_or: [ts, tsx]
         entry: npm run lint-fix
         language: system
         pass_filenames: false
       - id: frontend-typecheck
         name: frontend-typecheck
-        types_or: [javascript, jsx, ts, tsx]
+        types_or: [ts, tsx]
         entry: npm run typecheck
         language: system
         pass_filenames: false
