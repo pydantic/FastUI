@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit",
     "build": "tsc",
     "typewatch": "tsc --noEmit --watch",
-    "lint": "eslint frontend --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint react --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
     "lint-fix": "npm run lint -- --fix",
     "prettier": "prettier --write",
     "format": "npm run prettier -- . && npm run lint-fix"

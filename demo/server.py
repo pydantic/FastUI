@@ -3,20 +3,15 @@ from __future__ import annotations as _annotations
 from datetime import date
 
 from fastapi import FastAPI
-from pydantic import RootModel, BaseModel, Field
+from pydantic import BaseModel, Field
 
-import components as c
-from components import AnyComponent
-from components.events import PageEvent, GoToEvent
+from fastui import components as c
+from fastui import FastUI
 
 app = FastAPI()
 
 
-class FastUi(RootModel):
-    root: AnyComponent
-
-
-@app.get('/api/', response_model=FastUi, response_model_exclude_none=True)
+@app.get('/api/', response_model=FastUI, response_model_exclude_none=True)
 def read_root() -> AnyComponent:
     return c.Page(
         children=[
@@ -44,7 +39,7 @@ class MyTableRow(BaseModel):
     enabled: bool | None = None
 
 
-@app.get('/api/table', response_model=FastUi, response_model_exclude_none=True)
+@app.get('/api/table', response_model=FastUI, response_model_exclude_none=True)
 def read_foo() -> AnyComponent:
     return c.Page(
         children=[

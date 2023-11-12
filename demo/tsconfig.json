@@ -20,7 +20,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "fastui": ["../frontend/fastui"]
+      "fastui": ["../react/fastui"]
     }
   },
   "include": ["src"],
