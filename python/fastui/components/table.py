@@ -1,39 +1,26 @@
 from __future__ import annotations as _annotations
 
 import typing
-from enum import StrEnum
 
 import pydantic
 
-from . import extra, events
+from .. import events
+from ..display import Display
+from . import extra
 
 # TODO allow dataclasses and dicts here too
 DataModel = typing.TypeVar('DataModel', bound=pydantic.BaseModel)
-
-
-class Display(StrEnum):
-    """
-    How to a value.
-    """
-    auto = 'auto'  # default, same as None below
-    plain = 'plain'
-    datetime = 'datetime'
-    date = 'date'
-    duration = 'duration'
-    as_title = 'as_title'
-    markdown = 'markdown'
-    json = 'json'
-    inline_code = 'inline_code'
 
 
 class Column(pydantic.BaseModel):
     """
     Description of a table column.
     """
+
     field: str
     display: Display | None = None
     title: str | None = None
-    on_click: events.Event | None = pydantic.Field(None, serialization_alias='onClick')
+    on_click: typing.Annotated[events.Event | None, pydantic.Field(serialization_alias='onClick')] = None
     class_name: extra.ClassName | None = None
 
 

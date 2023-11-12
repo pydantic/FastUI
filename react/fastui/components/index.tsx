@@ -81,7 +81,7 @@ interface WithChildren {
   children: FastProps[]
 }
 
-function renderWithChildren<T extends WithChildren> (Component: FC<T>, props: T) {
+function renderWithChildren<T extends WithChildren>(Component: FC<T>, props: T) {
   const { children, ...rest } = props
   // TODO  is there a way to make this type safe?
   return <Component {...(rest as any)}>{children}</Component>

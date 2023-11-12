@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '**'
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - run: pip install -r python/requirements/all.txt
+
+    - run: npm install
+
+    - uses: pre-commit/action@v3.0.0
+      with:
+        extra_args: --all-files
+      env:
+        SKIP: no-commit-to-branch
+
+  check:  # This job does nothing and is only used for the branch protection
+    if: always()
+    needs: [lint]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Decide whether the needed jobs succeeded or failed
+        uses: re-actors/alls-green@release/v1
+        id: all-green
+        with:
+          jobs: ${{ toJSON(needs) }}
+
+  release:
+    needs: [check]
+    if: "success() && startsWith(github.ref, 'refs/tags/')"
+    runs-on: ubuntu-latest
+    environment: release
+
+    permissions:
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: set up python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: install
+        run: pip install -U build
+
+      - name: check version
+        id: check-version
+        uses: samuelcolvin/check-python-version@v4.1
+        with:
+          version_file_path: 'python/fastui/__init__.py'
+
+      - name: build
+        run: python -m build
+
+      - name: Upload package to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1

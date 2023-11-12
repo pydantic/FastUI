@@ -28,3 +28,5 @@ dist-ssr
 __pycache__/
 
 /.logfire/
+/frontend-dist/
+/scratch/

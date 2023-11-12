@@ -1,0 +1,3 @@
+-r ./lint.txt
+-r ./pyproject.txt
+uvicorn[standard]

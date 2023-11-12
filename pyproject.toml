@@ -1,0 +1,50 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.sdist]
+include = ["python"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["python/fastui"]
+
+[tool.hatch.version]
+path = "python/fastui/__init__.py"
+
+[project]
+name = "fastui"
+description = "Build UIs fast."
+authors = [{ name = "Samuel Colvin", email = "s@muelcolvin.com" }]
+license = "MIT"
+readme = "README.md"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Topic :: Internet",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    'Programming Language :: Python :: 3 :: Only',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "pydantic>=2.5.0b1",
+    "fastapi>=0.104.0",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/samuelcolvin/FastUI"
+
+
+[tool.ruff]
+line-length = 120
+extend-select = ["Q", "RUF100", "UP", "I"]
+flake8-quotes = {inline-quotes = "single", multiline-quotes = "double"}
+format.quote-style="single"
+target-version = "py38"
