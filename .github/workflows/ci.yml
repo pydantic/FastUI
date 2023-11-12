@@ -20,7 +20,13 @@ jobs:
       with:
         python-version: '3.11'
 
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
     - run: pip install -r python/requirements/all.txt
+
+    - run: npm install
 
     - uses: pre-commit/action@v3.0.0
       with:
