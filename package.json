@@ -1,16 +1,18 @@
 {
-  "name": "fastui-demo",
+  "name": "fastui",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "entry": "src/index.tsx",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite demo",
     "typecheck": "tsc --noEmit",
+    "build": "tsc",
     "typewatch": "tsc --noEmit --watch",
-    "build": "tsc && vite build",
-    "lint": "eslint . --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
-    "format": "prettier . --write -- '**/*.{ts,tsx,js,css,json,md}' && npm run lint -- --fix",
-    "preview": "vite preview"
+    "lint": "eslint frontend --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
+    "lint-fix": "npm run lint -- --fix",
+    "prettier": "prettier . --write -- '**/*.{ts,tsx,js,css,json,md}'",
+    "format": "npm run prettier && npm run lint-fix"
   },
   "prettier": {
     "singleQuote": true,
@@ -39,7 +41,6 @@
     "eslint-plugin-react-refresh": "^0.4.4",
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "prettier": "^3.0.3",
-    "sass": "^1.67.0",
     "typescript": "^5.0.2",
     "vite": "^4.4.5"
   }

@@ -17,6 +17,7 @@ export default () => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
+        fastui: path.resolve(__dirname, '../frontend/fastui'),
       },
     },
     server: serverConfig,

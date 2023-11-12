@@ -1,6 +1,6 @@
-import { FastUI, ClassNameGenerator, CustomRender } from './FastUI'
+import { FastUI, ClassNameGenerator, CustomRender } from 'fastui'
 
-export default function App () {
+export default function App() {
   return (
     <div className="app">
       <FastUI rootUrl="/api" classNameGenerator={bootstrapClassName} customRender={customRender} />

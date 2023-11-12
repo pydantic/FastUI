@@ -1,0 +1,31 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      #  - id: no-commit-to-branch
+      - id: check-yaml
+        args: ['--unsafe']
+      - id: check-toml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  - repo: local
+    hooks:
+      - id: frontend-prettier
+        name: frontend-prettier
+        types_or: [javascript, jsx, ts, tsx]
+        entry: npm run prettier
+        language: system
+        pass_filenames: false
+      - id: frontend-lint
+        name: frontend-lint
+        types_or: [javascript, jsx, ts, tsx]
+        entry: npm run lint-fix
+        language: system
+        pass_filenames: false
+      - id: frontend-typecheck
+        name: frontend-typecheck
+        types_or: [javascript, jsx, ts, tsx]
+        entry: npm run typecheck
+        language: system
+        pass_filenames: false
