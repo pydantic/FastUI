@@ -11,7 +11,8 @@ import typing
 
 import pydantic
 
-from . import events, extra
+from .. import events
+from . import extra
 from .table import Table
 
 if typing.TYPE_CHECKING:

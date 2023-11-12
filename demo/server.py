@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
 from fastui import components as c
-from fastui import FastUI
+from fastui import FastUI, PageEvent, GoToEvent, Display, AnyComponent
 
 app = FastAPI()
 
@@ -52,7 +52,7 @@ def read_foo() -> AnyComponent:
                 ],
                 columns=[
                     c.Column(field='name', on_click=GoToEvent(url='/api/more/{id}/')),
-                    c.Column(field='dob', display=c.Display.date),
+                    c.Column(field='dob', display=Display.date),
                     c.Column(field='enabled'),
                 ]
             )

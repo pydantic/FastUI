@@ -1,30 +1,15 @@
 from __future__ import annotations as _annotations
 
 import typing
-from enum import StrEnum
 
 import pydantic
 
-from . import events, extra
+from .. import events
+from ..display import Display
+from . import extra
 
 # TODO allow dataclasses and dicts here too
 DataModel = typing.TypeVar('DataModel', bound=pydantic.BaseModel)
-
-
-class Display(StrEnum):
-    """
-    How to a value.
-    """
-
-    auto = 'auto'  # default, same as None below
-    plain = 'plain'
-    datetime = 'datetime'
-    date = 'date'
-    duration = 'duration'
-    as_title = 'as_title'
-    markdown = 'markdown'
-    json = 'json'
-    inline_code = 'inline_code'
 
 
 class Column(pydantic.BaseModel):

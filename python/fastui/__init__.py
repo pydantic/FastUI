@@ -1,9 +1,9 @@
 __version__ = '0.0.1'
 
-from pydantic import RootModel
+import pydantic
 
 from .components import AnyComponent
 
 
-class FastUI(RootModel):
+class FastUI(pydantic.RootModel):
     root: AnyComponent
