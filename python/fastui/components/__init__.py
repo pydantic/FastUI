@@ -13,7 +13,7 @@ import pydantic
 
 from .. import events
 from . import extra
-from .table import Table
+from .tables import Table
 
 if typing.TYPE_CHECKING:
     import pydantic.fields
@@ -61,7 +61,7 @@ class Col(pydantic.BaseModel):
 
 class Button(pydantic.BaseModel):
     text: str
-    on_click: events.Event | None = pydantic.Field(None, serialization_alias='onClick')
+    on_click: events.Event | None = pydantic.Field(default=None, serialization_alias='onClick')
     class_name: extra.ClassName | None = None
     type: typing.Literal['Button'] = 'Button'
 
@@ -70,13 +70,10 @@ class Modal(pydantic.BaseModel):
     title: str
     body: list[AnyComponent]
     footer: list[AnyComponent] | None = None
-    open_trigger: events.PageEvent | None = pydantic.Field(None, serialization_alias='openTrigger')
+    open_trigger: events.PageEvent | None = pydantic.Field(default=None, serialization_alias='openTrigger')
     open: bool = False
     class_name: extra.ClassName | None = None
     type: typing.Literal['Modal'] = 'Modal'
-
-
-PydanticModel = typing.TypeVar('PydanticModel', bound=pydantic.BaseModel)
 
 
 AnyComponent = typing.Annotated[

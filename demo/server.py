@@ -6,7 +6,9 @@ from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
 from fastui import components as c
-from fastui import FastUI, PageEvent, GoToEvent, Display, AnyComponent
+from fastui import FastUI, AnyComponent
+from fastui.display import Display
+from fastui.events import PageEvent, GoToEvent
 
 app = FastAPI()
 
@@ -40,7 +42,7 @@ class MyTableRow(BaseModel):
 
 
 @app.get('/api/table', response_model=FastUI, response_model_exclude_none=True)
-def read_foo() -> AnyComponent:
+def table_view() -> AnyComponent:
     return c.Page(
         children=[
             c.Heading(text='Table'),
@@ -51,10 +53,26 @@ def read_foo() -> AnyComponent:
                     MyTableRow(id=3, name='Jack', dob=date(1992, 1, 1)),
                 ],
                 columns=[
-                    c.Column(field='name', on_click=GoToEvent(url='/api/more/{id}/')),
-                    c.Column(field='dob', display=Display.date),
-                    c.Column(field='enabled'),
+                    c.TableColumn(field='name', on_click=GoToEvent(url='/api/more/{id}/')),
+                    c.TableColumn(field='dob', display=Display.date),
+                    c.TableColumn(field='enabled'),
                 ]
             )
+        ]
+    )
+
+
+class MyFormModel(BaseModel):
+    name: str = Field(title='Name')
+    dob: date = Field(title='Date of Birth')
+    enabled: bool | None = None
+
+
+@app.get('/api/form', response_model=FastUI, response_model_exclude_none=True)
+def form_view() -> AnyComponent:
+    return c.Page(
+        children=[
+            c.Heading(text='Form'),
+            c.Form[MyFormModel]()
         ]
     )
