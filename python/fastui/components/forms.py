@@ -3,7 +3,6 @@ from abc import ABC
 
 import pydantic
 
-from .. import events
 from . import extra
 
 HtmlType = typing.Literal['checkbox', 'text', 'date', 'datetime-local', 'time', 'email', 'url', 'file', 'number']
@@ -20,8 +19,7 @@ class FormField(pydantic.BaseModel):
 
 
 class BaseForm(pydantic.BaseModel, ABC):
-    submit_url: str | None = pydantic.Field(default=None, serialization_alias='submitUrl')
-    success_event: events.Event | None = pydantic.Field(default=None, serialization_alias='successEvent')
+    submit_url: str = pydantic.Field(serialization_alias='submitUrl')
     class_name: extra.ClassName | None = None
 
 

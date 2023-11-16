@@ -18,7 +18,6 @@ def model_json_schema_to_fields(model: type[BaseModel]) -> list[FormField]:
 
 JsonSchemaInput: TypeAlias = 'JsonSchemaString | JsonSchemaInt | JsonSchemaNumber'
 JsonSchemaField: TypeAlias = 'JsonSchemaInput | JsonSchemaBool'
-
 JsonSchemaConcrete: TypeAlias = 'JsonSchemaField | JsonSchemaArray | JsonSchemaObject'
 JsonSchemaAny: TypeAlias = 'JsonSchemaConcrete | JsonSchemaRef'
 
@@ -102,15 +101,18 @@ def json_schema_any_to_fields(
     schema = deference_json_schema(schema, defs)
     if schema_is_field(schema):
         yield json_schema_field_to_field(schema, loc, title, required)
-    elif schema_is_array(schema):
+        return
+
+    if schema_title := schema.get('title'):
+        title = title + [schema_title]
+    elif loc:
+        title = title + [loc_to_title(loc)]
+
+    if schema_is_array(schema):
         yield from json_schema_array_to_fields(schema, loc, title, required, defs)
     else:
         assert schema_is_object(schema), f'Unexpected schema type {schema}'
 
-        if schema_title := schema.get('title'):
-            title = title + [schema_title]
-        elif loc:
-            title = title + [loc_to_title(loc)]
         yield from json_schema_obj_to_fields(schema, loc, title, defs)
 
 

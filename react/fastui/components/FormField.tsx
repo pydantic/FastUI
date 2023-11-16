@@ -7,9 +7,11 @@ interface Props<T> {
   // defaults to 'text'
   htmlType: T
   initial?: string | number | boolean
+  error?: string
   name: string
   title: string[]
   required: boolean
+  locked: boolean
   className?: ClassName
 }
 
@@ -26,20 +28,20 @@ export const FormFieldComp: FC<FormFieldProps> = (props) => {
 }
 
 const Checkbox: FC<FormFieldProps> = (props) => {
-  const { className, name, title, required } = props
-  const defaultChecked = !!props.initial
+  const { className, name, title, required, locked } = props
   return (
     <div className={useClassNameGenerator(className, props)}>
       <label htmlFor={name}>
         <Title title={title} />
       </label>
-      <input type="checkbox" defaultChecked={defaultChecked} name={name} required={required} />
+      <input type="checkbox" defaultChecked={!!props.initial} name={name} required={required} disabled={locked} />
+      {props.error ? <div>Error: {props.error}</div> : null}
     </div>
   )
 }
 
 const Input: FC<Props<inputHtmlType>> = (props) => {
-  const { className, name, title, required, htmlType } = props
+  const { className, name, title, required, htmlType, locked } = props
   let initial = props.initial ?? ''
   if (typeof initial === 'boolean') {
     initial = initial ? 1 : 0
@@ -58,7 +60,9 @@ const Input: FC<Props<inputHtmlType>> = (props) => {
         onChange={(e) => setValue(e.target.value)}
         name={name}
         required={required}
+        disabled={locked}
       />
+      {props.error ? <div>Error: {props.error}</div> : null}
     </div>
   )
 }

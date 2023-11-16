@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel, Field, PositiveInt
 
 from fastui import components as c
-from fastui import FastUI, AnyComponent, fastui_form
+from fastui import FastUI, AnyComponent, fastui_form, FormResponse
 from fastui.display import Display
 from fastui.events import PageEvent, GoToEvent
 
@@ -92,6 +92,6 @@ def form_view() -> AnyComponent:
 
 
 @app.post('/api/form')
-async def form_post(form: Annotated[MyFormModel, fastui_form(MyFormModel)], xxx: int):
+async def form_post(form: Annotated[MyFormModel, fastui_form(MyFormModel)]) -> FormResponse:
     debug(form)
-    return form
+    return FormResponse(event=GoToEvent(url='/'))

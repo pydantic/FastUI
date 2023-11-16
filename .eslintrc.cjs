@@ -14,6 +14,7 @@ module.exports = {
   rules: {
     'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     '@typescript-eslint/no-explicit-any': 'off',
+    'no-use-before-define': 'off',
     'import/order': [
       'error',
       {
