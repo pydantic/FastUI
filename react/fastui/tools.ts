@@ -3,7 +3,8 @@ interface Request {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
   // defaults to 200
   expectedStatus?: number[]
-  body?: Record<string, any>
+  json?: Record<string, any>
+  formData?: FormData
   headers?: Record<string, string>
 }
 
@@ -17,16 +18,34 @@ class RequestError extends Error {
   }
 }
 
-export async function request({ url, method, headers, body, expectedStatus }: Request): Promise<any> {
+export async function request({
+  url,
+  method,
+  headers,
+  json,
+  expectedStatus,
+  formData,
+}: Request): Promise<[number, any]> {
   const init: RequestInit = {}
-  if (method) {
-    init.method = method
+
+  let contentType = null
+  if (json) {
+    init.body = JSON.stringify(json)
+    contentType = 'application/json'
+    method = method ?? 'POST'
+  } else if (formData) {
+    // don't set content-type, let the browser set it
+    init.body = formData
+    method = method ?? 'POST'
   }
 
-  if (body) {
-    init.body = JSON.stringify(body)
-    headers = headers ?? {}
-    headers['Content-Type'] = 'application/json'
+  headers = headers ?? {}
+  if (contentType && !headers['Content-Type']) {
+    headers['Content-Type'] = contentType
+  }
+
+  if (method) {
+    init.method = method
   }
 
   if (headers) {
@@ -66,7 +85,7 @@ export async function request({ url, method, headers, body, expectedStatus }: Re
     throw new RequestError('Response not valid JSON', status)
   }
   console.debug(`${url} -> ${status} JSON:`, data)
-  return data
+  return [status, data]
 }
 
 function responseOk(response: Response, expectedStatus?: number[]) {

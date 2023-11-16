@@ -28,7 +28,7 @@ export function FastUIController({ rootUrl, pathSendMode, loading }: Props) {
     const promise = request({ url })
 
     promise
-      .then((data) => setComponentProps(data as FastProps))
+      .then(([, data]) => setComponentProps(data as FastProps))
       .catch((e) => {
         setError({ title: 'Request Error', description: e.message })
       })

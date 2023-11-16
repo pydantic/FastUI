@@ -11,7 +11,7 @@ HtmlType = typing.Literal['checkbox', 'text', 'date', 'datetime-local', 'time', 
 
 class FormField(pydantic.BaseModel):
     name: str
-    title: tuple[str, ...]
+    title: list[str]
     html_type: HtmlType = pydantic.Field(default='text', serialization_alias='htmlType')
     required: bool = False
     initial: str | int | float | bool | None = None

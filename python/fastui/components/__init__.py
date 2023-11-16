@@ -20,6 +20,7 @@ if typing.TYPE_CHECKING:
     import pydantic.fields
 
 __all__ = (
+    'AnyComponent',
     'Text',
     'Div',
     'Page',

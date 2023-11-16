@@ -27,9 +27,11 @@ export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
+    console.log(Object.fromEntries(formData.entries()))
     if (submitUrl) {
-      await request({ url: submitUrl, method: 'POST', body: formData })
-      // TODO substitute in to event
+      const [status, data] = await request({ url: submitUrl, formData, expectedStatus: [200, 422] })
+      console.log({ status, data })
+      // TODO substitute into event
     }
     fireEvent(successEvent)
   }
