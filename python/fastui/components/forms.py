@@ -1,28 +1,51 @@
 import typing
+from abc import ABC
 
 import pydantic
 
 from .. import events
 from . import extra
 
-FormModel = typing.TypeVar('FormModel', bound=pydantic.BaseModel)
+HtmlType = typing.Literal['checkbox', 'text', 'date', 'datetime-local', 'time', 'email', 'url', 'file', 'number']
 
 
-class Form(pydantic.BaseModel, typing.Generic[FormModel]):
-    submit_trigger: events.PageEvent | None = pydantic.Field(default=None, serialization_alias='submitTrigger')
-    submit_url: str | None = pydantic.Field(default=None, serialization_alias='submitUrl')
-    next_url: str | None = pydantic.Field(default=None, serialization_alias='nextUrl')
+class FormField(pydantic.BaseModel):
+    name: str
+    title: tuple[str, ...]
+    html_type: HtmlType = pydantic.Field(default='text', serialization_alias='htmlType')
+    required: bool = False
+    initial: str | int | float | bool | None = None
     class_name: extra.ClassName | None = None
-    type: typing.Literal['Form'] = 'Form'
+    type: typing.Literal['FormField'] = 'FormField'
 
-    @pydantic.computed_field(alias='formJsonSchema')
-    def form_json_schema(self) -> dict[str, typing.Any]:
+
+class BaseForm(pydantic.BaseModel, ABC):
+    submit_url: str | None = pydantic.Field(default=None, serialization_alias='submitUrl')
+    success_event: events.Event | None = pydantic.Field(default=None, serialization_alias='successEvent')
+    class_name: extra.ClassName | None = None
+
+
+FormFieldsModel = typing.TypeVar('FormFieldsModel', bound=pydantic.BaseModel)
+
+
+class ModelForm(BaseForm, typing.Generic[FormFieldsModel]):
+    type: typing.Literal['ModelForm'] = 'ModelForm'
+
+    @pydantic.computed_field(alias='formFields')
+    def form_fields(self) -> list[FormField]:
+        from ..json_schema import model_json_schema_to_fields
+
         args = self.__pydantic_generic_metadata__['args']
         try:
-            model: type[FormModel] = args[0]
+            model: type[FormFieldsModel] = args[0]
         except IndexError:
-            raise ValueError('`Form` must be parameterized with a pydantic model, i.e. `Form[MyModel]()`.')
+            raise ValueError('`ModelForm` must be parameterized with a pydantic model, i.e. `ModelForm[MyModel]()`.')
 
         if not issubclass(model, pydantic.BaseModel):
-            raise TypeError('`Form` must be parameterized with a pydantic model, i.e. `Form[MyModel]()`.')
-        return model.model_json_schema()
+            raise TypeError('`ModelForm` must be parameterized with a pydantic model, i.e. `ModelForm[MyModel]()`.')
+        return model_json_schema_to_fields(model)
+
+
+class Form(BaseForm):
+    form_fields: list[FormField] = pydantic.Field(serialization_alias='formFields')
+    type: typing.Literal['Form'] = 'Form'

@@ -2,11 +2,12 @@ import { useContext, FC } from 'react'
 
 import { ErrorContext } from '../hooks/error'
 import { useCustomRender } from '../hooks/customRender'
+import { unreachable } from '../tools'
 
 import { AllDivProps, DivComp } from './div'
 import { TextProps, TextComp } from './text'
 import { HeadingComp, HeadingProps } from './heading'
-import { FormComp, FormProps } from './form'
+import { FormComp, FormProps, ModelFormProps } from './form'
 import { FormFieldComp, FormFieldProps } from './FormField'
 import { ButtonComp, ButtonProps } from './button'
 import { LinkComp, LinkProps } from './link'
@@ -20,6 +21,7 @@ export type FastProps =
   | AllDivProps
   | HeadingProps
   | FormProps
+  | ModelFormProps
   | FormFieldProps
   | ButtonProps
   | ModalProps
@@ -53,6 +55,7 @@ export const AnyComp: FC<FastProps> = (props) => {
       case 'Link':
         return renderWithChildren(LinkComp, props)
       case 'Form':
+      case 'ModelForm':
         return <FormComp {...props} />
       case 'FormField':
         return <FormFieldComp {...props} />
@@ -98,8 +101,3 @@ export const RenderChildren: FC<{ children: FastProps[] }> = ({ children }) => (
     ))}
   </>
 )
-
-// eslint-disable-next-line react-refresh/only-export-components
-export const unreachable = (msg: string, unexpectedValue: never, args?: any) => {
-  console.warn(msg, { unexpectedValue }, args)
-}

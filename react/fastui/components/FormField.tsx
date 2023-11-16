@@ -1,40 +1,57 @@
 import { FC, useState } from 'react'
 
-import type { JsonSchemaField, JsonSchemaInput, JsonSchemaBool } from '../JsonSchema'
-
 import { ClassName, useClassNameGenerator } from '../hooks/className'
-
-import { unreachable } from './index'
 
 interface Props<T> {
   type: 'FormField'
-  schema: T
+  // defaults to 'text'
+  htmlType: T
+  initial?: string | number | boolean
   name: string
-  title: string
+  title: string[]
   required: boolean
   className?: ClassName
 }
 
-export type FormFieldProps = Props<JsonSchemaField>
+type inputHtmlType = 'text' | 'date' | 'datetime-local' | 'time' | 'email' | 'url' | 'file' | 'number'
+export type FormFieldProps = Props<inputHtmlType | 'checkbox'>
 
 export const FormFieldComp: FC<FormFieldProps> = (props) => {
-  const { schema } = props
-  if (schema.type === 'boolean') {
-    return <Checkbox {...(props as Props<JsonSchemaBool>)} />
+  const { htmlType } = props
+  if (htmlType === 'checkbox') {
+    return <Checkbox {...props} />
   } else {
-    return <Input {...(props as Props<JsonSchemaInput>)} />
+    return <Input {...(props as Props<inputHtmlType>)} />
   }
 }
 
-const Input: FC<Props<JsonSchemaInput>> = (props) => {
-  const { className, name, title, required, schema } = props
-  const [value, setValue] = useState(schema.default ?? '')
-
-  // TODO placeholder
-  const htmlType = getHtmlType(schema)
+const Checkbox: FC<FormFieldProps> = (props) => {
+  const { className, name, title, required } = props
+  const defaultChecked = !!props.initial
   return (
     <div className={useClassNameGenerator(className, props)}>
-      <label htmlFor={name}>{title}</label>
+      <label htmlFor={name}>
+        <Title title={title} />
+      </label>
+      <input type="checkbox" defaultChecked={defaultChecked} name={name} required={required} />
+    </div>
+  )
+}
+
+const Input: FC<Props<inputHtmlType>> = (props) => {
+  const { className, name, title, required, htmlType } = props
+  let initial = props.initial ?? ''
+  if (typeof initial === 'boolean') {
+    initial = initial ? 1 : 0
+  }
+  const [value, setValue] = useState(initial)
+
+  // TODO placeholder
+  return (
+    <div className={useClassNameGenerator(className, props)}>
+      <label htmlFor={name}>
+        <Title title={title} />
+      </label>
       <input
         type={htmlType}
         value={value}
@@ -46,50 +63,14 @@ const Input: FC<Props<JsonSchemaInput>> = (props) => {
   )
 }
 
-const Checkbox: FC<Props<JsonSchemaBool>> = (props) => {
-  const { className, name, title, required, schema } = props
-  const [checked, setChecked] = useState(schema.default ?? false)
+const Title: FC<{ title: string[] }> = ({ title }) => {
   return (
-    <div className={useClassNameGenerator(className, props)}>
-      <label htmlFor={name}>{title}</label>
-      <input
-        type="checkbox"
-        defaultChecked={checked}
-        onChange={() => setChecked((state) => !state)}
-        name={name}
-        required={required}
-      />
-    </div>
+    <>
+      {title.map((t, i) => (
+        <span key={i}>
+          {i > 0 ? <> &rsaquo;</> : null} {t}
+        </span>
+      ))}
+    </>
   )
-}
-
-function getHtmlType(schema: JsonSchemaInput): string {
-  const { type } = schema
-  switch (type) {
-    case 'string':
-      switch (schema.format) {
-        case 'date':
-          return 'date'
-        case 'date-time':
-          return 'datetime-local'
-        case 'time':
-          return 'time'
-        case 'email':
-          return 'email'
-        case 'uri':
-          return 'url'
-        case 'uuid':
-          return 'text'
-        // case 'binary':
-        //   return 'file'
-        default:
-          return 'text'
-      }
-    case 'number':
-    case 'integer':
-      return 'number'
-    default:
-      unreachable('Unexpected JsonSchemaInput type', type)
-      throw new Error(`Unknown type: ${type}`)
-  }
 }

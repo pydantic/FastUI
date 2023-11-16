@@ -2,8 +2,7 @@ import { FC } from 'react'
 
 import { useCustomRender } from '../hooks/customRender'
 import { DisplayChoices, asTitle } from '../display'
-
-import { unreachable } from './index'
+import { unreachable } from '../tools'
 
 import { JsonComp, JsonData } from './Json'
 

@@ -5,7 +5,7 @@ from datetime import date
 
 import annotated_types
 from fastapi import FastAPI
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, HttpUrl
 
 from fastui import components as c
 from fastui import FastUI, AnyComponent
@@ -66,15 +66,16 @@ def table_view() -> AnyComponent:
 
 
 class NestedFormModel(BaseModel):
-    x: int
-    y: str
+    # x: int
+    # profile_view: HttpUrl
+    profile_view: str
 
 
 class MyFormModel(BaseModel):
     name: str = Field(default='foobar', title='Name')
-    dob: date = Field(title='Date of Birth', description='Your date of birth')
-    weight: typing.Annotated[int, annotated_types.Gt(0)]
-    size: float = None
+    # dob: date = Field(title='Date of Birth', description='Your date of birth')
+    # weight: typing.Annotated[int, annotated_types.Gt(0)]
+    # size: float = None
     enabled: bool = None
     nested: NestedFormModel
 
@@ -84,8 +85,13 @@ def form_view() -> AnyComponent:
     f = c.Page(
         children=[
             c.Heading(text='Form'),
-            c.Form[MyFormModel]()
+            c.ModelForm[MyFormModel](submit_url='/api/form', success_event=PageEvent(name='form_success'))
         ]
     )
     debug(f)
     return f
+
+
+@app.post('/api/form')
+def form_post():
+    return {'success': True}
