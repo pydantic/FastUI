@@ -3,12 +3,14 @@ import { FC } from 'react'
 import { useCustomRender } from '../hooks/customRender'
 import { DisplayChoices, asTitle } from '../display'
 
-import { JsonComp, JSON } from './Json'
+import { unreachable } from './index'
+
+import { JsonComp, JsonData } from './Json'
 
 interface DisplayProps {
-  display?: DisplayChoices
-  value?: JSON
   type: 'Display'
+  display?: DisplayChoices
+  value?: JsonData
 }
 
 export const DisplayComp: FC<DisplayProps> = (props) => {
@@ -31,7 +33,7 @@ export const DisplayComp: FC<DisplayProps> = (props) => {
 }
 
 interface DisplayArrayProps {
-  value: JSON[]
+  value: JsonData[]
   display?: DisplayChoices
   type: 'DisplayArray'
 }
@@ -55,7 +57,7 @@ export const DisplayArray: FC<DisplayArrayProps> = (props) => {
 }
 
 interface DisplayObjectProps {
-  value: { [key: string]: JSON }
+  value: { [key: string]: JsonData }
   display?: DisplayChoices
   type: 'DisplayObject'
 }
@@ -108,8 +110,11 @@ export const DisplayPrimitive: FC<DisplayPrimitiveProps> = (props) => {
       return <DisplayAsTitle value={value} />
     case DisplayChoices.markdown:
       return <DisplayMarkdown value={value} />
+    case DisplayChoices.json:
     case DisplayChoices.inline_code:
       return <DisplayInlineCode value={value} />
+    default:
+      unreachable('Unexpected display type', display, props)
   }
 }
 

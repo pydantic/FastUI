@@ -13,10 +13,25 @@ import pydantic
 
 from .. import events
 from . import extra
-from .tables import Table
+from .forms import Form
+from .tables import Table, TableColumn
 
 if typing.TYPE_CHECKING:
     import pydantic.fields
+
+__all__ = (
+    'Text',
+    'Div',
+    'Page',
+    'Heading',
+    'Row',
+    'Col',
+    'Button',
+    'Modal',
+    'Form',
+    'Table',
+    'TableColumn',
+)
 
 
 class Text(pydantic.BaseModel):
@@ -77,5 +92,5 @@ class Modal(pydantic.BaseModel):
 
 
 AnyComponent = typing.Annotated[
-    Text | Div | Page | Heading | Row | Col | Button | Modal | Table, pydantic.Field(discriminator='type')
+    Text | Div | Page | Heading | Row | Col | Button | Modal | Table | Form, pydantic.Field(discriminator='type')
 ]

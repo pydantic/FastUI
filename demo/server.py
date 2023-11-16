@@ -1,7 +1,9 @@
 from __future__ import annotations as _annotations
 
+import typing
 from datetime import date
 
+import annotated_types
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
@@ -22,6 +24,7 @@ def read_root() -> AnyComponent:
                 c.Col(children=[c.Text(text='Hello World')]),
                 c.Col(children=[c.Button(text='Show Modal', on_click=PageEvent(name='modal'))]),
                 c.Col(children=[c.Button(text='View Table', on_click=GoToEvent(url='/table'))]),
+                c.Col(children=[c.Button(text='Form', on_click=GoToEvent(url='/form'))]),
             ]),
             c.Modal(
                 title='Modal Title',
@@ -53,7 +56,7 @@ def table_view() -> AnyComponent:
                     MyTableRow(id=3, name='Jack', dob=date(1992, 1, 1)),
                 ],
                 columns=[
-                    c.TableColumn(field='name', on_click=GoToEvent(url='/api/more/{id}/')),
+                    c.TableColumn(field='name', on_click=GoToEvent(url='/more/{id}/')),
                     c.TableColumn(field='dob', display=Display.date),
                     c.TableColumn(field='enabled'),
                 ]
@@ -62,17 +65,27 @@ def table_view() -> AnyComponent:
     )
 
 
+class NestedFormModel(BaseModel):
+    x: int
+    y: str
+
+
 class MyFormModel(BaseModel):
-    name: str = Field(title='Name')
-    dob: date = Field(title='Date of Birth')
-    enabled: bool | None = None
+    name: str = Field(default='foobar', title='Name')
+    dob: date = Field(title='Date of Birth', description='Your date of birth')
+    weight: typing.Annotated[int, annotated_types.Gt(0)]
+    size: float = None
+    enabled: bool = None
+    # nested: NestedFormModel
 
 
 @app.get('/api/form', response_model=FastUI, response_model_exclude_none=True)
 def form_view() -> AnyComponent:
-    return c.Page(
+    f = c.Page(
         children=[
             c.Heading(text='Form'),
             c.Form[MyFormModel]()
         ]
     )
+    debug(f)
+    return f
