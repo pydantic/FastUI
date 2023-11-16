@@ -3,7 +3,8 @@
 export type JsonSchemaInput = JsonSchemaString | JsonSchemaInt | JsonSchemaNumber
 export type JsonSchemaField = JsonSchemaInput | JsonSchemaBool
 
-export type JsonSchemaAny = JsonSchemaField | JsonSchemaArray | JsonSchemaObject
+export type JsonSchemaConcrete = JsonSchemaField | JsonSchemaArray | JsonSchemaObject
+export type JsonSchemaAny = JsonSchemaConcrete | JsonSchemaRef
 
 export type SchemeLocation = (string | number)[]
 
@@ -51,8 +52,17 @@ export interface JsonSchemaArray extends JsonSchemaBase {
   items?: JsonSchemaAny
 }
 
+export interface JsonSchemaDefs {
+  [def: string]: JsonSchemaConcrete
+}
+
+export interface JsonSchemaRef {
+  $ref: string
+}
+
 export interface JsonSchemaObject extends JsonSchemaBase {
   type: 'object'
   properties: Record<string, JsonSchemaAny>
+  $defs?: JsonSchemaDefs
   required?: string[]
 }

@@ -34,9 +34,10 @@ export const FormComp: FC<FormProps> = (props) => {
     fireEvent(submitTrigger)
   }
 
+  const defs = formJsonSchema.$defs ?? {}
   return (
     <form ref={formRef} className={useClassNameGenerator(className, props)} onSubmit={onSubmit}>
-      <JsonSchemaAnyComp schema={formJsonSchema} loc={[]} required />
+      <JsonSchemaAnyComp schema={formJsonSchema} loc={[]} required defs={defs} />
       <button type="submit">Submit</button>
     </form>
   )
@@ -46,23 +47,27 @@ interface JsonSchemaProps<T> {
   schema: T
   loc: js.SchemeLocation
   required: boolean
+  defs: js.JsonSchemaDefs
 }
 
-const JsonSchemaAnyComp: FC<JsonSchemaProps<js.JsonSchemaAny>> = ({ schema, loc, required }) => {
-  const { type } = schema
+const JsonSchemaAnyComp: FC<JsonSchemaProps<js.JsonSchemaAny>> = (props) => {
+  const { schema, ...rest } = props
+  const concreteSchema = dereferenceJsonSchema(schema, props.defs)
+
+  const { type } = concreteSchema
   switch (type) {
     case 'string':
     case 'number':
     case 'integer':
     case 'boolean':
-      return <JsonSchemaFieldComp schema={schema} loc={loc} required={required} />
+      return <JsonSchemaFieldComp schema={concreteSchema} {...rest} />
     case 'array':
-      return <JsonSchemaArrayComp schema={schema} loc={loc} required={required} />
+      return <JsonSchemaArrayComp schema={concreteSchema} {...rest} />
     case 'object':
-      return <JsonSchemaObjectComp schema={schema} loc={loc} required={required} />
+      return <JsonSchemaObjectComp schema={concreteSchema} {...rest} />
     default:
       unreachable('Unexpected JsonSchema type', type)
-      return <div>Unknown type: {type}</div>
+      return <div>Unknown type: {type || 'undefined'}</div>
   }
 }
 
@@ -79,12 +84,18 @@ const JsonSchemaFieldComp: FC<JsonSchemaProps<js.JsonSchemaField>> = (props) => 
   }
 }
 
-const JsonSchemaObjectComp: FC<JsonSchemaProps<js.JsonSchemaObject>> = ({ schema, loc }) => {
+const JsonSchemaObjectComp: FC<JsonSchemaProps<js.JsonSchemaObject>> = ({ schema, loc, defs }) => {
   const required = schema.required ?? []
   return (
     <>
       {Object.entries(schema.properties).map(([name, schema]) => (
-        <JsonSchemaAnyComp key={name} schema={schema} loc={[...loc, name]} required={required.includes(name)} />
+        <JsonSchemaAnyComp
+          key={name}
+          schema={schema}
+          loc={[...loc, name]}
+          required={required.includes(name)}
+          defs={defs}
+        />
       ))}
     </>
   )
@@ -135,20 +146,23 @@ function unflatten(formData: FormData, formSchema: js.JsonSchemaObject) {
 
 /**
  * Convert a value from a form input into the correct type for the schema,
- * specifically convert `'on` from checkboxes into a `true`
+ * specifically convert `'on` from checkboxes into a `true`.
+ * @param formSchema
+ * @param path
+ * @param value
  */
 function convertValue(formSchema: js.JsonSchemaObject, path: js.SchemeLocation, value: FormDataEntryValue): JsonData {
-  const schema = path.reduce((acc: js.JsonSchemaAny, currentKey) => {
+  const defs = formSchema.$defs ?? {}
+  const schema = path.reduce((acc: js.JsonSchemaConcrete, currentKey) => {
     if (acc.type !== 'object') {
-      throw new Error(`Invalid path ${path.join('.')} for schema ${JSON.stringify(schema)}`)
+      throw new Error(`Invalid path ${path.join('.')} for schema ${JSON.stringify(acc)}`)
     }
     const s = acc.properties[currentKey]
     if (s === undefined) {
       throw new Error(`Invalid path ${path} for schema ${JSON.stringify(schema)}`)
     }
-    return s
+    return dereferenceJsonSchema(s, defs)
   }, formSchema)
-  console.log({ formSchema, path, schema, value })
 
   if (typeof value === 'string') {
     const { type } = schema
@@ -168,5 +182,24 @@ function convertValue(formSchema: js.JsonSchemaObject, path: js.SchemeLocation, 
     }
   } else {
     throw new Error('Files not yet supported')
+  }
+}
+
+/**
+ * Convert a schema which might be a reference to a concrete schema.
+ * @param schema
+ * @param defs
+ */
+function dereferenceJsonSchema(schema: js.JsonSchemaAny, defs?: js.JsonSchemaDefs): js.JsonSchemaConcrete {
+  if ('$ref' in schema) {
+    defs = defs ?? {}
+    const defSchema = defs[schema.$ref.slice('#/$defs/'.length)]
+    if (defSchema === undefined) {
+      throw new Error(`Invalid $ref "${schema.$ref}", not found in ${JSON.stringify(defs)}`)
+    } else {
+      return defSchema
+    }
+  } else {
+    return schema
   }
 }

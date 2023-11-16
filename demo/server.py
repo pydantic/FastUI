@@ -76,7 +76,7 @@ class MyFormModel(BaseModel):
     weight: typing.Annotated[int, annotated_types.Gt(0)]
     size: float = None
     enabled: bool = None
-    # nested: NestedFormModel
+    nested: NestedFormModel
 
 
 @app.get('/api/form', response_model=FastUI, response_model_exclude_none=True)
