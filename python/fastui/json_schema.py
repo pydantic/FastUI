@@ -21,7 +21,7 @@ def model_json_schema_to_fields(model: type[BaseModel]) -> list[FormField]:
 JsonSchemaInput: TypeAlias = 'JsonSchemaString | JsonSchemaInt | JsonSchemaNumber'
 JsonSchemaField: TypeAlias = 'JsonSchemaInput | JsonSchemaBool'
 JsonSchemaConcrete: TypeAlias = 'JsonSchemaField | JsonSchemaArray | JsonSchemaObject'
-JsonSchemaAny: TypeAlias = 'JsonSchemaConcrete | JsonSchemaRef'
+JsonSchemaAny: TypeAlias = 'JsonSchemaConcrete | JsonSchemaAnyOf | JsonSchemaAllOf | JsonSchemaRef'
 
 
 class JsonSchemaBase(TypedDict, total=False):
@@ -69,10 +69,7 @@ class JsonSchemaArray(JsonSchemaBase, total=False):
     items: JsonSchemaAny
 
 
-JsonSchemaRef = TypedDict('JsonSchemaRef', {'$ref': str})
-
 JsonSchemaDefs = dict[str, JsonSchemaConcrete]
-
 JsonSchemaObject = TypedDict(
     'JsonSchemaObject',
     {
@@ -85,6 +82,21 @@ JsonSchemaObject = TypedDict(
     },
     total=False,
 )
+
+
+class JsonSchemaNull(JsonSchemaBase):
+    type: Literal['null']
+
+
+class JsonSchemaAnyOf(JsonSchemaBase):
+    anyOf: list[JsonSchemaAny]
+
+
+class JsonSchemaAllOf(JsonSchemaBase):
+    allOf: list[JsonSchemaAny]
+
+
+JsonSchemaRef = TypedDict('JsonSchemaRef', {'$ref': str})
 
 SchemeLocation = list[str | int]
 
@@ -101,7 +113,7 @@ def json_schema_obj_to_fields(
 def json_schema_any_to_fields(
     schema: JsonSchemaAny, loc: SchemeLocation, title: list[str], required: bool, defs: JsonSchemaDefs
 ) -> Iterable[FormField]:
-    schema = deference_json_schema(schema, defs)
+    schema, required = deference_json_schema(schema, defs, required)
     if schema_is_field(schema):
         yield json_schema_field_to_field(schema, loc, title, required)
         return
@@ -174,9 +186,11 @@ def loc_to_name(loc: SchemeLocation) -> str:
         return '.'.join(str(v) for v in loc)
 
 
-def deference_json_schema(schema: JsonSchemaAny, defs: JsonSchemaDefs) -> JsonSchemaConcrete:
+def deference_json_schema(
+    schema: JsonSchemaAny, defs: JsonSchemaDefs, required: bool
+) -> tuple[JsonSchemaConcrete, bool]:
     """
-    Convert a schema which might be a reference to a concrete schema.
+    Convert a schema which might be a reference or union to a concrete schema.
     """
     if ref := schema.get('$ref'):
         defs = defs or {}
@@ -184,9 +198,24 @@ def deference_json_schema(schema: JsonSchemaAny, defs: JsonSchemaDefs) -> JsonSc
         if def_schema is None:
             raise ValueError(f'Invalid $ref "{ref}", not found in {defs}')
         else:
-            return def_schema
+            return def_schema, required
+    elif any_of := schema.get('anyOf'):
+        if len(any_of) == 2 and sum(s.get('type') == 'null' for s in any_of) == 1:
+            # If anyOf is a single type and null, then it is optional
+            not_null_schema = next(s for s in any_of if s.get('type') != 'null')
+            return deference_json_schema(not_null_schema, defs, False)
+        else:
+            raise NotImplementedError('`anyOf` schemas which are not simply `X | None` are not yet supported')
+    elif all_of := schema.get('allOf'):
+        all_of = cast(list[JsonSchemaAny], all_of)
+        if len(all_of) == 1:
+            new_schema, required = deference_json_schema(all_of[0], defs, required)
+            new_schema.update({k: v for k, v in schema.items() if k != 'allOf'})  # type: ignore
+            return new_schema, required
+        else:
+            raise NotImplementedError('`allOf` schemas with more than 1 choice are not yet supported')
     else:
-        return cast(JsonSchemaConcrete, schema)
+        return cast(JsonSchemaConcrete, schema), required
 
 
 def as_title(s: typing.Any) -> str:

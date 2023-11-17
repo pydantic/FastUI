@@ -82,6 +82,7 @@ export const FormFieldSelectComp: FC<FormFieldSelectProps> = (props) => {
         required={required}
         disabled={locked}
       >
+        <option></option>
         {choices.map(([value, label]) => (
           <option key={value} value={value}>
             {label}

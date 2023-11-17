@@ -80,8 +80,8 @@ class ToolEnum(StrEnum):
 
 class MyFormModel(BaseModel):
     name: str = Field(default='foobar', title='Name')
-    tool: ToolEnum
-    task: Literal['build', 'destroy']
+    tool: ToolEnum = ToolEnum.saw
+    task: Literal['build', 'destroy'] | None = None
     # dob: date = Field(title='Date of Birth', description='Your date of birth')
     # weight: typing.Annotated[int, annotated_types.Gt(0)]
     # size: PositiveInt = None

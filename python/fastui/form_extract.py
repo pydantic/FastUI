@@ -49,10 +49,16 @@ NestedDict: typing.TypeAlias = 'dict[str | int, NestedDict | str]'
 
 def unflatten(form_data: datastructures.FormData) -> NestedDict:
     """
-    Unflatten a form data dict into a nested dict.
+    Unflatten a `FormData` dict into a nested dict.
+
+    Also omit empty strings, this might be a bit controversial, but it helps in many scenarios, e.g. a select
+    which hasn't been updated. It also avoids empty values for string inputs that haven't been fill in.
     """
     result_dict: NestedDict = {}
     for key, value in form_data.items():
+        if value == '':
+            continue
+
         d: dict[str | int, typing.Any] = result_dict
 
         *path, last_key = name_to_loc(key)
