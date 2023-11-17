@@ -7,6 +7,7 @@ import { DefaultLoading } from './DefaultLoading'
 import { LocationContext } from './hooks/locationContext'
 import { ErrorContext } from './hooks/error'
 import { request } from './tools'
+import { ReloadContext } from './hooks/dev'
 
 type Props = Omit<FastUIProps, 'defaultClassName' | 'OnError' | 'customRender'>
 
@@ -15,6 +16,7 @@ export function FastUIController({ rootUrl, pathSendMode, loading }: Props) {
   const { fullPath } = useContext(LocationContext)
 
   const { error, setError } = useContext(ErrorContext)
+  const reloadValue = useContext(ReloadContext)
 
   useEffect(() => {
     // setViewData(null)
@@ -35,7 +37,7 @@ export function FastUIController({ rootUrl, pathSendMode, loading }: Props) {
     return () => {
       promise.then(() => null).catch(() => null)
     }
-  }, [rootUrl, pathSendMode, fullPath, setError])
+  }, [rootUrl, pathSendMode, fullPath, setError, reloadValue])
 
   if (componentProps === null) {
     if (error) {

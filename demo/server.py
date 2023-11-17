@@ -8,12 +8,12 @@ from fastapi import FastAPI, UploadFile
 from pydantic import BaseModel, Field
 
 from fastui import components as c
-from fastui import FastUI, AnyComponent
+from fastui import FastUI, AnyComponent, dev_fastapi_app
 from fastui.forms import fastui_form, FormResponse, FormFile
 from fastui.display import Display
 from fastui.events import PageEvent, GoToEvent
 
-app = FastAPI()
+app = dev_fastapi_app()
 
 
 @app.get('/api/', response_model=FastUI, response_model_exclude_none=True)
