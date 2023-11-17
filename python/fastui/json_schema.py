@@ -7,7 +7,14 @@ from typing import Iterable, Literal, Required, TypeAlias, TypedDict, TypeGuard,
 
 from pydantic import BaseModel
 
-from .components.forms import FormField, FormFieldCheckbox, FormFieldInput, FormFieldSelect, InputHtmlType
+from .components.forms import (
+    FormField,
+    FormFieldCheckbox,
+    FormFieldFile,
+    FormFieldInput,
+    FormFieldSelect,
+    InputHtmlType,
+)
 
 __all__ = 'model_json_schema_to_fields', 'SchemeLocation'
 
@@ -18,7 +25,9 @@ def model_json_schema_to_fields(model: type[BaseModel]) -> list[FormField]:
     return list(json_schema_obj_to_fields(schema, [], [], defs))
 
 
-JsonSchemaInput: TypeAlias = 'JsonSchemaString | JsonSchemaInt | JsonSchemaNumber'
+JsonSchemaInput: TypeAlias = (
+    'JsonSchemaString | JsonSchemaStringEnum | JsonSchemaFile | JsonSchemaInt | JsonSchemaNumber'
+)
 JsonSchemaField: TypeAlias = 'JsonSchemaInput | JsonSchemaBool'
 JsonSchemaConcrete: TypeAlias = 'JsonSchemaField | JsonSchemaArray | JsonSchemaObject'
 JsonSchemaAny: TypeAlias = 'JsonSchemaConcrete | JsonSchemaAnyOf | JsonSchemaAllOf | JsonSchemaRef'
@@ -32,8 +41,20 @@ class JsonSchemaBase(TypedDict, total=False):
 class JsonSchemaString(JsonSchemaBase):
     type: Required[Literal['string']]
     default: str
-    enum: list[str]
     format: Literal['date', 'date-time', 'time', 'email', 'uri', 'uuid']
+
+
+class JsonSchemaStringEnum(JsonSchemaBase, total=False):
+    type: Required[Literal['string']]
+    enum: Required[list[str]]
+    default: str
+    enum_display_values: dict[str, str]
+
+
+class JsonSchemaFile(JsonSchemaBase, total=False):
+    type: Required[Literal['string']]
+    format: Required[Literal['file']]
+    accept: str
 
 
 class JsonSchemaBool(JsonSchemaBase, total=False):
@@ -144,12 +165,20 @@ def json_schema_field_to_field(
             initial=schema.get('default'),
         )
     elif schema['type'] == 'string' and (enum := schema.get('enum')):
+        enum_display_values = schema.get('enum_display_values', {})
         return FormFieldSelect(
             name=name,
             title=title,
             required=required,
-            choices=[(v, as_title(v)) for v in enum],
+            choices=[(v, enum_display_values.get(v) or as_title(v)) for v in enum],
             initial=schema.get('default'),
+        )
+    elif schema['type'] == 'string' and schema.get('format') == 'file':
+        return FormFieldFile(
+            name=name,
+            title=title,
+            required=required,
+            accept=schema.get('accept'),
         )
     else:
         return FormFieldInput(

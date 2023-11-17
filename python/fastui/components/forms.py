@@ -39,7 +39,13 @@ class FormFieldSelect(BaseFormField):
     type: typing.Literal['FormFieldSelect'] = 'FormFieldSelect'
 
 
-FormField = FormFieldInput | FormFieldCheckbox | FormFieldSelect
+class FormFieldFile(BaseFormField):
+    multiple: bool = False
+    accept: str | None = None
+    type: typing.Literal['FormFieldFile'] = 'FormFieldFile'
+
+
+FormField = FormFieldInput | FormFieldCheckbox | FormFieldSelect | FormFieldFile
 
 
 class BaseForm(pydantic.BaseModel, ABC, defer_build=True):

@@ -11,7 +11,7 @@ interface BaseFormFieldProps {
   className?: ClassName
 }
 
-export type FormFieldProps = FormFieldInputProps | FormFieldCheckboxProps | FormFieldSelectProps
+export type FormFieldProps = FormFieldInputProps | FormFieldCheckboxProps | FormFieldSelectProps | FormFieldFileProps
 
 interface FormFieldInputProps extends BaseFormFieldProps {
   type: 'FormFieldInput'
@@ -89,6 +89,26 @@ export const FormFieldSelectComp: FC<FormFieldSelectProps> = (props) => {
           </option>
         ))}
       </select>
+      {props.error ? <div>Error: {props.error}</div> : null}
+    </div>
+  )
+}
+
+interface FormFieldFileProps extends BaseFormFieldProps {
+  type: 'FormFieldFile'
+  multiple: boolean
+  accept?: string
+}
+
+export const FormFieldFileComp: FC<FormFieldFileProps> = (props) => {
+  const { className, name, title, required, locked, multiple, accept } = props
+
+  return (
+    <div className={useClassNameGenerator(className, props)}>
+      <label htmlFor={name}>
+        <Title title={title} />
+      </label>
+      <input type="file" name={name} required={required} disabled={locked} multiple={multiple} accept={accept} />
       {props.error ? <div>Error: {props.error}</div> : null}
     </div>
   )

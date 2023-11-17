@@ -5,10 +5,11 @@ from enum import StrEnum
 from typing import Annotated, Literal
 
 from fastapi import FastAPI
-from pydantic import BaseModel, Field, PositiveInt
+from pydantic import BaseModel, Field
 
 from fastui import components as c
-from fastui import FastUI, AnyComponent, fastui_form, FormResponse
+from fastui import FastUI, AnyComponent
+from fastui.forms import fastui_form, FormResponse, FileAccept, FormFile
 from fastui.display import Display
 from fastui.events import PageEvent, GoToEvent
 
@@ -80,8 +81,9 @@ class ToolEnum(StrEnum):
 
 class MyFormModel(BaseModel):
     name: str = Field(default='foobar', title='Name')
-    tool: ToolEnum = ToolEnum.saw
+    # tool: ToolEnum = Field(json_schema_extra={'enum_display_values': {'hammer': 'Big Hammer'}})
     task: Literal['build', 'destroy'] | None = None
+    profile_pic: Annotated[FormFile, FileAccept('image/*')]
     # dob: date = Field(title='Date of Birth', description='Your date of birth')
     # weight: typing.Annotated[int, annotated_types.Gt(0)]
     # size: PositiveInt = None
