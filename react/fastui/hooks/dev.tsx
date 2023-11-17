@@ -25,14 +25,13 @@ export const DevReloadProvider: FC<{ children: ReactNode; enabled: boolean }> = 
         if (!listening || failCount >= 4) {
           return value
         }
-        console.log('dev reload...')
+        console.debug('dev reload...')
         setValue(value)
       }
     }
 
     if (enabled && !devConnected) {
       devConnected = true
-      listening = true
       listen().then((value) => {
         console.debug('dev reload disconnected.')
         setValue(value)
