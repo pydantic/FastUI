@@ -3,7 +3,7 @@ import { FastUI, ClassNameGenerator, CustomRender } from 'fastui'
 export default function App() {
   return (
     <div className="app">
-      <FastUI rootUrl="/api" classNameGenerator={bootstrapClassName} customRender={customRender} dev />
+      <FastUI rootUrl="/api" classNameGenerator={bootstrapClassName} customRender={customRender} />
     </div>
   )
 }

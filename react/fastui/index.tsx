@@ -19,15 +19,16 @@ export interface FastUIProps {
   DisplayError?: ErrorDisplayType
   classNameGenerator?: ClassNameGenerator
   customRender?: CustomRender
-  dev?: boolean
+  // defaults to `process.env.NODE_ENV === 'development'
+  devMode?: boolean
 }
 
 export function FastUI(props: FastUIProps) {
-  const { classNameGenerator, DisplayError, customRender, dev, ...rest } = props
+  const { classNameGenerator, DisplayError, customRender, devMode, ...rest } = props
   return (
     <div className="fastui">
-      <DevReloadProvider enabled={dev ?? false}>
-        <ErrorContextProvider DisplayError={DisplayError}>
+      <ErrorContextProvider DisplayError={DisplayError}>
+        <DevReloadProvider enabled={devMode}>
           <LocationProvider>
             <ClassNameContext.Provider value={classNameGenerator ?? null}>
               <CustomRenderContext.Provider value={customRender ?? null}>
@@ -35,8 +36,8 @@ export function FastUI(props: FastUIProps) {
               </CustomRenderContext.Provider>
             </ClassNameContext.Provider>
           </LocationProvider>
-        </ErrorContextProvider>
-      </DevReloadProvider>
+        </DevReloadProvider>
+      </ErrorContextProvider>
     </div>
   )
 }

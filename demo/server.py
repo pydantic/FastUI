@@ -13,6 +13,7 @@ from fastui.forms import fastui_form, FormResponse, FormFile
 from fastui.display import Display
 from fastui.events import PageEvent, GoToEvent
 
+# app = FastAPI()
 app = dev_fastapi_app()
 
 
