@@ -53,7 +53,8 @@ class JsonSchemaStringEnum(JsonSchemaBase, total=False):
 
 class JsonSchemaFile(JsonSchemaBase, total=False):
     type: Required[Literal['string']]
-    format: Required[Literal['file']]
+    format: Required[Literal['binary']]
+    multiple: bool
     accept: str
 
 
@@ -173,11 +174,12 @@ def json_schema_field_to_field(
             choices=[(v, enum_display_values.get(v) or as_title(v)) for v in enum],
             initial=schema.get('default'),
         )
-    elif schema['type'] == 'string' and schema.get('format') == 'file':
+    elif schema['type'] == 'string' and schema.get('format') == 'binary':
         return FormFieldFile(
             name=name,
             title=title,
             required=required,
+            multiple=schema.get('multiple', False),
             accept=schema.get('accept'),
         )
     else:

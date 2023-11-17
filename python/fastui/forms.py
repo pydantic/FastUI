@@ -2,20 +2,18 @@ from __future__ import annotations as _annotations
 
 import json
 import typing
-from dataclasses import dataclass
+from itertools import groupby
+from operator import itemgetter
 
 import fastapi
 import pydantic
 import pydantic_core
 from pydantic_core import core_schema
-from starlette import datastructures
+from starlette import datastructures as ds
 
-# from fastapi import Depends, HTTPException, Request
-# from pydantic import BaseModel, ValidationError
-# from starlette.datastructures import FormData
 from . import events, json_schema
 
-__all__ = 'FastUIForm', 'fastui_form', 'FormResponse', 'FormFile', 'FileAccept', 'FormValidationError'
+__all__ = 'FastUIForm', 'fastui_form', 'FormResponse', 'FormFile'
 
 FormModel = typing.TypeVar('FormModel', bound=pydantic.BaseModel)
 
@@ -47,45 +45,61 @@ def fastui_form(model: type[FormModel]) -> typing.Callable[[fastapi.Request], ty
     return fastapi.Depends(run_fastui_form)
 
 
-def file_upload_validate(input_value: typing.Any) -> datastructures.UploadFile:
-    if isinstance(input_value, datastructures.UploadFile):
-        return input_value
-    else:
-        raise pydantic_core.PydanticCustomError('not_file', 'Input is not a file')
+class FormFile:
+    __slots__ = 'accept', 'max_size'
 
+    def __init__(self, accept: str | None = None, max_size: int | None = None):
+        self.accept = accept
+        self.max_size = max_size
 
-FormFile = typing.Annotated[
-    datastructures.UploadFile,
-    pydantic.PlainValidator(file_upload_validate),
-    pydantic.WithJsonSchema(json_schema=json_schema.JsonSchemaFile(type='string', format='file')),  # type: ignore
-]
+    def validate_single(self, input_value: typing.Any) -> ds.UploadFile:
+        if isinstance(input_value, ds.UploadFile):
+            file = input_value
+            self._validate_file(file)
+            return file
+        else:
+            raise pydantic_core.PydanticCustomError('not_file', 'Input is not a file')
 
+    def validate_multiple(self, input_value: typing.Any) -> list[ds.UploadFile]:
+        if isinstance(input_value, list):
+            return [self.validate_single(v) for v in input_value]
+        else:
+            return [self.validate_single(input_value)]
 
-@dataclass
-class FileAccept:
-    accept: str
-
-    def validate(self, input_value: typing.Any) -> datastructures.UploadFile:
+    def _validate_file(self, file: ds.UploadFile) -> None:
         """
         See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#unique_file_type_specifiers
         for details on what's allowed
         """
-        file = file_upload_validate(input_value)
+        if self.max_size is not None and file.size is not None and file.size > self.max_size:
+            raise pydantic_core.PydanticCustomError(
+                'file_no_big',
+                'File size was {file_size}, exceeding maximum allowed size of {max_size}',
+                {
+                    'file_size': pydantic.ByteSize(file.size).human_readable(),
+                    'max_size': pydantic.ByteSize(self.max_size).human_readable(),
+                },
+            )
+
+        if self.accept is None:
+            return
+
         for accept in self.accept.split(','):
             accept = accept.strip()
             if accept == '*/*':
-                return file
+                return
             elif accept.startswith('.'):
                 # this is a file extension
                 if file.filename and file.filename.endswith(accept):
-                    return file
+                    return
             elif file.content_type is None:
                 continue
             elif accept.endswith('/*'):
                 if file.content_type.startswith(accept[:-1]):
-                    return file
+                    return
             elif file.content_type == accept:
-                return file
+                return
+
         raise pydantic_core.PydanticCustomError(
             'accept_mismatch',
             (
@@ -95,12 +109,26 @@ class FileAccept:
             {'filename': file.filename, 'content_type': file.content_type, 'accept': self.accept},
         )
 
-    def __get_pydantic_core_schema__(self, *_args) -> core_schema.CoreSchema:
-        return core_schema.no_info_plain_validator_function(self.validate)
+    def __get_pydantic_core_schema__(self, source_type: type[typing.Any], *_args) -> core_schema.CoreSchema:
+        if issubclass(source_type, ds.UploadFile):
+            return core_schema.no_info_plain_validator_function(self.validate_single)
+        elif typing.get_origin(source_type) == list:
+            args = typing.get_args(source_type)
+            if len(args) == 1 and issubclass(args[0], ds.UploadFile):
+                return core_schema.no_info_plain_validator_function(self.validate_multiple)
 
-    def __get_pydantic_json_schema__(self, *_args) -> json_schema.JsonSchemaFile:
-        # return json_schema.JsonSchemaFile(type='string', format='file', accept=self.accept)
-        return json_schema.JsonSchemaFile(type='string', format='file')
+        raise TypeError(f'FormFile can only be used with `UploadFile` or `list[UploadFile]`, not {source_type}')
+
+    def __get_pydantic_json_schema__(self, core_schema_: core_schema.CoreSchema, *_args) -> json_schema.JsonSchemaFile:
+        function = core_schema_.get('function', {}).get('function')
+        multiple = bool(function and function.__name__ == 'validate_multiple')
+        s = json_schema.JsonSchemaFile(type='string', format='binary', multiple=multiple)
+        if self.accept:
+            s['accept'] = self.accept
+        return s
+
+    def __repr__(self):
+        return f'FormFile(accept={self.accept!r})'
 
 
 class FormResponse(pydantic.BaseModel):
@@ -108,10 +136,10 @@ class FormResponse(pydantic.BaseModel):
     type: typing.Literal['FormResponse'] = 'FormResponse'
 
 
-NestedDict: typing.TypeAlias = 'dict[str | int, NestedDict | str]'
+NestedDict: typing.TypeAlias = 'dict[str | int, NestedDict | str | list[str] | ds.UploadFile | list[ds.UploadFile]]'
 
 
-def unflatten(form_data: datastructures.FormData) -> NestedDict:
+def unflatten(form_data: ds.FormData) -> NestedDict:
     """
     Unflatten a `FormData` dict into a nested dict.
 
@@ -119,8 +147,9 @@ def unflatten(form_data: datastructures.FormData) -> NestedDict:
     which hasn't been updated. It also avoids empty values for string inputs that haven't been fill in.
     """
     result_dict: NestedDict = {}
-    for key, value in form_data.items():
-        if value == '':
+    for key, g in groupby(form_data.multi_items(), itemgetter(0)):
+        values = [v for _, v in g]
+        if values == ['']:
             continue
 
         d: dict[str | int, typing.Any] = result_dict
@@ -131,7 +160,11 @@ def unflatten(form_data: datastructures.FormData) -> NestedDict:
                 d[part] = {}
             d = d[part]
 
-        d[last_key] = value
+        if len(values) == 1:
+            d[last_key] = values[0]
+        else:
+            d[last_key] = values
+
     return result_dict
 
 

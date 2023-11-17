@@ -4,12 +4,12 @@ from datetime import date
 from enum import StrEnum
 from typing import Annotated, Literal
 
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile
 from pydantic import BaseModel, Field
 
 from fastui import components as c
 from fastui import FastUI, AnyComponent
-from fastui.forms import fastui_form, FormResponse, FileAccept, FormFile
+from fastui.forms import fastui_form, FormResponse, FormFile
 from fastui.display import Display
 from fastui.events import PageEvent, GoToEvent
 
@@ -83,7 +83,10 @@ class MyFormModel(BaseModel):
     name: str = Field(default='foobar', title='Name')
     # tool: ToolEnum = Field(json_schema_extra={'enum_display_values': {'hammer': 'Big Hammer'}})
     task: Literal['build', 'destroy'] | None = None
-    profile_pic: Annotated[FormFile, FileAccept('image/*')]
+    profile_pic: Annotated[UploadFile, FormFile(accept='image/*', max_size=16_000)]
+    # profile_pics: Annotated[list[UploadFile], FormFile(accept='image/*', max_size=400)]
+    # binary: bytes
+
     # dob: date = Field(title='Date of Birth', description='Your date of birth')
     # weight: typing.Annotated[int, annotated_types.Gt(0)]
     # size: PositiveInt = None
