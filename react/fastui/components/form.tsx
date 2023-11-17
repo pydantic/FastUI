@@ -2,16 +2,26 @@ import { FC, FormEvent, useState } from 'react'
 
 import { ClassName, useClassNameGenerator } from '../hooks/className'
 import { useFireEvent, PageEvent, GoToEvent } from '../hooks/event'
-import { useCustomRender } from '../hooks/customRender'
 import { request } from '../tools'
 
-import { FormFieldProps, FormFieldComp } from './FormField'
+import { FastProps, RenderChildren } from './index'
 
-export interface FormProps {
-  type: 'Form'
+import { ButtonComp } from './button'
+import { FormFieldProps } from './FormField'
+
+interface BaseFormProps {
   formFields: FormFieldProps[]
   submitUrl: string
+  footer?: boolean | FastProps[]
   className?: ClassName
+}
+
+export interface FormProps extends BaseFormProps {
+  type: 'Form'
+}
+
+export interface ModelFormProps extends BaseFormProps {
+  type: 'ModelForm'
 }
 
 interface FormResponse {
@@ -19,12 +29,8 @@ interface FormResponse {
   event: PageEvent | GoToEvent
 }
 
-export interface ModelFormProps extends Omit<FormProps, 'type'> {
-  type: 'ModelForm'
-}
-
 export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
-  const { className, formFields, submitUrl } = props
+  const { className, formFields, submitUrl, footer } = props
 
   // mostly equivalent to `<input disabled`
   const [locked, setLocked] = useState(false)
@@ -60,23 +66,26 @@ export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
     setLocked(false)
   }
 
+  const fieldProps: FormFieldProps[] = formFields.map((formField) =>
+    Object.assign({}, formField, { error: fieldErrors[formField.name], locked }),
+  )
+
   return (
     <form className={useClassNameGenerator(className, props)} onSubmit={onSubmit}>
-      {formFields.map((formField, i) => (
-        <RenderField key={i} {...formField} error={fieldErrors[formField.name]} locked={locked} />
-      ))}
+      <RenderChildren children={fieldProps} />
       {error ? <div>Error: {error}</div> : null}
-      <button type="submit">Submit</button>
+      <Footer footer={footer} />
     </form>
   )
 }
 
-const RenderField: FC<FormFieldProps> = (props) => {
-  const CustomRenderComp = useCustomRender(props)
-  if (CustomRenderComp) {
-    return <CustomRenderComp />
+const Footer: FC<{ footer?: boolean | FastProps[] }> = ({ footer }) => {
+  if (footer === false) {
+    return null
+  } else if (footer === true || typeof footer === 'undefined') {
+    return <ButtonComp type="Button" text="Submit" htmlType="submit" />
   } else {
-    return <FormFieldComp {...props} />
+    return <RenderChildren children={footer} />
   }
 }
 

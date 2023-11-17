@@ -1,7 +1,8 @@
 from __future__ import annotations as _annotations
 
 from datetime import date
-from typing import Annotated
+from enum import StrEnum
+from typing import Annotated, Literal
 
 from fastapi import FastAPI
 from pydantic import BaseModel, Field, PositiveInt
@@ -70,13 +71,22 @@ class NestedFormModel(BaseModel):
     profile_view: str
 
 
+class ToolEnum(StrEnum):
+    hammer = 'hammer'
+    screwdriver = 'screwdriver'
+    saw = 'saw'
+    claw_hammer = 'claw_hammer'
+
+
 class MyFormModel(BaseModel):
     name: str = Field(default='foobar', title='Name')
+    tool: ToolEnum
+    task: Literal['build', 'destroy']
     # dob: date = Field(title='Date of Birth', description='Your date of birth')
     # weight: typing.Annotated[int, annotated_types.Gt(0)]
-    size: PositiveInt = None
-    enabled: bool = False
-    nested: NestedFormModel
+    # size: PositiveInt = None
+    # enabled: bool = False
+    # nested: NestedFormModel
 
 
 @app.get('/api/form', response_model=FastUI, response_model_exclude_none=True)
@@ -84,7 +94,14 @@ def form_view() -> AnyComponent:
     f = c.Page(
         children=[
             c.Heading(text='Form'),
-            c.ModelForm[MyFormModel](submit_url='/api/form', success_event=PageEvent(name='form_success'))
+            c.ModelForm[MyFormModel](
+                submit_url='/api/form',
+                success_event=PageEvent(name='form_success'),
+                # footer=[
+                #     c.Button(text='Cancel', on_click=GoToEvent(url='/')),
+                #     c.Button(text='Submit', html_type='submit'),
+                # ]
+            )
         ]
     )
     debug(f)

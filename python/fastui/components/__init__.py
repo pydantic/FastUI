@@ -79,6 +79,9 @@ class Col(pydantic.BaseModel):
 class Button(pydantic.BaseModel):
     text: str
     on_click: events.Event | None = pydantic.Field(default=None, serialization_alias='onClick')
+    html_type: typing.Literal['button', 'submit', 'reset'] | None = pydantic.Field(
+        default=None, serialization_alias='htmlType'
+    )
     class_name: extra.ClassName | None = None
     type: typing.Literal['Button'] = 'Button'
 

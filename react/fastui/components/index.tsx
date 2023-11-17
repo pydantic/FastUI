@@ -8,7 +8,7 @@ import { AllDivProps, DivComp } from './div'
 import { TextProps, TextComp } from './text'
 import { HeadingComp, HeadingProps } from './heading'
 import { FormComp, FormProps, ModelFormProps } from './form'
-import { FormFieldComp, FormFieldProps } from './FormField'
+import { FormFieldProps, FormFieldInputComp, FormFieldCheckboxComp, FormFieldSelectComp } from './FormField'
 import { ButtonComp, ButtonProps } from './button'
 import { LinkComp, LinkProps } from './link'
 import { ModalComp, ModalProps } from './modal'
@@ -57,8 +57,12 @@ export const AnyComp: FC<FastProps> = (props) => {
       case 'Form':
       case 'ModelForm':
         return <FormComp {...props} />
-      case 'FormField':
-        return <FormFieldComp {...props} />
+      case 'FormFieldInput':
+        return <FormFieldInputComp {...props} />
+      case 'FormFieldCheckbox':
+        return <FormFieldCheckboxComp {...props} />
+      case 'FormFieldSelect':
+        return <FormFieldSelectComp {...props} />
       case 'Modal':
         return <ModalComp {...props} />
       case 'Table':

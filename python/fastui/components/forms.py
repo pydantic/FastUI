@@ -1,3 +1,5 @@
+from __future__ import annotations as _annotations
+
 import typing
 from abc import ABC
 
@@ -5,22 +7,50 @@ import pydantic
 
 from . import extra
 
-HtmlType = typing.Literal['checkbox', 'text', 'date', 'datetime-local', 'time', 'email', 'url', 'file', 'number']
+if typing.TYPE_CHECKING:
+    from . import AnyComponent
+
+InputHtmlType = typing.Literal['text', 'date', 'datetime-local', 'time', 'email', 'url', 'file', 'number']
 
 
-class FormField(pydantic.BaseModel):
+class BaseFormField(pydantic.BaseModel, ABC, defer_build=True):
     name: str
-    title: list[str]
-    html_type: HtmlType = pydantic.Field(default='text', serialization_alias='htmlType')
+    title: str | list[str]
     required: bool = False
-    initial: str | int | float | bool | None = None
+    error: str | None = None
+    locked: bool = False
     class_name: extra.ClassName | None = None
-    type: typing.Literal['FormField'] = 'FormField'
 
 
-class BaseForm(pydantic.BaseModel, ABC):
+class FormFieldInput(BaseFormField):
+    html_type: InputHtmlType = pydantic.Field(default='text', serialization_alias='htmlType')
+    initial: str | int | float | None = None
+    type: typing.Literal['FormFieldInput'] = 'FormFieldInput'
+
+
+class FormFieldCheckbox(BaseFormField):
+    initial: bool | None = None
+    type: typing.Literal['FormFieldCheckbox'] = 'FormFieldCheckbox'
+
+
+class FormFieldSelect(BaseFormField):
+    choices: list[tuple[str, str]]
+    initial: str | None = None
+    type: typing.Literal['FormFieldSelect'] = 'FormFieldSelect'
+
+
+FormField = FormFieldInput | FormFieldCheckbox | FormFieldSelect
+
+
+class BaseForm(pydantic.BaseModel, ABC, defer_build=True):
     submit_url: str = pydantic.Field(serialization_alias='submitUrl')
+    footer: bool | list[AnyComponent] | None = None
     class_name: extra.ClassName | None = None
+
+
+class Form(BaseForm):
+    form_fields: list[FormField] = pydantic.Field(serialization_alias='formFields')
+    type: typing.Literal['Form'] = 'Form'
 
 
 FormFieldsModel = typing.TypeVar('FormFieldsModel', bound=pydantic.BaseModel)
@@ -42,8 +72,3 @@ class ModelForm(BaseForm, typing.Generic[FormFieldsModel]):
         if not issubclass(model, pydantic.BaseModel):
             raise TypeError('`ModelForm` must be parameterized with a pydantic model, i.e. `ModelForm[MyModel]()`.')
         return model_json_schema_to_fields(model)
-
-
-class Form(BaseForm):
-    form_fields: list[FormField] = pydantic.Field(serialization_alias='formFields')
-    type: typing.Literal['Form'] = 'Form'

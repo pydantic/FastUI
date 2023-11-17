@@ -2,51 +2,26 @@ import { FC, useState } from 'react'
 
 import { ClassName, useClassNameGenerator } from '../hooks/className'
 
-interface Props<T> {
-  type: 'FormField'
-  // defaults to 'text'
-  htmlType: T
-  initial?: string | number | boolean
-  error?: string
+interface BaseFormFieldProps {
   name: string
   title: string[]
   required: boolean
   locked: boolean
+  error?: string
   className?: ClassName
 }
 
-type inputHtmlType = 'text' | 'date' | 'datetime-local' | 'time' | 'email' | 'url' | 'file' | 'number'
-export type FormFieldProps = Props<inputHtmlType | 'checkbox'>
+export type FormFieldProps = FormFieldInputProps | FormFieldCheckboxProps | FormFieldSelectProps
 
-export const FormFieldComp: FC<FormFieldProps> = (props) => {
-  const { htmlType } = props
-  if (htmlType === 'checkbox') {
-    return <Checkbox {...props} />
-  } else {
-    return <Input {...(props as Props<inputHtmlType>)} />
-  }
+interface FormFieldInputProps extends BaseFormFieldProps {
+  type: 'FormFieldInput'
+  htmlType?: 'text' | 'date' | 'datetime-local' | 'time' | 'email' | 'url' | 'file' | 'number'
+  initial?: string | number
 }
 
-const Checkbox: FC<FormFieldProps> = (props) => {
-  const { className, name, title, required, locked } = props
-  return (
-    <div className={useClassNameGenerator(className, props)}>
-      <label htmlFor={name}>
-        <Title title={title} />
-      </label>
-      <input type="checkbox" defaultChecked={!!props.initial} name={name} required={required} disabled={locked} />
-      {props.error ? <div>Error: {props.error}</div> : null}
-    </div>
-  )
-}
-
-const Input: FC<Props<inputHtmlType>> = (props) => {
+export const FormFieldInputComp: FC<FormFieldInputProps> = (props) => {
   const { className, name, title, required, htmlType, locked } = props
-  let initial = props.initial ?? ''
-  if (typeof initial === 'boolean') {
-    initial = initial ? 1 : 0
-  }
-  const [value, setValue] = useState(initial)
+  const [value, setValue] = useState(props.initial ?? '')
 
   // TODO placeholder
   return (
@@ -62,6 +37,57 @@ const Input: FC<Props<inputHtmlType>> = (props) => {
         required={required}
         disabled={locked}
       />
+      {props.error ? <div>Error: {props.error}</div> : null}
+    </div>
+  )
+}
+
+interface FormFieldCheckboxProps extends BaseFormFieldProps {
+  type: 'FormFieldCheckbox'
+  initial?: boolean
+}
+
+export const FormFieldCheckboxComp: FC<FormFieldCheckboxProps> = (props) => {
+  const { className, name, title, required, locked } = props
+  return (
+    <div className={useClassNameGenerator(className, props)}>
+      <label htmlFor={name}>
+        <Title title={title} />
+      </label>
+      <input type="checkbox" defaultChecked={!!props.initial} name={name} required={required} disabled={locked} />
+      {props.error ? <div>Error: {props.error}</div> : null}
+    </div>
+  )
+}
+
+interface FormFieldSelectProps extends BaseFormFieldProps {
+  type: 'FormFieldSelect'
+  choices: [string, string][]
+  initial?: string
+}
+
+export const FormFieldSelectComp: FC<FormFieldSelectProps> = (props) => {
+  const { className, name, title, required, locked, choices } = props
+  const [value, setValue] = useState(props.initial ?? '')
+
+  return (
+    <div className={useClassNameGenerator(className, props)}>
+      <label htmlFor={name}>
+        <Title title={title} />
+      </label>
+      <select
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        name={name}
+        required={required}
+        disabled={locked}
+      >
+        {choices.map(([value, label]) => (
+          <option key={value} value={value}>
+            {label}
+          </option>
+        ))}
+      </select>
       {props.error ? <div>Error: {props.error}</div> : null}
     </div>
   )

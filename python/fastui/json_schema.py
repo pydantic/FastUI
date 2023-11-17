@@ -1,11 +1,13 @@
 from __future__ import annotations as _annotations
 
 import json
+import re
+import typing
 from typing import Iterable, Literal, Required, TypeAlias, TypedDict, TypeGuard, cast
 
 from pydantic import BaseModel
 
-from .components.forms import FormField, HtmlType
+from .components.forms import FormField, FormFieldCheckbox, FormFieldInput, FormFieldSelect, InputHtmlType
 
 __all__ = 'model_json_schema_to_fields', 'SchemeLocation'
 
@@ -30,6 +32,7 @@ class JsonSchemaBase(TypedDict, total=False):
 class JsonSchemaString(JsonSchemaBase):
     type: Required[Literal['string']]
     default: str
+    enum: list[str]
     format: Literal['date', 'date-time', 'time', 'email', 'uri', 'uuid']
 
 
@@ -119,17 +122,35 @@ def json_schema_any_to_fields(
 def json_schema_field_to_field(
     schema: JsonSchemaField, loc: SchemeLocation, title: list[str], required: bool
 ) -> FormField:
-    return FormField(
-        name=loc_to_name(loc),
-        title=title + [schema.get('title') or loc_to_title(loc)],
-        html_type=get_html_type(schema),
-        required=required,
-        initial=schema.get('default'),
-    )
+    name = loc_to_name(loc)
+    title = title + [schema.get('title') or loc_to_title(loc)]
+    if schema['type'] == 'boolean':
+        return FormFieldCheckbox(
+            name=name,
+            title=title,
+            required=required,
+            initial=schema.get('default'),
+        )
+    elif schema['type'] == 'string' and (enum := schema.get('enum')):
+        return FormFieldSelect(
+            name=name,
+            title=title,
+            required=required,
+            choices=[(v, as_title(v)) for v in enum],
+            initial=schema.get('default'),
+        )
+    else:
+        return FormFieldInput(
+            name=name,
+            title=title,
+            html_type=input_html_type(schema),
+            required=required,
+            initial=schema.get('default'),
+        )
 
 
 def loc_to_title(loc: SchemeLocation) -> str:
-    return str(loc[-1]).title()
+    return as_title(loc[-1])
 
 
 def json_schema_array_to_fields(
@@ -168,7 +189,11 @@ def deference_json_schema(schema: JsonSchemaAny, defs: JsonSchemaDefs) -> JsonSc
         return cast(JsonSchemaConcrete, schema)
 
 
-type_lookup: dict[str, HtmlType] = {
+def as_title(s: typing.Any) -> str:
+    return re.sub(r'[\-_]', ' ', str(s)).title()
+
+
+type_lookup: dict[str, InputHtmlType] = {
     'string': 'text',
     'string-date': 'date',
     'string-date-time': 'datetime-local',
@@ -178,11 +203,10 @@ type_lookup: dict[str, HtmlType] = {
     'string-uuid': 'text',
     'number': 'number',
     'integer': 'number',
-    'boolean': 'checkbox',
 }
 
 
-def get_html_type(schema: JsonSchemaField) -> HtmlType:
+def input_html_type(schema: JsonSchemaField) -> InputHtmlType:
     """
     Convert a schema into an HTML type
     """
