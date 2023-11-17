@@ -96,7 +96,17 @@ class Modal(pydantic.BaseModel):
     type: typing.Literal['Modal'] = 'Modal'
 
 
+class ServerLoad(pydantic.BaseModel):
+    """
+    A component that will be replaced by the server with the component returned by the given URL.
+    """
+
+    url: str
+    class_name: extra.ClassName | None = None
+    type: typing.Literal['ServerLoad'] = 'ServerLoad'
+
+
 AnyComponent = typing.Annotated[
-    Text | Div | Page | Heading | Row | Col | Button | Modal | Table | Form | ModelForm | FormField,
+    Text | Div | Page | Heading | Row | Col | Button | Modal | ServerLoad | Table | Form | ModelForm | FormField,
     pydantic.Field(discriminator='type'),
 ]

@@ -1,5 +1,6 @@
 from __future__ import annotations as _annotations
 
+import asyncio
 from datetime import date
 from enum import StrEnum
 from typing import Annotated, Literal
@@ -31,7 +32,7 @@ def read_root() -> AnyComponent:
             ),
             c.Modal(
                 title='Modal Title',
-                body=[c.Text(text='Modal Content')],
+                body=[c.ServerLoad(url='/modal')],
                 footer=[c.Button(text='Close', on_click=PageEvent(name='modal'))],
                 open_trigger=PageEvent(name='modal'),
             ),
@@ -45,6 +46,12 @@ class MyTableRow(BaseModel):
     name: str = Field(title='Name')
     dob: date = Field(title='Date of Birth')
     enabled: bool | None = None
+
+
+@app.get('/api/modal', response_model=FastUI, response_model_exclude_none=True)
+async def modal_view() -> AnyComponent:
+    await asyncio.sleep(2)
+    return c.Text(text='Modal Content Dynamic')
 
 
 @app.get('/api/table', response_model=FastUI, response_model_exclude_none=True)
@@ -98,7 +105,7 @@ class MyFormModel(BaseModel):
 
 @app.get('/api/form', response_model=FastUI, response_model_exclude_none=True)
 def form_view() -> AnyComponent:
-    f = c.Page(
+    return c.Page(
         children=[
             c.Heading(text='Form'),
             c.ModelForm[MyFormModel](
@@ -111,8 +118,6 @@ def form_view() -> AnyComponent:
             ),
         ]
     )
-    debug(f)
-    return f
 
 
 @app.post('/api/form')
