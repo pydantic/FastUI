@@ -6,67 +6,9 @@ import { FastProps, AnyComp } from './components'
 import { DefaultLoading } from './DefaultLoading'
 import { LocationContext } from './hooks/locationContext'
 import { ErrorContext } from './hooks/error'
-
-interface Request {
-  url: string
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
-  body?: Record<string, any>
-  headers?: Record<string, string>
-}
+import { request } from './tools'
 
 type Props = Omit<FastUIProps, 'defaultClassName' | 'OnError' | 'customRender'>
-
-const request = async ({ url, method, headers, body }: Request): Promise<FastProps> => {
-  const init: RequestInit = {}
-  if (method) {
-    init.method = method
-  }
-
-  if (body) {
-    init.body = JSON.stringify(body)
-    headers = headers ?? {}
-    headers['Content-Type'] = 'application/json'
-  }
-
-  if (headers) {
-    init.headers = headers
-  }
-
-  let response
-  try {
-    response = await fetch(url, init)
-  } catch (e) {
-    throw new Error('fetch failed')
-  }
-
-  const { status } = response
-  if (!response.ok) {
-    let detail: null | string = null
-    const content = await response.text()
-    try {
-      const jsonData = JSON.parse(content)
-      console.warn(`${url} -> ${status} JSON:`, jsonData)
-      if (typeof jsonData.detail === 'string') {
-        detail = jsonData.detail
-      }
-    } catch (e) {
-      console.warn(`${url} -> ${status} content:`, content)
-      detail = content
-    }
-    const msg = `${detail || response.statusText} (${status})`
-    throw new Error(msg)
-  }
-
-  let data
-  try {
-    data = await response.json()
-  } catch (e) {
-    console.warn(`${url} -> ${status} response not valid JSON`)
-    throw new Error('Response not valid JSON')
-  }
-  console.debug(`${url} -> ${status} JSON:`, data)
-  return data as FastProps
-}
 
 export function FastUIController({ rootUrl, pathSendMode, loading }: Props) {
   const [componentProps, setComponentProps] = useState<FastProps | null>(null)
@@ -86,7 +28,7 @@ export function FastUIController({ rootUrl, pathSendMode, loading }: Props) {
     const promise = request({ url })
 
     promise
-      .then((data) => setComponentProps(data))
+      .then(([, data]) => setComponentProps(data as FastProps))
       .catch((e) => {
         setError({ title: 'Request Error', description: e.message })
       })

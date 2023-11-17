@@ -4,14 +4,14 @@ from pydantic import BaseModel, Field
 
 
 class PageEvent(BaseModel):
-    type: Literal['page'] = 'page'
     name: str
+    type: Literal['page'] = 'page'
 
 
 class GoToEvent(BaseModel):
-    type: Literal['go-to'] = 'go-to'
-    # can be a path or a URL
+    # can be a path or a full URL
     url: str
+    type: Literal['go-to'] = 'go-to'
 
 
 Event = Annotated[PageEvent | GoToEvent, Field(discriminator='type')]

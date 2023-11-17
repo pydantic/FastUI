@@ -52,7 +52,9 @@ export const ErrorContextProvider: FC<Props> = ({ DisplayError, children }) => {
 
   const setError = useCallback(
     (error: ErrorDetails | null) => {
-      console.warn('setting error:', error)
+      if (error) {
+        console.warn('setting error:', error)
+      }
       setErrorState(error)
     },
     [setErrorState],

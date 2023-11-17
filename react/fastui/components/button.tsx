@@ -7,16 +7,17 @@ export interface ButtonProps {
   type: 'Button'
   text: string
   onClick?: PageEvent | GoToEvent
+  htmlType?: 'button' | 'submit' | 'reset'
   className?: ClassName
 }
 
 export const ButtonComp: FC<ButtonProps> = (props) => {
-  const { className, text, onClick } = props
+  const { className, text, onClick, htmlType } = props
 
   const { fireEvent } = useFireEvent()
 
   return (
-    <button className={useClassNameGenerator(className, props)} onClick={() => fireEvent(onClick)}>
+    <button className={useClassNameGenerator(className, props)} type={htmlType} onClick={() => fireEvent(onClick)}>
       {text}
     </button>
   )

@@ -2,11 +2,19 @@ import { useContext, FC } from 'react'
 
 import { ErrorContext } from '../hooks/error'
 import { useCustomRender } from '../hooks/customRender'
+import { unreachable } from '../tools'
 
 import { AllDivProps, DivComp } from './div'
 import { TextProps, TextComp } from './text'
 import { HeadingComp, HeadingProps } from './heading'
-import { FormFieldComp, FormFieldProps } from './FormField'
+import { FormComp, FormProps, ModelFormProps } from './form'
+import {
+  FormFieldProps,
+  FormFieldInputComp,
+  FormFieldCheckboxComp,
+  FormFieldSelectComp,
+  FormFieldFileComp,
+} from './FormField'
 import { ButtonComp, ButtonProps } from './button'
 import { LinkComp, LinkProps } from './link'
 import { ModalComp, ModalProps } from './modal'
@@ -18,6 +26,8 @@ export type FastProps =
   | TextProps
   | AllDivProps
   | HeadingProps
+  | FormProps
+  | ModelFormProps
   | FormFieldProps
   | ButtonProps
   | ModalProps
@@ -50,8 +60,17 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <ButtonComp {...props} />
       case 'Link':
         return renderWithChildren(LinkComp, props)
-      case 'FormField':
-        return <FormFieldComp {...props} />
+      case 'Form':
+      case 'ModelForm':
+        return <FormComp {...props} />
+      case 'FormFieldInput':
+        return <FormFieldInputComp {...props} />
+      case 'FormFieldCheckbox':
+        return <FormFieldCheckboxComp {...props} />
+      case 'FormFieldSelect':
+        return <FormFieldSelectComp {...props} />
+      case 'FormFieldFile':
+        return <FormFieldFileComp {...props} />
       case 'Modal':
         return <ModalComp {...props} />
       case 'Table':
@@ -67,7 +86,7 @@ export const AnyComp: FC<FastProps> = (props) => {
       case 'JSON':
         return <JsonComp {...props} />
       default:
-        console.log('unknown component type:', type, props)
+        unreachable('Unexpected component type', type, props)
         return <DisplayError title="Invalid Server Response" description={`Unknown component type: "${type}"`} />
     }
   } catch (e) {

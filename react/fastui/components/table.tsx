@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import type { JSON } from './Json'
+import type { JsonData } from './Json'
 
 import { DisplayChoices, asTitle } from '../display'
 import { ClassName, useClassNameGenerator } from '../hooks/className'
@@ -17,7 +17,7 @@ interface ColumnProps {
   className?: ClassName
 }
 
-type Row = Record<string, JSON>
+type Row = Record<string, JsonData>
 
 export interface TableProps {
   type: 'Table'
@@ -92,7 +92,7 @@ const Cell: FC<CellProps> = ({ row, column }) => {
 const subKeys = (template: string, row: Row): string | null => {
   let returnNull = false
   const r = template.replace(/{(.+?)}/g, (_, key: string): string => {
-    const v: JSON | undefined = row[key]
+    const v: JsonData | undefined = row[key]
     if (v === undefined) {
       throw new Error(`field "${key}" not found in ${JSON.stringify(row)}`)
     } else if (v === null) {

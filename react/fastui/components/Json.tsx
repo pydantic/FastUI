@@ -1,9 +1,9 @@
 import { FC } from 'react'
 
-export type JSON = string | number | boolean | null | JSON[] | { [key: string]: JSON }
+export type JsonData = string | number | boolean | null | JsonData[] | { [key: string]: JsonData }
 
 export interface JsonProps {
-  value: JSON
+  value: JsonData
   type: 'JSON'
 }
 

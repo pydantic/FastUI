@@ -12,7 +12,7 @@ from . import extra
 DataModel = typing.TypeVar('DataModel', bound=pydantic.BaseModel)
 
 
-class Column(pydantic.BaseModel):
+class TableColumn(pydantic.BaseModel):
     """
     Description of a table column.
     """
@@ -26,7 +26,7 @@ class Column(pydantic.BaseModel):
 
 class Table(pydantic.BaseModel, typing.Generic[DataModel]):
     data: list[DataModel]
-    columns: list[Column] | None = None
+    columns: list[TableColumn] | None = None
     # TODO pagination
     class_name: extra.ClassName | None = None
     type: typing.Literal['Table'] = 'Table'
@@ -39,7 +39,9 @@ class Table(pydantic.BaseModel, typing.Generic[DataModel]):
             return self
 
         if self.columns is None:
-            self.columns = [Column(field=name, title=field.title) for name, field in data_model_0.model_fields.items()]
+            self.columns = [
+                TableColumn(field=name, title=field.title) for name, field in data_model_0.model_fields.items()
+            ]
         else:
             # add pydantic titles to columns that don't have them
             for column in (c for c in self.columns if c.title is None):

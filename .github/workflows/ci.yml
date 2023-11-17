@@ -14,27 +14,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-    - run: pip install -r python/requirements/all.txt
+      - run: pip install -r python/requirements/all.txt
 
-    - run: npm install
+      - run: npm install
 
-    - uses: pre-commit/action@v3.0.0
-      with:
-        extra_args: --all-files
-      env:
-        SKIP: no-commit-to-branch
+      - uses: pre-commit/action@v3.0.0
+        with:
+          extra_args: --all-files
+        env:
+          SKIP: no-commit-to-branch
 
-  check:  # This job does nothing and is only used for the branch protection
+  check: # This job does nothing and is only used for the branch protection
     if: always()
     needs: [lint]
     runs-on: ubuntu-latest
