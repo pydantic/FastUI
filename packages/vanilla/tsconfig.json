@@ -2,7 +2,8 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "paths": {
-      "fastui": ["../fastui/src"]
+      "fastui": ["../fastui/src"],
+      "fastui-bootstrap": ["../fastui-bootstrap/src"]
     }
   },
   "include": ["src"],

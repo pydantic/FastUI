@@ -2,7 +2,6 @@
   "name": "fastui",
   "version": "0.0.0",
   "scripts": {
-    "build": "tsc",
     "typecheck": "tsc --noEmit",
     "typewatch": "tsc --noEmit --watch"
   },

@@ -38,7 +38,7 @@ testcov: test
 
 .PHONY: dev
 dev:
-	uvicorn demo.server:app --reload
+	uvicorn python.demo.main:app --reload
 
 .PHONY: all
 all: testcov lint
