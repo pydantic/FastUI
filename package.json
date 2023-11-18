@@ -6,7 +6,7 @@
   ],
   "scripts": {
     "dev": "npm run --workspace=vanilla dev",
-    "build": "npm run --workspaces build",
+    "build": "rm -rf packages-dist && npm run --workspaces build",
     "typecheck": "npm run --workspaces typecheck",
     "lint": "eslint packages --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
     "lint-fix": "npm run lint -- --fix",
