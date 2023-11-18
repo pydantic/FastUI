@@ -8,7 +8,7 @@ module.exports = {
     'plugin:react-hooks/recommended',
     'prettier',
   ],
-  // ignorePatterns: ['dist', 'node_modules', 'demo/vite.config.ts', '**/public'],
+  ignorePatterns: ['node_modules'],
   parser: '@typescript-eslint/parser',
   plugins: ['react', '@typescript-eslint', 'react-refresh', 'simple-import-sort'],
   rules: {

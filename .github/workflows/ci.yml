@@ -50,7 +50,7 @@ jobs:
 
   check: # This job does nothing and is only used for the branch protection
     if: always()
-    needs: [lint]
+    needs: [lint, packages-build]
     runs-on: ubuntu-latest
 
     steps:
