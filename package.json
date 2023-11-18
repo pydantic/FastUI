@@ -1,15 +1,14 @@
 {
-  "name": "fastui",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
-  "entry": "src/index.tsx",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "vite demo",
-    "typecheck": "tsc --noEmit",
-    "build": "tsc",
-    "typewatch": "tsc --noEmit --watch",
-    "lint": "eslint react --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
+    "dev": "npm run --workspace=vanilla dev",
+    "build": "npm run --workspaces build",
+    "typecheck": "npm run --workspaces typecheck",
+    "lint": "eslint packages --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
     "lint-fix": "npm run lint -- --fix",
     "prettier": "prettier --write",
     "format": "npm run prettier -- . && npm run lint-fix"
@@ -22,18 +21,13 @@
     "printWidth": 119,
     "bracketSpacing": true
   },
-  "dependencies": {
-    "@types/node": "^20.9.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
   "devDependencies": {
+    "@types/node": "^20.9.1",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "@vitejs/plugin-react-swc": "^3.3.2",
-    "bootstrap": "^5.3.2",
     "eslint": "^8.53.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-config-standard": "^17.1.0",
@@ -42,7 +36,6 @@
     "eslint-plugin-react-refresh": "^0.4.4",
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "prettier": "^3.0.3",
-    "typescript": "^5.0.2",
-    "vite": "^4.4.5"
+    "typescript": "^5.0.2"
   }
 }

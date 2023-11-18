@@ -30,3 +30,4 @@ __pycache__/
 /.logfire/
 /frontend-dist/
 /scratch/
+/packages-dist/
