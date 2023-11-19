@@ -22,19 +22,19 @@ repos:
         entry: make typecheck
         language: system
         pass_filenames: false
-      - id: react-prettier
-        name: react-prettier
+      - id: js-prettier
+        name: js-prettier
         types_or: [javascript, jsx, ts, tsx, css, json, markdown]
         entry: npm run prettier
         language: system
-      - id: react-lint
-        name: react-lint
+      - id: js-lint
+        name: js-lint
         types_or: [ts, tsx]
         entry: npm run lint-fix
         language: system
         pass_filenames: false
-      - id: react-typecheck
-        name: react-typecheck
+      - id: js-typecheck
+        name: js-typecheck
         types_or: [ts, tsx]
         entry: npm run typecheck
         language: system

@@ -4,14 +4,13 @@ from datetime import date
 from enum import StrEnum
 from typing import Annotated, Literal
 
-from fastapi import FastAPI, UploadFile
-from pydantic import BaseModel, Field
-
+from fastapi import UploadFile
+from fastui import AnyComponent, FastUI, dev_fastapi_app
 from fastui import components as c
-from fastui import FastUI, AnyComponent, dev_fastapi_app
-from fastui.forms import fastui_form, FormResponse, FormFile
 from fastui.display import Display
-from fastui.events import PageEvent, GoToEvent
+from fastui.events import GoToEvent, PageEvent
+from fastui.forms import FormFile, FormResponse, fastui_form
+from pydantic import BaseModel, Field
 
 # app = FastAPI()
 app = dev_fastapi_app()
@@ -22,12 +21,14 @@ def read_root() -> AnyComponent:
     return c.Page(
         children=[
             c.Heading(text='Hello World'),
-            c.Row(children=[
-                c.Col(children=[c.Text(text='Hello World')]),
-                c.Col(children=[c.Button(text='Show Modal', on_click=PageEvent(name='modal'))]),
-                c.Col(children=[c.Button(text='View Table', on_click=GoToEvent(url='/table'))]),
-                c.Col(children=[c.Button(text='Form', on_click=GoToEvent(url='/form'))]),
-            ]),
+            c.Row(
+                children=[
+                    c.Col(children=[c.Text(text='Hello World')]),
+                    c.Col(children=[c.Button(text='Show Modal', on_click=PageEvent(name='modal'))]),
+                    c.Col(children=[c.Button(text='View Table', on_click=GoToEvent(url='/table'))]),
+                    c.Col(children=[c.Button(text='Form', on_click=GoToEvent(url='/form'))]),
+                ]
+            ),
             c.Modal(
                 title='Modal Title',
                 body=[c.Text(text='Modal Content')],
@@ -35,7 +36,7 @@ def read_root() -> AnyComponent:
                 open_trigger=PageEvent(name='modal'),
             ),
         ],
-        class_name='+ mt-4'
+        class_name='+ mt-4',
     )
 
 
@@ -61,8 +62,8 @@ def table_view() -> AnyComponent:
                     c.TableColumn(field='name', on_click=GoToEvent(url='/more/{id}/')),
                     c.TableColumn(field='dob', display=Display.date),
                     c.TableColumn(field='enabled'),
-                ]
-            )
+                ],
+            ),
         ]
     )
 
@@ -107,7 +108,7 @@ def form_view() -> AnyComponent:
                 #     c.Button(text='Cancel', on_click=GoToEvent(url='/')),
                 #     c.Button(text='Submit', html_type='submit'),
                 # ]
-            )
+            ),
         ]
     )
     debug(f)

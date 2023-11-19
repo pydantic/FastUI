@@ -1,14 +1,6 @@
-import { FastUI, ClassNameGenerator, CustomRender } from 'fastui'
+import { ClassNameGenerator, CustomRender } from 'fastui'
 
-export default function App() {
-  return (
-    <div className="app">
-      <FastUI rootUrl="/api" classNameGenerator={bootstrapClassName} customRender={customRender} />
-    </div>
-  )
-}
-
-const customRender: CustomRender = (props) => {
+export const customRender: CustomRender = (props) => {
   const { type } = props
   if (type === 'DisplayPrimitive') {
     const { value } = props
@@ -18,7 +10,7 @@ const customRender: CustomRender = (props) => {
   }
 }
 
-const bootstrapClassName: ClassNameGenerator = (props) => {
+export const classNameGenerator: ClassNameGenerator = (props) => {
   const { type } = props
   switch (type) {
     case 'Page':

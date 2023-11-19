@@ -13,14 +13,19 @@ export default () => {
   }
 
   return defineConfig({
+    // @ts-expect-error - no need to type check this file
     plugins: [react()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
-        fastui: path.resolve(__dirname, '../react/fastui'),
+        fastui: path.resolve(__dirname, '../fastui/src'),
+        'fastui-bootstrap': path.resolve(__dirname, '../fastui-bootstrap/src'),
       },
     },
     server: serverConfig,
     preview: serverConfig,
+    build: {
+      outDir: '../../packages-dist/vanilla',
+    },
   })
 }
