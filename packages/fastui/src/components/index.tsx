@@ -38,6 +38,8 @@ export type FastProps =
   | JsonProps
   | ServerLoadProps
 
+export type FastClassNameProps = Exclude<FastProps, TextProps | AllDisplayProps>
+
 export const AnyComp: FC<FastProps> = (props) => {
   const { DisplayError } = useContext(ErrorContext)
 

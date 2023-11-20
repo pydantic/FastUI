@@ -1,6 +1,6 @@
 import { FC, FormEvent, useState } from 'react'
 
-import { ClassName, useClassNameGenerator } from '../hooks/className'
+import { ClassName, useClassName } from '../hooks/className'
 import { useFireEvent, PageEvent, GoToEvent } from '../hooks/event'
 import { request } from '../tools'
 
@@ -30,7 +30,7 @@ interface FormResponse {
 }
 
 export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
-  const { className, formFields, submitUrl, footer } = props
+  const { formFields, submitUrl, footer } = props
 
   // mostly equivalent to `<input disabled`
   const [locked, setLocked] = useState(false)
@@ -71,7 +71,7 @@ export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
   )
 
   return (
-    <form className={useClassNameGenerator(className, props)} onSubmit={onSubmit}>
+    <form className={useClassName(props)} onSubmit={onSubmit}>
       <RenderChildren children={fieldProps} />
       {error ? <div>Error: {error}</div> : null}
       <Footer footer={footer} />

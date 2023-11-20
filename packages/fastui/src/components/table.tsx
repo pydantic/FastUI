@@ -3,7 +3,7 @@ import { FC } from 'react'
 import type { JsonData } from './Json'
 
 import { DisplayChoices, asTitle } from '../display'
-import { ClassName, useClassNameGenerator } from '../hooks/className'
+import { ClassName, useClassName } from '../hooks/className'
 import { PageEvent, GoToEvent } from '../hooks/event'
 
 import { DisplayComp } from './display'
@@ -27,10 +27,10 @@ export interface TableProps {
 }
 
 export const TableComp: FC<TableProps> = (props) => {
-  const { className, columns, data } = props
+  const { columns, data } = props
 
   return (
-    <table className={useClassNameGenerator(className, props)}>
+    <table className={useClassName(props)}>
       <thead>
         <tr>
           {columns.map((col, id) => (

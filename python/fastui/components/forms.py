@@ -19,12 +19,14 @@ class BaseFormField(pydantic.BaseModel, ABC, defer_build=True):
     required: bool = False
     error: str | None = None
     locked: bool = False
+    description: str | None = None
     class_name: extra.ClassName | None = None
 
 
 class FormFieldInput(BaseFormField):
     html_type: InputHtmlType = pydantic.Field(default='text', serialization_alias='htmlType')
     initial: str | int | float | None = None
+    placeholder: str | None = None
     type: typing.Literal['FormFieldInput'] = 'FormFieldInput'
 
 

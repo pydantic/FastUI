@@ -1,6 +1,6 @@
 import { FC, useState } from 'react'
 
-import { ClassName, useClassNameGenerator } from '../hooks/className'
+import { ClassName, useClassName } from '../hooks/className'
 
 interface BaseFormFieldProps {
   name: string
@@ -8,6 +8,7 @@ interface BaseFormFieldProps {
   required: boolean
   locked: boolean
   error?: string
+  description?: string
   className?: ClassName
 }
 
@@ -17,27 +18,29 @@ interface FormFieldInputProps extends BaseFormFieldProps {
   type: 'FormFieldInput'
   htmlType?: 'text' | 'date' | 'datetime-local' | 'time' | 'email' | 'url' | 'file' | 'number'
   initial?: string | number
+  placeholder?: string
 }
 
 export const FormFieldInputComp: FC<FormFieldInputProps> = (props) => {
-  const { className, name, title, required, htmlType, locked } = props
+  const { name, placeholder, required, htmlType, locked } = props
   const [value, setValue] = useState(props.initial ?? '')
 
-  // TODO placeholder
   return (
-    <div className={useClassNameGenerator(className, props)}>
-      <label htmlFor={name}>
-        <Title title={title} />
-      </label>
+    <div className={useClassName(props)}>
+      <Label {...props} />
       <input
         type={htmlType}
+        className={useClassName(props, { el: 'input' })}
         value={value}
         onChange={(e) => setValue(e.target.value)}
+        id={inputId(props)}
         name={name}
         required={required}
         disabled={locked}
+        placeholder={placeholder}
+        aria-describedby={descId(props)}
       />
-      {props.error ? <div>Error: {props.error}</div> : null}
+      <ErrorDescription {...props} />
     </div>
   )
 }
@@ -48,14 +51,22 @@ interface FormFieldCheckboxProps extends BaseFormFieldProps {
 }
 
 export const FormFieldCheckboxComp: FC<FormFieldCheckboxProps> = (props) => {
-  const { className, name, title, required, locked } = props
+  const { name, required, locked } = props
+
   return (
-    <div className={useClassNameGenerator(className, props)}>
-      <label htmlFor={name}>
-        <Title title={title} />
-      </label>
-      <input type="checkbox" defaultChecked={!!props.initial} name={name} required={required} disabled={locked} />
-      {props.error ? <div>Error: {props.error}</div> : null}
+    <div className={useClassName(props)}>
+      <Label {...props} />
+      <input
+        type="checkbox"
+        className={useClassName(props, { el: 'input' })}
+        defaultChecked={!!props.initial}
+        id={inputId(props)}
+        name={name}
+        required={required}
+        disabled={locked}
+        aria-describedby={descId(props)}
+      />
+      <ErrorDescription {...props} />
     </div>
   )
 }
@@ -67,20 +78,21 @@ interface FormFieldSelectProps extends BaseFormFieldProps {
 }
 
 export const FormFieldSelectComp: FC<FormFieldSelectProps> = (props) => {
-  const { className, name, title, required, locked, choices } = props
+  const { name, required, locked, choices } = props
   const [value, setValue] = useState(props.initial ?? '')
 
   return (
-    <div className={useClassNameGenerator(className, props)}>
-      <label htmlFor={name}>
-        <Title title={title} />
-      </label>
+    <div className={useClassName(props)}>
+      <Label {...props} />
       <select
+        id={inputId(props)}
+        className={useClassName(props, { el: 'select' })}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         name={name}
         required={required}
         disabled={locked}
+        aria-describedby={descId(props)}
       >
         <option></option>
         {choices.map(([value, label]) => (
@@ -89,7 +101,7 @@ export const FormFieldSelectComp: FC<FormFieldSelectProps> = (props) => {
           </option>
         ))}
       </select>
-      {props.error ? <div>Error: {props.error}</div> : null}
+      <ErrorDescription {...props} />
     </div>
   )
 }
@@ -101,27 +113,54 @@ interface FormFieldFileProps extends BaseFormFieldProps {
 }
 
 export const FormFieldFileComp: FC<FormFieldFileProps> = (props) => {
-  const { className, name, title, required, locked, multiple, accept } = props
+  const { name, required, locked, multiple, accept } = props
 
   return (
-    <div className={useClassNameGenerator(className, props)}>
-      <label htmlFor={name}>
-        <Title title={title} />
-      </label>
-      <input type="file" name={name} required={required} disabled={locked} multiple={multiple} accept={accept} />
-      {props.error ? <div>Error: {props.error}</div> : null}
+    <div className={useClassName(props)}>
+      <Label {...props} />
+      <input
+        type="file"
+        className={useClassName(props, { el: 'input' })}
+        id={inputId(props)}
+        name={name}
+        required={required}
+        disabled={locked}
+        multiple={multiple}
+        accept={accept}
+      />
+      <ErrorDescription {...props} />
     </div>
   )
 }
 
-const Title: FC<{ title: string[] }> = ({ title }) => {
+const Label: FC<FormFieldProps> = (props) => {
+  const { title } = props
   return (
-    <>
+    <label htmlFor={inputId(props)} className={useClassName(props, { el: 'label' })}>
       {title.map((t, i) => (
         <span key={i}>
           {i > 0 ? <> &rsaquo;</> : null} {t}
         </span>
       ))}
+    </label>
+  )
+}
+
+const inputId = (props: FormFieldProps) => `form-field-${props.name}`
+const descId = (props: FormFieldProps) => (props.description ? `${inputId(props)}-desc` : undefined)
+
+const ErrorDescription: FC<FormFieldProps> = (props) => {
+  const { description, error } = props
+  const descClassName = useClassName(props, { el: 'description' })
+  const errorClassName = useClassName(props, { el: 'error' })
+  return (
+    <>
+      {description ? (
+        <div id={descId(props)} className={descClassName}>
+          {description}
+        </div>
+      ) : null}
+      {error ? <div className={errorClassName}>Error: {error}</div> : null}
     </>
   )
 }
