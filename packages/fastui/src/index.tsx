@@ -6,12 +6,14 @@ import { ClassNameContext, ClassNameGenerator } from './hooks/className'
 import { ErrorContextProvider, ErrorDisplayType } from './hooks/error'
 import { ConfigContext } from './hooks/config'
 import { FastProps } from './components'
+import { FormFieldProps } from './components/FormField'
 import { DisplayChoices } from './display'
 import { DevReloadProvider } from './hooks/dev'
 
-export type { ClassNameGenerator, ErrorDisplayType, FastProps, DisplayChoices }
 
 export type CustomRender = (props: FastProps) => FC | void
+
+export type { ClassNameGenerator, CustomRender, ErrorDisplayType, FastProps, DisplayChoices, FormFieldProps }
 
 export interface FastUIProps {
   rootUrl: string
