@@ -1,6 +1,6 @@
-import { ClassNameGenerator, CustomRender } from 'fastui'
+import type { components, ClassNameGenerator, CustomRender, ClassName } from 'fastui'
 
-import type { FormFieldProps, ClassName } from 'fastui'
+import { ModalComp } from './modal'
 
 export const customRender: CustomRender = (props) => {
   const { type } = props
@@ -9,6 +9,8 @@ export const customRender: CustomRender = (props) => {
     if (typeof value === 'boolean') {
       return () => <>{value ? '👍' : '👎'}</>
     }
+  } else if (type === 'Modal') {
+    return () => <ModalComp {...props} />
   }
 }
 
@@ -36,7 +38,7 @@ export const classNameGenerator: ClassNameGenerator = (props, subElement) => {
   }
 }
 
-function formFieldClassName(props: FormFieldProps, subElement?: string): ClassName {
+function formFieldClassName(props: components.FormFieldProps, subElement?: string): ClassName {
   switch (subElement) {
     case 'input':
       return props.error ? 'is-invalid form-control' : 'form-control'

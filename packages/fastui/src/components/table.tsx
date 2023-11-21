@@ -4,7 +4,7 @@ import type { JsonData } from './Json'
 
 import { DisplayChoices, asTitle } from '../display'
 import { ClassName, useClassName } from '../hooks/className'
-import { Event } from '../hooks/event'
+import { AnyEvent } from '../hooks/events'
 
 import { DisplayComp } from './display'
 import { LinkRender } from './link'
@@ -13,7 +13,7 @@ interface ColumnProps {
   field: string
   display?: DisplayChoices
   title?: string
-  onClick?: Event
+  onClick?: AnyEvent
   className?: ClassName
 }
 
@@ -60,7 +60,7 @@ interface CellProps {
 const Cell: FC<CellProps> = ({ row, column }) => {
   const { field, display, onClick } = column
   const value = row[field]
-  let event: Event | null = onClick ? { ...onClick } : null
+  let event: AnyEvent | null = onClick ? { ...onClick } : null
   if (event) {
     if (event.type === 'go-to') {
       // for go-to events, substitute the row values into the url

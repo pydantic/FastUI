@@ -23,6 +23,22 @@ import { AllDisplayProps, DisplayArray, DisplayComp, DisplayObject, DisplayPrimi
 import { JsonComp, JsonProps } from './Json'
 import { ServerLoadComp, ServerLoadProps } from './ServerLoad'
 
+export type {
+  TextProps,
+  AllDivProps,
+  HeadingProps,
+  FormProps,
+  ModelFormProps,
+  FormFieldProps,
+  ButtonProps,
+  ModalProps,
+  TableProps,
+  LinkProps,
+  AllDisplayProps,
+  JsonProps,
+  ServerLoadProps,
+}
+
 export type FastProps =
   | TextProps
   | AllDivProps

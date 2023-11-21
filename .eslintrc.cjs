@@ -12,7 +12,7 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   plugins: ['react', '@typescript-eslint', 'react-refresh', 'simple-import-sort'],
   rules: {
-    'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+    'react-refresh/only-export-components': 'off', // how much effect does this have?
     '@typescript-eslint/no-explicit-any': 'off',
     'no-use-before-define': 'off',
     'import/order': [

@@ -1,7 +1,7 @@
 import { FC, FormEvent, useState } from 'react'
 
 import { ClassName, useClassName } from '../hooks/className'
-import { useFireEvent, Event } from '../hooks/event'
+import { useFireEvent, AnyEvent } from '../hooks/events'
 import { request } from '../tools'
 
 import { FastProps, RenderChildren } from './index'
@@ -26,7 +26,7 @@ export interface ModelFormProps extends BaseFormProps {
 
 interface FormResponse {
   type: 'FormResponse'
-  event: Event
+  event: AnyEvent
 }
 
 export const FormComp: FC<FormProps | ModelFormProps> = (props) => {

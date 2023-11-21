@@ -78,7 +78,7 @@ class Col(pydantic.BaseModel):
 
 class Button(pydantic.BaseModel):
     text: str
-    on_click: events.Event | None = pydantic.Field(default=None, serialization_alias='onClick')
+    on_click: events.AnyEvent | None = pydantic.Field(default=None, serialization_alias='onClick')
     html_type: typing.Literal['button', 'submit', 'reset'] | None = pydantic.Field(
         default=None, serialization_alias='htmlType'
     )
@@ -88,7 +88,7 @@ class Button(pydantic.BaseModel):
 
 class Link(pydantic.BaseModel):
     children: list[AnyComponent]
-    on_click: events.Event | None = pydantic.Field(default=None, serialization_alias='onClick')
+    on_click: events.AnyEvent | None = pydantic.Field(default=None, serialization_alias='onClick')
     class_name: extra.ClassName | None = None
     type: typing.Literal['Link'] = 'Link'
 

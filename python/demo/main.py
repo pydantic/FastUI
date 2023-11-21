@@ -51,7 +51,7 @@ class MyTableRow(BaseModel):
 
 @app.get('/api/modal', response_model=FastUI, response_model_exclude_none=True)
 async def modal_view() -> AnyComponent:
-    await asyncio.sleep(2)
+    await asyncio.sleep(0.5)
     return c.Text(text='Modal Content Dynamic')
 
 

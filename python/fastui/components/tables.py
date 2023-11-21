@@ -20,7 +20,7 @@ class TableColumn(pydantic.BaseModel):
     field: str
     display: Display | None = None
     title: str | None = None
-    on_click: typing.Annotated[events.Event | None, pydantic.Field(serialization_alias='onClick')] = None
+    on_click: typing.Annotated[events.AnyEvent | None, pydantic.Field(serialization_alias='onClick')] = None
     class_name: extra.ClassName | None = None
 
 

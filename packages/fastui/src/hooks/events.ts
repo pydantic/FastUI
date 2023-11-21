@@ -16,16 +16,16 @@ export interface BackEvent {
   type: 'back'
 }
 
-export type Event = PageEvent | GoToEvent | BackEvent
+export type AnyEvent = PageEvent | GoToEvent | BackEvent
 
 function pageEventType(event: PageEvent): string {
   return `fastui:${event.name}`
 }
 
-export function useFireEvent(): { fireEvent: (event?: Event) => void } {
+export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
   const location = useContext(LocationContext)
 
-  function fireEvent(event?: Event) {
+  function fireEvent(event?: AnyEvent) {
     if (!event) {
       return
     }
