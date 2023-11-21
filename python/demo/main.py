@@ -9,9 +9,10 @@ from fastapi import UploadFile
 from fastui import AnyComponent, FastUI, dev_fastapi_app
 from fastui import components as c
 from fastui.display import Display
-from fastui.events import GoToEvent, PageEvent
+from fastui.events import BackEvent, GoToEvent, PageEvent
 from fastui.forms import FormFile, FormResponse, fastui_form
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+from pydantic_core import PydanticCustomError
 
 # app = FastAPI()
 app = dev_fastapi_app()
@@ -89,7 +90,7 @@ class ToolEnum(StrEnum):
 
 
 class MyFormModel(BaseModel):
-    name: str = Field(default='foobar', title='Name')
+    name: str = Field(default='foobar', title='Name', min_length=3)
     # tool: ToolEnum = Field(json_schema_extra={'enum_display_values': {'hammer': 'Big Hammer'}})
     task: Literal['build', 'destroy'] | None = None
     profile_pic: Annotated[UploadFile, FormFile(accept='image/*', max_size=16_000)]
@@ -100,7 +101,13 @@ class MyFormModel(BaseModel):
     # weight: typing.Annotated[int, annotated_types.Gt(0)]
     # size: PositiveInt = None
     # enabled: bool = False
-    # nested: NestedFormModel
+    nested: NestedFormModel
+
+    @field_validator('name')
+    def name_validator(cls, v: str) -> str:
+        if v[0].islower():
+            raise PydanticCustomError('lower', 'Name must start with a capital letter')
+        return v
 
 
 @app.get('/api/form', response_model=FastUI, response_model_exclude_none=True)
@@ -108,6 +115,7 @@ def form_view() -> AnyComponent:
     return c.Page(
         children=[
             c.Heading(text='Form'),
+            c.Link(children=[c.Text(text='Back')], on_click=BackEvent()),
             c.ModelForm[MyFormModel](
                 submit_url='/api/form',
                 success_event=PageEvent(name='form_success'),

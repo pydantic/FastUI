@@ -14,4 +14,8 @@ class GoToEvent(BaseModel):
     type: Literal['go-to'] = 'go-to'
 
 
-Event = Annotated[PageEvent | GoToEvent, Field(discriminator='type')]
+class BackEvent(BaseModel):
+    type: Literal['back'] = 'back'
+
+
+Event = Annotated[PageEvent | GoToEvent | BackEvent, Field(discriminator='type')]

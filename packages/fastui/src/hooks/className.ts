@@ -37,7 +37,7 @@ export function useClassName(props: FastClassNameProps, extra?: UseClassNameExtr
     const { className } = props
     if (combineClassNameProp(className)) {
       if (classNameGenerator) {
-        dft = classNameGenerator(props)
+        dft = classNameGenerator(props) || dft
       }
       return combine(dft, className)
     } else {

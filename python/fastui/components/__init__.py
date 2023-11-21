@@ -86,6 +86,13 @@ class Button(pydantic.BaseModel):
     type: typing.Literal['Button'] = 'Button'
 
 
+class Link(pydantic.BaseModel):
+    children: list[AnyComponent]
+    on_click: events.Event | None = pydantic.Field(default=None, serialization_alias='onClick')
+    class_name: extra.ClassName | None = None
+    type: typing.Literal['Link'] = 'Link'
+
+
 class Modal(pydantic.BaseModel):
     title: str
     body: list[AnyComponent]
@@ -107,6 +114,6 @@ class ServerLoad(pydantic.BaseModel):
 
 
 AnyComponent = typing.Annotated[
-    Text | Div | Page | Heading | Row | Col | Button | Modal | ServerLoad | Table | Form | ModelForm | FormField,
+    Text | Div | Page | Heading | Row | Col | Button | Link | Modal | ServerLoad | Table | Form | ModelForm | FormField,
     pydantic.Field(discriminator='type'),
 ]

@@ -1,12 +1,12 @@
 import { FC } from 'react'
 
 import { ClassName, useClassName } from '../hooks/className'
-import { useFireEvent, PageEvent, GoToEvent } from '../hooks/event'
+import { useFireEvent, Event } from '../hooks/event'
 
 export interface ButtonProps {
   type: 'Button'
   text: string
-  onClick?: PageEvent | GoToEvent
+  onClick?: Event
   htmlType?: 'button' | 'submit' | 'reset'
   className?: ClassName
 }

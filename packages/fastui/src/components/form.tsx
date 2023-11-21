@@ -1,7 +1,7 @@
 import { FC, FormEvent, useState } from 'react'
 
 import { ClassName, useClassName } from '../hooks/className'
-import { useFireEvent, PageEvent, GoToEvent } from '../hooks/event'
+import { useFireEvent, Event } from '../hooks/event'
 import { request } from '../tools'
 
 import { FastProps, RenderChildren } from './index'
@@ -26,7 +26,7 @@ export interface ModelFormProps extends BaseFormProps {
 
 interface FormResponse {
   type: 'FormResponse'
-  event: PageEvent | GoToEvent
+  event: Event
 }
 
 export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
@@ -71,11 +71,13 @@ export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
   )
 
   return (
-    <form className={useClassName(props)} onSubmit={onSubmit}>
-      <RenderChildren children={fieldProps} />
-      {error ? <div>Error: {error}</div> : null}
-      <Footer footer={footer} />
-    </form>
+    <div className={useClassName(props, { el: 'form-container' })}>
+      <form className={useClassName(props)} onSubmit={onSubmit}>
+        <RenderChildren children={fieldProps} />
+        {error ? <div>Error: {error}</div> : null}
+        <Footer footer={footer} />
+      </form>
+    </div>
   )
 }
 

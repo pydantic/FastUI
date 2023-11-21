@@ -11,6 +11,7 @@ function parseLocation(): string {
 export interface LocationState {
   fullPath: string
   goto: (pushPath: string) => void
+  back: () => void
 }
 
 const initialPath = parseLocation()
@@ -18,6 +19,7 @@ const initialPath = parseLocation()
 const initialState = {
   fullPath: initialPath,
   goto: () => null,
+  back: () => null,
 }
 
 export const LocationContext = createContext<LocationState>(initialState)
@@ -68,6 +70,9 @@ export function LocationProvider({ children }: { children: ReactNode }) {
       },
       [setError],
     ),
+    back: useCallback(() => {
+      window.history.back()
+    }, []),
   }
 
   return <LocationContext.Provider value={value}>{children}</LocationContext.Provider>

@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import { LocationProvider } from './hooks/locationContext'
 import { FastUIController } from './controller'
-import { ClassNameContext, ClassNameGenerator } from './hooks/className'
+import { ClassNameContext, ClassNameGenerator, ClassName } from './hooks/className'
 import { ErrorContextProvider, ErrorDisplayType } from './hooks/error'
 import { ConfigContext } from './hooks/config'
 import { FastProps } from './components'
@@ -10,10 +10,17 @@ import { FormFieldProps } from './components/FormField'
 import { DisplayChoices } from './display'
 import { DevReloadProvider } from './hooks/dev'
 
-
 export type CustomRender = (props: FastProps) => FC | void
 
-export type { ClassNameGenerator, CustomRender, ErrorDisplayType, FastProps, DisplayChoices, FormFieldProps }
+export type {
+  ClassNameGenerator,
+  CustomRender,
+  ErrorDisplayType,
+  FastProps,
+  DisplayChoices,
+  FormFieldProps,
+  ClassName,
+}
 
 export interface FastUIProps {
   rootUrl: string

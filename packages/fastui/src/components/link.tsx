@@ -1,14 +1,14 @@
 import { FC, MouseEventHandler, ReactNode } from 'react'
 
 import { ClassName, useClassName } from '../hooks/className'
-import { useFireEvent, PageEvent, GoToEvent } from '../hooks/event'
+import { useFireEvent, Event } from '../hooks/event'
 
 import { FastProps, RenderChildren } from './index'
 
 export interface LinkProps {
   type: 'Link'
   children: FastProps[]
-  onClick?: PageEvent | GoToEvent
+  onClick?: Event
   className?: ClassName
 }
 
@@ -20,7 +20,7 @@ export const LinkComp: FC<LinkProps> = (props) => (
 
 interface LinkRenderProps {
   children: ReactNode
-  onClick?: PageEvent | GoToEvent
+  onClick?: Event
   className?: string
 }
 
