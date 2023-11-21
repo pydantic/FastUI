@@ -12,15 +12,7 @@ import { DevReloadProvider } from './hooks/dev'
 
 export type CustomRender = (props: FastProps) => FC | void
 
-export type {
-  ClassNameGenerator,
-  CustomRender,
-  ErrorDisplayType,
-  FastProps,
-  DisplayChoices,
-  FormFieldProps,
-  ClassName,
-}
+export type { ClassNameGenerator, ErrorDisplayType, FastProps, DisplayChoices, FormFieldProps, ClassName }
 
 export interface FastUIProps {
   rootUrl: string
