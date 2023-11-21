@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { useCustomRender } from '../hooks/customRender'
+import { useCustomRender } from '../hooks/config'
 import { DisplayChoices, asTitle } from '../display'
 import { unreachable } from '../tools'
 

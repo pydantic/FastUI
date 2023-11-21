@@ -1,7 +1,7 @@
 import { useContext, FC } from 'react'
 
 import { ErrorContext } from '../hooks/error'
-import { useCustomRender } from '../hooks/customRender'
+import { useCustomRender } from '../hooks/config'
 import { unreachable } from '../tools'
 
 import { AllDivProps, DivComp } from './div'
@@ -21,6 +21,7 @@ import { ModalComp, ModalProps } from './modal'
 import { TableComp, TableProps } from './table'
 import { AllDisplayProps, DisplayArray, DisplayComp, DisplayObject, DisplayPrimitive } from './display'
 import { JsonComp, JsonProps } from './Json'
+import { ServerLoadComp, ServerLoadProps } from './ServerLoad'
 
 export type FastProps =
   | TextProps
@@ -35,6 +36,7 @@ export type FastProps =
   | LinkProps
   | AllDisplayProps
   | JsonProps
+  | ServerLoadProps
 
 export const AnyComp: FC<FastProps> = (props) => {
   const { DisplayError } = useContext(ErrorContext)
@@ -85,6 +87,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <DisplayPrimitive {...props} />
       case 'JSON':
         return <JsonComp {...props} />
+      case 'ServerLoad':
+        return <ServerLoadComp {...props} />
       default:
         unreachable('Unexpected component type', type, props)
         return <DisplayError title="Invalid Server Response" description={`Unknown component type: "${type}"`} />
