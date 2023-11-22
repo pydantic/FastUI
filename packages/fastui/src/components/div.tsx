@@ -2,29 +2,29 @@ import { FC } from 'react'
 
 import { ClassName, useClassName } from '../hooks/className'
 
-import { FastProps, RenderChildren } from './index'
+import { FastProps, AnyCompList } from './index'
 
 interface DivProps {
   type: 'Div'
-  children: FastProps[]
+  components: FastProps[]
   className?: ClassName
 }
 
 interface PageProps {
   type: 'Page'
-  children: FastProps[]
+  components: FastProps[]
   className?: ClassName
 }
 
 interface RowProps {
   type: 'Row'
-  children: FastProps[]
+  components: FastProps[]
   className?: ClassName
 }
 
 interface ColProps {
   type: 'Col'
-  children: FastProps[]
+  components: FastProps[]
   className?: ClassName
 }
 
@@ -33,12 +33,12 @@ type AllDivTypes = 'Div' | 'Page' | 'Row' | 'Col'
 
 interface Props {
   type: AllDivTypes
-  children: FastProps[]
+  components: FastProps[]
   className?: ClassName
 }
 
 export const DivComp: FC<Props> = (props) => (
   <div className={useClassName(props)}>
-    <RenderChildren children={props.children} />
+    <AnyCompList propsList={props.components} />
   </div>
 )

@@ -2,9 +2,17 @@ import { createContext, useContext } from 'react'
 
 import type { FastClassNameProps } from '../components'
 
+import { LocationContext } from './locationContext'
+
 export type ClassName = string | ClassName[] | Record<string, boolean | null> | undefined
 
-export type ClassNameGenerator = (props: FastClassNameProps, subElement?: string) => ClassName
+interface ClassNameGeneratorArgs {
+  props: FastClassNameProps
+  fullPath: string
+  subElement?: string
+}
+
+export type ClassNameGenerator = (args: ClassNameGeneratorArgs) => ClassName
 export const ClassNameContext = createContext<ClassNameGenerator | null>(null)
 
 interface UseClassNameExtra {
@@ -22,14 +30,16 @@ interface UseClassNameExtra {
  */
 export function useClassName(props: FastClassNameProps, extra?: UseClassNameExtra): string | undefined {
   const classNameGenerator = useContext(ClassNameContext)
+  const { fullPath } = useContext(LocationContext)
   let { dft, el } = extra || {}
+  const genArgs: ClassNameGeneratorArgs = { props, fullPath, subElement: el }
 
   if (el) {
     // if getting the class for a sub-element, we don't care about `props.ClassName`
     if (classNameGenerator) {
-      const generated = classNameGenerator(props, el)
+      const generated = classNameGenerator(genArgs)
       if (generated) {
-        return renderClassName(classNameGenerator(props, el))
+        return renderClassName(classNameGenerator(genArgs))
       }
     }
     return renderClassName(dft)
@@ -37,7 +47,7 @@ export function useClassName(props: FastClassNameProps, extra?: UseClassNameExtr
     const { className } = props
     if (combineClassNameProp(className)) {
       if (classNameGenerator) {
-        dft = classNameGenerator(props) || dft
+        dft = classNameGenerator(genArgs) || dft
       }
       return combine(dft, className)
     } else {

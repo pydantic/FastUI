@@ -3,7 +3,7 @@ import { FC, lazy } from 'react'
 import { ClassName, renderClassName, useClassName } from '../hooks/className'
 import { PageEvent, useEventListenerToggle } from '../hooks/events'
 
-import { FastProps, RenderChildren } from './index'
+import { FastProps, AnyCompList } from './index'
 
 export interface ModalProps {
   type: 'Modal'
@@ -35,11 +35,11 @@ export const ModalComp: FC<ModalProps> = (props) => {
             </div>
           </div>
           <div className="fu-modal-body">
-            <RenderChildren children={body} />
+            <AnyCompList propsList={body} />
           </div>
           {footer && (
             <div className="fu-modal-footer">
-              <RenderChildren children={footer} />
+              <AnyCompList propsList={footer} />
             </div>
           )}
         </div>

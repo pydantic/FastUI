@@ -36,47 +36,47 @@ __all__ = (
 )
 
 
-class Text(pydantic.BaseModel):
+class Text(pydantic.BaseModel, extra='forbid'):
     text: str
     type: typing.Literal['Text'] = 'Text'
 
 
-class Div(pydantic.BaseModel):
-    children: list[AnyComponent]
+class Div(pydantic.BaseModel, extra='forbid'):
+    components: list[AnyComponent]
     class_name: extra.ClassName | None = None
     type: typing.Literal['Div'] = 'Div'
 
 
-class Page(pydantic.BaseModel):
+class Page(pydantic.BaseModel, extra='forbid'):
     """
     Similar to `container` in many UI frameworks, this should be a reasonable root component for most pages.
     """
 
-    children: list[AnyComponent]
+    components: list[AnyComponent]
     class_name: extra.ClassName | None = None
     type: typing.Literal['Page'] = 'Page'
 
 
-class Heading(pydantic.BaseModel):
+class Heading(pydantic.BaseModel, extra='forbid'):
     text: str
     level: typing.Literal[1, 2, 3, 4, 5, 6] = 1
     class_name: extra.ClassName | None = None
     type: typing.Literal['Heading'] = 'Heading'
 
 
-class Row(pydantic.BaseModel):
-    children: list[AnyComponent]
+class Row(pydantic.BaseModel, extra='forbid'):
+    components: list[AnyComponent]
     class_name: extra.ClassName | None = None
     type: typing.Literal['Row'] = 'Row'
 
 
-class Col(pydantic.BaseModel):
-    children: list[AnyComponent]
+class Col(pydantic.BaseModel, extra='forbid'):
+    components: list[AnyComponent]
     class_name: extra.ClassName | None = None
     type: typing.Literal['Col'] = 'Col'
 
 
-class Button(pydantic.BaseModel):
+class Button(pydantic.BaseModel, extra='forbid'):
     text: str
     on_click: events.AnyEvent | None = pydantic.Field(default=None, serialization_alias='onClick')
     html_type: typing.Literal['button', 'submit', 'reset'] | None = pydantic.Field(
@@ -86,14 +86,31 @@ class Button(pydantic.BaseModel):
     type: typing.Literal['Button'] = 'Button'
 
 
-class Link(pydantic.BaseModel):
-    children: list[AnyComponent]
+class Link(pydantic.BaseModel, extra='forbid'):
+    components: list[AnyComponent]
     on_click: events.AnyEvent | None = pydantic.Field(default=None, serialization_alias='onClick')
+    mode: typing.Literal['navbar', 'tabs', 'vertical'] | None = None
+    active: bool | str | None = None
     class_name: extra.ClassName | None = None
     type: typing.Literal['Link'] = 'Link'
 
 
-class Modal(pydantic.BaseModel):
+class LinkList(pydantic.BaseModel, extra='forbid'):
+    links: list[Link]
+    mode: typing.Literal['tabs', 'vertical'] | None = None
+    class_name: extra.ClassName | None = None
+    type: typing.Literal['LinkList'] = 'LinkList'
+
+
+class Navbar(pydantic.BaseModel, extra='forbid'):
+    title: str | None = None
+    title_event: events.AnyEvent | None = pydantic.Field(default=None, serialization_alias='titleEvent')
+    links: list[Link] = pydantic.Field(default_factory=list)
+    class_name: extra.ClassName | None = None
+    type: typing.Literal['Navbar'] = 'Navbar'
+
+
+class Modal(pydantic.BaseModel, extra='forbid'):
     title: str
     body: list[AnyComponent]
     footer: list[AnyComponent] | None = None
@@ -103,7 +120,7 @@ class Modal(pydantic.BaseModel):
     type: typing.Literal['Modal'] = 'Modal'
 
 
-class ServerLoad(pydantic.BaseModel):
+class ServerLoad(pydantic.BaseModel, extra='forbid'):
     """
     A component that will be replaced by the server with the component returned by the given URL.
     """
@@ -114,6 +131,21 @@ class ServerLoad(pydantic.BaseModel):
 
 
 AnyComponent = typing.Annotated[
-    Text | Div | Page | Heading | Row | Col | Button | Link | Modal | ServerLoad | Table | Form | ModelForm | FormField,
+    Text
+    | Div
+    | Page
+    | Heading
+    | Row
+    | Col
+    | Button
+    | Link
+    | LinkList
+    | Navbar
+    | Modal
+    | ServerLoad
+    | Table
+    | Form
+    | ModelForm
+    | FormField,
     pydantic.Field(discriminator='type'),
 ]

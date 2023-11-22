@@ -10,4 +10,4 @@ __all__ = 'AnyComponent', 'FastUI', 'dev_fastapi_app', 'Display'
 
 
 class FastUI(pydantic.RootModel):
-    root: AnyComponent
+    root: list[AnyComponent]

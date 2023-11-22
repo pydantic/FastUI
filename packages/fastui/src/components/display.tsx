@@ -81,7 +81,7 @@ export const DisplayObject: FC<DisplayObjectProps> = (props) => {
 
 type JSONPrimitive = string | number | boolean | null
 
-interface DisplayPrimitiveProps {
+export interface DisplayPrimitiveProps {
   value: JSONPrimitive
   display: DisplayChoices
   type: 'DisplayPrimitive'

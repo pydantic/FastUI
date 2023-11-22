@@ -1,20 +1,30 @@
+import { pathMatch } from 'fastui'
+
 import type { components, ClassNameGenerator, CustomRender, ClassName } from 'fastui'
 
-import { ModalComp } from './modal'
+import { Modal } from './modal'
+import { Navbar } from './navbar'
 
 export const customRender: CustomRender = (props) => {
   const { type } = props
-  if (type === 'DisplayPrimitive') {
-    const { value } = props
-    if (typeof value === 'boolean') {
-      return () => <>{value ? '👍' : '👎'}</>
-    }
-  } else if (type === 'Modal') {
-    return () => <ModalComp {...props} />
+  switch (type) {
+    case 'DisplayPrimitive':
+      return displayPrimitiveRender(props)
+    case 'Navbar':
+      return () => <Navbar {...props} />
+    case 'Modal':
+      return () => <Modal {...props} />
   }
 }
 
-export const classNameGenerator: ClassNameGenerator = (props, subElement) => {
+function displayPrimitiveRender(props: components.DisplayPrimitiveProps) {
+  const { value } = props
+  if (typeof value === 'boolean') {
+    return () => <>{value ? '👍' : '👎'}</>
+  }
+}
+
+export const classNameGenerator: ClassNameGenerator = ({ props, fullPath, subElement }) => {
   const { type } = props
   switch (type) {
     case 'Page':
@@ -35,6 +45,10 @@ export const classNameGenerator: ClassNameGenerator = (props, subElement) => {
     case 'FormFieldSelect':
     case 'FormFieldFile':
       return formFieldClassName(props, subElement)
+    case 'Navbar':
+      return navbarClassName(subElement)
+    case 'Link':
+      return linkClassName(props, fullPath)
   }
 }
 
@@ -58,4 +72,19 @@ function formClassName(subElement?: string): ClassName {
     case 'form-container':
       return 'd-flex justify-content-center'
   }
+}
+
+function navbarClassName(subElement?: string): ClassName {
+  switch (subElement) {
+    case 'contents':
+      return 'container'
+    case 'title':
+      return 'navbar-brand'
+    default:
+      return 'navbar navbar-expand-lg bg-body-tertiary'
+  }
+}
+
+function linkClassName(props: components.LinkProps, fullPath: string): ClassName {
+  return { active: pathMatch(props.active, fullPath), 'nav-link': props.mode === 'navbar' }
 }

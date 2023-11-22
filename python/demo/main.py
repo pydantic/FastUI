@@ -18,28 +18,41 @@ from pydantic_core import PydanticCustomError
 app = dev_fastapi_app()
 
 
-@app.get('/api/', response_model=FastUI, response_model_exclude_none=True)
-def read_root() -> AnyComponent:
-    return c.Page(
-        children=[
-            c.Heading(text='Hello World'),
-            c.Row(
-                children=[
-                    c.Col(children=[c.Text(text='Hello World')]),
-                    c.Col(children=[c.Button(text='Show Modal', on_click=PageEvent(name='modal'))]),
-                    c.Col(children=[c.Button(text='View Table', on_click=GoToEvent(url='/table'))]),
-                    c.Col(children=[c.Button(text='Form', on_click=GoToEvent(url='/form'))]),
-                ]
-            ),
-            c.Modal(
-                title='Modal Title',
-                body=[c.ServerLoad(url='/modal')],
-                footer=[c.Button(text='Close', on_click=PageEvent(name='modal'))],
-                open_trigger=PageEvent(name='modal'),
-            ),
+def navbar() -> AnyComponent:
+    return c.Navbar(
+        title='FastUI Demo',
+        links=[
+            c.Link(components=[c.Text(text='Home')], on_click=GoToEvent(url='/'), active='/'),
+            c.Link(components=[c.Text(text='Table')], on_click=GoToEvent(url='/table'), active='/table'),
         ],
-        class_name='+ mt-4',
     )
+
+
+@app.get('/api/', response_model=FastUI, response_model_exclude_none=True)
+def read_root() -> list[AnyComponent]:
+    return [
+        navbar(),
+        c.Page(
+            components=[
+                c.Heading(text='Hello World'),
+                c.Row(
+                    components=[
+                        c.Col(components=[c.Text(text='Hello World')]),
+                        c.Col(components=[c.Button(text='Show Modal', on_click=PageEvent(name='modal'))]),
+                        c.Col(components=[c.Button(text='View Table', on_click=GoToEvent(url='/table'))]),
+                        c.Col(components=[c.Button(text='Form', on_click=GoToEvent(url='/form'))]),
+                    ]
+                ),
+                c.Modal(
+                    title='Modal Title',
+                    body=[c.ServerLoad(url='/modal')],
+                    footer=[c.Button(text='Close', on_click=PageEvent(name='modal'))],
+                    open_trigger=PageEvent(name='modal'),
+                ),
+            ],
+            class_name='+ mt-4',
+        ),
+    ]
 
 
 class MyTableRow(BaseModel):
@@ -50,30 +63,33 @@ class MyTableRow(BaseModel):
 
 
 @app.get('/api/modal', response_model=FastUI, response_model_exclude_none=True)
-async def modal_view() -> AnyComponent:
+async def modal_view() -> list[AnyComponent]:
     await asyncio.sleep(0.5)
-    return c.Text(text='Modal Content Dynamic')
+    return [c.Text(text='Modal Content Dynamic')]
 
 
 @app.get('/api/table', response_model=FastUI, response_model_exclude_none=True)
-def table_view() -> AnyComponent:
-    return c.Page(
-        children=[
-            c.Heading(text='Table'),
-            c.Table[MyTableRow](
-                data=[
-                    MyTableRow(id=1, name='John', dob=date(1990, 1, 1), enabled=True),
-                    MyTableRow(id=2, name='Jane', dob=date(1991, 1, 1), enabled=False),
-                    MyTableRow(id=3, name='Jack', dob=date(1992, 1, 1)),
-                ],
-                columns=[
-                    c.TableColumn(field='name', on_click=GoToEvent(url='/more/{id}/')),
-                    c.TableColumn(field='dob', display=Display.date),
-                    c.TableColumn(field='enabled'),
-                ],
-            ),
-        ]
-    )
+def table_view() -> list[AnyComponent]:
+    return [
+        navbar(),
+        c.Page(
+            components=[
+                c.Heading(text='Table'),
+                c.Table[MyTableRow](
+                    data=[
+                        MyTableRow(id=1, name='John', dob=date(1990, 1, 1), enabled=True),
+                        MyTableRow(id=2, name='Jane', dob=date(1991, 1, 1), enabled=False),
+                        MyTableRow(id=3, name='Jack', dob=date(1992, 1, 1)),
+                    ],
+                    columns=[
+                        c.TableColumn(field='name', on_click=GoToEvent(url='/more/{id}/')),
+                        c.TableColumn(field='dob', display=Display.date),
+                        c.TableColumn(field='enabled'),
+                    ],
+                ),
+            ]
+        ),
+    ]
 
 
 class NestedFormModel(BaseModel):
@@ -111,21 +127,24 @@ class MyFormModel(BaseModel):
 
 
 @app.get('/api/form', response_model=FastUI, response_model_exclude_none=True)
-def form_view() -> AnyComponent:
-    return c.Page(
-        children=[
-            c.Heading(text='Form'),
-            c.Link(children=[c.Text(text='Back')], on_click=BackEvent()),
-            c.ModelForm[MyFormModel](
-                submit_url='/api/form',
-                success_event=PageEvent(name='form_success'),
-                # footer=[
-                #     c.Button(text='Cancel', on_click=GoToEvent(url='/')),
-                #     c.Button(text='Submit', html_type='submit'),
-                # ]
-            ),
-        ]
-    )
+def form_view() -> list[AnyComponent]:
+    return [
+        navbar(),
+        c.Page(
+            components=[
+                c.Heading(text='Form'),
+                c.Link(components=[c.Text(text='Back')], on_click=BackEvent()),
+                c.ModelForm[MyFormModel](
+                    submit_url='/api/form',
+                    success_event=PageEvent(name='form_success'),
+                    # footer=[
+                    #     c.Button(text='Cancel', on_click=GoToEvent(url='/')),
+                    #     c.Button(text='Submit', html_type='submit'),
+                    # ]
+                ),
+            ]
+        ),
+    ]
 
 
 @app.post('/api/form')

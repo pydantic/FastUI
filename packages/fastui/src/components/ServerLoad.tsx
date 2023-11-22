@@ -6,7 +6,7 @@ import { request } from '../tools'
 import { DefaultLoading } from '../DefaultLoading'
 import { ConfigContext } from '../hooks/config'
 
-import { AnyComp, FastProps } from './index'
+import { AnyCompList, FastProps } from './index'
 
 export interface ServerLoadProps {
   type: 'ServerLoad'
@@ -14,7 +14,7 @@ export interface ServerLoadProps {
 }
 
 export const ServerLoadComp: FC<ServerLoadProps> = ({ url }) => {
-  const [componentProps, setComponentProps] = useState<FastProps | null>(null)
+  const [componentProps, setComponentProps] = useState<FastProps[] | null>(null)
 
   const { error, setError } = useContext(ErrorContext)
   const reloadValue = useContext(ReloadContext)
@@ -32,7 +32,7 @@ export const ServerLoadComp: FC<ServerLoadProps> = ({ url }) => {
     const promise = request({ url: fetchUrl })
 
     promise
-      .then(([, data]) => setComponentProps(data as FastProps))
+      .then(([, data]) => setComponentProps(data as FastProps[]))
       .catch((e) => {
         setError({ title: 'Request Error', description: e.message })
       })
@@ -50,6 +50,6 @@ export const ServerLoadComp: FC<ServerLoadProps> = ({ url }) => {
       return <DefaultLoading />
     }
   } else {
-    return <AnyComp {...componentProps} />
+    return <AnyCompList propsList={componentProps} />
   }
 }
