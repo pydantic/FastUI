@@ -41,6 +41,20 @@ class Text(pydantic.BaseModel, extra='forbid'):
     type: typing.Literal['Text'] = 'Text'
 
 
+class Paragraph(pydantic.BaseModel, extra='forbid'):
+    text: str
+    type: typing.Literal['Paragraph'] = 'Paragraph'
+
+
+class PageTitle(pydantic.BaseModel, extra='forbid'):
+    """
+    This sets the title of the HTML page via the `document.title` property.
+    """
+
+    text: str
+    type: typing.Literal['PageTitle'] = 'PageTitle'
+
+
 class Div(pydantic.BaseModel, extra='forbid'):
     components: list[AnyComponent]
     class_name: extra.ClassName | None = None
@@ -132,6 +146,8 @@ class ServerLoad(pydantic.BaseModel, extra='forbid'):
 
 AnyComponent = typing.Annotated[
     Text
+    | Paragraph
+    | PageTitle
     | Div
     | Page
     | Heading

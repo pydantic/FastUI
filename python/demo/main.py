@@ -24,6 +24,7 @@ def navbar() -> AnyComponent:
         links=[
             c.Link(components=[c.Text(text='Home')], on_click=GoToEvent(url='/'), active='/'),
             c.Link(components=[c.Text(text='Table')], on_click=GoToEvent(url='/table'), active='/table'),
+            c.Link(components=[c.Text(text='Forms')], on_click=GoToEvent(url='/form'), active='/form'),
         ],
     )
 
@@ -31,10 +32,12 @@ def navbar() -> AnyComponent:
 @app.get('/api/', response_model=FastUI, response_model_exclude_none=True)
 def read_root() -> list[AnyComponent]:
     return [
+        c.PageTitle(text='FastUI Demo'),
         navbar(),
         c.Page(
             components=[
                 c.Heading(text='Hello World'),
+                c.Paragraph(text='This is a demo of FastUI.'),
                 c.Row(
                     components=[
                         c.Col(components=[c.Text(text='Hello World')]),
@@ -72,6 +75,7 @@ async def modal_view() -> list[AnyComponent]:
 def table_view() -> list[AnyComponent]:
     return [
         navbar(),
+        c.PageTitle(text='FastUI Demo - Table'),
         c.Page(
             components=[
                 c.Heading(text='Table'),
@@ -130,6 +134,7 @@ class MyFormModel(BaseModel):
 def form_view() -> list[AnyComponent]:
     return [
         navbar(),
+        c.PageTitle(text='FastUI Demo - Form Examples'),
         c.Page(
             components=[
                 c.Heading(text='Form'),

@@ -4,8 +4,10 @@ import { ErrorContext } from '../hooks/error'
 import { useCustomRender } from '../hooks/config'
 import { unreachable } from '../tools'
 
-import { AllDivProps, DivComp } from './div'
 import { TextProps, TextComp } from './text'
+import { ParagraphProps, ParagraphComp } from './paragraph'
+import { PageTitleProps, PageTitleComp } from './PageTitle'
+import { AllDivProps, DivComp } from './div'
 import { HeadingComp, HeadingProps } from './heading'
 import { FormComp, FormProps, ModelFormProps } from './form'
 import {
@@ -34,6 +36,8 @@ import { ServerLoadComp, ServerLoadProps } from './ServerLoad'
 
 export type {
   TextProps,
+  ParagraphProps,
+  PageTitleProps,
   AllDivProps,
   HeadingProps,
   FormProps,
@@ -56,6 +60,8 @@ export { LinkComp, LinkRender }
 
 export type FastProps =
   | TextProps
+  | ParagraphProps
+  | PageTitleProps
   | AllDivProps
   | HeadingProps
   | FormProps
@@ -71,7 +77,7 @@ export type FastProps =
   | JsonProps
   | ServerLoadProps
 
-export type FastClassNameProps = Exclude<FastProps, TextProps | AllDisplayProps | ServerLoadProps>
+export type FastClassNameProps = Exclude<FastProps, TextProps | AllDisplayProps | ServerLoadProps | PageTitleProps>
 
 export const AnyCompList: FC<{ propsList: FastProps[] }> = ({ propsList }) => (
   <>
@@ -94,6 +100,10 @@ export const AnyComp: FC<FastProps> = (props) => {
     switch (type) {
       case 'Text':
         return <TextComp {...props} />
+      case 'Paragraph':
+        return <ParagraphComp {...props} />
+      case 'PageTitle':
+        return <PageTitleComp {...props} />
       case 'Div':
       case 'Page':
       case 'Row':
