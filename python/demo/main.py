@@ -42,6 +42,18 @@ def read_root() -> list[AnyComponent]:
             components=[
                 c.Heading(text='Modal and Flex examples'),
                 c.Paragraph(text='Below is an example of a flex container with 3 panels.'),
+                c.Markdown(
+                    text="""\
+This is some **Markdown**, link to [table](/table).
+
+```python
+x = 1
+y = 2
+assert x + y == 3
+```
+
+"""
+                ),
                 c.Div(
                     class_name='row',
                     components=[
@@ -82,8 +94,8 @@ def read_root() -> list[AnyComponent]:
                     ],
                     open_trigger=PageEvent(name='dynamic-modal'),
                 ),
+                c.Code(text='print("Hello World")', language='python'),
             ],
-            class_name='+ mt-4',
         ),
     ]
 

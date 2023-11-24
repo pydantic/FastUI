@@ -9,6 +9,8 @@ import { ParagraphProps, ParagraphComp } from './paragraph'
 import { PageTitleProps, PageTitleComp } from './PageTitle'
 import { AllDivProps, DivComp, DivProps } from './div'
 import { HeadingComp, HeadingProps } from './heading'
+import { MarkdownComp, MarkdownProps } from './Markdown'
+import { CodeComp, CodeProps } from './Code'
 import { FormComp, FormProps, ModelFormProps } from './form'
 import {
   FormFieldProps,
@@ -41,6 +43,8 @@ export type {
   AllDivProps,
   DivProps,
   HeadingProps,
+  MarkdownProps,
+  CodeProps,
   FormProps,
   ModelFormProps,
   FormFieldProps,
@@ -66,6 +70,8 @@ export type FastProps =
   | AllDivProps
   | DivProps
   | HeadingProps
+  | MarkdownProps
+  | CodeProps
   | FormProps
   | ModelFormProps
   | FormFieldProps
@@ -111,6 +117,10 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <DivComp {...props} />
       case 'Heading':
         return <HeadingComp {...props} />
+      case 'Markdown':
+        return <MarkdownComp {...props} />
+      case 'Code':
+        return <CodeComp {...props} />
       case 'Button':
         return <ButtonComp {...props} />
       case 'Link':
