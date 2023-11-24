@@ -1,6 +1,7 @@
 from __future__ import annotations as _annotations
 
 import asyncio
+from collections import defaultdict
 from datetime import date
 from enum import StrEnum
 from typing import Annotated, Literal
@@ -11,6 +12,7 @@ from fastui import components as c
 from fastui.display import Display
 from fastui.events import BackEvent, GoToEvent, PageEvent
 from fastui.forms import FormFile, FormResponse, SelectSearchResponse, fastui_form
+from httpx import AsyncClient
 from pydantic import BaseModel, Field, SecretStr, field_validator
 from pydantic_core import PydanticCustomError
 
@@ -175,15 +177,18 @@ class MyFormModel(BaseModel):
 
 @app.get('/api/search', response_model=SelectSearchResponse)
 async def search_view(q: str) -> SelectSearchResponse:
-    print(f'Searching for {q}')
-    await asyncio.sleep(1)
-    return SelectSearchResponse(
-        options=[
-            {'value': '1', 'label': f'Option 1 - {q}'},
-            {'value': '2', 'label': 'Option 2'},
-            {'value': '3', 'label': 'Option 3'},
-        ]
-    )
+    async with AsyncClient() as client:
+        r = await client.get(f'https://restcountries.com/v3.1/name/{q}')
+        if r.status_code == 404:
+            options = []
+        else:
+            r.raise_for_status()
+            data = r.json()
+            regions = defaultdict(list)
+            for c in data:
+                regions[c['region']].append({'value': c['cca3'], 'label': c['name']['common']})
+            options = [{'label': k, 'options': v} for k, v in regions.items()]
+    return SelectSearchResponse(options=options)
 
 
 @app.get('/api/form', response_model=FastUI, response_model_exclude_none=True)

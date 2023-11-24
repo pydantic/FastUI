@@ -147,8 +147,13 @@ class SelectSearchOption(typing_extensions.TypedDict):
     label: str
 
 
-class SelectSearchResponse(pydantic.BaseModel):
+class SelectSearchGroup(typing_extensions.TypedDict):
+    label: str
     options: list[SelectSearchOption]
+
+
+class SelectSearchResponse(pydantic.BaseModel):
+    options: list[SelectSearchOption] | list[SelectSearchGroup]
 
 
 NestedDict: typing.TypeAlias = 'dict[str | int, NestedDict | str | list[str] | ds.UploadFile | list[ds.UploadFile]]'

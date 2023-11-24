@@ -3,7 +3,7 @@ import AsyncSelect from 'react-select/async'
 import { StylesConfig } from 'react-select'
 
 import { ClassName, useClassName } from '../hooks/className'
-import { request, debounce } from '../tools'
+import { debounce, useRequest } from '../tools'
 
 interface BaseFormFieldProps {
   name: string
@@ -117,6 +117,11 @@ interface SearchOption {
   label: string
 }
 
+interface SearchGroup {
+  label: string
+  options: SearchOption[]
+}
+
 interface FormFieldSelectSearchProps extends BaseFormFieldProps {
   type: 'FormFieldSelectSearch'
   searchUrl: string
@@ -125,26 +130,32 @@ interface FormFieldSelectSearchProps extends BaseFormFieldProps {
 }
 
 // cheat slightly and match bootstrap 😱
+// TODO make this configurable as an argument to `FastUI`
 const styles: StylesConfig = {
   control: (base) => ({ ...base, borderRadius: '0.375rem', border: '1px solid #dee2e6' }),
 }
 
-type OptionsCallback = (options: SearchOption[]) => void
+type EitherOptions = SearchOption[] | SearchGroup[]
 
 export const FormFieldSelectSearchComp: FC<FormFieldSelectSearchProps> = (props) => {
   const { name, required, locked, searchUrl, initial } = props
   const [isLoading, setIsLoading] = useState(false)
+  const request = useRequest()
 
-  const loadOptions = debounce((inputValue: string, callback: OptionsCallback) => {
+  const loadOptions = debounce((inputValue: string, callback: (options: EitherOptions) => void) => {
     setIsLoading(true)
     request({
       url: searchUrl,
       query: { q: inputValue },
-    }).then(([, response]) => {
-      const { options } = response as { options: SearchOption[] }
-      callback(options)
-      setIsLoading(false)
     })
+      .then(([, response]) => {
+        const { options } = response as { options: EitherOptions }
+        callback(options)
+        setIsLoading(false)
+      })
+      .catch(() => {
+        setIsLoading(false)
+      })
   }, props.debounce ?? 300)
 
   return (
@@ -153,6 +164,8 @@ export const FormFieldSelectSearchComp: FC<FormFieldSelectSearchProps> = (props)
       <AsyncSelect
         id={inputId(props)}
         className={useClassName(props, { el: 'select-search' })}
+        cacheOptions
+        isClearable
         loadOptions={loadOptions}
         defaultValue={initial}
         name={name}
@@ -161,6 +174,7 @@ export const FormFieldSelectSearchComp: FC<FormFieldSelectSearchProps> = (props)
         isLoading={isLoading}
         aria-describedby={descId(props)}
         styles={styles}
+        noOptionsMessage={({ inputValue }) => (inputValue ? 'No results' : 'Type to search')}
       />
       <ErrorDescription {...props} />
     </div>

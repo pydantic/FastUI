@@ -1,3 +1,23 @@
+import { useCallback, useContext } from 'react'
+
+import { ErrorContext } from './hooks/error'
+
+export function useRequest(): (args: Request) => Promise<[number, any]> {
+  const { setError } = useContext(ErrorContext)
+
+  return useCallback(
+    async (args: Request) => {
+      try {
+        return await request(args)
+      } catch (e) {
+        setError({ title: 'Request Error', description: (e as any)?.message })
+        throw e
+      }
+    },
+    [setError],
+  )
+}
+
 interface Request {
   url: string
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
@@ -19,7 +39,7 @@ class RequestError extends Error {
   }
 }
 
-export async function request({
+async function request({
   url,
   method,
   headers,
