@@ -164,6 +164,7 @@ def json_schema_field_to_field(
             title=title,
             required=required,
             initial=schema.get('default'),
+            description=schema.get('description'),
         )
     elif schema['type'] == 'string' and (enum := schema.get('enum')):
         enum_display_values = schema.get('enum_display_values', {})
@@ -173,6 +174,7 @@ def json_schema_field_to_field(
             required=required,
             choices=[(v, enum_display_values.get(v) or as_title(v)) for v in enum],
             initial=schema.get('default'),
+            description=schema.get('description'),
         )
     elif schema['type'] == 'string' and schema.get('format') == 'binary':
         return FormFieldFile(
@@ -181,6 +183,7 @@ def json_schema_field_to_field(
             required=required,
             multiple=schema.get('multiple', False),
             accept=schema.get('accept'),
+            description=schema.get('description'),
         )
     else:
         return FormFieldInput(
@@ -189,6 +192,7 @@ def json_schema_field_to_field(
             html_type=input_html_type(schema),
             required=required,
             initial=schema.get('default'),
+            description=schema.get('description'),
         )
 
 
@@ -261,6 +265,7 @@ type_lookup: dict[str, InputHtmlType] = {
     'string-email': 'email',
     'string-uri': 'url',
     'string-uuid': 'text',
+    'string-password': 'password',
     'number': 'number',
     'integer': 'number',
 }

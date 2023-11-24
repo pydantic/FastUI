@@ -4,8 +4,10 @@ import { ErrorContext } from '../hooks/error'
 import { useCustomRender } from '../hooks/config'
 import { unreachable } from '../tools'
 
-import { AllDivProps, DivComp } from './div'
 import { TextProps, TextComp } from './text'
+import { ParagraphProps, ParagraphComp } from './paragraph'
+import { PageTitleProps, PageTitleComp } from './PageTitle'
+import { AllDivProps, DivComp, DivProps } from './div'
 import { HeadingComp, HeadingProps } from './heading'
 import { FormComp, FormProps, ModelFormProps } from './form'
 import {
@@ -16,16 +18,53 @@ import {
   FormFieldFileComp,
 } from './FormField'
 import { ButtonComp, ButtonProps } from './button'
-import { LinkComp, LinkProps } from './link'
+import { LinkComp, LinkProps, LinkRender } from './link'
+import { LinkListProps, LinkListComp } from './LinkList'
+import { NavbarProps, NavbarComp } from './navbar'
 import { ModalComp, ModalProps } from './modal'
 import { TableComp, TableProps } from './table'
-import { AllDisplayProps, DisplayArray, DisplayComp, DisplayObject, DisplayPrimitive } from './display'
+import {
+  AllDisplayProps,
+  DisplayArray,
+  DisplayComp,
+  DisplayObject,
+  DisplayPrimitive,
+  DisplayPrimitiveProps,
+} from './display'
 import { JsonComp, JsonProps } from './Json'
 import { ServerLoadComp, ServerLoadProps } from './ServerLoad'
 
+export type {
+  TextProps,
+  ParagraphProps,
+  PageTitleProps,
+  AllDivProps,
+  DivProps,
+  HeadingProps,
+  FormProps,
+  ModelFormProps,
+  FormFieldProps,
+  ButtonProps,
+  ModalProps,
+  TableProps,
+  LinkProps,
+  LinkListProps,
+  NavbarProps,
+  AllDisplayProps,
+  DisplayPrimitiveProps,
+  JsonProps,
+  ServerLoadProps,
+}
+
+// TODO some better way to export components
+export { LinkComp, LinkRender }
+
 export type FastProps =
   | TextProps
+  | ParagraphProps
+  | PageTitleProps
   | AllDivProps
+  | DivProps
   | HeadingProps
   | FormProps
   | ModelFormProps
@@ -34,9 +73,21 @@ export type FastProps =
   | ModalProps
   | TableProps
   | LinkProps
+  | LinkListProps
+  | NavbarProps
   | AllDisplayProps
   | JsonProps
   | ServerLoadProps
+
+export type FastClassNameProps = Exclude<FastProps, TextProps | AllDisplayProps | ServerLoadProps | PageTitleProps>
+
+export const AnyCompList: FC<{ propsList: FastProps[] }> = ({ propsList }) => (
+  <>
+    {propsList.map((child, i) => (
+      <AnyComp key={i} {...child} />
+    ))}
+  </>
+)
 
 export const AnyComp: FC<FastProps> = (props) => {
   const { DisplayError } = useContext(ErrorContext)
@@ -51,17 +102,23 @@ export const AnyComp: FC<FastProps> = (props) => {
     switch (type) {
       case 'Text':
         return <TextComp {...props} />
+      case 'Paragraph':
+        return <ParagraphComp {...props} />
+      case 'PageTitle':
+        return <PageTitleComp {...props} />
       case 'Div':
       case 'Page':
-      case 'Row':
-      case 'Col':
-        return renderWithChildren(DivComp, props)
+        return <DivComp {...props} />
       case 'Heading':
         return <HeadingComp {...props} />
       case 'Button':
         return <ButtonComp {...props} />
       case 'Link':
-        return renderWithChildren(LinkComp, props)
+        return <LinkComp {...props} />
+      case 'LinkList':
+        return <LinkListComp {...props} />
+      case 'Navbar':
+        return <NavbarComp {...props} />
       case 'Form':
       case 'ModelForm':
         return <FormComp {...props} />
@@ -99,21 +156,3 @@ export const AnyComp: FC<FastProps> = (props) => {
     return <DisplayError title="Render Error" description={description} />
   }
 }
-
-interface WithChildren {
-  children: FastProps[]
-}
-
-function renderWithChildren<T extends WithChildren>(Component: FC<T>, props: T) {
-  const { children, ...rest } = props
-  // TODO  is there a way to make this type safe?
-  return <Component {...(rest as any)}>{children}</Component>
-}
-
-export const RenderChildren: FC<{ children: FastProps[] }> = ({ children }) => (
-  <>
-    {children.map((child, i) => (
-      <AnyComp key={i} {...child} />
-    ))}
-  </>
-)

@@ -1,26 +1,30 @@
 import { FC, MouseEventHandler, ReactNode } from 'react'
 
-import { ClassName, useClassNameGenerator } from '../hooks/className'
-import { useFireEvent, PageEvent, GoToEvent } from '../hooks/event'
+import { ClassName, useClassName } from '../hooks/className'
+import { useFireEvent, AnyEvent } from '../hooks/events'
 
-import { FastProps, RenderChildren } from './index'
+import { FastProps, AnyCompList } from './index'
 
 export interface LinkProps {
   type: 'Link'
-  children: FastProps[]
-  onClick?: PageEvent | GoToEvent
+  components: FastProps[]
+  mode?: 'navbar' | 'tabs' | 'vertical'
+  active?: boolean | string
+  onClick?: AnyEvent
   className?: ClassName
 }
 
 export const LinkComp: FC<LinkProps> = (props) => (
-  <LinkRender className={useClassNameGenerator(props.className, props)} onClick={props.onClick}>
-    <RenderChildren children={props.children} />
+  <LinkRender className={useClassName(props)} onClick={props.onClick}>
+    <AnyCompList propsList={props.components} />
   </LinkRender>
 )
 
 interface LinkRenderProps {
   children: ReactNode
-  onClick?: PageEvent | GoToEvent
+  mode?: 'navbar' | 'tabs' | 'vertical'
+  active?: boolean | string
+  onClick?: AnyEvent
   className?: string
 }
 

@@ -1,28 +1,58 @@
 import { createContext, useContext } from 'react'
 
-import type { FastProps } from '../components'
+import type { FastClassNameProps } from '../components'
+
+import { LocationContext } from './locationContext'
 
 export type ClassName = string | ClassName[] | Record<string, boolean | null> | undefined
 
-export type ClassNameGenerator = (props: FastProps) => ClassName
+interface ClassNameGeneratorArgs {
+  props: FastClassNameProps
+  fullPath: string
+  subElement?: string
+}
+
+export type ClassNameGenerator = (args: ClassNameGeneratorArgs) => ClassName
 export const ClassNameContext = createContext<ClassNameGenerator | null>(null)
 
+interface UseClassNameExtra {
+  // default className to use if the class name generator is not set or returns undefined.
+  dft?: ClassName
+  // identifier of the element within the component to generate the class name for.
+  el?: string
+}
+
 /**
- * Generates a `className` from a component.
+ * Generates a `className` from `props`, `classNameGenerator` or the default value.
  *
- * @param classNameProp The `className` taken from the props sent from the backend.
  * @param props The full props object sent from the backend, this is passed to the class name generator.
- * @param dft default className to use if the class name generator is not set or returns undefined.
+ * @param extra dft class name or sub-element
  */
-export function useClassNameGenerator(classNameProp: ClassName, props: FastProps, dft?: ClassName): string {
+export function useClassName(props: FastClassNameProps, extra?: UseClassNameExtra): string | undefined {
   const classNameGenerator = useContext(ClassNameContext)
-  if (combineClassNameProp(classNameProp)) {
-    if (!dft && classNameGenerator) {
-      dft = classNameGenerator(props)
+  const { fullPath } = useContext(LocationContext)
+  let { dft, el } = extra || {}
+  const genArgs: ClassNameGeneratorArgs = { props, fullPath, subElement: el }
+
+  if (el) {
+    // if getting the class for a sub-element, we don't care about `props.ClassName`
+    if (classNameGenerator) {
+      const generated = classNameGenerator(genArgs)
+      if (generated) {
+        return renderClassName(classNameGenerator(genArgs))
+      }
     }
-    return combine(dft, classNameProp)
+    return renderClassName(dft)
   } else {
-    return renderClassName(classNameProp)
+    const { className } = props
+    if (combineClassNameProp(className)) {
+      if (classNameGenerator) {
+        dft = classNameGenerator(genArgs) || dft
+      }
+      return combine(dft, className)
+    } else {
+      return renderClassName(className)
+    }
   }
 }
 

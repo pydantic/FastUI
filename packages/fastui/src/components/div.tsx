@@ -1,44 +1,25 @@
 import { FC } from 'react'
 
-import { ClassName, useClassNameGenerator } from '../hooks/className'
+import { ClassName, useClassName } from '../hooks/className'
 
-import { FastProps, RenderChildren } from './index'
+import { FastProps, AnyCompList } from './index'
 
-interface DivProps {
+export interface DivProps {
   type: 'Div'
-  children: FastProps[]
+  components: FastProps[]
   className?: ClassName
 }
 
 interface PageProps {
   type: 'Page'
-  children: FastProps[]
+  components: FastProps[]
   className?: ClassName
 }
 
-interface RowProps {
-  type: 'Row'
-  children: FastProps[]
-  className?: ClassName
-}
+export type AllDivProps = DivProps | PageProps
 
-interface ColProps {
-  type: 'Col'
-  children: FastProps[]
-  className?: ClassName
-}
-
-export type AllDivProps = DivProps | PageProps | RowProps | ColProps
-type AllDivTypes = 'Div' | 'Page' | 'Row' | 'Col'
-
-interface Props {
-  type: AllDivTypes
-  children: FastProps[]
-  className?: ClassName
-}
-
-export const DivComp: FC<Props> = (props) => (
-  <div className={useClassNameGenerator(props.className, props)}>
-    <RenderChildren children={props.children} />
+export const DivComp: FC<AllDivProps> = (props) => (
+  <div className={useClassName(props)}>
+    <AnyCompList propsList={props.components} />
   </div>
 )

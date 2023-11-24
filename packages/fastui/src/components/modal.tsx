@@ -1,10 +1,9 @@
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 
-import { ClassName, renderClassName, useClassNameGenerator } from '../hooks/className'
-import { PageEvent, useEventListenerToggle } from '../hooks/event'
+import { ClassName } from '../hooks/className'
+import { PageEvent, useEventListenerToggle } from '../hooks/events'
 
-import { FastProps, RenderChildren } from './index'
-import './modal.css'
+import { FastProps } from './index'
 
 export interface ModalProps {
   type: 'Modal'
@@ -17,28 +16,18 @@ export interface ModalProps {
 }
 
 export const ModalComp: FC<ModalProps> = (props) => {
-  const { title, body, footer, openTrigger, className } = props
+  const { title, openTrigger } = props
 
   const [open, toggle] = useEventListenerToggle(openTrigger, props.open)
 
-  return (
-    <div className={renderClassName({ 'fu-modal-overlay': true, open })}>
-      <div className={useClassNameGenerator(className, props, 'fu-modal-content')}>
-        <div className="fu-model-header">
-          <h2>{title}</h2>
-          <div className="fu-close" onClick={toggle}>
-            &times;
-          </div>
-        </div>
-        <div className="fu-modal-body">
-          <RenderChildren children={body} />
-        </div>
-        {footer && (
-          <div className="fu-modal-footer">
-            <RenderChildren children={footer} />
-          </div>
-        )}
-      </div>
-    </div>
-  )
+  useEffect(() => {
+    if (open) {
+      setTimeout(() => {
+        alert(`${title}\n\nNote: modals are not implemented by pure FastUI, implement a component for 'ModalProps'.`)
+        toggle()
+      })
+    }
+  }, [open, title, toggle])
+
+  return <></>
 }

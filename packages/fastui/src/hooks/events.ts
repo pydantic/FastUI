@@ -12,14 +12,20 @@ export interface GoToEvent {
   url: string
 }
 
+export interface BackEvent {
+  type: 'back'
+}
+
+export type AnyEvent = PageEvent | GoToEvent | BackEvent
+
 function pageEventType(event: PageEvent): string {
   return `fastui:${event.name}`
 }
 
-export function useFireEvent(): { fireEvent: (event?: PageEvent | GoToEvent) => void } {
+export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
   const location = useContext(LocationContext)
 
-  function fireEvent(event?: PageEvent | GoToEvent) {
+  function fireEvent(event?: AnyEvent) {
     if (!event) {
       return
     }
@@ -31,6 +37,9 @@ export function useFireEvent(): { fireEvent: (event?: PageEvent | GoToEvent) => 
         break
       case 'go-to':
         location.goto(event.url)
+        break
+      case 'back':
+        location.back()
         break
     }
   }

@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { ClassName, useClassNameGenerator } from '../hooks/className'
+import { ClassName, useClassName } from '../hooks/className'
 
 export interface HeadingProps {
   type: 'Heading'
@@ -10,12 +10,12 @@ export interface HeadingProps {
 }
 
 export const HeadingComp: FC<HeadingProps> = (props) => {
-  const { level, text, className } = props
+  const { level, text } = props
   const HeadingComponent = getComponent(level)
-  return <HeadingComponent text={text} className={useClassNameGenerator(className, props)} />
+  return <HeadingComponent text={text} className={useClassName(props)} />
 }
 
-function getComponent(level: 1 | 2 | 3 | 4 | 5 | 6): FC<{ text: string; className: string }> {
+function getComponent(level: 1 | 2 | 3 | 4 | 5 | 6): FC<{ text: string; className?: string }> {
   switch (level) {
     case 1:
       return ({ text, className }) => <h1 className={className}>{text}</h1>

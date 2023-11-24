@@ -132,7 +132,7 @@ class FormFile:
 
 
 class FormResponse(pydantic.BaseModel):
-    event: events.Event
+    event: events.AnyEvent
     type: typing.Literal['FormResponse'] = 'FormResponse'
 
 

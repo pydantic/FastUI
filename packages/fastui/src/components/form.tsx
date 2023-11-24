@@ -1,10 +1,10 @@
 import { FC, FormEvent, useState } from 'react'
 
-import { ClassName, useClassNameGenerator } from '../hooks/className'
-import { useFireEvent, PageEvent, GoToEvent } from '../hooks/event'
+import { ClassName, useClassName } from '../hooks/className'
+import { useFireEvent, AnyEvent } from '../hooks/events'
 import { request } from '../tools'
 
-import { FastProps, RenderChildren } from './index'
+import { FastProps, AnyCompList } from './index'
 
 import { ButtonComp } from './button'
 import { FormFieldProps } from './FormField'
@@ -26,11 +26,11 @@ export interface ModelFormProps extends BaseFormProps {
 
 interface FormResponse {
   type: 'FormResponse'
-  event: PageEvent | GoToEvent
+  event: AnyEvent
 }
 
 export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
-  const { className, formFields, submitUrl, footer } = props
+  const { formFields, submitUrl, footer } = props
 
   // mostly equivalent to `<input disabled`
   const [locked, setLocked] = useState(false)
@@ -71,11 +71,13 @@ export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
   )
 
   return (
-    <form className={useClassNameGenerator(className, props)} onSubmit={onSubmit}>
-      <RenderChildren children={fieldProps} />
-      {error ? <div>Error: {error}</div> : null}
-      <Footer footer={footer} />
-    </form>
+    <div className={useClassName(props, { el: 'form-container' })}>
+      <form className={useClassName(props)} onSubmit={onSubmit}>
+        <AnyCompList propsList={fieldProps} />
+        {error ? <div>Error: {error}</div> : null}
+        <Footer footer={footer} />
+      </form>
+    </div>
   )
 }
 
@@ -85,7 +87,7 @@ const Footer: FC<{ footer?: boolean | FastProps[] }> = ({ footer }) => {
   } else if (footer === true || typeof footer === 'undefined') {
     return <ButtonComp type="Button" text="Submit" htmlType="submit" />
   } else {
-    return <RenderChildren children={footer} />
+    return <AnyCompList propsList={footer} />
   }
 }
 

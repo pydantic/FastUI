@@ -3,8 +3,8 @@ import { FC } from 'react'
 import type { JsonData } from './Json'
 
 import { DisplayChoices, asTitle } from '../display'
-import { ClassName, useClassNameGenerator } from '../hooks/className'
-import { PageEvent, GoToEvent } from '../hooks/event'
+import { ClassName, useClassName } from '../hooks/className'
+import { AnyEvent } from '../hooks/events'
 
 import { DisplayComp } from './display'
 import { LinkRender } from './link'
@@ -13,7 +13,7 @@ interface ColumnProps {
   field: string
   display?: DisplayChoices
   title?: string
-  onClick?: PageEvent | GoToEvent
+  onClick?: AnyEvent
   className?: ClassName
 }
 
@@ -27,10 +27,10 @@ export interface TableProps {
 }
 
 export const TableComp: FC<TableProps> = (props) => {
-  const { className, columns, data } = props
+  const { columns, data } = props
 
   return (
-    <table className={useClassNameGenerator(className, props)}>
+    <table className={useClassName(props)}>
       <thead>
         <tr>
           {columns.map((col, id) => (
@@ -60,7 +60,7 @@ interface CellProps {
 const Cell: FC<CellProps> = ({ row, column }) => {
   const { field, display, onClick } = column
   const value = row[field]
-  let event: PageEvent | GoToEvent | null = onClick ? { ...onClick } : null
+  let event: AnyEvent | null = onClick ? { ...onClick } : null
   if (event) {
     if (event.type === 'go-to') {
       // for go-to events, substitute the row values into the url

@@ -1,10 +1,13 @@
 import { FC } from 'react'
 
+import { ClassName } from '../hooks/className'
+
 export type JsonData = string | number | boolean | null | JsonData[] | { [key: string]: JsonData }
 
 export interface JsonProps {
   value: JsonData
   type: 'JSON'
+  className?: ClassName
 }
 
 export const JsonComp: FC<JsonProps> = ({ value }) => {

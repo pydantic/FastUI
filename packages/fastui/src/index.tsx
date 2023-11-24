@@ -1,15 +1,21 @@
 import { FC } from 'react'
 
+import type { ErrorDisplayType } from './hooks/error'
+
 import { LocationProvider } from './hooks/locationContext'
 import { FastUIController } from './controller'
 import { ClassNameContext, ClassNameGenerator } from './hooks/className'
-import { ErrorContextProvider, ErrorDisplayType } from './hooks/error'
+import { ErrorContextProvider } from './hooks/error'
 import { ConfigContext } from './hooks/config'
 import { FastProps } from './components'
-import { DisplayChoices } from './display'
 import { DevReloadProvider } from './hooks/dev'
 
-export type { ClassNameGenerator, ErrorDisplayType, FastProps, DisplayChoices }
+export * as components from './components'
+export * as events from './hooks/events'
+export type { DisplayChoices } from './display'
+export type { ClassName, ClassNameGenerator } from './hooks/className'
+export { useClassName, renderClassName } from './hooks/className'
+export { pathMatch } from './hooks/locationContext'
 
 export type CustomRender = (props: FastProps) => FC | void
 

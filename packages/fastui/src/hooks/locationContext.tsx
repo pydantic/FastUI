@@ -11,6 +11,7 @@ function parseLocation(): string {
 export interface LocationState {
   fullPath: string
   goto: (pushPath: string) => void
+  back: () => void
 }
 
 const initialPath = parseLocation()
@@ -18,6 +19,7 @@ const initialPath = parseLocation()
 const initialState = {
   fullPath: initialPath,
   goto: () => null,
+  back: () => null,
 }
 
 export const LocationContext = createContext<LocationState>(initialState)
@@ -68,7 +70,27 @@ export function LocationProvider({ children }: { children: ReactNode }) {
       },
       [setError],
     ),
+    back: useCallback(() => {
+      window.history.back()
+    }, []),
   }
 
   return <LocationContext.Provider value={value}>{children}</LocationContext.Provider>
+}
+
+export function pathMatch(matchPath: string | boolean | undefined, fullPath: string): boolean {
+  if (typeof matchPath === 'string') {
+    if (matchPath.startsWith('regex:')) {
+      const regex = new RegExp(matchPath.slice(6))
+      return regex.test(fullPath)
+    } else if (matchPath.startsWith('startswith:')) {
+      return fullPath.startsWith(matchPath.slice(12))
+    } else {
+      return fullPath === matchPath
+    }
+  } else if (matchPath === undefined) {
+    return false
+  } else {
+    return matchPath
+  }
 }
