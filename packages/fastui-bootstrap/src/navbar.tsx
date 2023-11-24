@@ -15,8 +15,8 @@ export const Navbar: FC<components.NavbarProps> = (props) => {
         <BootstrapNavbar.Collapse id="navbar-collapse">
           <ul className="navbar-nav me-auto">
             {links.map((link, i) => (
-              <li className="nav-item">
-                <components.LinkComp key={i} {...link} />
+              <li key={i} className="nav-item">
+                <components.LinkComp {...link} />
               </li>
             ))}
           </ul>
