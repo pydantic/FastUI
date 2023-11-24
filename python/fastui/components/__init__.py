@@ -79,13 +79,24 @@ class Heading(pydantic.BaseModel, extra='forbid'):
     type: typing.Literal['Heading'] = 'Heading'
 
 
+# see https://github.com/PrismJS/prism-themes
+# and https://cdn.jsdelivr.net/npm/react-syntax-highlighter@15.5.0/dist/esm/styles/prism/index.js
+CodeStyle = typing.Annotated[str | None, pydantic.Field(serialization_alias='codeStyle')]
+
+
 class Markdown(pydantic.BaseModel, extra='forbid'):
     text: str
-    # see https://github.com/PrismJS/prism-themes
-    # and https://cdn.jsdelivr.net/npm/react-syntax-highlighter@15.5.0/dist/esm/styles/prism/index.js
-    code_style: str | None = pydantic.Field(default=None, serialization_alias='codeStyle')
+    code_style: CodeStyle = None
     class_name: extra.ClassName = None
     type: typing.Literal['Markdown'] = 'Markdown'
+
+
+class Code(pydantic.BaseModel, extra='forbid'):
+    text: str
+    language: str | None = None
+    code_style: CodeStyle = None
+    class_name: extra.ClassName = None
+    type: typing.Literal['Code'] = 'Code'
 
 
 class Button(pydantic.BaseModel, extra='forbid'):
@@ -150,6 +161,7 @@ AnyComponent = typing.Annotated[
     | Page
     | Heading
     | Markdown
+    | Code
     | Button
     | Link
     | LinkList

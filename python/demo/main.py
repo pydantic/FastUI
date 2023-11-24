@@ -94,8 +94,8 @@ assert x + y == 3
                     ],
                     open_trigger=PageEvent(name='dynamic-modal'),
                 ),
+                c.Code(text='print("Hello World")', language='python'),
             ],
-            class_name='+ mt-4',
         ),
     ]
 

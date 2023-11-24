@@ -1,20 +1,16 @@
 import { FC, MouseEventHandler, ReactNode } from 'react'
 import Markdown, { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import * as codeStyles from 'react-syntax-highlighter/dist/esm/styles/prism'
 
-import { ClassName, useClassName } from '../hooks/className'
+import type { MarkdownProps } from './Markdown'
+
+import { useClassName } from '../hooks/className'
 import { useFireEvent, AnyEvent } from '../hooks/events'
+import { useCustomRender } from '../hooks/config'
 
-export interface MarkdownProps {
-  type: 'Markdown'
-  text: string
-  codeStyle?: keyof typeof codeStyles
-  className?: ClassName
-}
+import { CodeProps, CodeComp } from './Code'
 
-export const MarkdownComp: FC<MarkdownProps> = (props) => {
+const MarkdownComp: FC<MarkdownProps> = (props) => {
   const { text, codeStyle } = props
   const components: Components = {
     a({ children, href }) {
@@ -35,6 +31,8 @@ export const MarkdownComp: FC<MarkdownProps> = (props) => {
     </Markdown>
   )
 }
+
+export default MarkdownComp
 
 const MarkdownA: FC<{ children: ReactNode; href?: string }> = ({ children, href }) => {
   const { fireEvent } = useFireEvent()
@@ -69,25 +67,25 @@ const MarkdownA: FC<{ children: ReactNode; href?: string }> = ({ children, href 
   )
 }
 
-interface CodeProps {
+interface MarkdownCodeProps {
   children: ReactNode
   className?: string
-  codeStyle?: keyof typeof codeStyles
+  codeStyle?: string
 }
 
-const MarkdownCode: FC<CodeProps> = ({ children, className, codeStyle }) => {
+const MarkdownCode: FC<MarkdownCodeProps> = ({ children, className, codeStyle }) => {
   const match = /language-(\w+)/.exec(className || '')
-  if (match) {
-    const style = (codeStyle && codeStyles[codeStyle]) || codeStyles.coldarkCold
-    return (
-      <SyntaxHighlighter
-        PreTag="div"
-        children={String(children).replace(/\n$/, '')}
-        language={match[1]}
-        style={style}
-      />
-    )
+  const language = match ? match[1] : undefined
+  const codeProps: CodeProps = {
+    type: 'Code',
+    text: String(children).replace(/\n$/, ''),
+    language,
+    codeStyle,
+  }
+  const CustomRenderComp = useCustomRender(codeProps)
+  if (CustomRenderComp) {
+    return <CustomRenderComp />
   } else {
-    return <code className={className}>{children}</code>
+    return <CodeComp {...codeProps} />
   }
 }
