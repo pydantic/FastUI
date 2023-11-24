@@ -133,14 +133,17 @@ type OptionsCallback = (options: SearchOption[]) => void
 
 export const FormFieldSelectSearchComp: FC<FormFieldSelectSearchProps> = (props) => {
   const { name, required, locked, searchUrl, initial } = props
+  const [isLoading, setIsLoading] = useState(false)
 
   const loadOptions = debounce((inputValue: string, callback: OptionsCallback) => {
+    setIsLoading(true)
     request({
       url: searchUrl,
       query: { q: inputValue },
     }).then(([, response]) => {
       const { options } = response as { options: SearchOption[] }
       callback(options)
+      setIsLoading(false)
     })
   }, props.debounce ?? 300)
 
@@ -155,6 +158,7 @@ export const FormFieldSelectSearchComp: FC<FormFieldSelectSearchProps> = (props)
         name={name}
         required={required}
         isDisabled={locked}
+        isLoading={isLoading}
         aria-describedby={descId(props)}
         styles={styles}
       />
