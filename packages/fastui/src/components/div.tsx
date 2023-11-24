@@ -4,7 +4,7 @@ import { ClassName, useClassName } from '../hooks/className'
 
 import { FastProps, AnyCompList } from './index'
 
-interface DivProps {
+export interface DivProps {
   type: 'Div'
   components: FastProps[]
   className?: ClassName
@@ -16,28 +16,9 @@ interface PageProps {
   className?: ClassName
 }
 
-interface RowProps {
-  type: 'Row'
-  components: FastProps[]
-  className?: ClassName
-}
+export type AllDivProps = DivProps | PageProps
 
-interface ColProps {
-  type: 'Col'
-  components: FastProps[]
-  className?: ClassName
-}
-
-export type AllDivProps = DivProps | PageProps | RowProps | ColProps
-type AllDivTypes = 'Div' | 'Page' | 'Row' | 'Col'
-
-interface Props {
-  type: AllDivTypes
-  components: FastProps[]
-  className?: ClassName
-}
-
-export const DivComp: FC<Props> = (props) => (
+export const DivComp: FC<AllDivProps> = (props) => (
   <div className={useClassName(props)}>
     <AnyCompList propsList={props.components} />
   </div>

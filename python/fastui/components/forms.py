@@ -10,7 +10,7 @@ from . import extra
 if typing.TYPE_CHECKING:
     from . import AnyComponent
 
-InputHtmlType = typing.Literal['text', 'date', 'datetime-local', 'time', 'email', 'url', 'file', 'number']
+InputHtmlType = typing.Literal['text', 'date', 'datetime-local', 'time', 'email', 'url', 'number', 'password']
 
 
 class BaseFormField(pydantic.BaseModel, ABC, defer_build=True):

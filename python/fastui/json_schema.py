@@ -265,6 +265,7 @@ type_lookup: dict[str, InputHtmlType] = {
     'string-email': 'email',
     'string-uri': 'url',
     'string-uuid': 'text',
+    'string-password': 'password',
     'number': 'number',
     'integer': 'number',
 }

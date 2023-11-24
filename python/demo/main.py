@@ -11,7 +11,7 @@ from fastui import components as c
 from fastui.display import Display
 from fastui.events import BackEvent, GoToEvent, PageEvent
 from fastui.forms import FormFile, FormResponse, fastui_form
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, SecretStr, field_validator
 from pydantic_core import PydanticCustomError
 
 # app = FastAPI()
@@ -29,6 +29,10 @@ def navbar() -> AnyComponent:
     )
 
 
+def panel(*components: AnyComponent) -> AnyComponent:
+    return c.Div(class_name='col border rounded m-1 p-2 pb-3', components=list(components))
+
+
 @app.get('/api/', response_model=FastUI, response_model_exclude_none=True)
 def read_root() -> list[AnyComponent]:
     return [
@@ -36,21 +40,47 @@ def read_root() -> list[AnyComponent]:
         navbar(),
         c.Page(
             components=[
-                c.Heading(text='Hello World'),
-                c.Paragraph(text='This is a demo of FastUI.'),
-                c.Row(
+                c.Heading(text='Modal and Flex examples'),
+                c.Paragraph(text='Below is an example of a flex container with 3 panels.'),
+                c.Div(
+                    class_name='row',
                     components=[
-                        c.Col(components=[c.Text(text='Hello World')]),
-                        c.Col(components=[c.Button(text='Show Modal', on_click=PageEvent(name='modal'))]),
-                        c.Col(components=[c.Button(text='View Table', on_click=GoToEvent(url='/table'))]),
-                        c.Col(components=[c.Button(text='Form', on_click=GoToEvent(url='/form'))]),
-                    ]
+                        panel(
+                            c.Heading(text='Panel 1', level=3),
+                            c.Paragraph(text='This is a div with a border and rounded corners.'),
+                        ),
+                        panel(
+                            c.Heading(text='Panel 2', level=3),
+                            c.Paragraph(text='Click the link below to open a modal with content included directly'),
+                            c.Button(text='Show Static Modal', on_click=PageEvent(name='static-modal')),
+                        ),
+                        panel(
+                            c.Heading(text='Panel 3', level=3),
+                            c.Paragraph(
+                                text=(
+                                    'Click the link below to open a modal with content loaded from the '
+                                    'server when the modal is opened.'
+                                )
+                            ),
+                            c.Button(text='Show Dynamic Modal', on_click=PageEvent(name='dynamic-modal')),
+                        ),
+                    ],
                 ),
                 c.Modal(
-                    title='Modal Title',
+                    title='Static Modal',
+                    body=[c.Paragraph(text='This is some static content in a modal.')],
+                    footer=[
+                        c.Button(text='Close', on_click=PageEvent(name='static-modal')),
+                    ],
+                    open_trigger=PageEvent(name='static-modal'),
+                ),
+                c.Modal(
+                    title='Dynamic Modal',
                     body=[c.ServerLoad(url='/modal')],
-                    footer=[c.Button(text='Close', on_click=PageEvent(name='modal'))],
-                    open_trigger=PageEvent(name='modal'),
+                    footer=[
+                        c.Button(text='Close', on_click=PageEvent(name='dynamic-modal')),
+                    ],
+                    open_trigger=PageEvent(name='dynamic-modal'),
                 ),
             ],
             class_name='+ mt-4',
@@ -110,7 +140,7 @@ class ToolEnum(StrEnum):
 
 
 class MyFormModel(BaseModel):
-    name: str = Field(default='foobar', title='Name', min_length=3)
+    name: str = Field(default='foobar', title='Name', min_length=3, description='Your name')
     # tool: ToolEnum = Field(json_schema_extra={'enum_display_values': {'hammer': 'Big Hammer'}})
     task: Literal['build', 'destroy'] | None = None
     profile_pic: Annotated[UploadFile, FormFile(accept='image/*', max_size=16_000)]
@@ -121,7 +151,8 @@ class MyFormModel(BaseModel):
     # weight: typing.Annotated[int, annotated_types.Gt(0)]
     # size: PositiveInt = None
     # enabled: bool = False
-    nested: NestedFormModel
+    # nested: NestedFormModel
+    password: SecretStr
 
     @field_validator('name')
     def name_validator(cls, v: str) -> str:

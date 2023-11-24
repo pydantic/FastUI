@@ -7,7 +7,7 @@ import { unreachable } from '../tools'
 import { TextProps, TextComp } from './text'
 import { ParagraphProps, ParagraphComp } from './paragraph'
 import { PageTitleProps, PageTitleComp } from './PageTitle'
-import { AllDivProps, DivComp } from './div'
+import { AllDivProps, DivComp, DivProps } from './div'
 import { HeadingComp, HeadingProps } from './heading'
 import { FormComp, FormProps, ModelFormProps } from './form'
 import {
@@ -39,6 +39,7 @@ export type {
   ParagraphProps,
   PageTitleProps,
   AllDivProps,
+  DivProps,
   HeadingProps,
   FormProps,
   ModelFormProps,
@@ -63,6 +64,7 @@ export type FastProps =
   | ParagraphProps
   | PageTitleProps
   | AllDivProps
+  | DivProps
   | HeadingProps
   | FormProps
   | ModelFormProps
@@ -106,8 +108,6 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <PageTitleComp {...props} />
       case 'Div':
       case 'Page':
-      case 'Row':
-      case 'Col':
         return <DivComp {...props} />
       case 'Heading':
         return <HeadingComp {...props} />

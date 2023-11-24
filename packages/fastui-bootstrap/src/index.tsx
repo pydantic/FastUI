@@ -29,10 +29,6 @@ export const classNameGenerator: ClassNameGenerator = ({ props, fullPath, subEle
   switch (type) {
     case 'Page':
       return 'container py-4'
-    case 'Row':
-      return 'row'
-    case 'Col':
-      return 'col'
     case 'Button':
       return 'btn btn-primary'
     case 'Table':
@@ -62,6 +58,8 @@ function formFieldClassName(props: components.FormFieldProps, subElement?: strin
       return { 'form-label': true, 'fw-bold': props.required }
     case 'error':
       return 'invalid-feedback'
+    case 'description':
+      return 'form-text'
     default:
       return 'mb-3'
   }
@@ -70,7 +68,9 @@ function formFieldClassName(props: components.FormFieldProps, subElement?: strin
 function formClassName(subElement?: string): ClassName {
   switch (subElement) {
     case 'form-container':
-      return 'd-flex justify-content-center'
+      return 'row justify-content-center'
+    default:
+      return 'col-md-4'
   }
 }
 

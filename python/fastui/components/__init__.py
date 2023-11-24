@@ -57,7 +57,7 @@ class PageTitle(pydantic.BaseModel, extra='forbid'):
 
 class Div(pydantic.BaseModel, extra='forbid'):
     components: list[AnyComponent]
-    class_name: extra.ClassName | None = None
+    class_name: extra.ClassName = None
     type: typing.Literal['Div'] = 'Div'
 
 
@@ -67,27 +67,15 @@ class Page(pydantic.BaseModel, extra='forbid'):
     """
 
     components: list[AnyComponent]
-    class_name: extra.ClassName | None = None
+    class_name: extra.ClassName = None
     type: typing.Literal['Page'] = 'Page'
 
 
 class Heading(pydantic.BaseModel, extra='forbid'):
     text: str
     level: typing.Literal[1, 2, 3, 4, 5, 6] = 1
-    class_name: extra.ClassName | None = None
+    class_name: extra.ClassName = None
     type: typing.Literal['Heading'] = 'Heading'
-
-
-class Row(pydantic.BaseModel, extra='forbid'):
-    components: list[AnyComponent]
-    class_name: extra.ClassName | None = None
-    type: typing.Literal['Row'] = 'Row'
-
-
-class Col(pydantic.BaseModel, extra='forbid'):
-    components: list[AnyComponent]
-    class_name: extra.ClassName | None = None
-    type: typing.Literal['Col'] = 'Col'
 
 
 class Button(pydantic.BaseModel, extra='forbid'):
@@ -96,7 +84,7 @@ class Button(pydantic.BaseModel, extra='forbid'):
     html_type: typing.Literal['button', 'submit', 'reset'] | None = pydantic.Field(
         default=None, serialization_alias='htmlType'
     )
-    class_name: extra.ClassName | None = None
+    class_name: extra.ClassName = None
     type: typing.Literal['Button'] = 'Button'
 
 
@@ -105,14 +93,14 @@ class Link(pydantic.BaseModel, extra='forbid'):
     on_click: events.AnyEvent | None = pydantic.Field(default=None, serialization_alias='onClick')
     mode: typing.Literal['navbar', 'tabs', 'vertical'] | None = None
     active: bool | str | None = None
-    class_name: extra.ClassName | None = None
+    class_name: extra.ClassName = None
     type: typing.Literal['Link'] = 'Link'
 
 
 class LinkList(pydantic.BaseModel, extra='forbid'):
     links: list[Link]
     mode: typing.Literal['tabs', 'vertical'] | None = None
-    class_name: extra.ClassName | None = None
+    class_name: extra.ClassName = None
     type: typing.Literal['LinkList'] = 'LinkList'
 
 
@@ -120,7 +108,7 @@ class Navbar(pydantic.BaseModel, extra='forbid'):
     title: str | None = None
     title_event: events.AnyEvent | None = pydantic.Field(default=None, serialization_alias='titleEvent')
     links: list[Link] = pydantic.Field(default_factory=list)
-    class_name: extra.ClassName | None = None
+    class_name: extra.ClassName = None
     type: typing.Literal['Navbar'] = 'Navbar'
 
 
@@ -130,7 +118,7 @@ class Modal(pydantic.BaseModel, extra='forbid'):
     footer: list[AnyComponent] | None = None
     open_trigger: events.PageEvent | None = pydantic.Field(default=None, serialization_alias='openTrigger')
     open: bool = False
-    class_name: extra.ClassName | None = None
+    class_name: extra.ClassName = None
     type: typing.Literal['Modal'] = 'Modal'
 
 
@@ -140,7 +128,7 @@ class ServerLoad(pydantic.BaseModel, extra='forbid'):
     """
 
     url: str
-    class_name: extra.ClassName | None = None
+    class_name: extra.ClassName = None
     type: typing.Literal['ServerLoad'] = 'ServerLoad'
 
 
@@ -151,8 +139,6 @@ AnyComponent = typing.Annotated[
     | Div
     | Page
     | Heading
-    | Row
-    | Col
     | Button
     | Link
     | LinkList

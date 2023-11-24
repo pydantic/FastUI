@@ -16,7 +16,7 @@ export type FormFieldProps = FormFieldInputProps | FormFieldCheckboxProps | Form
 
 interface FormFieldInputProps extends BaseFormFieldProps {
   type: 'FormFieldInput'
-  htmlType?: 'text' | 'date' | 'datetime-local' | 'time' | 'email' | 'url' | 'file' | 'number'
+  htmlType?: 'text' | 'date' | 'datetime-local' | 'time' | 'email' | 'url' | 'number' | 'password'
   initial?: string | number
   placeholder?: string
 }
@@ -160,7 +160,7 @@ const ErrorDescription: FC<FormFieldProps> = (props) => {
           {description}
         </div>
       ) : null}
-      {error ? <div className={errorClassName}>Error: {error}</div> : null}
+      {error ? <div className={errorClassName}>{error}</div> : null}
     </>
   )
 }
