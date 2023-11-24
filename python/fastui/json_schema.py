@@ -13,8 +13,12 @@ from .components.forms import (
     FormFieldFile,
     FormFieldInput,
     FormFieldSelect,
+    FormFieldSelectSearch,
     InputHtmlType,
 )
+
+if typing.TYPE_CHECKING:
+    from .forms import SelectSearchOption
 
 __all__ = 'model_json_schema_to_fields', 'SchemeLocation'
 
@@ -49,6 +53,12 @@ class JsonSchemaStringEnum(JsonSchemaBase, total=False):
     enum: Required[list[str]]
     default: str
     enum_display_values: dict[str, str]
+
+
+class JsonSchemaStringSearch(JsonSchemaBase, total=False):
+    type: Required[Literal['string']]
+    search_url: Required[str]
+    initial: SelectSearchOption
 
 
 class JsonSchemaFile(JsonSchemaBase, total=False):
@@ -166,34 +176,44 @@ def json_schema_field_to_field(
             initial=schema.get('default'),
             description=schema.get('description'),
         )
-    elif schema['type'] == 'string' and (enum := schema.get('enum')):
-        enum_display_values = schema.get('enum_display_values', {})
-        return FormFieldSelect(
-            name=name,
-            title=title,
-            required=required,
-            choices=[(v, enum_display_values.get(v) or as_title(v)) for v in enum],
-            initial=schema.get('default'),
-            description=schema.get('description'),
-        )
-    elif schema['type'] == 'string' and schema.get('format') == 'binary':
-        return FormFieldFile(
-            name=name,
-            title=title,
-            required=required,
-            multiple=schema.get('multiple', False),
-            accept=schema.get('accept'),
-            description=schema.get('description'),
-        )
-    else:
-        return FormFieldInput(
-            name=name,
-            title=title,
-            html_type=input_html_type(schema),
-            required=required,
-            initial=schema.get('default'),
-            description=schema.get('description'),
-        )
+    elif schema['type'] == 'string':
+        if enum := schema.get('enum'):
+            enum_display_values = schema.get('enum_display_values', {})
+            return FormFieldSelect(
+                name=name,
+                title=title,
+                required=required,
+                choices=[(v, enum_display_values.get(v) or as_title(v)) for v in enum],
+                initial=schema.get('default'),
+                description=schema.get('description'),
+            )
+        elif schema.get('format') == 'binary':
+            return FormFieldFile(
+                name=name,
+                title=title,
+                required=required,
+                multiple=schema.get('multiple', False),
+                accept=schema.get('accept'),
+                description=schema.get('description'),
+            )
+        elif search_url := schema.get('search_url'):
+            return FormFieldSelectSearch(
+                search_url=search_url,
+                name=name,
+                title=title,
+                required=required,
+                initial=schema.get('initial'),
+                description=schema.get('description'),
+            )
+
+    return FormFieldInput(
+        name=name,
+        title=title,
+        html_type=input_html_type(schema),
+        required=required,
+        initial=schema.get('default'),
+        description=schema.get('description'),
+    )
 
 
 def loc_to_title(loc: SchemeLocation) -> str:

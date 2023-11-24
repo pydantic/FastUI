@@ -3,6 +3,7 @@ interface Request {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
   // defaults to 200
   expectedStatus?: number[]
+  query?: Record<string, string>
   json?: Record<string, any>
   formData?: FormData
   headers?: Record<string, string>
@@ -22,6 +23,7 @@ export async function request({
   url,
   method,
   headers,
+  query,
   json,
   expectedStatus,
   formData,
@@ -37,6 +39,11 @@ export async function request({
     // don't set content-type, let the browser set it
     init.body = formData
     method = method ?? 'POST'
+  }
+
+  if (query) {
+    const searchParams = new URLSearchParams(query)
+    url = `${url}?${searchParams.toString()}`
   }
 
   headers = headers ?? {}
@@ -98,4 +105,16 @@ function responseOk(response: Response, expectedStatus?: number[]) {
 
 export function unreachable(msg: string, unexpectedValue: never, args?: any) {
   console.warn(msg, { unexpectedValue }, args)
+}
+
+type Callable = (...args: any[]) => void
+
+export function debounce<C extends Callable>(fn: C, delay: number): C {
+  let timerId: any
+
+  // @ts-expect-error - functions are contravariant, so this should be fine, no idea how to satisfy TS though
+  return (...args: any[]) => {
+    clearTimeout(timerId)
+    timerId = setTimeout(() => fn(...args), delay)
+  }
 }

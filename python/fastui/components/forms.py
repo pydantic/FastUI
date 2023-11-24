@@ -5,6 +5,7 @@ from abc import ABC
 
 import pydantic
 
+from .. import forms
 from . import extra
 
 if typing.TYPE_CHECKING:
@@ -41,13 +42,21 @@ class FormFieldSelect(BaseFormField):
     type: typing.Literal['FormFieldSelect'] = 'FormFieldSelect'
 
 
+class FormFieldSelectSearch(BaseFormField):
+    search_url: str = pydantic.Field(serialization_alias='searchUrl')
+    initial: forms.SelectSearchOption | None = None
+    # time in ms to debounce requests by, defaults to 300ms
+    debounce: int | None = None
+    type: typing.Literal['FormFieldSelectSearch'] = 'FormFieldSelectSearch'
+
+
 class FormFieldFile(BaseFormField):
     multiple: bool = False
     accept: str | None = None
     type: typing.Literal['FormFieldFile'] = 'FormFieldFile'
 
 
-FormField = FormFieldInput | FormFieldCheckbox | FormFieldSelect | FormFieldFile
+FormField = FormFieldInput | FormFieldCheckbox | FormFieldSelect | FormFieldSelectSearch | FormFieldFile
 
 
 class BaseForm(pydantic.BaseModel, ABC, defer_build=True):

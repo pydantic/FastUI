@@ -39,6 +39,7 @@ export const classNameGenerator: ClassNameGenerator = ({ props, fullPath, subEle
     case 'FormFieldInput':
     case 'FormFieldCheckbox':
     case 'FormFieldSelect':
+    case 'FormFieldSelectSearch':
     case 'FormFieldFile':
       return formFieldClassName(props, subElement)
     case 'Navbar':
@@ -54,6 +55,8 @@ function formFieldClassName(props: components.FormFieldProps, subElement?: strin
       return props.error ? 'is-invalid form-control' : 'form-control'
     case 'select':
       return 'form-select'
+    case 'select-search':
+      return ''
     case 'label':
       return { 'form-label': true, 'fw-bold': props.required }
     case 'error':

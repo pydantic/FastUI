@@ -10,7 +10,7 @@ from fastui import AnyComponent, FastUI, dev_fastapi_app
 from fastui import components as c
 from fastui.display import Display
 from fastui.events import BackEvent, GoToEvent, PageEvent
-from fastui.forms import FormFile, FormResponse, fastui_form
+from fastui.forms import FormFile, FormResponse, SelectSearchResponse, fastui_form
 from pydantic import BaseModel, Field, SecretStr, field_validator
 from pydantic_core import PydanticCustomError
 
@@ -94,7 +94,6 @@ assert x + y == 3
                     ],
                     open_trigger=PageEvent(name='dynamic-modal'),
                 ),
-                c.Code(text='print("Hello World")', language='python'),
             ],
         ),
     ]
@@ -165,12 +164,26 @@ class MyFormModel(BaseModel):
     # enabled: bool = False
     # nested: NestedFormModel
     password: SecretStr
+    search: str = Field(json_schema_extra={'search_url': '/api/search'})
 
     @field_validator('name')
     def name_validator(cls, v: str) -> str:
         if v[0].islower():
             raise PydanticCustomError('lower', 'Name must start with a capital letter')
         return v
+
+
+@app.get('/api/search', response_model=SelectSearchResponse)
+async def search_view(q: str) -> SelectSearchResponse:
+    print(f'Searching for {q}')
+    await asyncio.sleep(1)
+    return SelectSearchResponse(
+        options=[
+            {'value': '1', 'label': f'Option 1 - {q}'},
+            {'value': '2', 'label': 'Option 2'},
+            {'value': '3', 'label': 'Option 3'},
+        ]
+    )
 
 
 @app.get('/api/form', response_model=FastUI, response_model_exclude_none=True)

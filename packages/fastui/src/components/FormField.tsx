@@ -1,6 +1,9 @@
 import { FC, useState } from 'react'
+import AsyncSelect from 'react-select/async'
+import { StylesConfig } from 'react-select'
 
 import { ClassName, useClassName } from '../hooks/className'
+import { request, debounce } from '../tools'
 
 interface BaseFormFieldProps {
   name: string
@@ -12,7 +15,12 @@ interface BaseFormFieldProps {
   className?: ClassName
 }
 
-export type FormFieldProps = FormFieldInputProps | FormFieldCheckboxProps | FormFieldSelectProps | FormFieldFileProps
+export type FormFieldProps =
+  | FormFieldInputProps
+  | FormFieldCheckboxProps
+  | FormFieldSelectProps
+  | FormFieldSelectSearchProps
+  | FormFieldFileProps
 
 interface FormFieldInputProps extends BaseFormFieldProps {
   type: 'FormFieldInput'
@@ -23,7 +31,6 @@ interface FormFieldInputProps extends BaseFormFieldProps {
 
 export const FormFieldInputComp: FC<FormFieldInputProps> = (props) => {
   const { name, placeholder, required, htmlType, locked } = props
-  const [value, setValue] = useState(props.initial ?? '')
 
   return (
     <div className={useClassName(props)}>
@@ -31,8 +38,7 @@ export const FormFieldInputComp: FC<FormFieldInputProps> = (props) => {
       <input
         type={htmlType}
         className={useClassName(props, { el: 'input' })}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
+        defaultValue={props.initial}
         id={inputId(props)}
         name={name}
         required={required}
@@ -101,6 +107,57 @@ export const FormFieldSelectComp: FC<FormFieldSelectProps> = (props) => {
           </option>
         ))}
       </select>
+      <ErrorDescription {...props} />
+    </div>
+  )
+}
+
+interface SearchOption {
+  value: string
+  label: string
+}
+
+interface FormFieldSelectSearchProps extends BaseFormFieldProps {
+  type: 'FormFieldSelectSearch'
+  searchUrl: string
+  debounce?: number
+  initial?: SearchOption
+}
+
+// cheat slightly and match bootstrap 😱
+const styles: StylesConfig = {
+  control: (base) => ({ ...base, borderRadius: '0.375rem', border: '1px solid #dee2e6' }),
+}
+
+type OptionsCallback = (options: SearchOption[]) => void
+
+export const FormFieldSelectSearchComp: FC<FormFieldSelectSearchProps> = (props) => {
+  const { name, required, locked, searchUrl, initial } = props
+
+  const loadOptions = debounce((inputValue: string, callback: OptionsCallback) => {
+    request({
+      url: searchUrl,
+      query: { q: inputValue },
+    }).then(([, response]) => {
+      const { options } = response as { options: SearchOption[] }
+      callback(options)
+    })
+  }, props.debounce ?? 300)
+
+  return (
+    <div className={useClassName(props)}>
+      <Label {...props} />
+      <AsyncSelect
+        id={inputId(props)}
+        className={useClassName(props, { el: 'select-search' })}
+        loadOptions={loadOptions}
+        defaultValue={initial}
+        name={name}
+        required={required}
+        isDisabled={locked}
+        aria-describedby={descId(props)}
+        styles={styles}
+      />
       <ErrorDescription {...props} />
     </div>
   )

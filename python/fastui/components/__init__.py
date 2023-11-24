@@ -25,8 +25,6 @@ __all__ = (
     'Div',
     'Page',
     'Heading',
-    'Row',
-    'Col',
     'Button',
     'Modal',
     'ModelForm',
