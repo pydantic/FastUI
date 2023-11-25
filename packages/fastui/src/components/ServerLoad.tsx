@@ -2,7 +2,7 @@ import { FC, useContext, useEffect, useState } from 'react'
 
 import { ErrorContext } from '../hooks/error'
 import { ReloadContext } from '../hooks/dev'
-import { request } from '../tools'
+import { useRequest } from '../tools'
 import { DefaultLoading } from '../DefaultLoading'
 import { ConfigContext } from '../hooks/config'
 
@@ -19,9 +19,9 @@ export const ServerLoadComp: FC<ServerLoadProps> = ({ url }) => {
   const { error, setError } = useContext(ErrorContext)
   const reloadValue = useContext(ReloadContext)
   const { rootUrl, pathSendMode, Loading } = useContext(ConfigContext)
+  const request = useRequest()
 
   useEffect(() => {
-    // setViewData(null)
     let fetchUrl = rootUrl
     if (pathSendMode === 'query') {
       fetchUrl += `?path=${encodeURIComponent(url)}`
@@ -31,15 +31,12 @@ export const ServerLoadComp: FC<ServerLoadProps> = ({ url }) => {
 
     const promise = request({ url: fetchUrl })
 
-    promise
-      .then(([, data]) => setComponentProps(data as FastProps[]))
-      .catch((e) => {
-        setError({ title: 'Request Error', description: e.message })
-      })
+    promise.then(([, data]) => setComponentProps(data as FastProps[]))
+
     return () => {
       promise.then(() => null)
     }
-  }, [rootUrl, pathSendMode, url, setError, reloadValue])
+  }, [rootUrl, pathSendMode, url, setError, reloadValue, request])
 
   if (componentProps === null) {
     if (error) {

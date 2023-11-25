@@ -8,12 +8,16 @@ from operator import itemgetter
 import fastapi
 import pydantic
 import pydantic_core
+import typing_extensions
 from pydantic_core import core_schema
 from starlette import datastructures as ds
 
-from . import events, json_schema
+from . import events
 
-__all__ = 'FastUIForm', 'fastui_form', 'FormResponse', 'FormFile'
+if typing.TYPE_CHECKING:
+    from . import json_schema
+
+__all__ = 'FastUIForm', 'fastui_form', 'FormResponse', 'FormFile', 'SelectSearchResponse', 'SelectOption'
 
 FormModel = typing.TypeVar('FormModel', bound=pydantic.BaseModel)
 
@@ -119,12 +123,16 @@ class FormFile:
 
         raise TypeError(f'FormFile can only be used with `UploadFile` or `list[UploadFile]`, not {source_type}')
 
-    def __get_pydantic_json_schema__(self, core_schema_: core_schema.CoreSchema, *_args) -> json_schema.JsonSchemaFile:
-        function = core_schema_.get('function', {}).get('function')
-        multiple = bool(function and function.__name__ == 'validate_multiple')
-        s = json_schema.JsonSchemaFile(type='string', format='binary', multiple=multiple)
+    def __get_pydantic_json_schema__(self, core_schema_: core_schema.CoreSchema, *_args) -> json_schema.JsonSchemaAny:
+        from . import json_schema
+
+        s = json_schema.JsonSchemaFile(type='string', format='binary')
         if self.accept:
             s['accept'] = self.accept
+
+        function = core_schema_.get('function', {}).get('function')
+        if function and function.__name__ == 'validate_multiple':
+            s = json_schema.JsonSchemaArray(type='array', items=s)
         return s
 
     def __repr__(self):
@@ -134,6 +142,20 @@ class FormFile:
 class FormResponse(pydantic.BaseModel):
     event: events.AnyEvent
     type: typing.Literal['FormResponse'] = 'FormResponse'
+
+
+class SelectOption(typing_extensions.TypedDict):
+    value: str
+    label: str
+
+
+class SelectGroup(typing_extensions.TypedDict):
+    label: str
+    options: list[SelectOption]
+
+
+class SelectSearchResponse(pydantic.BaseModel):
+    options: list[SelectOption] | list[SelectGroup]
 
 
 NestedDict: typing.TypeAlias = 'dict[str | int, NestedDict | str | list[str] | ds.UploadFile | list[ds.UploadFile]]'

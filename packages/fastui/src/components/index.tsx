@@ -17,6 +17,7 @@ import {
   FormFieldInputComp,
   FormFieldCheckboxComp,
   FormFieldSelectComp,
+  FormFieldSelectSearchComp,
   FormFieldFileComp,
 } from './FormField'
 import { ButtonComp, ButtonProps } from './button'
@@ -136,10 +137,12 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <FormFieldInputComp {...props} />
       case 'FormFieldCheckbox':
         return <FormFieldCheckboxComp {...props} />
-      case 'FormFieldSelect':
-        return <FormFieldSelectComp {...props} />
       case 'FormFieldFile':
         return <FormFieldFileComp {...props} />
+      case 'FormFieldSelect':
+        return <FormFieldSelectComp {...props} />
+      case 'FormFieldSelectSearch':
+        return <FormFieldSelectSearchComp {...props} />
       case 'Modal':
         return <ModalComp {...props} />
       case 'Table':

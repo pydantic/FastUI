@@ -5,6 +5,7 @@ from abc import ABC
 
 import pydantic
 
+from .. import forms
 from . import extra
 
 if typing.TYPE_CHECKING:
@@ -35,19 +36,30 @@ class FormFieldCheckbox(BaseFormField):
     type: typing.Literal['FormFieldCheckbox'] = 'FormFieldCheckbox'
 
 
-class FormFieldSelect(BaseFormField):
-    choices: list[tuple[str, str]]
-    initial: str | None = None
-    type: typing.Literal['FormFieldSelect'] = 'FormFieldSelect'
-
-
 class FormFieldFile(BaseFormField):
-    multiple: bool = False
+    multiple: bool | None = None
     accept: str | None = None
     type: typing.Literal['FormFieldFile'] = 'FormFieldFile'
 
 
-FormField = FormFieldInput | FormFieldCheckbox | FormFieldSelect | FormFieldFile
+class FormFieldSelect(BaseFormField):
+    options: list[forms.SelectOption] | list[forms.SelectGroup]
+    multiple: bool | None = None
+    initial: str | None = None
+    vanilla: bool | None = None
+    type: typing.Literal['FormFieldSelect'] = 'FormFieldSelect'
+
+
+class FormFieldSelectSearch(BaseFormField):
+    search_url: str = pydantic.Field(serialization_alias='searchUrl')
+    multiple: bool | None = None
+    initial: forms.SelectOption | None = None
+    # time in ms to debounce requests by, defaults to 300ms
+    debounce: int | None = None
+    type: typing.Literal['FormFieldSelectSearch'] = 'FormFieldSelectSearch'
+
+
+FormField = FormFieldInput | FormFieldCheckbox | FormFieldFile | FormFieldSelect | FormFieldSelectSearch
 
 
 class BaseForm(pydantic.BaseModel, ABC, defer_build=True):

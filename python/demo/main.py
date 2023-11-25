@@ -1,6 +1,7 @@
 from __future__ import annotations as _annotations
 
 import asyncio
+from collections import defaultdict
 from datetime import date
 from enum import StrEnum
 from typing import Annotated, Literal
@@ -10,7 +11,8 @@ from fastui import AnyComponent, FastUI, dev_fastapi_app
 from fastui import components as c
 from fastui.display import Display
 from fastui.events import BackEvent, GoToEvent, PageEvent
-from fastui.forms import FormFile, FormResponse, fastui_form
+from fastui.forms import FormFile, FormResponse, SelectSearchResponse, fastui_form
+from httpx import AsyncClient
 from pydantic import BaseModel, Field, SecretStr, field_validator
 from pydantic_core import PydanticCustomError
 
@@ -94,7 +96,6 @@ assert x + y == 3
                     ],
                     open_trigger=PageEvent(name='dynamic-modal'),
                 ),
-                c.Code(text='print("Hello World")', language='python'),
             ],
         ),
     ]
@@ -153,8 +154,9 @@ class ToolEnum(StrEnum):
 
 class MyFormModel(BaseModel):
     name: str = Field(default='foobar', title='Name', min_length=3, description='Your name')
-    # tool: ToolEnum = Field(json_schema_extra={'enum_display_values': {'hammer': 'Big Hammer'}})
-    task: Literal['build', 'destroy'] | None = None
+    # tool: ToolEnum = Field(json_schema_extra={'enum_labels': {'hammer': 'Big Hammer'}})
+    task: Literal['build', 'destroy'] | None = 'build'
+    tasks: set[Literal['build', 'destroy']]
     profile_pic: Annotated[UploadFile, FormFile(accept='image/*', max_size=16_000)]
     # profile_pics: Annotated[list[UploadFile], FormFile(accept='image/*', max_size=400)]
     # binary: bytes
@@ -165,12 +167,37 @@ class MyFormModel(BaseModel):
     # enabled: bool = False
     # nested: NestedFormModel
     password: SecretStr
+    search: str = Field(json_schema_extra={'search_url': '/api/search'})
+    searches: list[str] = Field(json_schema_extra={'search_url': '/api/search'})
 
     @field_validator('name')
     def name_validator(cls, v: str) -> str:
         if v[0].islower():
             raise PydanticCustomError('lower', 'Name must start with a capital letter')
         return v
+
+
+@app.get('/api/search', response_model=SelectSearchResponse)
+async def search_view(q: str) -> SelectSearchResponse:
+    async with AsyncClient() as client:
+        path_ends = f'name/{q}' if q else 'all'
+        r = await client.get(f'https://restcountries.com/v3.1/{path_ends}')
+        if r.status_code == 404:
+            options = []
+        else:
+            r.raise_for_status()
+            data = r.json()
+            if path_ends == 'all':
+                # if we got all, filter to the 20 most populous countries
+                data.sort(key=lambda x: x['population'], reverse=True)
+                data = data[0:20]
+                data.sort(key=lambda x: x['name']['common'])
+
+            regions = defaultdict(list)
+            for co in data:
+                regions[co['region']].append({'value': co['cca3'], 'label': co['name']['common']})
+            options = [{'label': k, 'options': v} for k, v in regions.items()]
+    return SelectSearchResponse(options=options)
 
 
 @app.get('/api/form', response_model=FastUI, response_model_exclude_none=True)
