@@ -18,7 +18,9 @@ from .components.forms import (
 )
 
 if typing.TYPE_CHECKING:
-    from .forms import SelectSearchOption
+    from .forms import SelectOption
+else:
+    SelectOption = dict
 
 __all__ = 'model_json_schema_to_fields', 'SchemeLocation'
 
@@ -45,20 +47,20 @@ class JsonSchemaBase(TypedDict, total=False):
 class JsonSchemaString(JsonSchemaBase):
     type: Required[Literal['string']]
     default: str
-    format: Literal['date', 'date-time', 'time', 'email', 'uri', 'uuid']
+    format: Literal['date', 'date-time', 'time', 'email', 'uri', 'uuid', 'password']
 
 
 class JsonSchemaStringEnum(JsonSchemaBase, total=False):
     type: Required[Literal['string']]
     enum: Required[list[str]]
     default: str
-    enum_display_values: dict[str, str]
+    enum_labels: dict[str, str]
 
 
 class JsonSchemaStringSearch(JsonSchemaBase, total=False):
     type: Required[Literal['string']]
     search_url: Required[str]
-    initial: SelectSearchOption
+    initial: SelectOption
 
 
 class JsonSchemaFile(JsonSchemaBase, total=False):
@@ -95,6 +97,7 @@ class JsonSchemaNumber(JsonSchemaBase, total=False):
 
 class JsonSchemaArray(JsonSchemaBase, total=False):
     type: Required[Literal['array']]
+    uniqueItems: bool
     minItems: int
     maxItems: int
     prefixItems: list[JsonSchemaAny]
@@ -177,13 +180,13 @@ def json_schema_field_to_field(
             description=schema.get('description'),
         )
     elif schema['type'] == 'string':
-        if enum := schema.get('enum'):
-            enum_display_values = schema.get('enum_display_values', {})
+        if schema.get('enum'):
+            schema = cast(JsonSchemaStringEnum, schema)
             return FormFieldSelect(
                 name=name,
                 title=title,
                 required=required,
-                choices=[(v, enum_display_values.get(v) or as_title(v)) for v in enum],
+                options=select_options(schema),
                 initial=schema.get('default'),
                 description=schema.get('description'),
             )
@@ -222,8 +225,28 @@ def loc_to_title(loc: SchemeLocation) -> str:
 
 def json_schema_array_to_fields(
     schema: JsonSchemaArray, loc: SchemeLocation, title: list[str], required: bool, defs: JsonSchemaDefs
-) -> list[FormField]:
+) -> Iterable[FormField]:
+    items_schema = schema.get('items')
+    if items_schema and items_schema.get('type') == 'string':
+        if items_schema.get('enum'):
+            items_schema = cast(JsonSchemaStringEnum, items_schema)
+            name = loc_to_name(loc)
+            yield FormFieldSelect(
+                name=name,
+                title=title,
+                required=required,
+                options=select_options(items_schema),
+                # TODO initial with multiple
+                multiple=True,
+                description=items_schema.get('description'),
+            )
+            return
     raise NotImplementedError('todo')
+
+
+def select_options(schema: JsonSchemaStringEnum) -> list[SelectOption]:
+    enum_labels = schema.get('enum_labels', {})
+    return [SelectOption(value=v, label=enum_labels.get(v) or as_title(v)) for v in schema['enum']]
 
 
 def loc_to_name(loc: SchemeLocation) -> str:
@@ -258,6 +281,11 @@ def deference_json_schema(
         if len(any_of) == 2 and sum(s.get('type') == 'null' for s in any_of) == 1:
             # If anyOf is a single type and null, then it is optional
             not_null_schema = next(s for s in any_of if s.get('type') != 'null')
+
+            # is there anything else apart from `default` we need to copy over?
+            if default := schema.get('default'):
+                not_null_schema['default'] = default  # type: ignore
+
             return deference_json_schema(not_null_schema, defs, False)
         else:
             raise NotImplementedError('`anyOf` schemas which are not simply `X | None` are not yet supported')

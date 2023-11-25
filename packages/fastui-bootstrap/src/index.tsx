@@ -55,7 +55,7 @@ function formFieldClassName(props: components.FormFieldProps, subElement?: strin
       return props.error ? 'is-invalid form-control' : 'form-control'
     case 'select':
       return 'form-select'
-    case 'select-search':
+    case 'select-react':
       return ''
     case 'label':
       return { 'form-label': true, 'fw-bold': props.required }

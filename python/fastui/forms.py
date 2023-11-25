@@ -17,7 +17,7 @@ from . import events
 if typing.TYPE_CHECKING:
     from . import json_schema
 
-__all__ = 'FastUIForm', 'fastui_form', 'FormResponse', 'FormFile', 'SelectSearchResponse', 'SelectSearchOption'
+__all__ = 'FastUIForm', 'fastui_form', 'FormResponse', 'FormFile', 'SelectSearchResponse', 'SelectOption'
 
 FormModel = typing.TypeVar('FormModel', bound=pydantic.BaseModel)
 
@@ -142,18 +142,18 @@ class FormResponse(pydantic.BaseModel):
     type: typing.Literal['FormResponse'] = 'FormResponse'
 
 
-class SelectSearchOption(typing_extensions.TypedDict):
+class SelectOption(typing_extensions.TypedDict):
     value: str
     label: str
 
 
-class SelectSearchGroup(typing_extensions.TypedDict):
+class SelectGroup(typing_extensions.TypedDict):
     label: str
-    options: list[SelectSearchOption]
+    options: list[SelectOption]
 
 
 class SelectSearchResponse(pydantic.BaseModel):
-    options: list[SelectSearchOption] | list[SelectSearchGroup]
+    options: list[SelectOption] | list[SelectGroup]
 
 
 NestedDict: typing.TypeAlias = 'dict[str | int, NestedDict | str | list[str] | ds.UploadFile | list[ds.UploadFile]]'

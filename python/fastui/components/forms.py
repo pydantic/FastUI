@@ -37,14 +37,17 @@ class FormFieldCheckbox(BaseFormField):
 
 
 class FormFieldSelect(BaseFormField):
-    choices: list[tuple[str, str]]
+    options: list[forms.SelectOption] | list[forms.SelectGroup]
+    multiple: bool | None = None
     initial: str | None = None
+    vanilla: bool | None = None
     type: typing.Literal['FormFieldSelect'] = 'FormFieldSelect'
 
 
 class FormFieldSelectSearch(BaseFormField):
     search_url: str = pydantic.Field(serialization_alias='searchUrl')
-    initial: forms.SelectSearchOption | None = None
+    multiple: bool | None = None
+    initial: forms.SelectOption | None = None
     # time in ms to debounce requests by, defaults to 300ms
     debounce: int | None = None
     type: typing.Literal['FormFieldSelectSearch'] = 'FormFieldSelectSearch'
