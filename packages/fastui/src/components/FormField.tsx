@@ -18,9 +18,9 @@ interface BaseFormFieldProps {
 export type FormFieldProps =
   | FormFieldInputProps
   | FormFieldCheckboxProps
+  | FormFieldFileProps
   | FormFieldSelectProps
   | FormFieldSelectSearchProps
-  | FormFieldFileProps
 
 interface FormFieldInputProps extends BaseFormFieldProps {
   type: 'FormFieldInput'
@@ -71,6 +71,33 @@ export const FormFieldCheckboxComp: FC<FormFieldCheckboxProps> = (props) => {
         required={required}
         disabled={locked}
         aria-describedby={descId(props)}
+      />
+      <ErrorDescription {...props} />
+    </div>
+  )
+}
+
+interface FormFieldFileProps extends BaseFormFieldProps {
+  type: 'FormFieldFile'
+  multiple?: boolean
+  accept?: string
+}
+
+export const FormFieldFileComp: FC<FormFieldFileProps> = (props) => {
+  const { name, required, locked, multiple, accept } = props
+
+  return (
+    <div className={useClassName(props)}>
+      <Label {...props} />
+      <input
+        type="file"
+        className={useClassName(props, { el: 'input' })}
+        id={inputId(props)}
+        name={name}
+        required={required}
+        disabled={locked}
+        multiple={multiple ?? false}
+        accept={accept}
       />
       <ErrorDescription {...props} />
     </div>
@@ -229,33 +256,6 @@ export const FormFieldSelectSearchComp: FC<FormFieldSelectSearchProps> = (props)
         isLoading={isLoading}
         aria-describedby={descId(props)}
         styles={styles}
-      />
-      <ErrorDescription {...props} />
-    </div>
-  )
-}
-
-interface FormFieldFileProps extends BaseFormFieldProps {
-  type: 'FormFieldFile'
-  multiple: boolean
-  accept?: string
-}
-
-export const FormFieldFileComp: FC<FormFieldFileProps> = (props) => {
-  const { name, required, locked, multiple, accept } = props
-
-  return (
-    <div className={useClassName(props)}>
-      <Label {...props} />
-      <input
-        type="file"
-        className={useClassName(props, { el: 'input' })}
-        id={inputId(props)}
-        name={name}
-        required={required}
-        disabled={locked}
-        multiple={multiple}
-        accept={accept}
       />
       <ErrorDescription {...props} />
     </div>

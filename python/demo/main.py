@@ -168,6 +168,7 @@ class MyFormModel(BaseModel):
     # nested: NestedFormModel
     password: SecretStr
     search: str = Field(json_schema_extra={'search_url': '/api/search'})
+    searches: list[str] = Field(json_schema_extra={'search_url': '/api/search'})
 
     @field_validator('name')
     def name_validator(cls, v: str) -> str:

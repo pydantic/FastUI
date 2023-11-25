@@ -36,6 +36,12 @@ class FormFieldCheckbox(BaseFormField):
     type: typing.Literal['FormFieldCheckbox'] = 'FormFieldCheckbox'
 
 
+class FormFieldFile(BaseFormField):
+    multiple: bool | None = None
+    accept: str | None = None
+    type: typing.Literal['FormFieldFile'] = 'FormFieldFile'
+
+
 class FormFieldSelect(BaseFormField):
     options: list[forms.SelectOption] | list[forms.SelectGroup]
     multiple: bool | None = None
@@ -53,13 +59,7 @@ class FormFieldSelectSearch(BaseFormField):
     type: typing.Literal['FormFieldSelectSearch'] = 'FormFieldSelectSearch'
 
 
-class FormFieldFile(BaseFormField):
-    multiple: bool = False
-    accept: str | None = None
-    type: typing.Literal['FormFieldFile'] = 'FormFieldFile'
-
-
-FormField = FormFieldInput | FormFieldCheckbox | FormFieldSelect | FormFieldSelectSearch | FormFieldFile
+FormField = FormFieldInput | FormFieldCheckbox | FormFieldFile | FormFieldSelect | FormFieldSelectSearch
 
 
 class BaseForm(pydantic.BaseModel, ABC, defer_build=True):
