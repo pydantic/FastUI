@@ -46,6 +46,8 @@ export const classNameGenerator: ClassNameGenerator = ({ props, fullPath, subEle
       return navbarClassName(subElement)
     case 'Link':
       return linkClassName(props, fullPath)
+    case 'LinkList':
+      return linkListClassName(props, subElement)
   }
 }
 
@@ -89,5 +91,22 @@ function navbarClassName(subElement?: string): ClassName {
 }
 
 function linkClassName(props: components.LinkProps, fullPath: string): ClassName {
-  return { active: pathMatch(props.active, fullPath), 'nav-link': props.mode === 'navbar' }
+  return {
+    active: pathMatch(props.active, fullPath),
+    'nav-link': props.mode === 'navbar' || props.mode === 'tabs',
+  }
+}
+
+function linkListClassName(props: components.LinkListProps, subElement?: string): ClassName {
+  if (subElement === 'link-list-item' && props.mode) {
+    return 'nav-item'
+  }
+  switch (props.mode) {
+    case 'tabs':
+      return 'nav nav-underline'
+    case 'vertical':
+      return 'nav flex-column'
+    default:
+      return ''
+  }
 }

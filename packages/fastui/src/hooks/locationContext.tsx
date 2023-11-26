@@ -84,7 +84,7 @@ export function pathMatch(matchPath: string | boolean | undefined, fullPath: str
       const regex = new RegExp(matchPath.slice(6))
       return regex.test(fullPath)
     } else if (matchPath.startsWith('startswith:')) {
-      return fullPath.startsWith(matchPath.slice(12))
+      return fullPath.startsWith(matchPath.slice(11))
     } else {
       return fullPath === matchPath
     }

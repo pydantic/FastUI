@@ -10,7 +10,7 @@ from fastapi import UploadFile
 from fastui import AnyComponent, FastUI, dev_fastapi_app
 from fastui import components as c
 from fastui.display import Display
-from fastui.events import BackEvent, GoToEvent, PageEvent
+from fastui.events import GoToEvent, PageEvent
 from fastui.forms import FormFile, FormResponse, SelectSearchResponse, fastui_form
 from httpx import AsyncClient
 from pydantic import BaseModel, Field, SecretStr, field_validator
@@ -26,7 +26,7 @@ def navbar() -> AnyComponent:
         links=[
             c.Link(components=[c.Text(text='Home')], on_click=GoToEvent(url='/'), active='/'),
             c.Link(components=[c.Text(text='Table')], on_click=GoToEvent(url='/table'), active='/table'),
-            c.Link(components=[c.Text(text='Forms')], on_click=GoToEvent(url='/form'), active='/form'),
+            c.Link(components=[c.Text(text='Forms')], on_click=GoToEvent(url='/form/one'), active='startswith:/form'),
         ],
     )
 
@@ -200,15 +200,34 @@ async def search_view(q: str) -> SelectSearchResponse:
     return SelectSearchResponse(options=options)
 
 
-@app.get('/api/form', response_model=FastUI, response_model_exclude_none=True)
-def form_view() -> list[AnyComponent]:
+@app.get('/api/form/{kind}', response_model=FastUI, response_model_exclude_none=True)
+def form_view(kind: str) -> list[AnyComponent]:
     return [
         navbar(),
         c.PageTitle(text='FastUI Demo - Form Examples'),
         c.Page(
             components=[
                 c.Heading(text='Form'),
-                c.Link(components=[c.Text(text='Back')], on_click=BackEvent()),
+                c.LinkList(
+                    links=[
+                        c.Link(
+                            components=[c.Text(text='Form One')],
+                            on_click=GoToEvent(url='/form/one'),
+                            active='/form/one',
+                        ),
+                        c.Link(
+                            components=[c.Text(text='Form Two')],
+                            on_click=GoToEvent(url='/form/two'),
+                            active='/form/two',
+                        ),
+                        c.Link(
+                            components=[c.Text(text='Form Three')],
+                            on_click=GoToEvent(url='/form/three'),
+                            active='/form/three',
+                        ),
+                    ],
+                    mode='tabs',
+                ),
                 c.ModelForm[MyFormModel](
                     submit_url='/api/form',
                     success_event=PageEvent(name='form_success'),

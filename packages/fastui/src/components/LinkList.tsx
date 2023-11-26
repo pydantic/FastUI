@@ -9,10 +9,15 @@ export interface LinkListProps {
   className?: ClassName
 }
 
-export const LinkListComp = (props: LinkListProps) => (
-  <div className={useClassName(props)}>
-    {props.links.map((link, i) => (
-      <LinkComp key={i} {...link} />
-    ))}
-  </div>
-)
+export const LinkListComp = (props: LinkListProps) => {
+  const itemClassName = useClassName(props, { el: 'link-list-item' })
+  return (
+    <div className={useClassName(props)}>
+      {props.links.map((link, i) => (
+        <div key={i} className={itemClassName}>
+          <LinkComp {...{ ...link, mode: props.mode }} />
+        </div>
+      ))}
+    </div>
+  )
+}
