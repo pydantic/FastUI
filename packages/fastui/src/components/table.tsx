@@ -4,7 +4,7 @@ import type { JsonData } from './Json'
 
 import { DisplayChoices, asTitle } from '../display'
 import { ClassName, useClassName } from '../hooks/className'
-import { AnyEvent } from '../hooks/events'
+import { AnyEvent } from '../events'
 
 import { DisplayComp } from './display'
 import { LinkRender } from './link'

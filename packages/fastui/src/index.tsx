@@ -8,10 +8,9 @@ import { ClassNameContext, ClassNameGenerator } from './hooks/className'
 import { ErrorContextProvider } from './hooks/error'
 import { ConfigContext } from './hooks/config'
 import { FastProps } from './components'
-import { DevReloadProvider } from './hooks/dev'
-
+import { DevReload } from './dev'
 export * as components from './components'
-export * as events from './hooks/events'
+export * as events from './events'
 export type { DisplayChoices } from './display'
 export type { ClassName, ClassNameGenerator } from './hooks/className'
 export { useClassName, renderClassName } from './hooks/className'
@@ -36,15 +35,14 @@ export function FastUI(props: FastUIProps) {
   return (
     <div className="fastui">
       <ErrorContextProvider DisplayError={DisplayError}>
-        <DevReloadProvider enabled={devMode}>
-          <LocationProvider>
-            <ClassNameContext.Provider value={classNameGenerator ?? null}>
-              <ConfigContext.Provider value={rest}>
-                <FastUIController />
-              </ConfigContext.Provider>
-            </ClassNameContext.Provider>
-          </LocationProvider>
-        </DevReloadProvider>
+        <LocationProvider>
+          <ClassNameContext.Provider value={classNameGenerator ?? null}>
+            <ConfigContext.Provider value={rest}>
+              <DevReload enabled={devMode} />
+              <FastUIController />
+            </ConfigContext.Provider>
+          </ClassNameContext.Provider>
+        </LocationProvider>
       </ErrorContextProvider>
     </div>
   )

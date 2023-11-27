@@ -1,10 +1,11 @@
 import { useContext, useState, useEffect, useCallback } from 'react'
 
-import { LocationContext } from './locationContext'
+import { LocationContext } from './hooks/locationContext'
 
 export interface PageEvent {
   type: 'page'
   name: string
+  pushPath?: string
 }
 
 export interface GoToEvent {
@@ -33,6 +34,9 @@ export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
     const { type } = event
     switch (type) {
       case 'page':
+        if (event.pushPath) {
+          location.gotoCosmetic(event.pushPath)
+        }
         document.dispatchEvent(new CustomEvent(pageEventType(event)))
         break
       case 'go-to':
@@ -45,6 +49,17 @@ export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
   }
 
   return { fireEvent }
+}
+
+export const loadEvent = 'fastui:load'
+
+export interface LoadEventDetail {
+  path?: string
+  reloadValue?: number
+}
+
+export function fireLoadEvent(detail: LoadEventDetail) {
+  document.dispatchEvent(new CustomEvent(loadEvent, { detail }))
 }
 
 export function useEventListenerToggle(event?: PageEvent, initialState = false): [boolean, () => void] {

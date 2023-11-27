@@ -138,3 +138,7 @@ export function debounce<C extends Callable>(fn: C, delay: number): C {
     timerId = setTimeout(() => fn(...args), delay)
   }
 }
+
+export async function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}

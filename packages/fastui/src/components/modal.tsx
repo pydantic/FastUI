@@ -1,7 +1,7 @@
 import { FC, useEffect } from 'react'
 
 import { ClassName } from '../hooks/className'
-import { PageEvent, useEventListenerToggle } from '../hooks/events'
+import { PageEvent, useEventListenerToggle } from '../events'
 
 import { FastProps } from './index'
 

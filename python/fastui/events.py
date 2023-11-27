@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 
 class PageEvent(BaseModel):
     name: str
+    push_path: str | None = Field(default=None, serialization_alias='pushPath')
     type: Literal['page'] = 'page'
 
 

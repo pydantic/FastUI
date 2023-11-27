@@ -146,8 +146,9 @@ class ServerLoad(pydantic.BaseModel, extra='forbid'):
     A component that will be replaced by the server with the component returned by the given URL.
     """
 
-    url: str
-    class_name: extra.ClassName = None
+    path: str
+    load_trigger: events.PageEvent | None = pydantic.Field(default=None, serialization_alias='loadTrigger')
+    components: list[AnyComponent] | None = None
     type: typing.Literal['ServerLoad'] = 'ServerLoad'
 
 
