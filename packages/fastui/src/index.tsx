@@ -15,6 +15,7 @@ export type { DisplayChoices } from './display'
 export type { ClassName, ClassNameGenerator } from './hooks/className'
 export { useClassName, renderClassName } from './hooks/className'
 export { pathMatch } from './hooks/locationContext'
+export { EventContextProvider } from './hooks/eventContext'
 
 export type CustomRender = (props: FastProps) => FC | void
 

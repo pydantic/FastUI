@@ -136,7 +136,7 @@ class Modal(pydantic.BaseModel, extra='forbid'):
     body: list[AnyComponent]
     footer: list[AnyComponent] | None = None
     open_trigger: events.PageEvent | None = pydantic.Field(default=None, serialization_alias='openTrigger')
-    open: bool = False
+    open_context: events.EventContext | None = pydantic.Field(default=None, serialization_alias='openContext')
     class_name: extra.ClassName = None
     type: typing.Literal['Modal'] = 'Modal'
 

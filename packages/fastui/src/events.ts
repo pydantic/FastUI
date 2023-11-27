@@ -1,11 +1,14 @@
 import { useContext, useState, useEffect, useCallback } from 'react'
 
 import { LocationContext } from './hooks/locationContext'
+import { ContextType } from './hooks/eventContext'
 
 export interface PageEvent {
   type: 'page'
   name: string
   pushPath?: string
+  context?: ContextType
+  clear?: boolean
 }
 
 export interface GoToEvent {
@@ -18,6 +21,11 @@ export interface BackEvent {
 }
 
 export type AnyEvent = PageEvent | GoToEvent | BackEvent
+
+export interface PageEventDetail {
+  clear: boolean
+  context?: ContextType
+}
 
 function pageEventType(event: PageEvent): string {
   return `fastui:${event.name}`
@@ -33,12 +41,14 @@ export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
     console.debug('firing event', event)
     const { type } = event
     switch (type) {
-      case 'page':
+      case 'page': {
         if (event.pushPath) {
           location.gotoCosmetic(event.pushPath)
         }
-        document.dispatchEvent(new CustomEvent(pageEventType(event)))
+        const detail: PageEventDetail = { clear: event.clear || false, context: event.context }
+        document.dispatchEvent(new CustomEvent(pageEventType(event), { detail }))
         break
+      }
       case 'go-to':
         location.goto(event.url)
         break
@@ -62,10 +72,20 @@ export function fireLoadEvent(detail: LoadEventDetail) {
   document.dispatchEvent(new CustomEvent(loadEvent, { detail }))
 }
 
-export function useEventListenerToggle(event?: PageEvent, initialState = false): [boolean, () => void] {
-  const [state, setState] = useState(initialState)
+export function usePageEventListen(
+  event?: PageEvent,
+  initialContext: ContextType | null = null,
+): { eventContext: ContextType | null; clear: () => void } {
+  const [eventContext, setEventContext] = useState<ContextType | null>(initialContext)
 
-  const toggle = useCallback(() => setState((state) => !state), [])
+  const onEvent = useCallback((e: Event) => {
+    const { context, clear } = (e as CustomEvent<PageEventDetail>).detail
+    if (clear) {
+      setEventContext(null)
+    } else {
+      setEventContext(context ?? {})
+    }
+  }, [])
 
   useEffect(() => {
     if (!event) {
@@ -74,9 +94,12 @@ export function useEventListenerToggle(event?: PageEvent, initialState = false):
 
     const eventType = pageEventType(event)
 
-    document.addEventListener(eventType, toggle)
-    return () => document.removeEventListener(eventType, toggle)
-  }, [event, toggle])
+    document.addEventListener(eventType, onEvent)
+    return () => document.removeEventListener(eventType, onEvent)
+  }, [event, onEvent])
 
-  return [state, toggle]
+  return {
+    eventContext,
+    clear: useCallback(() => setEventContext(null), []),
+  }
 }

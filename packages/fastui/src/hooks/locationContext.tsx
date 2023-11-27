@@ -99,7 +99,6 @@ export function LocationProvider({ children }: { children: ReactNode }) {
 }
 
 export function pathMatch(matchPath: string | boolean | undefined, fullPath: string): boolean {
-  console.log({ matchPath, fullPath })
   if (typeof matchPath === 'string') {
     if (matchPath.startsWith('regex:')) {
       const regex = new RegExp(matchPath.slice(6))

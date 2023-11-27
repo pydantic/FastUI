@@ -84,7 +84,7 @@ assert x + y == 3
                     title='Static Modal',
                     body=[c.Paragraph(text='This is some static content in a modal.')],
                     footer=[
-                        c.Button(text='Close', on_click=PageEvent(name='static-modal')),
+                        c.Button(text='Close', on_click=PageEvent(name='static-modal', clear=True)),
                     ],
                     open_trigger=PageEvent(name='static-modal'),
                 ),
@@ -92,7 +92,7 @@ assert x + y == 3
                     title='Dynamic Modal',
                     body=[c.ServerLoad(path='/modal')],
                     footer=[
-                        c.Button(text='Close', on_click=PageEvent(name='dynamic-modal')),
+                        c.Button(text='Close', on_click=PageEvent(name='dynamic-modal', clear=True)),
                     ],
                     open_trigger=PageEvent(name='dynamic-modal'),
                 ),
@@ -202,7 +202,6 @@ async def search_view(q: str) -> SelectSearchResponse:
 
 @app.get('/api/form/{kind}', response_model=FastUI, response_model_exclude_none=True)
 def form_view(kind: Literal['one', 'two', 'three']) -> list[AnyComponent]:
-    other_form = 'two' if kind == 'one' else 'one'
     return [
         navbar(),
         c.PageTitle(text='FastUI Demo - Form Examples'),
@@ -213,24 +212,24 @@ def form_view(kind: Literal['one', 'two', 'three']) -> list[AnyComponent]:
                     links=[
                         c.Link(
                             components=[c.Text(text='Form One')],
-                            on_click=GoToEvent(url='/form/one'),
+                            on_click=PageEvent(name='change-form', push_path='/form/one', context={'kind': 'one'}),
                             active='/form/one',
                         ),
                         c.Link(
                             components=[c.Text(text='Form Two')],
-                            on_click=PageEvent(name='change-form', push_path='/form/two'),
+                            on_click=PageEvent(name='change-form', push_path='/form/two', context={'kind': 'two'}),
                             active='/form/two',
                         ),
-                        # c.Link(
-                        #     components=[c.Text(text='Form Three')],
-                        #     on_click=GoToEvent(url='/form/three'),
-                        #     active='/form/three',
-                        # ),
+                        c.Link(
+                            components=[c.Text(text='Form Three')],
+                            on_click=PageEvent(name='change-form', push_path='/form/three', context={'kind': 'three'}),
+                            active='/form/three',
+                        ),
                     ],
                     mode='tabs',
                 ),
                 c.ServerLoad(
-                    path=f'/form/content/{other_form}',
+                    path='/form/content/{kind}',
                     load_trigger=PageEvent(name='change-form'),
                     components=form_content(kind),
                 ),

@@ -1,11 +1,15 @@
-from typing import Annotated, Literal
+from typing import Annotated, Literal, TypeAlias
 
 from pydantic import BaseModel, Field
+
+EventContext: TypeAlias = dict[str, str | int]
 
 
 class PageEvent(BaseModel):
     name: str
     push_path: str | None = Field(default=None, serialization_alias='pushPath')
+    context: EventContext | None = None
+    clear: bool | None = None
     type: Literal['page'] = 'page'
 
 

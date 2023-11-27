@@ -4,7 +4,8 @@ import { ErrorContext } from '../hooks/error'
 import { useRequest } from '../tools'
 import { DefaultLoading } from '../DefaultLoading'
 import { ConfigContext } from '../hooks/config'
-import { PageEvent, useEventListenerToggle } from '../events'
+import { PageEvent, usePageEventListen } from '../events'
+import { EventContextProvider, useEventContext } from '../hooks/eventContext'
 
 import { AnyCompList, FastProps } from './index'
 
@@ -27,10 +28,14 @@ const ServerLoadDefer: FC<{ path: string; components: FastProps[]; loadTrigger?:
   path,
   loadTrigger,
 }) => {
-  const [loadFromServer] = useEventListenerToggle(loadTrigger)
+  const { eventContext } = usePageEventListen(loadTrigger)
 
-  if (loadFromServer) {
-    return <ServerLoadDirect path={path} />
+  if (eventContext) {
+    return (
+      <EventContextProvider context={eventContext}>
+        <ServerLoadDirect path={path} />
+      </EventContextProvider>
+    )
   } else {
     return <AnyCompList propsList={components} />
   }
@@ -42,13 +47,15 @@ export const ServerLoadDirect: FC<{ path: string; devReload?: number }> = ({ pat
   const { error } = useContext(ErrorContext)
   const { rootUrl, pathSendMode, Loading } = useContext(ConfigContext)
   const request = useRequest()
+  const applyContext = useEventContext()
 
   useEffect(() => {
     let fetchUrl = rootUrl
+    const requestPath = applyContext(path)
     if (pathSendMode === 'query') {
-      fetchUrl += `?path=${encodeURIComponent(path)}`
+      fetchUrl += `?path=${encodeURIComponent(requestPath)}`
     } else {
-      fetchUrl += path
+      fetchUrl += requestPath
     }
     const promise = request({ url: fetchUrl })
     promise.then(([, data]) => setComponentProps(data as FastProps[]))
@@ -56,7 +63,7 @@ export const ServerLoadDirect: FC<{ path: string; devReload?: number }> = ({ pat
     return () => {
       promise.then(() => null)
     }
-  }, [rootUrl, pathSendMode, path, request, devReload])
+  }, [rootUrl, pathSendMode, path, applyContext, request, devReload])
 
   if (componentProps === null) {
     if (error) {
