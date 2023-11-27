@@ -1,9 +1,10 @@
 import { FC, useEffect } from 'react'
 
-import { ClassName } from '../hooks/className'
-import { PageEvent, useEventListenerToggle } from '../hooks/events'
+import type { FastProps } from './index'
+import type { ContextType } from '../hooks/eventContext'
 
-import { FastProps } from './index'
+import { ClassName } from '../hooks/className'
+import { PageEvent, usePageEventListen } from '../events'
 
 export interface ModalProps {
   type: 'Modal'
@@ -11,23 +12,24 @@ export interface ModalProps {
   body: FastProps[]
   footer?: FastProps[]
   openTrigger?: PageEvent
-  open?: boolean
+  openContext?: ContextType
   className?: ClassName
 }
 
 export const ModalComp: FC<ModalProps> = (props) => {
-  const { title, openTrigger } = props
+  const { title, openTrigger, openContext } = props
 
-  const [open, toggle] = useEventListenerToggle(openTrigger, props.open)
+  const { eventContext, clear } = usePageEventListen(openTrigger, openContext)
+  const open = !!eventContext
 
   useEffect(() => {
     if (open) {
       setTimeout(() => {
         alert(`${title}\n\nNote: modals are not implemented by pure FastUI, implement a component for 'ModalProps'.`)
-        toggle()
+        clear()
       })
     }
-  }, [open, title, toggle])
+  }, [open, title, clear])
 
   return <></>
 }

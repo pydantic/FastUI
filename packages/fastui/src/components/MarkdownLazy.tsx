@@ -5,7 +5,7 @@ import remarkGfm from 'remark-gfm'
 import type { MarkdownProps } from './Markdown'
 
 import { useClassName } from '../hooks/className'
-import { useFireEvent, AnyEvent } from '../hooks/events'
+import { useFireEvent, AnyEvent } from '../events'
 import { useCustomRender } from '../hooks/config'
 
 import { CodeProps, CodeComp } from './Code'

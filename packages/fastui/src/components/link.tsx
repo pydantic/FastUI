@@ -1,7 +1,7 @@
 import { FC, MouseEventHandler, ReactNode } from 'react'
 
 import { ClassName, useClassName } from '../hooks/className'
-import { useFireEvent, AnyEvent } from '../hooks/events'
+import { useFireEvent, AnyEvent } from '../events'
 
 import { FastProps, AnyCompList } from './index'
 

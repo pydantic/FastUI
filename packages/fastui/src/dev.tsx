@@ -1,19 +1,30 @@
-import { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react'
+import { FC, useContext, useEffect } from 'react'
 
-import { ErrorContext } from './error'
+import { sleep } from './tools'
+import { ErrorContext } from './hooks/error'
+import { fireLoadEvent } from './events'
 
-export const ReloadContext = createContext<number>(0)
 let devConnected = false
 
-export const DevReloadProvider: FC<{ children: ReactNode; enabled?: boolean }> = ({ children, enabled }) => {
-  const [value, setValue] = useState<number>(0)
-  const { setError } = useContext(ErrorContext)
+export const DevReload: FC<{ enabled?: boolean }> = ({ enabled }) => {
   if (typeof enabled === 'undefined') {
     enabled = process.env.NODE_ENV === 'development'
   }
 
+  if (enabled) {
+    return <DevReloadActive />
+  } else {
+    return <></>
+  }
+}
+
+const DevReloadActive = () => {
+  const { setError } = useContext(ErrorContext)
+
   useEffect(() => {
     let listening = true
+    let lastValue = 0
+
     async function listen() {
       let count = 0
       let failCount = 0
@@ -32,17 +43,20 @@ export const DevReloadProvider: FC<{ children: ReactNode; enabled?: boolean }> =
         }
         // await like this means we wait for the entire response to be received
         const text = await response.text()
-        const value = parseInt(text.replace(/\./g, '')) || 0
         if (response.status === 404) {
           console.log('dev reload endpoint not found, disabling dev reload')
           return count
         } else if (response.ok) {
           failCount = 0
-          // wait long enough for the server to be back online
-          await sleep(300)
-          console.debug('dev reloading')
-          setValue(value)
-          setError(null)
+          const value = parseInt(text.replace(/\./g, '')) || 0
+          if (value !== lastValue) {
+            lastValue = value
+            // wait long enough for the server to be back online
+            await sleep(300)
+            console.debug('dev reloading')
+            fireLoadEvent({ reloadValue: value })
+            setError(null)
+          }
         } else {
           failCount++
           await sleep(2000)
@@ -50,7 +64,7 @@ export const DevReloadProvider: FC<{ children: ReactNode; enabled?: boolean }> =
       }
     }
 
-    if (enabled && !devConnected) {
+    if (!devConnected) {
       devConnected = true
       listen().then((count) => count > 0 && console.debug('dev reload disconnected.'))
       return () => {
@@ -58,11 +72,6 @@ export const DevReloadProvider: FC<{ children: ReactNode; enabled?: boolean }> =
         devConnected = false
       }
     }
-  }, [enabled, setError])
-
-  return <ReloadContext.Provider value={value}>{children}</ReloadContext.Provider>
-}
-
-async function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
+  }, [setError])
+  return <></>
 }

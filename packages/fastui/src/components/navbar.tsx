@@ -1,5 +1,5 @@
 import { ClassName, useClassName } from '../hooks/className'
-import { AnyEvent } from '../hooks/events'
+import { AnyEvent } from '../events'
 
 import { LinkProps, LinkComp, LinkRender } from './link'
 

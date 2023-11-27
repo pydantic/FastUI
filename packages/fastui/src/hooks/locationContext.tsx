@@ -1,5 +1,7 @@
 import { createContext, ReactNode, useEffect, useState, useCallback, useContext } from 'react'
 
+import { fireLoadEvent } from '../events'
+
 import { ErrorContext } from './error'
 
 function parseLocation(): string {
@@ -11,6 +13,8 @@ function parseLocation(): string {
 export interface LocationState {
   fullPath: string
   goto: (pushPath: string) => void
+  // like `goto`, but does not fire `fireLoadEvent`
+  gotoCosmetic: (pushPath: string) => void
   back: () => void
 }
 
@@ -19,6 +23,7 @@ const initialPath = parseLocation()
 const initialState = {
   fullPath: initialPath,
   goto: () => null,
+  gotoCosmetic: () => null,
   back: () => null,
 }
 
@@ -32,6 +37,7 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     const fullPath = parseLocation()
     setError(null)
     setFullPath(fullPath)
+    fireLoadEvent({ path: fullPath })
   }, [setError, setFullPath])
 
   useEffect(() => {
@@ -41,34 +47,48 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     }
   }, [onPopState])
 
-  const value: LocationState = {
-    fullPath,
-    goto: useCallback(
-      (pushPath: string) => {
-        let newPath = pushPath
-        if (!newPath.startsWith('/')) {
-          // get rid of `.` and `./` at the beginning of the path
-          if (newPath.startsWith('.')) {
+  const pushPath = useCallback(
+    (newPath: string): string => {
+      if (!newPath.startsWith('/')) {
+        // get rid of `.` and `./` at the beginning of the path
+        if (newPath.startsWith('.')) {
+          newPath = newPath.slice(1)
+          if (newPath.startsWith('/')) {
             newPath = newPath.slice(1)
-            if (newPath.startsWith('/')) {
-              newPath = newPath.slice(1)
-            }
-          }
-
-          const oldPath = new URL(window.location.href).pathname
-          // we're now sure newPath does not start with a `/`
-          if (oldPath.endsWith('/')) {
-            newPath = oldPath + newPath
-          } else {
-            newPath = oldPath + '/' + newPath
           }
         }
 
-        window.history.pushState(null, '', newPath)
-        setError(null)
-        setFullPath(newPath)
+        const oldPath = new URL(window.location.href).pathname
+        // we're now sure newPath does not start with a `/`
+        if (oldPath.endsWith('/')) {
+          newPath = oldPath + newPath
+        } else {
+          newPath = oldPath + '/' + newPath
+        }
+      }
+
+      window.history.pushState(null, '', newPath)
+      setError(null)
+      setFullPath(newPath)
+      return newPath
+    },
+    [setError],
+  )
+
+  const value: LocationState = {
+    fullPath,
+    goto: useCallback(
+      (newPath: string) => {
+        const path = pushPath(newPath)
+        fireLoadEvent({ path })
       },
-      [setError],
+      [pushPath],
+    ),
+    gotoCosmetic: useCallback(
+      (newPath: string) => {
+        pushPath(newPath)
+      },
+      [pushPath],
     ),
     back: useCallback(() => {
       window.history.back()
@@ -84,7 +104,7 @@ export function pathMatch(matchPath: string | boolean | undefined, fullPath: str
       const regex = new RegExp(matchPath.slice(6))
       return regex.test(fullPath)
     } else if (matchPath.startsWith('startswith:')) {
-      return fullPath.startsWith(matchPath.slice(12))
+      return fullPath.startsWith(matchPath.slice(11))
     } else {
       return fullPath === matchPath
     }

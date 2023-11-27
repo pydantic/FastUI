@@ -10,7 +10,7 @@ from fastapi import UploadFile
 from fastui import AnyComponent, FastUI, dev_fastapi_app
 from fastui import components as c
 from fastui.display import Display
-from fastui.events import BackEvent, GoToEvent, PageEvent
+from fastui.events import GoToEvent, PageEvent
 from fastui.forms import FormFile, FormResponse, SelectSearchResponse, fastui_form
 from httpx import AsyncClient
 from pydantic import BaseModel, Field, SecretStr, field_validator
@@ -26,7 +26,7 @@ def navbar() -> AnyComponent:
         links=[
             c.Link(components=[c.Text(text='Home')], on_click=GoToEvent(url='/'), active='/'),
             c.Link(components=[c.Text(text='Table')], on_click=GoToEvent(url='/table'), active='/table'),
-            c.Link(components=[c.Text(text='Forms')], on_click=GoToEvent(url='/form'), active='/form'),
+            c.Link(components=[c.Text(text='Forms')], on_click=GoToEvent(url='/form/one'), active='startswith:/form'),
         ],
     )
 
@@ -84,15 +84,15 @@ assert x + y == 3
                     title='Static Modal',
                     body=[c.Paragraph(text='This is some static content in a modal.')],
                     footer=[
-                        c.Button(text='Close', on_click=PageEvent(name='static-modal')),
+                        c.Button(text='Close', on_click=PageEvent(name='static-modal', clear=True)),
                     ],
                     open_trigger=PageEvent(name='static-modal'),
                 ),
                 c.Modal(
                     title='Dynamic Modal',
-                    body=[c.ServerLoad(url='/modal')],
+                    body=[c.ServerLoad(path='/modal')],
                     footer=[
-                        c.Button(text='Close', on_click=PageEvent(name='dynamic-modal')),
+                        c.Button(text='Close', on_click=PageEvent(name='dynamic-modal', clear=True)),
                     ],
                     open_trigger=PageEvent(name='dynamic-modal'),
                 ),
@@ -200,15 +200,50 @@ async def search_view(q: str) -> SelectSearchResponse:
     return SelectSearchResponse(options=options)
 
 
-@app.get('/api/form', response_model=FastUI, response_model_exclude_none=True)
-def form_view() -> list[AnyComponent]:
+@app.get('/api/form/{kind}', response_model=FastUI, response_model_exclude_none=True)
+def form_view(kind: Literal['one', 'two', 'three']) -> list[AnyComponent]:
     return [
         navbar(),
         c.PageTitle(text='FastUI Demo - Form Examples'),
         c.Page(
             components=[
                 c.Heading(text='Form'),
-                c.Link(components=[c.Text(text='Back')], on_click=BackEvent()),
+                c.LinkList(
+                    links=[
+                        c.Link(
+                            components=[c.Text(text='Form One')],
+                            on_click=PageEvent(name='change-form', push_path='/form/one', context={'kind': 'one'}),
+                            active='/form/one',
+                        ),
+                        c.Link(
+                            components=[c.Text(text='Form Two')],
+                            on_click=PageEvent(name='change-form', push_path='/form/two', context={'kind': 'two'}),
+                            active='/form/two',
+                        ),
+                        c.Link(
+                            components=[c.Text(text='Form Three')],
+                            on_click=PageEvent(name='change-form', push_path='/form/three', context={'kind': 'three'}),
+                            active='/form/three',
+                        ),
+                    ],
+                    mode='tabs',
+                ),
+                c.ServerLoad(
+                    path='/form/content/{kind}',
+                    load_trigger=PageEvent(name='change-form'),
+                    components=form_content(kind),
+                ),
+            ]
+        ),
+    ]
+
+
+@app.get('/api/form/content/{kind}', response_model=FastUI, response_model_exclude_none=True)
+def form_content(kind: Literal['one', 'two', 'three']):
+    match kind:
+        case 'one':
+            return [
+                c.Heading(text='Form One', level=2),
                 c.ModelForm[MyFormModel](
                     submit_url='/api/form',
                     success_event=PageEvent(name='form_success'),
@@ -218,8 +253,24 @@ def form_view() -> list[AnyComponent]:
                     # ]
                 ),
             ]
-        ),
-    ]
+        case 'two':
+            return [
+                c.Heading(text='Form Two', level=2),
+                c.ModelForm[MyFormModel](
+                    submit_url='/api/form',
+                    success_event=PageEvent(name='form_success'),
+                ),
+            ]
+        case 'three':
+            return [
+                c.Heading(text='Form Three', level=2),
+                c.ModelForm[MyFormModel](
+                    submit_url='/api/form',
+                    success_event=PageEvent(name='form_success'),
+                ),
+            ]
+        case _:
+            raise ValueError(f'Invalid kind {kind!r}')
 
 
 @app.post('/api/form')

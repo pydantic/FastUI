@@ -1,7 +1,7 @@
 import { FC, FormEvent, useState } from 'react'
 
 import { ClassName, useClassName } from '../hooks/className'
-import { useFireEvent, AnyEvent } from '../hooks/events'
+import { useFireEvent, AnyEvent } from '../events'
 import { useRequest } from '../tools'
 
 import { FastProps, AnyCompList } from './index'
