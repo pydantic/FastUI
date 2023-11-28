@@ -69,11 +69,13 @@ const Cell: FC<CellProps> = ({ row, column }) => {
   if (event) {
     if (event.type === 'go-to') {
       // for go-to events, substitute the row values into the url
-      const url = subKeys(event.url, row)
-      if (url === null) {
-        event = null
-      } else {
-        event.url = url
+      if (event.url) {
+        const url = subKeys(event.url, row)
+        if (url === null) {
+          event = null
+        } else {
+          event.url = url
+        }
       }
     }
   }

@@ -25,13 +25,13 @@ export const PaginationComp: FC<PaginationProps> = (props) => {
       type: 'Link',
       components: [{ type: 'Text', text: 'Previous' }],
       locked: page !== 1,
-      onClick: { type: 'go-to', url: `?page=${page - 1}` },
+      onClick: { type: 'go-to', query: { page: page - 1 } },
     },
     {
       type: 'Link',
       components: [{ type: 'Text', text: 'Next' }],
       locked: page !== pageCount,
-      onClick: { type: 'go-to', url: `?page=${page + 1}` },
+      onClick: { type: 'go-to', query: { page: page + 1 } },
     },
   ]
 

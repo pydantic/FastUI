@@ -15,7 +15,8 @@ class PageEvent(BaseModel):
 
 class GoToEvent(BaseModel):
     # can be a path or a full URL
-    url: str
+    url: str | None = None
+    query: dict[str, str | float | None] | None = None
     type: Literal['go-to'] = 'go-to'
 
 

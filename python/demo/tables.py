@@ -50,7 +50,9 @@ class City(BaseModel):
 def get_cities() -> list[City]:
     cities_adapter = TypeAdapter(list[City])
     cities_file = Path(__file__).parent / 'cities.json'
-    return cities_adapter.validate_json(cities_file.read_bytes())
+    cities = cities_adapter.validate_json(cities_file.read_bytes())
+    cities.sort(key=lambda city: city.population, reverse=True)
+    return cities
 
 
 @router.get('', response_model=FastUI, response_model_exclude_none=True)
@@ -68,8 +70,9 @@ def cities_view(page: int = 1) -> list[AnyComponent]:
                 c.Table[City](
                     data=cities[(page - 1) * page_size : page * page_size],
                     columns=[
-                        c.TableColumn(field='city', on_click=GoToEvent(url='/more/{id}/'), width_percent=50),
-                        c.TableColumn(field='country', width_percent=50),
+                        c.TableColumn(field='city', on_click=GoToEvent(url='/more/{id}/'), width_percent=33),
+                        c.TableColumn(field='country', width_percent=33),
+                        c.TableColumn(field='population', width_percent=33),
                     ],
                 ),
                 c.Pagination(page=page, page_size=page_size, total=len(cities)),

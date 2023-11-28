@@ -13,7 +13,8 @@ export interface PageEvent {
 
 export interface GoToEvent {
   type: 'go-to'
-  url: string
+  url?: string
+  query?: Record<string, string | number | null>
 }
 
 export interface BackEvent {
@@ -50,7 +51,12 @@ export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
         break
       }
       case 'go-to':
-        location.goto(event.url)
+        if (event.url) {
+          location.goto(event.url)
+        }
+        if (event.query) {
+          location.setQuery(event.query)
+        }
         break
       case 'back':
         location.back()

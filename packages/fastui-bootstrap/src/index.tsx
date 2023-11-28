@@ -35,7 +35,7 @@ export const classNameGenerator: ClassNameGenerator = ({ props, fullPath, subEle
     case 'Button':
       return 'btn btn-primary'
     case 'Table':
-      return 'table table-striped'
+      return 'table table-striped table-bordered'
     case 'Form':
     case 'ModelForm':
       return formClassName(subElement)

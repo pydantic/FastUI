@@ -29,11 +29,11 @@ export const Pagination: FC<components.PaginationProps> = (props) => {
     },
   ]
 
-  if (page > 5) {
+  if (page > 4) {
     links.push({ Display: () => <>...</> })
   }
 
-  for (let p = page - 3; p <= page + 3; p++) {
+  for (let p = page - 2; p <= page + 2; p++) {
     if (p <= 1 || p >= pageCount) continue
     links.push({
       Display: () => <>{p}</>,
@@ -82,7 +82,12 @@ const PaginationLink: FC<Link> = ({ Display, ariaLabel, locked, active, page }) 
     )
   }
   const className = renderClassName({ 'page-link': true, disabled: locked && !active, active } as ClassName)
-  const onClick = { type: 'go-to', url: `?page=${page}` } as events.GoToEvent
+  let onClick: events.GoToEvent
+  if (page === 1) {
+    onClick = { type: 'go-to', query: { page: null } }
+  } else {
+    onClick = { type: 'go-to', query: { page } }
+  }
   return (
     <li className="page-item">
       <components.LinkRender onClick={onClick} className={className} locked={locked || active} ariaLabel={ariaLabel}>

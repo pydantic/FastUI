@@ -1,6 +1,7 @@
-import { FC, MouseEventHandler, ReactNode } from 'react'
+import { FC, MouseEventHandler, ReactNode, useContext } from 'react'
 
 import { ClassName, useClassName } from '../hooks/className'
+import { LocationContext } from '../hooks/locationContext'
 import { useFireEvent, AnyEvent } from '../events'
 
 import { FastProps, AnyCompList } from './index'
@@ -33,10 +34,15 @@ export const LinkRender: FC<LinkRenderProps> = (props) => {
   const { className, ariaLabel, children, onClick, locked } = props
 
   const { fireEvent } = useFireEvent()
+  const { computeQuery } = useContext(LocationContext)
 
   let href = locked ? undefined : '#'
   if (!locked && onClick && onClick.type === 'go-to') {
-    href = onClick.url
+    if (onClick.url) {
+      href = onClick.url
+    } else if (onClick.query) {
+      href = computeQuery(onClick.query)
+    }
   }
 
   const clickHandler: MouseEventHandler<HTMLAnchorElement> = (e) => {
