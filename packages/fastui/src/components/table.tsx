@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, CSSProperties } from 'react'
 
 import type { JsonData } from './Json'
 
@@ -14,6 +14,7 @@ interface ColumnProps {
   display?: DisplayChoices
   title?: string
   onClick?: AnyEvent
+  widthPercent?: number
   className?: ClassName
 }
 
@@ -34,7 +35,9 @@ export const TableComp: FC<TableProps> = (props) => {
       <thead>
         <tr>
           {columns.map((col, id) => (
-            <th key={id}>{col.title ?? asTitle(col.field)}</th>
+            <th key={id} style={colWidth(col.widthPercent)}>
+              {col.title ?? asTitle(col.field)}
+            </th>
           ))}
         </tr>
       </thead>
@@ -50,6 +53,8 @@ export const TableComp: FC<TableProps> = (props) => {
     </table>
   )
 }
+
+const colWidth = (w: number | undefined): CSSProperties | undefined => (w ? { width: `${w}%` } : undefined)
 
 interface CellProps {
   row: Row

@@ -33,7 +33,7 @@ classifiers = [
 ]
 requires-python = ">=3.8"
 dependencies = [
-    "pydantic>=2.5.0b1",
+    "pydantic>=2.5.2",
     "fastapi>=0.104.0",
 ]
 dynamic = ["version"]

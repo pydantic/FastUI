@@ -60,7 +60,7 @@ export function LocationProvider({ children }: { children: ReactNode }) {
 
         const oldPath = new URL(window.location.href).pathname
         // we're now sure newPath does not start with a `/`
-        if (oldPath.endsWith('/')) {
+        if (oldPath.endsWith('/') || newPath.startsWith('?')) {
           newPath = oldPath + newPath
         } else {
           newPath = oldPath + '/' + newPath

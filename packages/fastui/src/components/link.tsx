@@ -8,43 +8,46 @@ import { FastProps, AnyCompList } from './index'
 export interface LinkProps {
   type: 'Link'
   components: FastProps[]
-  mode?: 'navbar' | 'tabs' | 'vertical'
+  mode?: 'navbar' | 'tabs' | 'vertical' | 'pagination'
   active?: boolean | string
+  locked?: boolean
   onClick?: AnyEvent
   className?: ClassName
 }
 
 export const LinkComp: FC<LinkProps> = (props) => (
-  <LinkRender className={useClassName(props)} onClick={props.onClick}>
+  <LinkRender className={useClassName(props)} onClick={props.onClick} locked={props.locked}>
     <AnyCompList propsList={props.components} />
   </LinkRender>
 )
 
 interface LinkRenderProps {
   children: ReactNode
-  mode?: 'navbar' | 'tabs' | 'vertical'
-  active?: boolean | string
+  locked?: boolean
   onClick?: AnyEvent
   className?: string
+  ariaLabel?: string
 }
 
 export const LinkRender: FC<LinkRenderProps> = (props) => {
-  const { className, children, onClick } = props
+  const { className, ariaLabel, children, onClick, locked } = props
 
   const { fireEvent } = useFireEvent()
 
-  let href = '#'
-  if (onClick && onClick.type === 'go-to') {
+  let href = locked ? undefined : '#'
+  if (!locked && onClick && onClick.type === 'go-to') {
     href = onClick.url
   }
 
   const clickHandler: MouseEventHandler<HTMLAnchorElement> = (e) => {
     e.preventDefault()
-    fireEvent(onClick)
+    if (!locked) {
+      fireEvent(onClick)
+    }
   }
 
   return (
-    <a href={href} className={className} onClick={clickHandler}>
+    <a href={href} className={className} onClick={clickHandler} aria-label={ariaLabel} aria-disabled={locked}>
       {children}
     </a>
   )
