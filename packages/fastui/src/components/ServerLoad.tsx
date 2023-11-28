@@ -1,7 +1,7 @@
-import { FC, useContext, useEffect, useState } from 'react'
+import { FC, useCallback, useContext, useEffect, useState } from 'react'
 
 import { ErrorContext } from '../hooks/error'
-import { useRequest } from '../tools'
+import { useRequest, useSSE } from '../tools'
 import { DefaultLoading } from '../DefaultLoading'
 import { ConfigContext } from '../hooks/config'
 import { PageEvent, usePageEventListen } from '../events'
@@ -14,26 +14,30 @@ export interface ServerLoadProps {
   path: string
   components?: FastProps[]
   loadTrigger?: PageEvent
+  sse?: boolean
 }
-export const ServerLoadComp: FC<ServerLoadProps> = ({ path, components, loadTrigger }) => {
+export const ServerLoadComp: FC<ServerLoadProps> = ({ path, components, loadTrigger, sse }) => {
   if (components) {
-    return <ServerLoadDefer path={path} components={components} loadTrigger={loadTrigger} />
+    return <ServerLoadDefer path={path} components={components} loadTrigger={loadTrigger} sse={sse} />
+  } else if (sse) {
+    return <ServerLoadSSE path={path} />
   } else {
-    return <ServerLoadDirect path={path} />
+    return <ServerLoadFetch path={path} />
   }
 }
 
-const ServerLoadDefer: FC<{ path: string; components: FastProps[]; loadTrigger?: PageEvent }> = ({
+const ServerLoadDefer: FC<{ path: string; components: FastProps[]; loadTrigger?: PageEvent; sse?: boolean }> = ({
   components,
   path,
   loadTrigger,
+  sse,
 }) => {
   const { eventContext } = usePageEventListen(loadTrigger)
 
   if (eventContext) {
     return (
       <EventContextProvider context={eventContext}>
-        <ServerLoadDirect path={path} />
+        {sse ? <ServerLoadSSE path={path} /> : <ServerLoadFetch path={path} />}
       </EventContextProvider>
     )
   } else {
@@ -41,31 +45,39 @@ const ServerLoadDefer: FC<{ path: string; components: FastProps[]; loadTrigger?:
   }
 }
 
-export const ServerLoadDirect: FC<{ path: string; devReload?: number }> = ({ path, devReload }) => {
+export const ServerLoadFetch: FC<{ path: string; devReload?: number }> = ({ path, devReload }) => {
   const [componentProps, setComponentProps] = useState<FastProps[] | null>(null)
 
-  const { error } = useContext(ErrorContext)
-  const { rootUrl, pathSendMode, Loading } = useContext(ConfigContext)
+  const url = useServerUrl(path)
   const request = useRequest()
-  const applyContext = useEventContext()
 
   useEffect(() => {
-    let fetchUrl = rootUrl
-    const requestPath = applyContext(path)
-    if (pathSendMode === 'query') {
-      fetchUrl += `?path=${encodeURIComponent(requestPath)}`
-    } else {
-      fetchUrl += requestPath
-    }
-    const promise = request({ url: fetchUrl })
+    const promise = request({ url })
     promise.then(([, data]) => setComponentProps(data as FastProps[]))
 
     return () => {
       promise.then(() => null)
     }
-  }, [rootUrl, pathSendMode, path, applyContext, request, devReload])
+  }, [url, request, devReload])
 
-  if (componentProps === null) {
+  return <Render propsList={componentProps} />
+}
+
+export const ServerLoadSSE: FC<{ path: string }> = ({ path }) => {
+  const [componentProps, setComponentProps] = useState<FastProps[] | null>(null)
+
+  const url = useServerUrl(path)
+  const onMessage = useCallback((data: any) => setComponentProps(data as FastProps[]), [])
+  useSSE(url, onMessage)
+
+  return <Render propsList={componentProps} />
+}
+
+const Render: FC<{ propsList: FastProps[] | null }> = ({ propsList }) => {
+  const { error } = useContext(ErrorContext)
+  const { Loading } = useContext(ConfigContext)
+
+  if (propsList === null) {
     if (error) {
       return <></>
     } else if (Loading) {
@@ -74,6 +86,18 @@ export const ServerLoadDirect: FC<{ path: string; devReload?: number }> = ({ pat
       return <DefaultLoading />
     }
   } else {
-    return <AnyCompList propsList={componentProps} />
+    return <AnyCompList propsList={propsList} />
+  }
+}
+
+function useServerUrl(path: string): string {
+  const { rootUrl, pathSendMode } = useContext(ConfigContext)
+  const applyContext = useEventContext()
+  const requestPath = applyContext(path)
+
+  if (pathSendMode === 'query') {
+    return `${rootUrl}?path=${encodeURIComponent(requestPath)}`
+  } else {
+    return rootUrl + requestPath
   }
 }
