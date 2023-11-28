@@ -55,15 +55,13 @@ export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
       if (method === 'GOTO') {
         // this seems to work in common cases, but typescript doesn't like it
         const query = new URLSearchParams(formData as any)
-        console.log(Object.fromEntries(query.entries()))
         for (const [k, v] of query.entries()) {
-          console.log(k, v)
           if (v === '') {
             query.delete(k)
           }
         }
         const queryStr = query.toString()
-        goto(queryStr === '' ? submitUrl : `${submitUrl}?${query}`)
+        goto(queryStr === '' ? submitUrl : `${submitUrl}?${queryStr}`)
         setLocked(false)
         return
       }
@@ -106,8 +104,8 @@ export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
   }
 
   const onChange = useCallback(() => {
-    if (submitOnChange) {
-      const formData = new FormData(formRef.current!)
+    if (submitOnChange && formRef.current) {
+      const formData = new FormData(formRef.current)
       submit(formData)
     }
   }, [submitOnChange, submit])
