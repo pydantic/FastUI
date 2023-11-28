@@ -21,7 +21,7 @@ class BaseFormField(pydantic.BaseModel, ABC, defer_build=True):
     error: str | None = None
     locked: bool = False
     description: str | None = None
-    class_name: _class_name.ClassName | None = None
+    class_name: _class_name.ClassName = None
 
 
 class FormFieldInput(BaseFormField):
@@ -46,7 +46,8 @@ class FormFieldSelect(BaseFormField):
     options: list[forms.SelectOption] | list[forms.SelectGroup]
     multiple: bool | None = None
     initial: str | None = None
-    vanilla: bool | None = None
+    vanilla: bool | None = True
+    placeholder: str | None = None
     type: typing.Literal['FormFieldSelect'] = 'FormFieldSelect'
 
 
@@ -56,6 +57,7 @@ class FormFieldSelectSearch(BaseFormField):
     initial: forms.SelectOption | None = None
     # time in ms to debounce requests by, defaults to 300ms
     debounce: int | None = None
+    placeholder: str | None = None
     type: typing.Literal['FormFieldSelectSearch'] = 'FormFieldSelectSearch'
 
 
@@ -64,8 +66,20 @@ FormField = FormFieldInput | FormFieldCheckbox | FormFieldFile | FormFieldSelect
 
 class BaseForm(pydantic.BaseModel, ABC, defer_build=True):
     submit_url: str = pydantic.Field(serialization_alias='submitUrl')
+    initial: dict[str, typing.Any] | None = None
+    method: typing.Literal['POST', 'GOTO', 'GET'] = 'POST'
+    display_mode: typing.Literal['default', 'inline'] | None = pydantic.Field(
+        default=None, serialization_alias='displayMode'
+    )
+    submit_on_change: bool | None = pydantic.Field(default=None, serialization_alias='submitOnChange')
     footer: bool | list[AnyComponent] | None = None
-    class_name: _class_name.ClassName | None = None
+    class_name: _class_name.ClassName = None
+
+    @pydantic.model_validator(mode='after')
+    def default_footer(self) -> typing.Self:
+        if self.footer is None and self.display_mode == 'inline':
+            self.footer = False
+        return self
 
 
 class Form(BaseForm):

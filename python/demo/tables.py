@@ -2,11 +2,13 @@ from datetime import date
 from functools import cache
 from pathlib import Path
 
+import pydantic
 from fastapi import APIRouter
 from fastui import AnyComponent, FastUI
 from fastui import components as c
 from fastui.components.display import DisplayLookup, DisplayMode
 from fastui.events import BackEvent, GoToEvent
+from fastui.forms import FormResponse
 from pydantic import BaseModel, Field, TypeAdapter
 
 from .shared import navbar
@@ -65,16 +67,32 @@ def cities_lookup() -> dict[id, City]:
     return {city.id: city for city in cities_list()}
 
 
+class FilterForm(pydantic.BaseModel):
+    country: str = Field(json_schema_extra={'search_url': '/api/search', 'placeholder': 'Filter by Country...'})
+
+
 @router.get('/cities', response_model=FastUI, response_model_exclude_none=True)
-def cities_view(page: int = 1) -> list[AnyComponent]:
+def cities_view(page: int = 1, country: str | None = None) -> list[AnyComponent]:
     cities = cities_list()
     page_size = 50
+    filter_form_initial = {}
+    if country:
+        cities = [city for city in cities if city.iso3 == country]
+        country_name = cities[0].country if cities else country
+        filter_form_initial['country'] = {'value': country, 'label': country_name}
     return [
         navbar(),
         c.PageTitle(text='FastUI Demo - Table'),
         c.Page(
             components=[
                 *heading('Cities'),
+                c.ModelForm[FilterForm](
+                    submit_url='.',
+                    initial=filter_form_initial,
+                    method='GOTO',
+                    submit_on_change=True,
+                    display_mode='inline',
+                ),
                 c.Table[City](
                     data=cities[(page - 1) * page_size : page * page_size],
                     columns=[
@@ -87,6 +105,11 @@ def cities_view(page: int = 1) -> list[AnyComponent]:
             ]
         ),
     ]
+
+
+@router.get('/cities/query', response_model=FormResponse, response_model_exclude_none=True)
+def cities_view(country: str) -> FormResponse:
+    return FormResponse(event=GoToEvent(url=f'/table/cities?country={country}'))
 
 
 @router.get('/cities/{city_id}', response_model=FastUI, response_model_exclude_none=True)

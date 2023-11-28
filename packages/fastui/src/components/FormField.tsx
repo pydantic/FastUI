@@ -12,7 +12,9 @@ interface BaseFormFieldProps {
   locked: boolean
   error?: string
   description?: string
+  displayMode?: 'default' | 'inline'
   className?: ClassName
+  onChange?: () => void
 }
 
 export type FormFieldProps =
@@ -128,57 +130,82 @@ interface FormFieldSelectProps extends BaseFormFieldProps {
   initial?: string
   multiple?: boolean
   vanilla?: boolean
+  placeholder?: string
 }
 
 export const FormFieldSelectComp: FC<FormFieldSelectProps> = (props) => {
-  const { name, required, locked, options, multiple, initial, vanilla } = props
+  if (props.vanilla) {
+    return <FormFieldSelectVanillaComp {...props} />
+  } else {
+    return <FormFieldSelectReactComp {...props} />
+  }
+}
+
+export const FormFieldSelectVanillaComp: FC<FormFieldSelectProps> = (props) => {
+  const { name, required, locked, options, multiple, initial, placeholder, onChange } = props
 
   const className = useClassName(props)
   const classNameSelect = useClassName(props, { el: 'select' })
+  return (
+    <div className={className}>
+      <Label {...props} />
+      <select
+        id={inputId(props)}
+        className={classNameSelect}
+        defaultValue={initial}
+        multiple={multiple}
+        name={name}
+        required={required}
+        disabled={locked}
+        aria-describedby={descId(props)}
+        placeholder={placeholder}
+        onChange={() => onChange && onChange()}
+      >
+        {multiple ? null : <option></option>}
+        {options.map((option, i) => (
+          <SelectOptionComp key={i} option={option} />
+        ))}
+      </select>
+      <ErrorDescription {...props} />
+    </div>
+  )
+}
+
+export const FormFieldSelectReactComp: FC<FormFieldSelectProps> = (props) => {
+  const { name, required, locked, options, multiple, initial, placeholder, onChange } = props
+
+  const className = useClassName(props)
   const classNameSelectReact = useClassName(props, { el: 'select-react' })
-  if (vanilla) {
-    return (
-      <div className={className}>
-        <Label {...props} />
-        <select
-          id={inputId(props)}
-          className={classNameSelect}
-          defaultValue={initial}
-          multiple={multiple}
-          name={name}
-          required={required}
-          disabled={locked}
-          aria-describedby={descId(props)}
-        >
-          {multiple ? null : <option></option>}
-          {options.map((option, i) => (
-            <SelectOptionComp key={i} option={option} />
-          ))}
-        </select>
-        <ErrorDescription {...props} />
-      </div>
-    )
-  } else {
-    return (
-      <div className={className}>
-        <Label {...props} />
-        <Select
-          id={inputId(props)}
-          className={classNameSelectReact}
-          isMulti={multiple ?? false}
-          isClearable
-          defaultValue={findDefault(options, initial)}
-          name={name}
-          required={required}
-          isDisabled={locked}
-          options={options}
-          aria-describedby={descId(props)}
-          styles={styles}
-        />
-        <ErrorDescription {...props} />
-      </div>
-    )
+
+  const reactSelectOnChanged = () => {
+    // TODO this is a hack to wait for the input to be updated, can we do better?
+    setTimeout(() => {
+      onChange && onChange()
+    }, 50)
   }
+
+  return (
+    <div className={className}>
+      <Label {...props} />
+      <Select
+        id={inputId(props)}
+        classNamePrefix="fastui-react-select"
+        className={classNameSelectReact}
+        isMulti={multiple ?? false}
+        isClearable
+        defaultValue={findDefault(options, initial)}
+        name={name}
+        required={required}
+        isDisabled={locked}
+        options={options}
+        aria-describedby={descId(props)}
+        styles={styles}
+        placeholder={placeholder}
+        onChange={reactSelectOnChanged}
+      />
+      <ErrorDescription {...props} />
+    </div>
+  )
 }
 
 const SelectOptionComp: FC<{ option: SelectOption | SelectGroup }> = ({ option }) => {
@@ -214,10 +241,11 @@ interface FormFieldSelectSearchProps extends BaseFormFieldProps {
   debounce?: number
   initial?: SelectOption
   multiple?: boolean
+  placeholder?: string
 }
 
 export const FormFieldSelectSearchComp: FC<FormFieldSelectSearchProps> = (props) => {
-  const { name, required, locked, searchUrl, initial, multiple } = props
+  const { name, required, locked, searchUrl, initial, multiple, placeholder, onChange } = props
   const [isLoading, setIsLoading] = useState(false)
   const request = useRequest()
 
@@ -237,10 +265,18 @@ export const FormFieldSelectSearchComp: FC<FormFieldSelectSearchProps> = (props)
       })
   }, props.debounce ?? 300)
 
+  const reactSelectOnChanged = () => {
+    // TODO this is a hack to wait for the input to be updated, can we do better?
+    setTimeout(() => {
+      onChange && onChange()
+    }, 50)
+  }
+
   return (
     <div className={useClassName(props)}>
       <Label {...props} />
       <AsyncSelect
+        classNamePrefix="fastui-react-select"
         id={inputId(props)}
         className={useClassName(props, { el: 'select-react' })}
         isMulti={multiple ?? false}
@@ -256,6 +292,8 @@ export const FormFieldSelectSearchComp: FC<FormFieldSelectSearchProps> = (props)
         isLoading={isLoading}
         aria-describedby={descId(props)}
         styles={styles}
+        placeholder={placeholder}
+        onChange={reactSelectOnChanged}
       />
       <ErrorDescription {...props} />
     </div>

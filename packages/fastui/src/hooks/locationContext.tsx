@@ -53,7 +53,9 @@ export function LocationProvider({ children }: { children: ReactNode }) {
 
   const pushPath = useCallback(
     (newPath: string): string => {
-      if (!newPath.startsWith('/')) {
+      if (newPath === '.' || newPath === '') {
+        newPath = stripQuery(fullPath)
+      } else if (!newPath.startsWith('/')) {
         // get rid of `.` and `./` at the beginning of the path
         if (newPath.startsWith('.')) {
           newPath = newPath.slice(1)

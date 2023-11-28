@@ -2,11 +2,11 @@ import { useCallback, useContext, useEffect } from 'react'
 
 import { ErrorContext } from './hooks/error'
 
-export function useRequest(): (args: Request) => Promise<[number, any]> {
+export function useRequest(): (args: RequestArgs) => Promise<[number, any]> {
   const { setError } = useContext(ErrorContext)
 
   return useCallback(
-    async (args: Request) => {
+    async (args: RequestArgs) => {
       try {
         return await request(args)
       } catch (e) {
@@ -36,12 +36,12 @@ export function useSSE(url: string, onMessage: (data: any) => void): void {
   }, [url, setError, onMessage])
 }
 
-interface Request {
+export interface RequestArgs {
   url: string
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
   // defaults to 200
   expectedStatus?: number[]
-  query?: Record<string, string>
+  query?: Record<string, string> | URLSearchParams
   json?: Record<string, any>
   formData?: FormData
   headers?: Record<string, string>
@@ -65,7 +65,7 @@ async function request({
   json,
   expectedStatus,
   formData,
-}: Request): Promise<[number, any]> {
+}: RequestArgs): Promise<[number, any]> {
   const init: RequestInit = {}
 
   let contentType = null
