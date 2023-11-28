@@ -1,8 +1,9 @@
-import { FC, FormEvent, useState } from 'react'
+import { FC, FormEvent, useContext, useState, useRef, useCallback } from 'react'
 
 import { ClassName, useClassName } from '../hooks/className'
 import { useFireEvent, AnyEvent } from '../events'
-import { useRequest } from '../tools'
+import { useRequest, RequestArgs } from '../tools'
+import { LocationContext } from '../hooks/locationContext'
 
 import { FastProps, AnyCompList } from './index'
 
@@ -11,8 +12,12 @@ import { FormFieldProps } from './FormField'
 
 interface BaseFormProps {
   formFields: FormFieldProps[]
+  initial?: Record<string, any>
   submitUrl: string
   footer?: boolean | FastProps[]
+  method?: 'GET' | 'GOTO' | 'POST'
+  displayMode?: 'default' | 'inline'
+  submitOnChange?: boolean
   className?: ClassName
 }
 
@@ -30,7 +35,8 @@ interface FormResponse {
 }
 
 export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
-  const { formFields, submitUrl, footer } = props
+  const formRef = useRef<HTMLFormElement>(null)
+  const { formFields, initial, submitUrl, method, footer, displayMode, submitOnChange } = props
 
   // mostly equivalent to `<input disabled`
   const [locked, setLocked] = useState(false)
@@ -38,42 +44,92 @@ export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
   const [error, setError] = useState<string | null>(null)
   const { fireEvent } = useFireEvent()
   const request = useRequest()
+  const { goto } = useContext(LocationContext)
+
+  const submit = useCallback(
+    async (formData: FormData) => {
+      setLocked(true)
+      setError(null)
+      setFieldErrors({})
+
+      if (method === 'GOTO') {
+        // this seems to work in common cases, but typescript doesn't like it
+        const query = new URLSearchParams(formData as any)
+        console.log(Object.fromEntries(query.entries()))
+        for (const [k, v] of query.entries()) {
+          console.log(k, v)
+          if (v === '') {
+            query.delete(k)
+          }
+        }
+        const queryStr = query.toString()
+        goto(queryStr === '' ? submitUrl : `${submitUrl}?${query}`)
+        setLocked(false)
+        return
+      }
+
+      const requestArgs: RequestArgs = { url: submitUrl, expectedStatus: [200, 422] }
+      if (method === 'GET') {
+        // as above with URLSearchParams
+        requestArgs.query = new URLSearchParams(formData as any)
+      } else {
+        requestArgs.formData = formData
+      }
+
+      const [status, data] = await request(requestArgs)
+      if (status === 200) {
+        if (data.type !== 'FormResponse') {
+          throw new Error(`Expected FormResponse, got ${JSON.stringify(data)}`)
+        }
+        const { event } = data as FormResponse
+        fireEvent(event)
+      } else {
+        // status === 422
+        const errorResponse = data as ErrorResponse
+        const formErrors = errorResponse.detail.form
+        if (formErrors) {
+          setFieldErrors(Object.fromEntries(formErrors.map((e) => [locToName(e.loc), e.msg])))
+        } else {
+          console.warn('Non-field error submitting form:', data)
+          setError('Error submitting form')
+        }
+      }
+      setLocked(false)
+    },
+    [goto, method, request, submitUrl, fireEvent],
+  )
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setLocked(true)
-    setError(null)
-    setFieldErrors({})
     const formData = new FormData(e.currentTarget)
-
-    const [status, data] = await request({ url: submitUrl, formData, expectedStatus: [200, 422] })
-    if (status === 200) {
-      if (data.type !== 'FormResponse') {
-        throw new Error(`Expected FormResponse, got ${JSON.stringify(data)}`)
-      }
-      const { event } = data as FormResponse
-      fireEvent(event)
-    } else {
-      // status === 422
-      const errorResponse = data as ErrorResponse
-      const formErrors = errorResponse.detail.form
-      if (formErrors) {
-        setFieldErrors(Object.fromEntries(formErrors.map((e) => [locToName(e.loc), e.msg])))
-      } else {
-        console.warn('Non-field error submitting form:', data)
-        setError('Error submitting form')
-      }
-    }
-    setLocked(false)
+    await submit(formData)
   }
 
-  const fieldProps: FormFieldProps[] = formFields.map((formField) =>
-    Object.assign({}, formField, { error: fieldErrors[formField.name], locked }),
-  )
+  const onChange = useCallback(() => {
+    if (submitOnChange) {
+      const formData = new FormData(formRef.current!)
+      submit(formData)
+    }
+  }, [submitOnChange, submit])
+
+  const fieldProps: FormFieldProps[] = formFields.map((formField) => {
+    const f = {
+      ...formField,
+      error: fieldErrors[formField.name],
+      locked,
+      displayMode,
+      onChange,
+    } as FormFieldProps
+    const formInitial = initial && initial[formField.name]
+    if (formInitial !== undefined) {
+      ;(f as any).initial = formInitial
+    }
+    return f
+  })
 
   return (
     <div className={useClassName(props, { el: 'form-container' })}>
-      <form className={useClassName(props)} onSubmit={onSubmit}>
+      <form ref={formRef} className={useClassName(props)} onSubmit={onSubmit}>
         <AnyCompList propsList={fieldProps} />
         {error ? <div>Error: {error}</div> : null}
         <Footer footer={footer} />

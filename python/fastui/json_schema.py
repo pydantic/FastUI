@@ -54,12 +54,14 @@ class JsonSchemaStringEnum(JsonSchemaBase, total=False):
     type: Required[Literal['string']]
     enum: Required[list[str]]
     default: str
+    placeholder: str
     enum_labels: dict[str, str]
 
 
 class JsonSchemaStringSearch(JsonSchemaBase, total=False):
     type: Required[Literal['string']]
     search_url: Required[str]
+    placeholder: str
     initial: SelectOption
 
 
@@ -102,6 +104,7 @@ class JsonSchemaArray(JsonSchemaBase, total=False):
     prefixItems: list[JsonSchemaAny]
     items: JsonSchemaAny
     search_url: str
+    placeholder: str
 
 
 JsonSchemaDefs = dict[str, JsonSchemaConcrete]
@@ -196,8 +199,9 @@ def json_schema_array_to_fields(
     items_schema = schema.get('items')
     if items_schema:
         items_schema, required = deference_json_schema(items_schema, defs, required)
-        if search_url := schema.get('search_url'):
-            items_schema['search_url'] = search_url  # type: ignore
+        for field_name in 'search_url', 'placeholder':
+            if value := schema.get(field_name):
+                items_schema[field_name] = value  # type: ignore
         if field := special_string_field(items_schema, loc_to_name(loc), title, required, True):
             return [field]
     raise NotImplementedError('todo')
@@ -232,6 +236,7 @@ def special_string_field(
                 search_url=search_url,
                 name=name,
                 title=title,
+                placeholder=schema.get('placeholder'),
                 required=required,
                 multiple=multiple,
                 initial=schema.get('initial'),

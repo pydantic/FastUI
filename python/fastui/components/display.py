@@ -60,7 +60,7 @@ DataModel = typing.TypeVar('DataModel', bound=pydantic.BaseModel)
 class Details(pydantic.BaseModel, typing.Generic[DataModel], extra='forbid'):
     data: DataModel
     fields: list[DisplayLookup] | None = None
-    class_name: _class_name.ClassName | None = None
+    class_name: _class_name.ClassName = None
     type: typing.Literal['Details'] = 'Details'
 
     @pydantic.model_validator(mode='after')

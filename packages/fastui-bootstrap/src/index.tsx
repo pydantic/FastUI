@@ -27,7 +27,7 @@ function displayPrimitiveRender(props: components.DisplayPrimitiveProps) {
   }
 }
 
-export const classNameGenerator: ClassNameGenerator = ({ props, fullPath, subElement }) => {
+export const classNameGenerator: ClassNameGenerator = ({ props, fullPath, subElement }): ClassName => {
   const { type } = props
   switch (type) {
     case 'Page':
@@ -52,78 +52,72 @@ export const classNameGenerator: ClassNameGenerator = ({ props, fullPath, subEle
       }
     case 'Form':
     case 'ModelForm':
-      return formClassName(subElement)
+      if (props.displayMode === 'inline') {
+        switch (subElement) {
+          case 'form-container':
+            return ''
+          default:
+            return 'row row-cols-lg-4 align-items-center justify-content-end'
+        }
+      } else {
+        switch (subElement) {
+          case 'form-container':
+            return 'row justify-content-center'
+          default:
+            return 'col-md-4'
+        }
+      }
     case 'FormFieldInput':
     case 'FormFieldCheckbox':
     case 'FormFieldSelect':
     case 'FormFieldSelectSearch':
     case 'FormFieldFile':
-      return formFieldClassName(props, subElement)
+      switch (subElement) {
+        case 'input':
+          return props.error ? 'is-invalid form-control' : 'form-control'
+        case 'select':
+          return 'form-select'
+        case 'select-react':
+          return ''
+        case 'label':
+          if (props.displayMode === 'inline') {
+            return 'visually-hidden'
+          } else {
+            return { 'form-label': true, 'fw-bold': props.required }
+          }
+        case 'error':
+          return 'invalid-feedback'
+        case 'description':
+          return 'form-text'
+        default:
+          return 'mb-3'
+      }
     case 'Navbar':
-      return navbarClassName(subElement)
+      switch (subElement) {
+        case 'contents':
+          return 'container'
+        case 'title':
+          return 'navbar-brand'
+        default:
+          return 'navbar navbar-expand-lg bg-body-tertiary'
+      }
     case 'Link':
-      return linkClassName(props, fullPath)
+      return {
+        active: pathMatch(props.active, fullPath),
+        'nav-link': props.mode === 'navbar' || props.mode === 'tabs',
+      }
     case 'LinkList':
-      return linkListClassName(props, subElement)
-  }
-}
-
-function formFieldClassName(props: components.FormFieldProps, subElement?: string): ClassName {
-  switch (subElement) {
-    case 'input':
-      return props.error ? 'is-invalid form-control' : 'form-control'
-    case 'select':
-      return 'form-select'
-    case 'select-react':
-      return ''
-    case 'label':
-      return { 'form-label': true, 'fw-bold': props.required }
-    case 'error':
-      return 'invalid-feedback'
-    case 'description':
-      return 'form-text'
-    default:
-      return 'mb-3'
-  }
-}
-
-function formClassName(subElement?: string): ClassName {
-  switch (subElement) {
-    case 'form-container':
-      return 'row justify-content-center'
-    default:
-      return 'col-md-4'
-  }
-}
-
-function navbarClassName(subElement?: string): ClassName {
-  switch (subElement) {
-    case 'contents':
-      return 'container'
-    case 'title':
-      return 'navbar-brand'
-    default:
-      return 'navbar navbar-expand-lg bg-body-tertiary'
-  }
-}
-
-function linkClassName(props: components.LinkProps, fullPath: string): ClassName {
-  return {
-    active: pathMatch(props.active, fullPath),
-    'nav-link': props.mode === 'navbar' || props.mode === 'tabs',
-  }
-}
-
-function linkListClassName(props: components.LinkListProps, subElement?: string): ClassName {
-  if (subElement === 'link-list-item' && props.mode) {
-    return 'nav-item'
-  }
-  switch (props.mode) {
-    case 'tabs':
-      return 'nav nav-underline'
-    case 'vertical':
-      return 'nav flex-column'
-    default:
-      return ''
+      if (subElement === 'link-list-item' && props.mode) {
+        return 'nav-item'
+      } else {
+        switch (props.mode) {
+          case 'tabs':
+            return 'nav nav-underline'
+          case 'vertical':
+            return 'nav flex-column'
+          default:
+            return ''
+        }
+      }
   }
 }
