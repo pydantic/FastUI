@@ -2,7 +2,7 @@ import { FC, useCallback, useContext, useEffect, useState } from 'react'
 
 import { ErrorContext } from '../hooks/error'
 import { useRequest, useSSE } from '../tools'
-import { DefaultLoading } from '../DefaultLoading'
+import { DefaultSpinner, DefaultNotFound } from '../Defaults'
 import { ConfigContext } from '../hooks/config'
 import { PageEvent, usePageEventListen } from '../events'
 import { EventContextProvider, useEventContext } from '../hooks/eventContext'
@@ -16,6 +16,7 @@ export interface ServerLoadProps {
   loadTrigger?: PageEvent
   sse?: boolean
 }
+
 export const ServerLoadComp: FC<ServerLoadProps> = ({ path, components, loadTrigger, sse }) => {
   if (components) {
     return <ServerLoadDefer path={path} components={components} loadTrigger={loadTrigger} sse={sse} />
@@ -47,20 +48,27 @@ const ServerLoadDefer: FC<{ path: string; components: FastProps[]; loadTrigger?:
 
 export const ServerLoadFetch: FC<{ path: string; devReload?: number }> = ({ path, devReload }) => {
   const [componentProps, setComponentProps] = useState<FastProps[] | null>(null)
+  const [notFoundUrl, setNotFoundUrl] = useState<string | undefined>(undefined)
 
   const url = useServerUrl(path)
   const request = useRequest()
 
   useEffect(() => {
-    const promise = request({ url })
-    promise.then(([, data]) => setComponentProps(data as FastProps[]))
+    const promise = request({ url, expectedStatus: [200, 404] })
+    promise.then(([status, data]) => {
+      if (status === 200) {
+        setComponentProps(data as FastProps[])
+      } else {
+        setNotFoundUrl(url)
+      }
+    })
 
     return () => {
       promise.then(() => null)
     }
   }, [url, request, devReload])
 
-  return <Render propsList={componentProps} />
+  return <Render propsList={componentProps} notFoundUrl={notFoundUrl} />
 }
 
 export const ServerLoadSSE: FC<{ path: string }> = ({ path }) => {
@@ -73,17 +81,19 @@ export const ServerLoadSSE: FC<{ path: string }> = ({ path }) => {
   return <Render propsList={componentProps} />
 }
 
-const Render: FC<{ propsList: FastProps[] | null }> = ({ propsList }) => {
+const Render: FC<{ propsList: FastProps[] | null; notFoundUrl?: string }> = ({ propsList, notFoundUrl }) => {
   const { error } = useContext(ErrorContext)
-  const { Loading } = useContext(ConfigContext)
+  const { Spinner, NotFound } = useContext(ConfigContext)
+  const SpinnerComp = Spinner ?? DefaultSpinner
+  const NotFoundComp = NotFound ?? DefaultNotFound
 
-  if (propsList === null) {
+  if (notFoundUrl) {
+    return <NotFoundComp url={notFoundUrl} />
+  } else if (propsList === null) {
     if (error) {
       return <></>
-    } else if (Loading) {
-      return <Loading />
     } else {
-      return <DefaultLoading />
+      return <SpinnerComp />
     }
   } else {
     return <AnyCompList propsList={propsList} />

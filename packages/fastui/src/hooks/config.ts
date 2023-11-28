@@ -1,16 +1,10 @@
 import { createContext, FC, useContext } from 'react'
 
-import type { CustomRender } from '../index'
+import type { FastUIProps } from '../index'
 
 import { FastProps } from '../components'
 
-interface Config {
-  rootUrl: string
-  // defaults to 'append'
-  pathSendMode?: 'append' | 'query'
-  customRender?: CustomRender
-  Loading?: FC
-}
+type Config = Omit<FastUIProps, 'DisplayError' | 'classNameGenerator' | 'devMode'>
 
 export const ConfigContext = createContext<Config>({ rootUrl: '' })
 

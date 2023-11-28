@@ -29,7 +29,7 @@ def panel(*components: AnyComponent) -> AnyComponent:
 
 
 @app.get('/api/', response_model=FastUI, response_model_exclude_none=True)
-def read_root() -> list[AnyComponent]:
+def api_index() -> list[AnyComponent]:
     return [
         c.PageTitle(text='FastUI Demo'),
         navbar(),
@@ -245,7 +245,7 @@ async def sse_generator():
         d = datetime.now()
         m = FastUI(root=[c.Div(components=[c.Text(text=f'Time {d:%H:%M:%S.%f}'[:-4])], class_name='font-monospace')])
         yield dict(data=m.model_dump_json(by_alias=True))
-        await asyncio.sleep(0.15)
+        await asyncio.sleep(0.09)
 
 
 @app.get('/api/sse', response_class=EventSourceResponse)

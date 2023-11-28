@@ -23,7 +23,8 @@ export interface FastUIProps {
   rootUrl: string
   // defaults to 'append'
   pathSendMode?: 'append' | 'query'
-  Loading?: FC
+  Spinner?: FC
+  NotFound?: FC<{ url: string }>
   DisplayError?: ErrorDisplayType
   classNameGenerator?: ClassNameGenerator
   customRender?: CustomRender
