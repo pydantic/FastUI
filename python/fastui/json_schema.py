@@ -225,6 +225,7 @@ def special_string_field(
             return FormFieldSelect(
                 name=name,
                 title=title,
+                placeholder=schema.get('placeholder'),
                 required=required,
                 multiple=multiple,
                 options=[SelectOption(value=v, label=enum_labels.get(v) or as_title(v)) for v in enum],

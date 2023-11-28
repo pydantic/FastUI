@@ -8,7 +8,6 @@ from fastui import AnyComponent, FastUI
 from fastui import components as c
 from fastui.components.display import DisplayLookup, DisplayMode
 from fastui.events import BackEvent, GoToEvent
-from fastui.forms import FormResponse
 from pydantic import BaseModel, Field, TypeAdapter
 
 from .shared import navbar
@@ -105,11 +104,6 @@ def cities_view(page: int = 1, country: str | None = None) -> list[AnyComponent]
             ]
         ),
     ]
-
-
-@router.get('/cities/query', response_model=FormResponse, response_model_exclude_none=True)
-def cities_view(country: str) -> FormResponse:
-    return FormResponse(event=GoToEvent(url=f'/table/cities?country={country}'))
 
 
 @router.get('/cities/{city_id}', response_model=FastUI, response_model_exclude_none=True)
