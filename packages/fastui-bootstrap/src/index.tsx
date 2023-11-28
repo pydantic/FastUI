@@ -35,7 +35,21 @@ export const classNameGenerator: ClassNameGenerator = ({ props, fullPath, subEle
     case 'Button':
       return 'btn btn-primary'
     case 'Table':
-      return 'table table-striped table-bordered'
+      switch (subElement) {
+        case 'no-data-message':
+          return 'text-center mt-2'
+        default:
+          return 'table table-striped table-bordered'
+      }
+    case 'Details':
+      switch (subElement) {
+        case 'dt':
+          return 'col-sm-3 col-md-2 text-sm-end'
+        case 'dd':
+          return 'col-sm-9 col-md-10'
+        default:
+          return 'row'
+      }
     case 'Form':
     case 'ModelForm':
       return formClassName(subElement)

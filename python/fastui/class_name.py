@@ -1,3 +1,4 @@
+# could be renamed to something general if there's more to add
 from typing import Annotated
 
 from pydantic import Field

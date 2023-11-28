@@ -5,8 +5,8 @@ from abc import ABC
 
 import pydantic
 
+from .. import class_name as _class_name
 from .. import forms
-from . import extra
 
 if typing.TYPE_CHECKING:
     from . import AnyComponent
@@ -21,7 +21,7 @@ class BaseFormField(pydantic.BaseModel, ABC, defer_build=True):
     error: str | None = None
     locked: bool = False
     description: str | None = None
-    class_name: extra.ClassName | None = None
+    class_name: _class_name.ClassName | None = None
 
 
 class FormFieldInput(BaseFormField):
@@ -65,7 +65,7 @@ FormField = FormFieldInput | FormFieldCheckbox | FormFieldFile | FormFieldSelect
 class BaseForm(pydantic.BaseModel, ABC, defer_build=True):
     submit_url: str = pydantic.Field(serialization_alias='submitUrl')
     footer: bool | list[AnyComponent] | None = None
-    class_name: extra.ClassName | None = None
+    class_name: _class_name.ClassName | None = None
 
 
 class Form(BaseForm):

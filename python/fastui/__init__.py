@@ -4,9 +4,8 @@ import pydantic
 
 from .components import AnyComponent
 from .dev import dev_fastapi_app
-from .display import Display
 
-__all__ = 'AnyComponent', 'FastUI', 'dev_fastapi_app', 'Display'
+__all__ = 'AnyComponent', 'FastUI', 'dev_fastapi_app'
 
 
 class FastUI(pydantic.RootModel):
