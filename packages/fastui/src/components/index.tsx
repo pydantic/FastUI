@@ -27,6 +27,7 @@ import { NavbarProps, NavbarComp } from './navbar'
 import { ModalComp, ModalProps } from './modal'
 import { TableComp, TableProps } from './table'
 import { PaginationProps, PaginationComp } from './pagination'
+import { DetailsProps, DetailsComp } from './details'
 import {
   AllDisplayProps,
   DisplayArray,
@@ -54,6 +55,7 @@ export type {
   ModalProps,
   TableProps,
   PaginationProps,
+  DetailsProps,
   LinkProps,
   LinkListProps,
   NavbarProps,
@@ -82,6 +84,7 @@ export type FastProps =
   | ModalProps
   | TableProps
   | PaginationProps
+  | DetailsProps
   | LinkProps
   | LinkListProps
   | NavbarProps
@@ -152,6 +155,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <TableComp {...props} />
       case 'Pagination':
         return <PaginationComp {...props} />
+      case 'Details':
+        return <DetailsComp {...props} />
       case 'Display':
         return <DisplayComp {...props} />
       case 'DisplayArray':

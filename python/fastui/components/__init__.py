@@ -11,10 +11,11 @@ import typing
 
 import pydantic
 
+from .. import class_name as _class_name
 from .. import events
-from . import extra
+from .display import Details, Display
 from .forms import Form, FormField, ModelForm
-from .tables import Pagination, Table, TableColumn
+from .tables import Pagination, Table
 
 if typing.TYPE_CHECKING:
     import pydantic.fields
@@ -30,7 +31,8 @@ __all__ = (
     'ModelForm',
     'Form',
     'Table',
-    'TableColumn',
+    'Display',
+    'Details',
 )
 
 
@@ -55,7 +57,7 @@ class PageTitle(pydantic.BaseModel, extra='forbid'):
 
 class Div(pydantic.BaseModel, extra='forbid'):
     components: list[AnyComponent]
-    class_name: extra.ClassName = None
+    class_name: _class_name.ClassName = None
     type: typing.Literal['Div'] = 'Div'
 
 
@@ -65,7 +67,7 @@ class Page(pydantic.BaseModel, extra='forbid'):
     """
 
     components: list[AnyComponent]
-    class_name: extra.ClassName = None
+    class_name: _class_name.ClassName = None
     type: typing.Literal['Page'] = 'Page'
 
 
@@ -73,7 +75,7 @@ class Heading(pydantic.BaseModel, extra='forbid'):
     text: str
     level: typing.Literal[1, 2, 3, 4, 5, 6] = 1
     html_id: str | None = pydantic.Field(default=None, serialization_alias='htmlId')
-    class_name: extra.ClassName = None
+    class_name: _class_name.ClassName = None
     type: typing.Literal['Heading'] = 'Heading'
 
 
@@ -85,7 +87,7 @@ CodeStyle = typing.Annotated[str | None, pydantic.Field(serialization_alias='cod
 class Markdown(pydantic.BaseModel, extra='forbid'):
     text: str
     code_style: CodeStyle = None
-    class_name: extra.ClassName = None
+    class_name: _class_name.ClassName = None
     type: typing.Literal['Markdown'] = 'Markdown'
 
 
@@ -93,7 +95,7 @@ class Code(pydantic.BaseModel, extra='forbid'):
     text: str
     language: str | None = None
     code_style: CodeStyle = None
-    class_name: extra.ClassName = None
+    class_name: _class_name.ClassName = None
     type: typing.Literal['Code'] = 'Code'
 
 
@@ -103,7 +105,7 @@ class Button(pydantic.BaseModel, extra='forbid'):
     html_type: typing.Literal['button', 'submit', 'reset'] | None = pydantic.Field(
         default=None, serialization_alias='htmlType'
     )
-    class_name: extra.ClassName = None
+    class_name: _class_name.ClassName = None
     type: typing.Literal['Button'] = 'Button'
 
 
@@ -113,14 +115,14 @@ class Link(pydantic.BaseModel, extra='forbid'):
     mode: typing.Literal['navbar', 'tabs', 'vertical', 'pagination'] | None = None
     active: bool | str | None = None
     locked: bool | None = None
-    class_name: extra.ClassName = None
+    class_name: _class_name.ClassName = None
     type: typing.Literal['Link'] = 'Link'
 
 
 class LinkList(pydantic.BaseModel, extra='forbid'):
     links: list[Link]
     mode: typing.Literal['tabs', 'vertical', 'pagination'] | None = None
-    class_name: extra.ClassName = None
+    class_name: _class_name.ClassName = None
     type: typing.Literal['LinkList'] = 'LinkList'
 
 
@@ -128,7 +130,7 @@ class Navbar(pydantic.BaseModel, extra='forbid'):
     title: str | None = None
     title_event: events.AnyEvent | None = pydantic.Field(default=None, serialization_alias='titleEvent')
     links: list[Link] = pydantic.Field(default_factory=list)
-    class_name: extra.ClassName = None
+    class_name: _class_name.ClassName = None
     type: typing.Literal['Navbar'] = 'Navbar'
 
 
@@ -138,7 +140,7 @@ class Modal(pydantic.BaseModel, extra='forbid'):
     footer: list[AnyComponent] | None = None
     open_trigger: events.PageEvent | None = pydantic.Field(default=None, serialization_alias='openTrigger')
     open_context: events.EventContext | None = pydantic.Field(default=None, serialization_alias='openContext')
-    class_name: extra.ClassName = None
+    class_name: _class_name.ClassName = None
     type: typing.Literal['Modal'] = 'Modal'
 
 
@@ -171,6 +173,8 @@ AnyComponent = typing.Annotated[
     | ServerLoad
     | Table
     | Pagination
+    | Display
+    | Details
     | Form
     | ModelForm
     | FormField,

@@ -160,3 +160,6 @@ export function debounce<C extends Callable>(fn: C, delay: number): C {
 export async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
+
+// usage `as_title('what_ever') > 'What Ever'`
+export const asTitle = (s: string): string => s.replace(/[_-]/g, ' ').replace(/(_|\b)\w/g, (l) => l.toUpperCase())

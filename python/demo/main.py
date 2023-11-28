@@ -39,7 +39,7 @@ def read_root() -> list[AnyComponent]:
                 c.Paragraph(text='Below is an example of a flex container with 3 panels.'),
                 c.Markdown(
                     text="""\
-This is some **Markdown**, link to [table](/table).
+This is some **Markdown**, link to [table](/table/cities).
 
 ```python
 x = 1
