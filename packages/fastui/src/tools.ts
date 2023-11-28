@@ -1,4 +1,4 @@
-import { useCallback, useContext } from 'react'
+import { useCallback, useContext, useEffect } from 'react'
 
 import { ErrorContext } from './hooks/error'
 
@@ -16,6 +16,24 @@ export function useRequest(): (args: Request) => Promise<[number, any]> {
     },
     [setError],
   )
+}
+
+export function useSSE(url: string, onMessage: (data: any) => void): void {
+  const { setError } = useContext(ErrorContext)
+
+  useEffect(() => {
+    const source = new EventSource(url)
+    source.onmessage = (e) => {
+      const data = JSON.parse(e.data)
+      onMessage(data)
+    }
+    source.onerror = (e) => {
+      setError({ title: 'SSE Error', description: (e as any)?.message })
+    }
+    return () => {
+      source.close()
+    }
+  }, [url, setError, onMessage])
 }
 
 interface Request {

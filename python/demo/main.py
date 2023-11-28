@@ -2,7 +2,7 @@ from __future__ import annotations as _annotations
 
 import asyncio
 from collections import defaultdict
-from datetime import date
+from datetime import date, datetime
 from enum import StrEnum
 from typing import Annotated, Literal
 
@@ -15,6 +15,7 @@ from fastui.forms import FormFile, FormResponse, SelectSearchResponse, fastui_fo
 from httpx import AsyncClient
 from pydantic import BaseModel, Field, SecretStr, field_validator
 from pydantic_core import PydanticCustomError
+from sse_starlette import EventSourceResponse
 
 # app = FastAPI()
 app = dev_fastapi_app()
@@ -80,6 +81,7 @@ assert x + y == 3
                         ),
                     ],
                 ),
+                c.ServerLoad(path='/sse', sse=True),
                 c.Modal(
                     title='Static Modal',
                     body=[c.Paragraph(text='This is some static content in a modal.')],
@@ -275,5 +277,17 @@ def form_content(kind: Literal['one', 'two', 'three']):
 
 @app.post('/api/form')
 async def form_post(form: Annotated[MyFormModel, fastui_form(MyFormModel)]) -> FormResponse:
-    debug(form)
     return FormResponse(event=GoToEvent(url='/'))
+
+
+async def sse_generator():
+    while True:
+        d = datetime.now()
+        m = FastUI(root=[c.Div(components=[c.Text(text=f'Time {d:%H:%M:%S.%f}'[:-4])], class_name='font-monospace')])
+        yield dict(data=m.model_dump_json(by_alias=True))
+        await asyncio.sleep(0.15)
+
+
+@app.get('/api/sse', response_class=EventSourceResponse)
+async def sse_experiment():
+    return EventSourceResponse(sse_generator())

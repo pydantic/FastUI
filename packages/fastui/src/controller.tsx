@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 
 import { LocationContext } from './hooks/locationContext'
-import { ServerLoadDirect } from './components/ServerLoad'
+import { ServerLoadFetch } from './components/ServerLoad'
 import { loadEvent, LoadEventDetail } from './events'
 
 export function FastUIController() {
@@ -24,5 +24,5 @@ export function FastUIController() {
     }
   }, [fullPath])
 
-  return <ServerLoadDirect path={path} devReload={reloadValue} />
+  return <ServerLoadFetch path={path} devReload={reloadValue} />
 }

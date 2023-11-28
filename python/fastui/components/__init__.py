@@ -149,6 +149,7 @@ class ServerLoad(pydantic.BaseModel, extra='forbid'):
     path: str
     load_trigger: events.PageEvent | None = pydantic.Field(default=None, serialization_alias='loadTrigger')
     components: list[AnyComponent] | None = None
+    sse: bool | None = None
     type: typing.Literal['ServerLoad'] = 'ServerLoad'
 
 
