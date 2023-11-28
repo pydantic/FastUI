@@ -2,14 +2,13 @@ from __future__ import annotations as _annotations
 
 import asyncio
 from collections import defaultdict
-from datetime import date, datetime
+from datetime import datetime
 from enum import StrEnum
 from typing import Annotated, Literal
 
 from fastapi import UploadFile
 from fastui import AnyComponent, FastUI, dev_fastapi_app
 from fastui import components as c
-from fastui.display import Display
 from fastui.events import GoToEvent, PageEvent
 from fastui.forms import FormFile, FormResponse, SelectSearchResponse, fastui_form
 from httpx import AsyncClient
@@ -17,19 +16,12 @@ from pydantic import BaseModel, Field, SecretStr, field_validator
 from pydantic_core import PydanticCustomError
 from sse_starlette import EventSourceResponse
 
+from .shared import navbar
+from .tables import router
+
 # app = FastAPI()
 app = dev_fastapi_app()
-
-
-def navbar() -> AnyComponent:
-    return c.Navbar(
-        title='FastUI Demo',
-        links=[
-            c.Link(components=[c.Text(text='Home')], on_click=GoToEvent(url='/'), active='/'),
-            c.Link(components=[c.Text(text='Table')], on_click=GoToEvent(url='/table'), active='/table'),
-            c.Link(components=[c.Text(text='Forms')], on_click=GoToEvent(url='/form/one'), active='startswith:/form'),
-        ],
-    )
+app.include_router(router, prefix='/api/table')
 
 
 def panel(*components: AnyComponent) -> AnyComponent:
@@ -103,42 +95,10 @@ assert x + y == 3
     ]
 
 
-class MyTableRow(BaseModel):
-    id: int = Field(title='ID')
-    name: str = Field(title='Name')
-    dob: date = Field(title='Date of Birth')
-    enabled: bool | None = None
-
-
 @app.get('/api/modal', response_model=FastUI, response_model_exclude_none=True)
 async def modal_view() -> list[AnyComponent]:
     await asyncio.sleep(0.5)
     return [c.Text(text='Modal Content Dynamic')]
-
-
-@app.get('/api/table', response_model=FastUI, response_model_exclude_none=True)
-def table_view() -> list[AnyComponent]:
-    return [
-        navbar(),
-        c.PageTitle(text='FastUI Demo - Table'),
-        c.Page(
-            components=[
-                c.Heading(text='Table'),
-                c.Table[MyTableRow](
-                    data=[
-                        MyTableRow(id=1, name='John', dob=date(1990, 1, 1), enabled=True),
-                        MyTableRow(id=2, name='Jane', dob=date(1991, 1, 1), enabled=False),
-                        MyTableRow(id=3, name='Jack', dob=date(1992, 1, 1)),
-                    ],
-                    columns=[
-                        c.TableColumn(field='name', on_click=GoToEvent(url='/more/{id}/')),
-                        c.TableColumn(field='dob', display=Display.date),
-                        c.TableColumn(field='enabled'),
-                    ],
-                ),
-            ]
-        ),
-    ]
 
 
 class NestedFormModel(BaseModel):

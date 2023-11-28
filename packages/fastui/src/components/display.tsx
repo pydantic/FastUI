@@ -133,7 +133,7 @@ const DisplayAuto: FC<{ value: JSONPrimitive }> = ({ value }) => {
       return <>&times;</>
     }
   } else if (typeof value === 'number') {
-    return <>{value.toString()}</>
+    return <>{value.toLocaleString()}</>
   } else {
     return <>{value}</>
   }

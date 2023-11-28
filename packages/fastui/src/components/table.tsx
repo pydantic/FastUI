@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, CSSProperties } from 'react'
 
 import type { JsonData } from './Json'
 
@@ -14,6 +14,7 @@ interface ColumnProps {
   display?: DisplayChoices
   title?: string
   onClick?: AnyEvent
+  widthPercent?: number
   className?: ClassName
 }
 
@@ -34,7 +35,9 @@ export const TableComp: FC<TableProps> = (props) => {
       <thead>
         <tr>
           {columns.map((col, id) => (
-            <th key={id}>{col.title ?? asTitle(col.field)}</th>
+            <th key={id} style={colWidth(col.widthPercent)}>
+              {col.title ?? asTitle(col.field)}
+            </th>
           ))}
         </tr>
       </thead>
@@ -51,6 +54,8 @@ export const TableComp: FC<TableProps> = (props) => {
   )
 }
 
+const colWidth = (w: number | undefined): CSSProperties | undefined => (w ? { width: `${w}%` } : undefined)
+
 interface CellProps {
   row: Row
   column: ColumnProps
@@ -64,11 +69,13 @@ const Cell: FC<CellProps> = ({ row, column }) => {
   if (event) {
     if (event.type === 'go-to') {
       // for go-to events, substitute the row values into the url
-      const url = subKeys(event.url, row)
-      if (url === null) {
-        event = null
-      } else {
-        event.url = url
+      if (event.url) {
+        const url = subKeys(event.url, row)
+        if (url === null) {
+          event = null
+        } else {
+          event.url = url
+        }
       }
     }
   }

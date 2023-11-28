@@ -4,6 +4,7 @@ import type { components, ClassNameGenerator, CustomRender, ClassName } from 'fa
 
 import { Modal } from './modal'
 import { Navbar } from './navbar'
+import { Pagination } from './pagination'
 
 export const customRender: CustomRender = (props) => {
   const { type } = props
@@ -14,6 +15,8 @@ export const customRender: CustomRender = (props) => {
       return () => <Navbar {...props} />
     case 'Modal':
       return () => <Modal {...props} />
+    case 'Pagination':
+      return () => <Pagination {...props} />
   }
 }
 
@@ -32,7 +35,7 @@ export const classNameGenerator: ClassNameGenerator = ({ props, fullPath, subEle
     case 'Button':
       return 'btn btn-primary'
     case 'Table':
-      return 'table table-striped'
+      return 'table table-striped table-bordered'
     case 'Form':
     case 'ModelForm':
       return formClassName(subElement)

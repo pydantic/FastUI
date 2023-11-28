@@ -14,7 +14,7 @@ import pydantic
 from .. import events
 from . import extra
 from .forms import Form, FormField, ModelForm
-from .tables import Table, TableColumn
+from .tables import Pagination, Table, TableColumn
 
 if typing.TYPE_CHECKING:
     import pydantic.fields
@@ -110,15 +110,16 @@ class Button(pydantic.BaseModel, extra='forbid'):
 class Link(pydantic.BaseModel, extra='forbid'):
     components: list[AnyComponent]
     on_click: events.AnyEvent | None = pydantic.Field(default=None, serialization_alias='onClick')
-    mode: typing.Literal['navbar', 'tabs', 'vertical'] | None = None
+    mode: typing.Literal['navbar', 'tabs', 'vertical', 'pagination'] | None = None
     active: bool | str | None = None
+    locked: bool | None = None
     class_name: extra.ClassName = None
     type: typing.Literal['Link'] = 'Link'
 
 
 class LinkList(pydantic.BaseModel, extra='forbid'):
     links: list[Link]
-    mode: typing.Literal['tabs', 'vertical'] | None = None
+    mode: typing.Literal['tabs', 'vertical', 'pagination'] | None = None
     class_name: extra.ClassName = None
     type: typing.Literal['LinkList'] = 'LinkList'
 
@@ -169,6 +170,7 @@ AnyComponent = typing.Annotated[
     | Modal
     | ServerLoad
     | Table
+    | Pagination
     | Form
     | ModelForm
     | FormField,

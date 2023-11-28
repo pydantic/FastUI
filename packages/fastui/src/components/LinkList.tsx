@@ -5,7 +5,7 @@ import { LinkProps, LinkComp } from './link'
 export interface LinkListProps {
   type: 'LinkList'
   links: LinkProps[]
-  mode?: 'tabs' | 'vertical'
+  mode?: 'tabs' | 'vertical' | 'pagination'
   className?: ClassName
 }
 
