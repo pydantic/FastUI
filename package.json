@@ -5,8 +5,8 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run --workspace=vanilla dev",
-    "build": "rm -rf packages-dist && npm run build --workspaces --if-present",
+    "dev": "npm run --workspace=fastui-prebuilt dev",
+    "build": "npm run --workspaces prepublishOnly",
     "typecheck": "npm run --workspaces typecheck",
     "lint": "eslint packages --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
     "lint-fix": "npm run lint -- --fix",

@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../packages-dist/fastui"
+    "outDir": "dist"
   },
   "include": ["src"]
 }

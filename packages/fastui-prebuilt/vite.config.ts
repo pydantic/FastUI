@@ -24,8 +24,5 @@ export default () => {
     },
     server: serverConfig,
     preview: serverConfig,
-    build: {
-      outDir: '../../packages-dist/vanilla',
-    },
   })
 }
