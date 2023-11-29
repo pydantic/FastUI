@@ -1,4 +1,21 @@
+$primary: black;
+$link-color: #0d6efd;  // bootstrap primary
+
 @import 'bootstrap/scss/bootstrap';
+
+:root {
+  --bs-font-sans-serif: 'IBM Plex Sans', sans-serif;
+}
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&display=swap');
+
+.bg-body {
+  --bs-bg-opacity: 0.6;
+  backdrop-filter: blur(8px);
+}
+
+.top-offset {
+  margin-top: 80px;
+}
 
 // custom spinner from https://cssloaders.github.io/
 

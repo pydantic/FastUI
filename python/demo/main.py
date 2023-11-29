@@ -1,12 +1,13 @@
 from __future__ import annotations as _annotations
 
 import asyncio
+import sys
 from collections import defaultdict
 from datetime import datetime
 from enum import StrEnum
 from typing import Annotated, Literal
 
-from fastapi import UploadFile
+from fastapi import FastAPI, UploadFile
 from fastui import AnyComponent, FastUI, dev_fastapi_app
 from fastui import components as c
 from fastui.events import GoToEvent, PageEvent
@@ -19,8 +20,12 @@ from sse_starlette import EventSourceResponse
 from .shared import navbar
 from .tables import router
 
-# app = FastAPI()
-app = dev_fastapi_app()
+frontend_reload = '--reload' in sys.argv
+if frontend_reload:
+    # dev_fastapi_app reloads in the browser when the Python source changes
+    app = dev_fastapi_app()
+else:
+    app = FastAPI()
 app.include_router(router, prefix='/api/table')
 
 

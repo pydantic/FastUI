@@ -8,7 +8,7 @@ export const Navbar: FC<components.NavbarProps> = (props) => {
     return link
   })
   return (
-    <BootstrapNavbar expand="lg" className="bg-body-tertiary">
+    <BootstrapNavbar expand="lg" className={useClassName(props)}>
       <div className={useClassName(props, { el: 'contents' })}>
         <NavbarTitle {...props} />
         <BootstrapNavbar.Toggle aria-controls="navbar-collapse" />

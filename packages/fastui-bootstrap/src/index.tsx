@@ -31,7 +31,7 @@ export const classNameGenerator: ClassNameGenerator = ({ props, fullPath, subEle
   const { type } = props
   switch (type) {
     case 'Page':
-      return 'container py-4'
+      return 'container mt-80'
     case 'Button':
       return 'btn btn-primary'
     case 'Table':
@@ -99,7 +99,7 @@ export const classNameGenerator: ClassNameGenerator = ({ props, fullPath, subEle
         case 'title':
           return 'navbar-brand'
         default:
-          return 'navbar navbar-expand-lg bg-body-tertiary'
+          return 'border-bottom fixed-top bg-body'
       }
     case 'Link':
       return {
