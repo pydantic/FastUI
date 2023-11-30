@@ -29,6 +29,6 @@
     "sass": "^1.69.5"
   },
   "peerDependencies": {
-    "@pydantic/fastui": "0.0.5"
+    "@pydantic/fastui": "0.0.6"
   }
 }
