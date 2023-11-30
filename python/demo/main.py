@@ -70,7 +70,7 @@ assert x + y == 3
                         ),
                     ],
                 ),
-                # c.ServerLoad(path='/sse', sse=True),
+                c.ServerLoad(path='/sse', sse=True),
                 c.Modal(
                     title='Static Modal',
                     body=[c.Paragraph(text='This is some static content in a modal.')],
@@ -240,9 +240,9 @@ async def form_post(form: Annotated[MyFormModel, fastui_form(MyFormModel)]) -> F
 async def sse_generator() -> AsyncIterable[str]:
     while True:
         d = datetime.now()
-        m = FastUI(root=[c.Div(components=[c.Text(text=f'Time {d:%H:%M:%S.%f}'[:-4])], class_name='font-monospace')])
+        m = FastUI(root=[c.Div(components=[c.Text(text=f'Time {d:%H:%M:%S}')], class_name='font-monospace')])
         yield f'data: {m.model_dump_json(by_alias=True)}\n\n'
-        await asyncio.sleep(0.09)
+        await asyncio.sleep(1)
 
 
 @router.get('/sse')

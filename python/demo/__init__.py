@@ -27,8 +27,8 @@ if frontend_reload:
 else:
     app = FastAPI(lifespan=lifespan)
 
-app.include_router(main_router, prefix='/api')
 app.include_router(table_router, prefix='/api/table')
+app.include_router(main_router, prefix='/api')
 
 
 @app.get('/robots.txt', response_class=PlainTextResponse)
