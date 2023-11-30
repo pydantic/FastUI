@@ -248,3 +248,9 @@ async def sse_generator() -> AsyncIterable[str]:
 @router.get('/sse')
 async def sse_experiment() -> StreamingResponse:
     return StreamingResponse(sse_generator(), media_type='text/event-stream')
+
+
+@router.get('/{path:path}')
+async def api_404():
+    # so we don't fall through to the index page
+    return {'message': 'Not Found'}
