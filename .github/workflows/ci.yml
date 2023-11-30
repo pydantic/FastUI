@@ -46,7 +46,7 @@ jobs:
 
       - run: npm install
       - run: npm run build
-      - run: tree packages-dist
+      - run: tree packages
 
   check: # This job does nothing and is only used for the branch protection
     if: always()
