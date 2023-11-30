@@ -1,4 +1,0 @@
-# this is used by render to install dependencies
--r python/requirements/pyproject.txt
-uvicorn[standard]
-httpx
