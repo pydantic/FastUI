@@ -8,6 +8,25 @@ $link-color: #0d6efd;  // bootstrap primary
 }
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&display=swap');
 
+.transition-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  background-color: white;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+  &.transitioning {
+    opacity: 0.8;
+    pointer-events: auto;
+    width: 100%;
+    height: 100%;
+  }
+}
+
 .bg-body {
   --bs-bg-opacity: 0.6;
   backdrop-filter: blur(8px);

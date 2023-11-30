@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, ReactNode } from 'react'
 
 import type { ErrorDisplayType } from './hooks/error'
 
@@ -25,6 +25,7 @@ export interface FastUIProps {
   pathSendMode?: 'append' | 'query'
   Spinner?: FC
   NotFound?: FC<{ url: string }>
+  Transition?: FC<{ children: ReactNode; transitioning: boolean }>
   DisplayError?: ErrorDisplayType
   classNameGenerator?: ClassNameGenerator
   customRender?: CustomRender

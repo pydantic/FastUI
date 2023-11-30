@@ -1,3 +1,12 @@
-export const DefaultSpinner = () => <div>loading...</div>
+import { FC, ReactNode } from 'react'
 
-export const DefaultNotFound = ({ url }: { url: string }) => <div>Page not found: {url}</div>
+export const DefaultSpinner: FC = () => <div>loading...</div>
+
+export const DefaultNotFound: FC<{ url: string }> = ({ url }) => <div>Page not found: {url}</div>
+
+// default here does nothing
+export const DefaultTransition: FC<{ children: ReactNode; transitioning: boolean }> = ({children}) => (
+  <div>
+    {children}
+  </div>
+)

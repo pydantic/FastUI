@@ -1,5 +1,6 @@
-import { FastUI } from 'fastui'
+import { FastUI, renderClassName } from 'fastui'
 import * as bootstrap from 'fastui-bootstrap'
+import { FC, ReactNode } from 'react'
 
 export default function App() {
   return (
@@ -10,6 +11,7 @@ export default function App() {
         customRender={bootstrap.customRender}
         NotFound={NotFound}
         Spinner={Spinner}
+        Transition={Transition}
       />
     </div>
   )
@@ -27,5 +29,12 @@ const NotFound = ({ url }: { url: string }) => (
 const Spinner = () => (
   <div className="container d-flex justify-content-center my-3" role="status">
     <div className="spinner" />
+  </div>
+)
+
+const Transition: FC<{ children: ReactNode; transitioning: boolean }> = ({ children, transitioning }) => (
+  <div>
+    <div className={renderClassName({ 'transition-overlay': true, transitioning })} />
+    {children}
   </div>
 )

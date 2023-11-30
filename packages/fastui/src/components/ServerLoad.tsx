@@ -2,7 +2,7 @@ import { FC, useCallback, useContext, useEffect, useState } from 'react'
 
 import { ErrorContext } from '../hooks/error'
 import { useRequest, useSSE } from '../tools'
-import { DefaultSpinner, DefaultNotFound } from '../Defaults'
+import { DefaultSpinner, DefaultNotFound, DefaultTransition } from '../Defaults'
 import { ConfigContext } from '../hooks/config'
 import { PageEvent, usePageEventListen } from '../events'
 import { EventContextProvider, useEventContext } from '../hooks/eventContext'
@@ -47,6 +47,7 @@ const ServerLoadDefer: FC<{ path: string; components: FastProps[]; loadTrigger?:
 }
 
 export const ServerLoadFetch: FC<{ path: string; devReload?: number }> = ({ path, devReload }) => {
+  const [transitioning, setTransitioning] = useState<boolean>(false)
   const [componentProps, setComponentProps] = useState<FastProps[] | null>(null)
   const [notFoundUrl, setNotFoundUrl] = useState<string | undefined>(undefined)
 
@@ -54,6 +55,7 @@ export const ServerLoadFetch: FC<{ path: string; devReload?: number }> = ({ path
   const request = useRequest()
 
   useEffect(() => {
+    setTransitioning(true)
     const promise = request({ url, expectedStatus: [200, 404] })
     promise.then(([status, data]) => {
       if (status === 200) {
@@ -61,6 +63,7 @@ export const ServerLoadFetch: FC<{ path: string; devReload?: number }> = ({ path
       } else {
         setNotFoundUrl(url)
       }
+      setTransitioning(false)
     })
 
     return () => {
@@ -68,7 +71,7 @@ export const ServerLoadFetch: FC<{ path: string; devReload?: number }> = ({ path
     }
   }, [url, request, devReload])
 
-  return <Render propsList={componentProps} notFoundUrl={notFoundUrl} />
+  return <Render propsList={componentProps} notFoundUrl={notFoundUrl} transitioning={transitioning} />
 }
 
 export const ServerLoadSSE: FC<{ path: string }> = ({ path }) => {
@@ -78,14 +81,19 @@ export const ServerLoadSSE: FC<{ path: string }> = ({ path }) => {
   const onMessage = useCallback((data: any) => setComponentProps(data as FastProps[]), [])
   useSSE(url, onMessage)
 
-  return <Render propsList={componentProps} />
+  return <Render propsList={componentProps} transitioning={false} />
 }
 
-const Render: FC<{ propsList: FastProps[] | null; notFoundUrl?: string }> = ({ propsList, notFoundUrl }) => {
+const Render: FC<{ propsList: FastProps[] | null; notFoundUrl?: string; transitioning: boolean }> = ({
+  propsList,
+  notFoundUrl,
+  transitioning,
+}) => {
   const { error } = useContext(ErrorContext)
-  const { Spinner, NotFound } = useContext(ConfigContext)
+  const { Spinner, NotFound, Transition } = useContext(ConfigContext)
   const SpinnerComp = Spinner ?? DefaultSpinner
   const NotFoundComp = NotFound ?? DefaultNotFound
+  const TransitionComp = Transition ?? DefaultTransition
 
   if (notFoundUrl) {
     return <NotFoundComp url={notFoundUrl} />
@@ -96,7 +104,11 @@ const Render: FC<{ propsList: FastProps[] | null; notFoundUrl?: string }> = ({ p
       return <SpinnerComp />
     }
   } else {
-    return <AnyCompList propsList={propsList} />
+    return (
+      <TransitionComp transitioning={transitioning}>
+        <AnyCompList propsList={propsList} />
+      </TransitionComp>
+    )
   }
 }
 
