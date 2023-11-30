@@ -13,6 +13,7 @@ export default () => {
   }
 
   return defineConfig({
+    // @ts-expect-error - no need to type check this file
     plugins: [react()],
     resolve: {
       alias: {

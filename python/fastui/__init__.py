@@ -7,6 +7,10 @@ __all__ = 'AnyComponent', 'FastUI', 'prebuilt_html'
 
 
 class FastUI(pydantic.RootModel):
+    """
+    The root component of a FastUI application.
+    """
+
     root: list[AnyComponent]
 
 
@@ -15,6 +19,15 @@ _PREBUILT_CDN_URL = f'https://cdn.jsdelivr.net/npm/@pydantic/fastui-prebuilt@{_P
 
 
 def prebuilt_html(title: str = ''):
+    """
+    Returns a very simple HTML page which includes the FastUI react frontend, loaded from https://www.jsdelivr.com/.
+
+    Arguments:
+        title: page title
+
+    Returns:
+        HTML string which can be returned by an endpoint to serve the FastUI frontend.
+    """
     # language=HTML
     return f"""\
 <!doctype html>

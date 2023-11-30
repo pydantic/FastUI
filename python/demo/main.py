@@ -245,6 +245,6 @@ async def sse_generator() -> AsyncIterable[str]:
         await asyncio.sleep(0.09)
 
 
-@router.get('/sse', response_class=StreamingResponse)
-async def sse_experiment():
+@router.get('/sse')
+async def sse_experiment() -> StreamingResponse:
     return StreamingResponse(sse_generator(), media_type='text/event-stream')
