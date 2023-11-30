@@ -13,7 +13,7 @@ path = "python/fastui/__init__.py"
 
 [project]
 name = "fastui"
-description = "Build UIs fast."
+description = "Build better UIs faster."
 authors = [{ name = "Samuel Colvin", email = "s@muelcolvin.com" }]
 license = "MIT"
 readme = "README.md"
@@ -30,17 +30,18 @@ classifiers = [
     'Programming Language :: Python :: 3.12',
     "Intended Audience :: Developers",
     "Intended Audience :: Information Technology",
+    "Framework :: Pydantic :: 2",
+    "Framework :: FastAPI",
 ]
 requires-python = ">=3.8"
-dependencies = [
-    "pydantic>=2.5.2",
-    "fastapi>=0.104.0",
-]
+dependencies = ["pydantic>=2.5.2"]
 dynamic = ["version"]
+
+[project.optional-dependencies]
+fastapi = ["fastapi>=0.104"]
 
 [project.urls]
 Homepage = "https://github.com/samuelcolvin/FastUI"
-
 
 [tool.ruff]
 line-length = 120

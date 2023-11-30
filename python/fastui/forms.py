@@ -5,14 +5,18 @@ import typing
 from itertools import groupby
 from operator import itemgetter
 
-import fastapi
 import pydantic
 import pydantic_core
 import typing_extensions
 from pydantic_core import core_schema
-from starlette import datastructures as ds
 
 from . import events
+
+try:
+    import fastapi
+    from starlette import datastructures as ds
+except ImportError as e:
+    raise ImportError('fastui.dev requires fastapi to be installed, install with `pip install fastui[fastapi]`') from e
 
 if typing.TYPE_CHECKING:
     from . import json_schema

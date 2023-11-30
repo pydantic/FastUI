@@ -13,7 +13,6 @@ export default () => {
   }
 
   return defineConfig({
-    // @ts-expect-error - no need to type check this file
     plugins: [react()],
     resolve: {
       alias: {
@@ -24,5 +23,15 @@ export default () => {
     },
     server: serverConfig,
     preview: serverConfig,
+    build: {
+      sourcemap: true,
+      rollupOptions: {
+        output: {
+          entryFileNames: `assets/[name].js`,
+          chunkFileNames: `assets/[name].js`,
+          assetFileNames: `assets/[name].[ext]`,
+        },
+      },
+    },
   })
 }

@@ -11,7 +11,7 @@ install:
 update-lockfiles:
 	@echo "Updating requirements files using pip-compile"
 	pip-compile -q --strip-extras -o python/requirements/lint.txt python/requirements/lint.in
-	pip-compile -q --strip-extras -o python/requirements/pyproject.txt pyproject.toml
+	pip-compile -q --strip-extras -o python/requirements/pyproject.txt pyproject.toml --extra=fastapi
 	pip install --dry-run -r python/requirements/all.txt
 
 .PHONY: format
@@ -38,7 +38,7 @@ testcov: test
 
 .PHONY: dev
 dev:
-	uvicorn python.demo.main:app --reload
+	uvicorn python.demo:app --reload
 
 .PHONY: all
 all: testcov lint

@@ -4,9 +4,12 @@ import signal
 import typing
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
-from fastapi.responses import StreamingResponse
-from starlette import types
+try:
+    from fastapi import FastAPI
+    from fastapi.responses import StreamingResponse
+    from starlette import types
+except ImportError as e:
+    raise ImportError('fastui.dev requires fastapi to be installed, install with `pip install fastui[fastapi]`') from e
 
 
 def dev_fastapi_app(reload_path: str = '/api/__dev__/reload', **fastapi_kwargs) -> FastAPI:

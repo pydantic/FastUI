@@ -1,8 +1,9 @@
 {
   "name": "@pydantic/fastui-prebuilt",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Pre-built files for FastUI",
   "main": "dist/index.html",
+  "type": "module",
   "author": "Samuel Colvin",
   "license": "MIT",
   "homepage": "https://github.com/samuelcolvin/fastui",

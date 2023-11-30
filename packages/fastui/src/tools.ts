@@ -28,10 +28,16 @@ export function useSSE(url: string, onMessage: (data: any) => void): void {
       onMessage(data)
     }
     source.onerror = (e) => {
-      setError({ title: 'SSE Error', description: (e as any)?.message })
+      setError({ title: 'SSE Error', description: (e as any)?.message || `SSE error, URL '${url}'` })
     }
-    return () => {
+    const cleanup = () => {
+      source.onerror = null
       source.close()
+    }
+    window.addEventListener('beforeunload', cleanup)
+    return () => {
+      window.removeEventListener('beforeunload', cleanup)
+      cleanup()
     }
   }, [url, setError, onMessage])
 }

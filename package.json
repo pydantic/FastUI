@@ -5,7 +5,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run --workspace=fastui-prebuilt dev",
+    "dev": "npm run --workspace=@pydantic/fastui-prebuilt dev",
     "build": "npm run --workspaces prepublishOnly",
     "typecheck": "npm run --workspaces typecheck",
     "lint": "eslint packages --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
