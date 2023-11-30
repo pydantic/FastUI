@@ -25,6 +25,7 @@ export default () => {
     preview: serverConfig,
     build: {
       sourcemap: true,
+      // we don't need hashes in URLs, we the URL will change when we release a new version
       rollupOptions: {
         output: {
           entryFileNames: `assets/[name].js`,
