@@ -9,4 +9,4 @@ Packages:
 
 - npm: [`@pydantic/fastui`](https://www.npmjs.com/package/@pydantic/fastui)
 - npm: [`@pydantic/fastui-bootstrap`](https://www.npmjs.com/package/@pydantic/fastui-bootstrap)
-- cdn: [`@pydantic/fastui-prebuilt`](https://www.jsdelivr.com/package/npm/@pydantic/fastui-prebuilt) (via npm package)
+- cdn: [`@pydantic/fastui-prebuilt`](https://www.jsdelivr.com/package/npm/@pydantic/fastui-prebuilt) - jsdelivr via npm package

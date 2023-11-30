@@ -46,7 +46,7 @@ class FormFieldSelect(BaseFormField):
     options: list[forms.SelectOption] | list[forms.SelectGroup]
     multiple: bool | None = None
     initial: str | None = None
-    vanilla: bool | None = True
+    vanilla: bool | None = None
     placeholder: str | None = None
     type: typing.Literal['FormFieldSelect'] = 'FormFieldSelect'
 

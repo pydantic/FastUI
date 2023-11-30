@@ -70,7 +70,7 @@ assert x + y == 3
                         ),
                     ],
                 ),
-                c.ServerLoad(path='/sse', sse=True),
+                # c.ServerLoad(path='/sse', sse=True),
                 c.Modal(
                     title='Static Modal',
                     body=[c.Paragraph(text='This is some static content in a modal.')],
