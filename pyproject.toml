@@ -38,7 +38,10 @@ dependencies = ["pydantic>=2.5.2"]
 dynamic = ["version"]
 
 [project.optional-dependencies]
-fastapi = ["fastapi>=0.104"]
+fastapi = [
+    "fastapi>=0.104",
+    "python-multipart>=0.0.6",
+]
 
 [project.urls]
 Homepage = "https://github.com/samuelcolvin/FastUI"

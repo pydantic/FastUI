@@ -1,6 +1,6 @@
 {
   "name": "@pydantic/fastui-prebuilt",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Pre-built files for FastUI",
   "main": "dist/index.html",
   "type": "module",

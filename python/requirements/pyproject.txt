@@ -20,6 +20,8 @@ pydantic==2.5.2
     #   fastui (pyproject.toml)
 pydantic-core==2.14.5
     # via pydantic
+python-multipart==0.0.6
+    # via fastui (pyproject.toml)
 sniffio==1.3.0
     # via anyio
 starlette==0.27.0
