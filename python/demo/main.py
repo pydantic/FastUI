@@ -250,7 +250,7 @@ async def sse_experiment() -> StreamingResponse:
     return StreamingResponse(sse_generator(), media_type='text/event-stream')
 
 
-@router.get('/{path:path}')
+@router.get('/{path:path}', status_code=404)
 async def api_404():
     # so we don't fall through to the index page
     return {'message': 'Not Found'}
