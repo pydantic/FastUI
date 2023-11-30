@@ -19,8 +19,6 @@ export function useRequest(): (args: RequestArgs) => Promise<[number, any]> {
 }
 
 export function useSSE(url: string, onMessage: (data: any) => void): void {
-  const { setError } = useContext(ErrorContext)
-
   useEffect(() => {
     const source = new EventSource(url)
     source.onmessage = (e) => {
@@ -28,12 +26,19 @@ export function useSSE(url: string, onMessage: (data: any) => void): void {
       onMessage(data)
     }
     source.onerror = (e) => {
-      setError({ title: 'SSE Error', description: (e as any)?.message })
+      // we don't raise an error her as this can happen when the server is restarted
+      console.debug('SSE error', e)
     }
-    return () => {
+    const cleanup = () => {
+      source.onerror = null
       source.close()
     }
-  }, [url, setError, onMessage])
+    window.addEventListener('beforeunload', cleanup)
+    return () => {
+      window.removeEventListener('beforeunload', cleanup)
+      cleanup()
+    }
+  }, [url, onMessage])
 }
 
 export interface RequestArgs {

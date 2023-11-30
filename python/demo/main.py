@@ -1,39 +1,31 @@
 from __future__ import annotations as _annotations
 
 import asyncio
-import sys
 from collections import defaultdict
 from datetime import datetime
 from enum import StrEnum
-from typing import Annotated, Literal
+from typing import Annotated, AsyncIterable, Literal
 
-from fastapi import FastAPI, UploadFile
-from fastui import AnyComponent, FastUI, dev_fastapi_app
+from fastapi import APIRouter, Request, UploadFile
+from fastapi.responses import StreamingResponse
+from fastui import AnyComponent, FastUI
 from fastui import components as c
 from fastui.events import GoToEvent, PageEvent
 from fastui.forms import FormFile, FormResponse, SelectSearchResponse, fastui_form
 from httpx import AsyncClient
 from pydantic import BaseModel, Field, SecretStr, field_validator
 from pydantic_core import PydanticCustomError
-from sse_starlette import EventSourceResponse
 
 from .shared import navbar
-from .tables import router
 
-frontend_reload = '--reload' in sys.argv
-if frontend_reload:
-    # dev_fastapi_app reloads in the browser when the Python source changes
-    app = dev_fastapi_app()
-else:
-    app = FastAPI()
-app.include_router(router, prefix='/api/table')
+router = APIRouter()
 
 
 def panel(*components: AnyComponent) -> AnyComponent:
     return c.Div(class_name='col border rounded m-1 p-2 pb-3', components=list(components))
 
 
-@app.get('/api/', response_model=FastUI, response_model_exclude_none=True)
+@router.get('/', response_model=FastUI, response_model_exclude_none=True)
 def api_index() -> list[AnyComponent]:
     return [
         c.PageTitle(text='FastUI Demo'),
@@ -100,7 +92,7 @@ assert x + y == 3
     ]
 
 
-@app.get('/api/modal', response_model=FastUI, response_model_exclude_none=True)
+@router.get('/modal', response_model=FastUI, response_model_exclude_none=True)
 async def modal_view() -> list[AnyComponent]:
     await asyncio.sleep(0.5)
     return [c.Text(text='Modal Content Dynamic')]
@@ -144,30 +136,30 @@ class MyFormModel(BaseModel):
         return v
 
 
-@app.get('/api/search', response_model=SelectSearchResponse)
-async def search_view(q: str) -> SelectSearchResponse:
-    async with AsyncClient() as client:
-        path_ends = f'name/{q}' if q else 'all'
-        r = await client.get(f'https://restcountries.com/v3.1/{path_ends}')
-        if r.status_code == 404:
-            options = []
-        else:
-            r.raise_for_status()
-            data = r.json()
-            if path_ends == 'all':
-                # if we got all, filter to the 20 most populous countries
-                data.sort(key=lambda x: x['population'], reverse=True)
-                data = data[0:20]
-                data.sort(key=lambda x: x['name']['common'])
+@router.get('/search', response_model=SelectSearchResponse)
+async def search_view(request: Request, q: str) -> SelectSearchResponse:
+    path_ends = f'name/{q}' if q else 'all'
+    client: AsyncClient = request.app.state.httpx_client
+    r = await client.get(f'https://restcountries.com/v3.1/{path_ends}')
+    if r.status_code == 404:
+        options = []
+    else:
+        r.raise_for_status()
+        data = r.json()
+        if path_ends == 'all':
+            # if we got all, filter to the 20 most populous countries
+            data.sort(key=lambda x: x['population'], reverse=True)
+            data = data[0:20]
+            data.sort(key=lambda x: x['name']['common'])
 
-            regions = defaultdict(list)
-            for co in data:
-                regions[co['region']].append({'value': co['cca3'], 'label': co['name']['common']})
-            options = [{'label': k, 'options': v} for k, v in regions.items()]
+        regions = defaultdict(list)
+        for co in data:
+            regions[co['region']].append({'value': co['cca3'], 'label': co['name']['common']})
+        options = [{'label': k, 'options': v} for k, v in regions.items()]
     return SelectSearchResponse(options=options)
 
 
-@app.get('/api/form/{kind}', response_model=FastUI, response_model_exclude_none=True)
+@router.get('/form/{kind}', response_model=FastUI, response_model_exclude_none=True)
 def form_view(kind: Literal['one', 'two', 'three']) -> list[AnyComponent]:
     return [
         navbar(),
@@ -205,7 +197,7 @@ def form_view(kind: Literal['one', 'two', 'three']) -> list[AnyComponent]:
     ]
 
 
-@app.get('/api/form/content/{kind}', response_model=FastUI, response_model_exclude_none=True)
+@router.get('/form/content/{kind}', response_model=FastUI, response_model_exclude_none=True)
 def form_content(kind: Literal['one', 'two', 'three']):
     match kind:
         case 'one':
@@ -240,19 +232,19 @@ def form_content(kind: Literal['one', 'two', 'three']):
             raise ValueError(f'Invalid kind {kind!r}')
 
 
-@app.post('/api/form')
+@router.post('/form')
 async def form_post(form: Annotated[MyFormModel, fastui_form(MyFormModel)]) -> FormResponse:
     return FormResponse(event=GoToEvent(url='/'))
 
 
-async def sse_generator():
+async def sse_generator() -> AsyncIterable[str]:
     while True:
         d = datetime.now()
         m = FastUI(root=[c.Div(components=[c.Text(text=f'Time {d:%H:%M:%S.%f}'[:-4])], class_name='font-monospace')])
-        yield dict(data=m.model_dump_json(by_alias=True))
+        yield f'data: {m.model_dump_json(by_alias=True)}\n\n'
         await asyncio.sleep(0.09)
 
 
-@app.get('/api/sse', response_class=EventSourceResponse)
-async def sse_experiment():
-    return EventSourceResponse(sse_generator())
+@router.get('/sse')
+async def sse_experiment() -> StreamingResponse:
+    return StreamingResponse(sse_generator(), media_type='text/event-stream')

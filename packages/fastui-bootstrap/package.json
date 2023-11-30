@@ -1,8 +1,23 @@
 {
-  "name": "fastui-bootstrap",
-  "version": "0.0.0",
+  "name": "@pydantic/fastui-bootstrap",
+  "version": "0.0.6",
+  "description": "Boostrap renderer for FastUI",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "author": "Samuel Colvin",
+  "license": "MIT",
+  "homepage": "https://github.com/samuelcolvin/fastui",
+  "private": false,
+  "keywords": [
+    "fastui",
+    "bootstrap",
+    "jsx",
+    "typescript",
+    "react",
+    "fastapi"
+  ],
   "scripts": {
-    "build": "tsc",
+    "prepublishOnly": "rm -rf dist && tsc",
     "typecheck": "tsc --noEmit",
     "typewatch": "tsc --noEmit --watch"
   },
@@ -14,6 +29,6 @@
     "sass": "^1.69.5"
   },
   "peerDependencies": {
-    "fastui": "0.0.0"
+    "@pydantic/fastui": "0.0.6"
   }
 }

@@ -25,7 +25,15 @@ export default () => {
     server: serverConfig,
     preview: serverConfig,
     build: {
-      outDir: '../../packages-dist/vanilla',
+      sourcemap: true,
+      // we don't need hashes in URLs, we the URL will change when we release a new version
+      rollupOptions: {
+        output: {
+          entryFileNames: `assets/[name].js`,
+          chunkFileNames: `assets/[name].js`,
+          assetFileNames: `assets/[name].[ext]`,
+        },
+      },
     },
   })
 }
