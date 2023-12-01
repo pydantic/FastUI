@@ -1,3 +1,3 @@
 # FastUI
 
-[FastUI](https://github.com/samuelcolvin/FastUI) React library.
+React frontend for [FastUI](https://github.com/samuelcolvin/FastUI).
