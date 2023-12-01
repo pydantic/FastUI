@@ -6,6 +6,7 @@ import { DefaultSpinner, DefaultNotFound, DefaultTransition } from '../Defaults'
 import { ConfigContext } from '../hooks/config'
 import { PageEvent, usePageEventListen } from '../events'
 import { EventContextProvider, useEventContext } from '../hooks/eventContext'
+import { LocationContext } from '../hooks/locationContext'
 
 import { AnyCompList, FastProps } from './index'
 
@@ -51,6 +52,7 @@ export const ServerLoadFetch: FC<{ path: string; devReload?: number }> = ({ path
   const [componentProps, setComponentProps] = useState<FastProps[] | null>(null)
   const [notFoundUrl, setNotFoundUrl] = useState<string | undefined>(undefined)
 
+  const { fullPath } = useContext(LocationContext)
   const url = useServerUrl(path)
   const request = useRequest()
 
@@ -70,6 +72,10 @@ export const ServerLoadFetch: FC<{ path: string; devReload?: number }> = ({ path
       promise.then(() => null)
     }
   }, [url, request, devReload])
+
+  useEffect(() => {
+    setNotFoundUrl(undefined)
+  }, [fullPath])
 
   return <Render propsList={componentProps} notFoundUrl={notFoundUrl} transitioning={transitioning} />
 }
