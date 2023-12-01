@@ -1,6 +1,6 @@
 import { pathMatch } from 'fastui'
 
-import type { components, ClassNameGenerator, CustomRender, ClassName } from 'fastui'
+import type { ClassNameGenerator, CustomRender, ClassName } from 'fastui'
 
 import { Modal } from './modal'
 import { Navbar } from './navbar'
@@ -9,21 +9,12 @@ import { Pagination } from './pagination'
 export const customRender: CustomRender = (props) => {
   const { type } = props
   switch (type) {
-    case 'DisplayPrimitive':
-      return displayPrimitiveRender(props)
     case 'Navbar':
       return () => <Navbar {...props} />
     case 'Modal':
       return () => <Modal {...props} />
     case 'Pagination':
       return () => <Pagination {...props} />
-  }
-}
-
-function displayPrimitiveRender(props: components.DisplayPrimitiveProps) {
-  const { value } = props
-  if (typeof value === 'boolean') {
-    return () => <>{value ? '👍' : '👎'}</>
   }
 }
 

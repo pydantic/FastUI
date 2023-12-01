@@ -26,7 +26,11 @@ const MarkdownComp: FC<MarkdownProps> = (props) => {
   }
 
   return (
-    <Markdown className={useClassName(props)} remarkPlugins={[remarkGfm]} components={components}>
+    <Markdown
+      className={useClassName(props, { dft: 'fastui-markdown' })}
+      remarkPlugins={[remarkGfm]}
+      components={components}
+    >
       {text}
     </Markdown>
   )
@@ -75,7 +79,24 @@ interface MarkdownCodeProps {
 
 const MarkdownCode: FC<MarkdownCodeProps> = ({ children, className, codeStyle }) => {
   const match = /language-(\w+)/.exec(className || '')
-  const language = match ? match[1] : undefined
+  if (match) {
+    return (
+      <MarkdownCodeHighlight codeStyle={codeStyle} language={match[1]}>
+        {children}
+      </MarkdownCodeHighlight>
+    )
+  } else {
+    return <code className={className}>{children}</code>
+  }
+}
+
+interface MarkdownCodeHighlightProps {
+  children: ReactNode
+  language?: string
+  codeStyle?: string
+}
+
+const MarkdownCodeHighlight: FC<MarkdownCodeHighlightProps> = ({ children, codeStyle, language }) => {
   const codeProps: CodeProps = {
     type: 'Code',
     text: String(children).replace(/\n$/, ''),

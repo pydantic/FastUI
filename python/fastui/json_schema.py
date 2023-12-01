@@ -245,11 +245,6 @@ def special_string_field(
             )
 
 
-def select_options(schema: JsonSchemaStringEnum) -> list[SelectOption]:
-    enum_labels = schema.get('enum_labels', {})
-    return [SelectOption(value=v, label=enum_labels.get(v) or as_title(v)) for v in schema['enum']]
-
-
 def loc_to_name(loc: SchemeLocation) -> str:
     """
     Convert a loc to a string if any item contains a '.' or the first item starts with '[' then encode with JSON,
@@ -284,8 +279,9 @@ def deference_json_schema(
             not_null_schema = next(s for s in any_of if s.get('type') != 'null')
 
             # is there anything else apart from `default` we need to copy over?
-            if default := schema.get('default'):
-                not_null_schema['default'] = default  # type: ignore
+            for field in 'default', 'description':
+                if value := schema.get(field):
+                    not_null_schema[field] = value  # type: ignore
 
             return deference_json_schema(not_null_schema, defs, False)
         else:

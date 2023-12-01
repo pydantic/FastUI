@@ -104,8 +104,12 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     fullPath,
     goto: useCallback(
       (newPath) => {
-        const path = pushPath(newPath)
-        fireLoadEvent({ path })
+        if (newPath.startsWith('http')) {
+          window.location.href = newPath
+        } else {
+          const path = pushPath(newPath)
+          fireLoadEvent({ path })
+        }
       },
       [pushPath],
     ),
