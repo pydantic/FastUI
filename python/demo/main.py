@@ -31,6 +31,7 @@ The following components are demonstrated:
 * `ServerLoad` — see [dynamic modal example](/components#dynamic-modal) and [SSE example](/components#server-load-sse)
 * `Table` — See [cities table](/table/cities) and [users table](/table/users)
 * `Pagination` — See the bottom of the [cities table](/table/cities)
+* `ModelForm` — See [forms](/forms/login)
 """
     return demo_page(c.Markdown(text=markdown))
 

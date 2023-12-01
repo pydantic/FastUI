@@ -79,6 +79,10 @@ class FormFile:
         See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#unique_file_type_specifiers
         for details on what's allowed
         """
+        if file.size == 0:
+            # FIXME is this right???
+            return
+
         if self.max_size is not None and file.size is not None and file.size > self.max_size:
             raise pydantic_core.PydanticCustomError(
                 'file_no_big',

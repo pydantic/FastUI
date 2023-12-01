@@ -10,14 +10,21 @@ anyio==3.7.1
     # via
     #   fastapi
     #   starlette
+dnspython==2.4.2
+    # via email-validator
+email-validator==2.1.0.post1
+    # via pydantic
 fastapi==0.104.1
     # via fastui (pyproject.toml)
 idna==3.4
-    # via anyio
+    # via
+    #   anyio
+    #   email-validator
 pydantic==2.5.2
     # via
     #   fastapi
     #   fastui (pyproject.toml)
+    #   pydantic
 pydantic-core==2.14.5
     # via pydantic
 python-multipart==0.0.6

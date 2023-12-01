@@ -1,8 +1,9 @@
 from __future__ import annotations as _annotations
 
 from collections import defaultdict
+from datetime import date
 from enum import StrEnum
-from typing import Annotated, Literal
+from typing import Annotated, Literal, TypeAlias
 
 from fastapi import APIRouter, Request, UploadFile
 from fastui import AnyComponent, FastUI
@@ -10,50 +11,12 @@ from fastui import components as c
 from fastui.events import GoToEvent, PageEvent
 from fastui.forms import FormFile, FormResponse, SelectSearchResponse, fastui_form
 from httpx import AsyncClient
-from pydantic import BaseModel, Field, SecretStr, field_validator
+from pydantic import BaseModel, EmailStr, Field, SecretStr, field_validator
 from pydantic_core import PydanticCustomError
 
 from .shared import demo_page
 
 router = APIRouter()
-
-
-class NestedFormModel(BaseModel):
-    # x: int
-    # profile_view: HttpUrl
-    profile_view: str
-
-
-class ToolEnum(StrEnum):
-    hammer = 'hammer'
-    screwdriver = 'screwdriver'
-    saw = 'saw'
-    claw_hammer = 'claw_hammer'
-
-
-class MyFormModel(BaseModel):
-    name: str = Field(default='foobar', title='Name', min_length=3, description='Your name')
-    # tool: ToolEnum = Field(json_schema_extra={'enum_labels': {'hammer': 'Big Hammer'}})
-    task: Literal['build', 'destroy'] | None = 'build'
-    tasks: set[Literal['build', 'destroy']]
-    profile_pic: Annotated[UploadFile, FormFile(accept='image/*', max_size=16_000)]
-    # profile_pics: Annotated[list[UploadFile], FormFile(accept='image/*', max_size=400)]
-    # binary: bytes
-
-    # dob: date = Field(title='Date of Birth', description='Your date of birth')
-    # weight: typing.Annotated[int, annotated_types.Gt(0)]
-    # size: PositiveInt = None
-    # enabled: bool = False
-    # nested: NestedFormModel
-    password: SecretStr
-    search: str = Field(json_schema_extra={'search_url': '/api/forms/search'})
-    searches: list[str] = Field(json_schema_extra={'search_url': '/api/forms/search'})
-
-    @field_validator('name')
-    def name_validator(cls, v: str) -> str:
-        if v[0].islower():
-            raise PydanticCustomError('lower', 'Name must start with a capital letter')
-        return v
 
 
 @router.get('/search', response_model=SelectSearchResponse)
@@ -79,28 +42,32 @@ async def search_view(request: Request, q: str) -> SelectSearchResponse:
     return SelectSearchResponse(options=options)
 
 
+FormKind: TypeAlias = Literal['login', 'select', 'big']
+
+
 @router.get('/{kind}', response_model=FastUI, response_model_exclude_none=True)
-def form_view(kind: Literal['one', 'two', 'three']) -> list[AnyComponent]:
+def forms_view(kind: FormKind) -> list[AnyComponent]:
     return demo_page(
         c.LinkList(
             links=[
                 c.Link(
-                    components=[c.Text(text='Form One')],
-                    on_click=PageEvent(name='change-form', push_path='/forms/one', context={'kind': 'one'}),
-                    active='/forms/one',
+                    components=[c.Text(text='Login Form')],
+                    on_click=PageEvent(name='change-form', push_path='/forms/login', context={'kind': 'login'}),
+                    active='/forms/login',
                 ),
                 c.Link(
-                    components=[c.Text(text='Form Two')],
-                    on_click=PageEvent(name='change-form', push_path='/forms/two', context={'kind': 'two'}),
-                    active='/forms/two',
+                    components=[c.Text(text='Select Form')],
+                    on_click=PageEvent(name='change-form', push_path='/forms/select', context={'kind': 'select'}),
+                    active='/forms/select',
                 ),
                 c.Link(
-                    components=[c.Text(text='Form Three')],
-                    on_click=PageEvent(name='change-form', push_path='/forms/three', context={'kind': 'three'}),
-                    active='/forms/three',
+                    components=[c.Text(text='Big Form')],
+                    on_click=PageEvent(name='change-form', push_path='/forms/big', context={'kind': 'big'}),
+                    active='/forms/big',
                 ),
             ],
             mode='tabs',
+            class_name='+ mb-4',
         ),
         c.ServerLoad(
             path='/forms/content/{kind}',
@@ -112,33 +79,32 @@ def form_view(kind: Literal['one', 'two', 'three']) -> list[AnyComponent]:
 
 
 @router.get('/content/{kind}', response_model=FastUI, response_model_exclude_none=True)
-def form_content(kind: Literal['one', 'two', 'three']):
+def form_content(kind: FormKind):
     match kind:
-        case 'one':
+        case 'login':
             return [
-                c.Heading(text='Form One', level=2),
-                c.ModelForm[MyFormModel](
-                    submit_url='/api/form',
-                    success_event=PageEvent(name='form_success'),
-                    # footer=[
-                    #     c.Button(text='Cancel', on_click=GoToEvent(url='/')),
-                    #     c.Button(text='Submit', html_type='submit'),
-                    # ]
-                ),
-            ]
-        case 'two':
-            return [
-                c.Heading(text='Form Two', level=2),
-                c.ModelForm[MyFormModel](
-                    submit_url='/api/form',
+                c.Heading(text='Login Form', level=2),
+                c.Paragraph(text='Simple login form with email and password.'),
+                c.ModelForm[LoginForm](
+                    submit_url='/api/forms/login',
                     success_event=PageEvent(name='form_success'),
                 ),
             ]
-        case 'three':
+        case 'select':
             return [
-                c.Heading(text='Form Three', level=2),
-                c.ModelForm[MyFormModel](
-                    submit_url='/api/form',
+                c.Heading(text='Select Form', level=2),
+                c.Paragraph(text='Form showing different ways of doing select.'),
+                c.ModelForm[SelectForm](
+                    submit_url='/api/forms/select',
+                    success_event=PageEvent(name='form_success'),
+                ),
+            ]
+        case 'big':
+            return [
+                c.Heading(text='Large Form', level=2),
+                c.Paragraph(text='Form with a lot of fields.'),
+                c.ModelForm[BigModel](
+                    submit_url='/api/forms/big',
                     success_event=PageEvent(name='form_success'),
                 ),
             ]
@@ -146,6 +112,64 @@ def form_content(kind: Literal['one', 'two', 'three']):
             raise ValueError(f'Invalid kind {kind!r}')
 
 
-@router.post('/form')
-async def form_post(form: Annotated[MyFormModel, fastui_form(MyFormModel)]) -> FormResponse:
+class LoginForm(BaseModel):
+    email: EmailStr = Field(title='Email Address', description="Try 'x@y' to trigger server side validation")
+    password: SecretStr
+
+
+@router.post('/login')
+async def login_form_post(form: Annotated[LoginForm, fastui_form(LoginForm)]) -> FormResponse:
+    # print(form)
+    return FormResponse(event=GoToEvent(url='/'))
+
+
+class ToolEnum(StrEnum):
+    hammer = 'hammer'
+    screwdriver = 'screwdriver'
+    saw = 'saw'
+    claw_hammer = 'claw_hammer'
+
+
+class SelectForm(BaseModel):
+    select_single: ToolEnum = Field(title='Select Single')
+    select_multiple: list[ToolEnum] = Field(title='Select Multiple')
+    search_select_single: str = Field(json_schema_extra={'search_url': '/api/forms/search'})
+    search_select_multiple: list[str] = Field(json_schema_extra={'search_url': '/api/forms/search'})
+
+
+@router.post('/select')
+async def select_form_post(form: Annotated[SelectForm, fastui_form(SelectForm)]) -> FormResponse:
+    # print(form)
+    return FormResponse(event=GoToEvent(url='/'))
+
+
+class SizeModel(BaseModel):
+    width: int = Field(description='This is a field of a nested model')
+    height: int = Field(description='This is a field of a nested model')
+
+
+class BigModel(BaseModel):
+    name: str | None = Field(
+        None, description='This field is not required, it must start with a capital letter if provided'
+    )
+    profile_pic: Annotated[UploadFile, FormFile(accept='image/*', max_size=16_000)] = Field(
+        description='Upload a profile picture, must not be more than 16kb'
+    )
+    profile_pics: Annotated[list[UploadFile], FormFile(accept='image/*')] | None = Field(
+        None, description='Upload multiple images'
+    )
+
+    dob: date = Field(title='Date of Birth', description='Your date of birth, this is required hence bold')
+    size: SizeModel
+
+    @field_validator('name')
+    def name_validator(cls, v: str | None) -> str:
+        if v and v[0].islower():
+            raise PydanticCustomError('lower', 'Name must start with a capital letter')
+        return v
+
+
+@router.post('/big')
+async def big_form_post(form: Annotated[BigModel, fastui_form(BigModel)]) -> FormResponse:
+    # print(form)
     return FormResponse(event=GoToEvent(url='/'))

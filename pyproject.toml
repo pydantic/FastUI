@@ -34,7 +34,7 @@ classifiers = [
     "Framework :: FastAPI",
 ]
 requires-python = ">=3.8"
-dependencies = ["pydantic>=2.5.2"]
+dependencies = ["pydantic[email]>=2.5.2"]
 dynamic = ["version"]
 
 [project.optional-dependencies]
