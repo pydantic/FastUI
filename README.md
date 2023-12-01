@@ -113,7 +113,7 @@ async def html_landing() -> HTMLResponse:
 
 Which renders like this:
 
-![screenshot](./screenshot.png)
+![screenshot](https://raw.githubusercontent.com/samuelcolvin/FastUI/main/screenshot.png)
 
 Of course, that's a very simple application, the [full demo](https://fastui-demo.onrender.com) is more complete.
 
