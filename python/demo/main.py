@@ -13,7 +13,8 @@ router = APIRouter()
 def api_index() -> list[AnyComponent]:
     # language=markdown
     markdown = """\
-This site providers a demo of [FastUI](https://github.com/samuelcolvin/FastUI).
+This site providers a demo of [FastUI](https://github.com/samuelcolvin/FastUI), the code for the demo\
+is [here](https://github.com/samuelcolvin/FastUI/tree/main/python/demo).
 
 The following components are demonstrated:
 
