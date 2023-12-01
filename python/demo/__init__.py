@@ -9,6 +9,8 @@ from fastui import prebuilt_html
 from fastui.dev import dev_fastapi_app
 from httpx import AsyncClient
 
+from .components_list import router as components_router
+from .forms import router as forms_router
 from .main import router as main_router
 from .tables import router as table_router
 
@@ -27,7 +29,9 @@ if frontend_reload:
 else:
     app = FastAPI(lifespan=lifespan)
 
+app.include_router(components_router, prefix='/api/components')
 app.include_router(table_router, prefix='/api/table')
+app.include_router(forms_router, prefix='/api/forms')
 app.include_router(main_router, prefix='/api')
 
 

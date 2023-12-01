@@ -119,14 +119,14 @@ Of course, that's a very simple application, the [full demo](https://fastui-demo
 
 ### Components
 
-FastUI already defines the following components:
+FastUI already defines the following components, all are shown in the [demo app](https://fastui-demo.onrender.com):
 
 - `Text` - renders a string
 - `Paragraph` - renders a string as a paragraph
 - `PageTitle` - renders nothing, sets the HTML page title
 - `Div` - renders a `<div>` with arbitrary components inside
-- `Page` - a container for components, [example](https://fastui-demo.onrender.com)
-- `Heading` - renders a heading `<h1>` to `<h6>`, [example](https://fastui-demo.onrender.com)
+- `Page` - a container for components
+- `Heading` - renders a heading `<h1>` to `<h6>`
 - `Markdown` - renders markdown, [example](https://fastui-demo.onrender.com)
 - `Code` - renders code with highlighting in a `<pre>`
 - `Button` - renders a `<button>`

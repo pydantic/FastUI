@@ -1,6 +1,7 @@
 import { FC } from 'react'
 
 import { ClassName, useClassName } from '../hooks/className'
+import { slugify } from '../tools'
 
 export interface HeadingProps {
   type: 'Heading'
@@ -13,7 +14,7 @@ export interface HeadingProps {
 export const HeadingComp: FC<HeadingProps> = (props) => {
   const { level, text, htmlId } = props
   const HeadingComponent = getComponent(level)
-  return <HeadingComponent text={text} id={htmlId} className={useClassName(props)} />
+  return <HeadingComponent text={text} id={htmlId || slugify(text)} className={useClassName(props)} />
 }
 
 function getComponent(level: 1 | 2 | 3 | 4 | 5 | 6): FC<{ text: string; id?: string; className?: string }> {

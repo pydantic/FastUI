@@ -62,6 +62,16 @@ export const ServerLoadFetch: FC<{ path: string; devReload?: number }> = ({ path
     promise.then(([status, data]) => {
       if (status === 200) {
         setComponentProps(data as FastProps[])
+        // if there's a fragment, scroll to that ID once the page is loaded
+        const fragment = getFragment(path)
+        if (fragment) {
+          setTimeout(() => {
+            const element = document.getElementById(fragment)
+            if (element) {
+              element.scrollIntoView()
+            }
+          }, 50)
+        }
       } else {
         setNotFoundUrl(url)
       }
@@ -71,7 +81,7 @@ export const ServerLoadFetch: FC<{ path: string; devReload?: number }> = ({ path
     return () => {
       promise.then(() => null)
     }
-  }, [url, request, devReload])
+  }, [url, path, request, devReload])
 
   useEffect(() => {
     setNotFoundUrl(undefined)
@@ -127,5 +137,12 @@ function useServerUrl(path: string): string {
     return `${rootUrl}?path=${encodeURIComponent(requestPath)}`
   } else {
     return rootUrl + requestPath
+  }
+}
+
+function getFragment(path: string): string | undefined {
+  const index = path.indexOf('#')
+  if (index !== -1) {
+    return path.slice(index + 1)
   }
 }
