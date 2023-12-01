@@ -15,11 +15,11 @@ FastUI is a new way to build web application user interfaces defined by declarat
 
 This means:
 
-- **If you're a Python developer** — you can build responsive web applications using React without writing a single line of Java/TypeScript.
+- **If you're a Python developer** — you can build responsive web applications using React without writing a single line of JavaScript, or touching `npm`.
 - **If you're a frontend developer** — you can concentrate on building magical components that are truly reusable, no copy-pasting components for each view.
 - **For everyone** — a true separation of concerns, the backend defines the entire application; while the frontend is free to implement just the user interface
 
-At its heart, **FastUI** is a set of matching [Pydantic](https://docs.pydantic.dev) models and TypeScript interfaces that allow you to define a user interface. This interface is validated at build time by TypeScript and pyright/mypy and at runtime by Pydantic.
+At its heart, FastUI is a set of matching [Pydantic](https://docs.pydantic.dev) models and TypeScript interfaces that allow you to define a user interface. This interface is validated at build time by TypeScript and pyright/mypy and at runtime by Pydantic.
 
 ## The Practice — Usage
 
@@ -37,10 +37,10 @@ from datetime import date
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
-from pydantic import BaseModel, Field
 from fastui import FastUI, AnyComponent, prebuilt_html, components as c
 from fastui.components.display import DisplayMode, DisplayLookup
 from fastui.events import GoToEvent, BackEvent
+from pydantic import BaseModel, Field
 
 app = FastAPI()
 
@@ -111,6 +111,12 @@ async def html_landing() -> HTMLResponse:
     return HTMLResponse(prebuilt_html(title='FastUI Demo'))
 ```
 
+Which renders like this:
+
+![screenshot](./screenshot.png)
+
+Of course, that's a very simple application, the [full demo](https://fastui-demo.onrender.com) is more complete.
+
 ### Components
 
 FastUI already defines the following components:
@@ -118,8 +124,8 @@ FastUI already defines the following components:
 - `Text` - renders a string
 - `Paragraph` - renders a string as a paragraph
 - `PageTitle` - renders nothing, sets the HTML page title
-- `Div` - renders a `<div>` with arbitrary components inside`
-- `Page` - a container for components`, [example](https://fastui-demo.onrender.com)
+- `Div` - renders a `<div>` with arbitrary components inside
+- `Page` - a container for components, [example](https://fastui-demo.onrender.com)
 - `Heading` - renders a heading `<h1>` to `<h6>`, [example](https://fastui-demo.onrender.com)
 - `Markdown` - renders markdown, [example](https://fastui-demo.onrender.com)
 - `Code` - renders code with highlighting in a `<pre>`
@@ -143,17 +149,17 @@ FastUI already defines the following components:
 
 ## The Principle (long version)
 
-FastUI is an implementation of the RESTful principle; but not as it's usually understood, instead I mean the principle defined in the original [pHD disseration](https://ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) by Roy Fielding, and excellently summarised in [this essay on htmx.org](https://htmx.org/essays/how-did-rest-come-to-mean-the-opposite-of-rest/) (HTMX people, I'm sorry to use your excellent article to promote React 🙏 which I know you fundamentally disagree with).
+FastUI is an implementation of the RESTful principle; but not as it's usually understood, instead I mean the principle defined in the original [pHD dissertation](https://ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) by Roy Fielding, and excellently summarised in [this essay on htmx.org](https://htmx.org/essays/how-did-rest-come-to-mean-the-opposite-of-rest/) (HTMX people, I'm sorry to use your article to promote React which I know you despise 🙏).
 
 The RESTful principle as described in the HTMX article is that the frontend doesn't need to (and shouldn't) know anything about the application your building. Instead, it should just provide all the components you need to construct the interface, the backend can then tell the frontend what to do.
 
-Think of your frontend as a puppet, and the backend as the hand within it.
+Think of your frontend as a puppet, and the backend as the hand within it — the uppet doesn't need to know what to say, that's kind of the point.
 
 Building an application this way has a number of significant advantages:
 
-- you only need to write code in one place to build a new feature, add a new view, change the behavior of an existing view or alter the URL structure
+- you only need to write code in one place to build a new feature — add a new view, change the behavior of an existing view or alter the URL structure
 - deploying the front and backend can be completely decoupled, provided the frontend knows how to render all the components the backend is going to ask it to use, you're good to go
-- You should be able to reuse a rich set of opensource components, they should end up being better tested and more reliable than anything you could build yourself (note: since FastUI is brand new, this isn't true yet, hopefully we get there)
+- You should be able to reuse a rich set of opensource components, they should end up being better tested and more reliable than anything you could build yourself, this is possible because the components need no context about how they're going to be used (note: since FastUI is brand new, this isn't true yet, hopefully we get there)
 - We can use Pydantic, TypeScript and JSON Schema to provide guarantees that the two sides are communicating with an agreed schema (note: this is not complete yet, see [#TODO](#))
 
 In the abstract, FastUI is like the opposite of GraphQL but with the same goal — GraphQL lets frontend developers extend an application without any new backend development; FastUI lets backend developers extend an application without any new frontend development.
@@ -164,7 +170,7 @@ Of course, this principle shouldn't be limited to Python and React applications 
 
 This could mean:
 
-- implementing web a frontend using other JS frameworks like Vue — lots of work, limited value IMHO
+- implementing web a frontend using another JS framework like Vue — lots of work, limited value IMHO
 - implementing web a frontend using an edge server, so the browser just sees HTML — lots of work but very valuable
-- implementing frontends for other platforms like mobile or IOT — lots of work, no idea if it's a good idea
-- implementing the component models in other web frameworks, e.g. in Rust or Go — since there's actually not that much code in the backend, this would be a relatively small and mechanical task
+- implementing frontends for other platforms like mobile or IOT — lots of work, no idea if it's actually a good idea?
+- implementing the component models in another language like Rust or Go — since there's actually not that much code in the backend, so this would be a relatively small and mechanical task
