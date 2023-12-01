@@ -25,9 +25,9 @@ At its heart, FastUI is a set of matching [Pydantic](https://docs.pydantic.dev) 
 
 FastUI is made up of 4 things:
 
-- [`fastui` PyPI package](https://pypi.python.org/pypi/fastui) - Pydantic models for UI components, and some utilities. While it works well with [FastAPI](https://fastapi.tiangolo.com) it doesn't depend on FastAPI, and most of it could be used with any python web framework.
-- [`@pydantic/fastui` npm package](https://www.npmjs.com/package/@pydantic/fastui) - a React TypeScript package that let's you reuse the machinery and types of FastUI while implementing your own components
-- [`@pydantic/fastui-bootstrap` npm package](https://www.npmjs.com/package/@pydantic/fastui-bootstrap) - implementation/customisation of all FastUI components using [Bootstrap](https://getbootstrap.com)
+- [`fastui` PyPI package](https://pypi.python.org/pypi/fastui) — Pydantic models for UI components, and some utilities. While it works well with [FastAPI](https://fastapi.tiangolo.com) it doesn't depend on FastAPI, and most of it could be used with any python web framework.
+- [`@pydantic/fastui` npm package](https://www.npmjs.com/package/@pydantic/fastui) — a React TypeScript package that let's you reuse the machinery and types of FastUI while implementing your own components
+- [`@pydantic/fastui-bootstrap` npm package](https://www.npmjs.com/package/@pydantic/fastui-bootstrap) — implementation/customisation of all FastUI components using [Bootstrap](https://getbootstrap.com)
 - [`@pydantic/fastui-prebuilt` npm package](https://www.jsdelivr.com/package/npm/@pydantic/fastui-prebuilt) (available on [jsdelivr.com CDN](https://www.jsdelivr.com/package/npm/@pydantic/fastui-prebuilt)) providing a pre-built version of the FastUI React app so you can use it without installing any npm packages or building anything yourself. The Python package provides a simple HTML page to serve this app.
 
 Here's a simple but complete FastAPI application that uses FastUI to show some user profiles:
@@ -121,31 +121,31 @@ Of course, that's a very simple application, the [full demo](https://fastui-demo
 
 FastUI already defines the following components, all are shown in the [demo app](https://fastui-demo.onrender.com):
 
-- `Text` - renders a string
-- `Paragraph` - renders a string as a paragraph
-- `PageTitle` - renders nothing, sets the HTML page title
-- `Div` - renders a `<div>` with arbitrary components inside
-- `Page` - a container for components
-- `Heading` - renders a heading `<h1>` to `<h6>`
-- `Markdown` - renders markdown, [example](https://fastui-demo.onrender.com)
-- `Code` - renders code with highlighting in a `<pre>`
-- `Button` - renders a `<button>`
-- `Link` - renders a link `<a>`
-- `LinkList` - renders a list of links
-- `Navbar` - renders a navbar `<nav>`
-- `Modal` - renders a modal dialog that opens triggered by an event
-- `ServerLoad` - render components fetched from the server, also provides SSE mode to update components based on server sent events
-- `Table` - renders a table
-- `Details` - renders a table of key/value pairs as a `<dl>`
-- `Display` - renders a value based on a display mode
-- `Table` - renders a table from a list of Pydantic models
-- `Pagination` - renders a pagination component
-- `FormFieldInput` - renders a form field using `<input>`
-- `FormFieldCheckbox` - renders a form field for a boolean using `<input type="checkbox">`
-- `FormFieldSelect` - renders a form field using `<select>` or [react-select](https://react-select.com)
-- `FormFieldSelectSearch` - renders a form field using [react-select](https://react-select.com) with options updated from the server on search
-- `Form` - renders a form using a list of `FormField` components
-- `ModelForm` - renders a form based on a Pydantic model; the model's JSON Schema is used to build a list of `FormField` components
+- `Text` — renders a string
+- `Paragraph` — renders a string as a paragraph
+- `PageTitle` — renders nothing, sets the HTML page title
+- `Div` — renders a `<div>` with arbitrary components inside
+- `Page` — a container for components
+- `Heading` — renders a heading `<h1>` to `<h6>`
+- `Markdown` — renders markdown, [example](https://fastui-demo.onrender.com)
+- `Code` — renders code with highlighting in a `<pre>`
+- `Button` — renders a `<button>`
+- `Link` — renders a link `<a>`
+- `LinkList` — renders a list of links
+- `Navbar` — renders a navbar `<nav>`
+- `Modal` — renders a modal dialog that opens triggered by an event
+- `ServerLoad` — render components fetched from the server, also provides SSE mode to update components based on server sent events
+- `Table` — renders a table
+- `Details` — renders a table of key/value pairs as a `<dl>`
+- `Display` — renders a value based on a display mode
+- `Table` — renders a table from a list of Pydantic models
+- `Pagination` — renders a pagination component
+- `FormFieldInput` — renders a form field using `<input>`
+- `FormFieldCheckbox` — renders a form field for a boolean using `<input type="checkbox">`
+- `FormFieldSelect` — renders a form field using `<select>` or [react-select](https://react-select.com)
+- `FormFieldSelectSearch` — renders a form field using [react-select](https://react-select.com) with options updated from the server on search
+- `Form` — renders a form using a list of `FormField` components
+- `ModelForm` — renders a form based on a Pydantic model; the model's JSON Schema is used to build a list of `FormField` components
 
 ## The Principle (long version)
 
@@ -160,7 +160,7 @@ Building an application this way has a number of significant advantages:
 - you only need to write code in one place to build a new feature — add a new view, change the behavior of an existing view or alter the URL structure
 - deploying the front and backend can be completely decoupled, provided the frontend knows how to render all the components the backend is going to ask it to use, you're good to go
 - You should be able to reuse a rich set of opensource components, they should end up being better tested and more reliable than anything you could build yourself, this is possible because the components need no context about how they're going to be used (note: since FastUI is brand new, this isn't true yet, hopefully we get there)
-- We can use Pydantic, TypeScript and JSON Schema to provide guarantees that the two sides are communicating with an agreed schema (note: this is not complete yet, see [#TODO](#))
+- We can use Pydantic, TypeScript and JSON Schema to provide guarantees that the two sides are communicating with an agreed schema (note: this is not complete yet, see [#18](https://github.com/samuelcolvin/FastUI/issues/18))
 
 In the abstract, FastUI is like the opposite of GraphQL but with the same goal — GraphQL lets frontend developers extend an application without any new backend development; FastUI lets backend developers extend an application without any new frontend development.
 
