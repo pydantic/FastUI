@@ -153,7 +153,7 @@ FastUI is an implementation of the RESTful principle; but not as it's usually un
 
 The RESTful principle as described in the HTMX article is that the frontend doesn't need to (and shouldn't) know anything about the application your building. Instead, it should just provide all the components you need to construct the interface, the backend can then tell the frontend what to do.
 
-Think of your frontend as a puppet, and the backend as the hand within it — the uppet doesn't need to know what to say, that's kind of the point.
+Think of your frontend as a puppet, and the backend as the hand within it — the puppet doesn't need to know what to say, that's kind of the point.
 
 Building an application this way has a number of significant advantages:
 
