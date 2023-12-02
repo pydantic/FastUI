@@ -38,6 +38,6 @@
     "typescript": "^5.0.2"
   },
   "dependencies": {
-    "buckaroo": "^0.4.8"
+    "buckaroo-dfviewer": "^0.4.9"
   }
 }
