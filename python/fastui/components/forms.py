@@ -34,6 +34,7 @@ class FormFieldInput(BaseFormField):
 class FormFieldCheckbox(BaseFormField):
     initial: bool | None = None
     type: typing.Literal['FormFieldCheckbox'] = 'FormFieldCheckbox'
+    mode: typing.Literal['checkbox', 'switch'] = 'checkbox'
 
 
 class FormFieldFile(BaseFormField):

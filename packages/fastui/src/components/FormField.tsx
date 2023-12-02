@@ -55,6 +55,7 @@ export const FormFieldInputComp: FC<FormFieldInputProps> = (props) => {
 
 interface FormFieldCheckboxProps extends BaseFormFieldProps {
   type: 'FormFieldCheckbox'
+  mode: 'checkbox'
   initial?: boolean
 }
 

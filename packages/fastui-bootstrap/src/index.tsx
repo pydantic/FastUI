@@ -58,8 +58,20 @@ export const classNameGenerator: ClassNameGenerator = ({ props, fullPath, subEle
             return 'col-md-4'
         }
       }
-    case 'FormFieldInput':
     case 'FormFieldCheckbox':
+      switch (subElement) {
+        case 'input':
+          return props.error ? 'is-invalid form-check-input' : 'form-check-input'
+        case 'label':
+          return 'form-check-label'
+        case 'error':
+          return 'invalid-feedback'
+        case 'description':
+          return 'form-text'
+        default:
+          return props.mode === 'checkbox' ? 'form-check' : 'form-check form-switch'
+      }
+    case 'FormFieldInput':
     case 'FormFieldSelect':
     case 'FormFieldSelectSearch':
     case 'FormFieldFile':

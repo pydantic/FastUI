@@ -74,6 +74,7 @@ class JsonSchemaFile(JsonSchemaBase, total=False):
 class JsonSchemaBool(JsonSchemaBase, total=False):
     type: Required[Literal['boolean']]
     default: bool
+    mode: Literal['checkbox', 'switch']
 
 
 class JsonSchemaInt(JsonSchemaBase, total=False):
@@ -175,6 +176,7 @@ def json_schema_field_to_field(
             required=required,
             initial=schema.get('default'),
             description=schema.get('description'),
+            mode=schema.get('mode', 'checkbox'),
         )
     elif field := special_string_field(schema, name, title, required, False):
         return field
