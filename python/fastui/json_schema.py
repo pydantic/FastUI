@@ -3,9 +3,10 @@ from __future__ import annotations as _annotations
 import json
 import re
 import typing
-from typing import Iterable, Literal, Required, TypeAlias, TypedDict, TypeGuard, cast
+from typing import Iterable, Literal, TypeAlias, TypedDict, TypeGuard, cast
 
 from pydantic import BaseModel
+from typing_extensions import Required
 
 from .components.forms import (
     FormField,
@@ -31,9 +32,9 @@ def model_json_schema_to_fields(model: type[BaseModel]) -> list[FormField]:
     return list(json_schema_obj_to_fields(schema, [], [], defs))
 
 
-JsonSchemaInput: TypeAlias = (
-    'JsonSchemaString | JsonSchemaStringEnum | JsonSchemaFile | JsonSchemaInt | JsonSchemaNumber'
-)
+JsonSchemaInput: (
+    TypeAlias
+) = 'JsonSchemaString | JsonSchemaStringEnum | JsonSchemaFile | JsonSchemaInt | JsonSchemaNumber'
 JsonSchemaField: TypeAlias = 'JsonSchemaInput | JsonSchemaBool'
 JsonSchemaConcrete: TypeAlias = 'JsonSchemaField | JsonSchemaArray | JsonSchemaObject'
 JsonSchemaAny: TypeAlias = 'JsonSchemaConcrete | JsonSchemaAnyOf | JsonSchemaAllOf | JsonSchemaRef'
