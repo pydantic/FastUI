@@ -170,6 +170,7 @@ class ServerLoad(pydantic.BaseModel, extra='forbid'):
     sse: bool | None = None
     type: typing.Literal['ServerLoad'] = 'ServerLoad'
 
+
 class Image(pydantic.BaseModel, extra='forbid'):
     src: str
     alt: str | None = None
