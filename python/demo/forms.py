@@ -165,7 +165,7 @@ class BigModel(BaseModel):
     address: tuple[
         Annotated[str, Field(description='Main Address')],
         Annotated[str | None, Field(description='Secondary Address')],
-        Annotated[str | None, Field(description='Business Address')]
+        Annotated[str | None, Field(description='Business Address')],
     ]
 
     @field_validator('name')
