@@ -32,6 +32,7 @@ if typing.TYPE_CHECKING:
 __all__ = (
     'AnyComponent',
     'Text',
+    'Marquee',
     'Div',
     'Page',
     'Heading',
@@ -58,6 +59,11 @@ class Text(pydantic.BaseModel, extra='forbid'):
 class Paragraph(pydantic.BaseModel, extra='forbid'):
     text: str
     type: typing.Literal['Paragraph'] = 'Paragraph'
+
+
+class Marquee(pydantic.BaseModel, extra='forbid'):
+    text: str
+    type: typing.Literal['Marquee'] = 'Marquee'
 
 
 class PageTitle(pydantic.BaseModel, extra='forbid'):
@@ -173,6 +179,7 @@ class ServerLoad(pydantic.BaseModel, extra='forbid'):
 AnyComponent = typing.Annotated[
     Text
     | Paragraph
+    | Marquee
     | PageTitle
     | Div
     | Page

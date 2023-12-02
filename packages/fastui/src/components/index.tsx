@@ -6,6 +6,7 @@ import { unreachable } from '../tools'
 
 import { TextProps, TextComp } from './text'
 import { ParagraphProps, ParagraphComp } from './paragraph'
+import { MarqueeProps, MarqueeComp } from './marquee'
 import { PageTitleProps, PageTitleComp } from './PageTitle'
 import { AllDivProps, DivComp, DivProps } from './div'
 import { HeadingComp, HeadingProps } from './heading'
@@ -42,6 +43,7 @@ import { ServerLoadComp, ServerLoadProps } from './ServerLoad'
 export type {
   TextProps,
   ParagraphProps,
+  MarqueeProps,
   PageTitleProps,
   AllDivProps,
   DivProps,
@@ -71,6 +73,7 @@ export { LinkComp, LinkRender }
 export type FastProps =
   | TextProps
   | ParagraphProps
+  | MarqueeProps
   | PageTitleProps
   | AllDivProps
   | DivProps
@@ -117,6 +120,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <TextComp {...props} />
       case 'Paragraph':
         return <ParagraphComp {...props} />
+      case 'Marquee':
+        return <MarqueeComp {...props} />
       case 'PageTitle':
         return <PageTitleComp {...props} />
       case 'Div':

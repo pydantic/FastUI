@@ -37,6 +37,13 @@ def components_view() -> list[AnyComponent]:
         ),
         c.Div(
             components=[
+                c.Heading(text='Marquee', level=2),
+                c.Marquee(text='This is basic example of marquee.'),
+            ],
+            class_name='border-top mt-3 pt-1',
+        ),
+        c.Div(
+            components=[
                 c.Heading(text='Heading', level=2),
                 c.Heading(text='This is an H3', level=3),
                 c.Heading(text='This is an H4', level=4),
