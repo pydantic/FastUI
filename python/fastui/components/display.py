@@ -1,4 +1,3 @@
-import enum
 import typing
 from abc import ABC
 
@@ -7,11 +6,12 @@ import pydantic
 
 from .. import class_name as _class_name
 from .. import events
+from ..enums import StrEnum
 
 __all__ = 'DisplayMode', 'DisplayLookup', 'Display', 'Details'
 
 
-class DisplayMode(enum.StrEnum):
+class DisplayMode(StrEnum):
     """
     How to a value.
     """

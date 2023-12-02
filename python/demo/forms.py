@@ -2,12 +2,12 @@ from __future__ import annotations as _annotations
 
 from collections import defaultdict
 from datetime import date
-from enum import StrEnum
 from typing import Annotated, Literal, TypeAlias
 
 from fastapi import APIRouter, Request, UploadFile
 from fastui import AnyComponent, FastUI
 from fastui import components as c
+from fastui.enums import StrEnum
 from fastui.events import GoToEvent, PageEvent
 from fastui.forms import FormFile, FormResponse, SelectSearchResponse, fastui_form
 from httpx import AsyncClient
