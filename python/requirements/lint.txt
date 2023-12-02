@@ -13,3 +13,4 @@ ruff==0.1.5
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
+pre-commit
