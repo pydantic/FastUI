@@ -141,7 +141,7 @@ FastUI already defines the following components, all are shown in the [demo app]
 - `Table` — renders a table from a list of Pydantic models
 - `Pagination` — renders a pagination component
 - `FormFieldInput` — renders a form field using `<input>`
-- `FormFieldCheckbox` — renders a form field for a boolean using `<input type="checkbox">`
+- `FormFieldBoolean` — renders a form field for a boolean using `<input type="checkbox">`
 - `FormFieldSelect` — renders a form field using `<select>` or [react-select](https://react-select.com)
 - `FormFieldSelectSearch` — renders a form field using [react-select](https://react-select.com) with options updated from the server on search
 - `Form` — renders a form using a list of `FormField` components

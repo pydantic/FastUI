@@ -9,7 +9,7 @@ from pydantic import BaseModel
 
 from .components.forms import (
     FormField,
-    FormFieldCheckbox,
+    FormFieldBoolean,
     FormFieldFile,
     FormFieldInput,
     FormFieldSelect,
@@ -170,7 +170,7 @@ def json_schema_field_to_field(
 ) -> FormField:
     name = loc_to_name(loc)
     if schema['type'] == 'boolean':
-        return FormFieldCheckbox(
+        return FormFieldBoolean(
             name=name,
             title=title,
             required=required,

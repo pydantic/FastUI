@@ -31,10 +31,10 @@ class FormFieldInput(BaseFormField):
     type: typing.Literal['FormFieldInput'] = 'FormFieldInput'
 
 
-class FormFieldCheckbox(BaseFormField):
+class FormFieldBoolean(BaseFormField):
     initial: bool | None = None
-    type: typing.Literal['FormFieldCheckbox'] = 'FormFieldCheckbox'
     mode: typing.Literal['checkbox', 'switch'] = 'checkbox'
+    type: typing.Literal['FormFieldBoolean'] = 'FormFieldBoolean'
 
 
 class FormFieldFile(BaseFormField):
@@ -62,7 +62,7 @@ class FormFieldSelectSearch(BaseFormField):
     type: typing.Literal['FormFieldSelectSearch'] = 'FormFieldSelectSearch'
 
 
-FormField = FormFieldInput | FormFieldCheckbox | FormFieldFile | FormFieldSelect | FormFieldSelectSearch
+FormField = FormFieldInput | FormFieldBoolean | FormFieldFile | FormFieldSelect | FormFieldSelectSearch
 
 
 class BaseForm(pydantic.BaseModel, ABC, defer_build=True):

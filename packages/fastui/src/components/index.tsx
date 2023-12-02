@@ -15,7 +15,7 @@ import { FormComp, FormProps, ModelFormProps } from './form'
 import {
   FormFieldProps,
   FormFieldInputComp,
-  FormFieldCheckboxComp,
+  FormFieldBooleanComp,
   FormFieldSelectComp,
   FormFieldSelectSearchComp,
   FormFieldFileComp,
@@ -141,8 +141,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <FormComp {...props} />
       case 'FormFieldInput':
         return <FormFieldInputComp {...props} />
-      case 'FormFieldCheckbox':
-        return <FormFieldCheckboxComp {...props} />
+      case 'FormFieldBoolean':
+        return <FormFieldBooleanComp {...props} />
       case 'FormFieldFile':
         return <FormFieldFileComp {...props} />
       case 'FormFieldSelect':
