@@ -162,6 +162,12 @@ class BigModel(BaseModel):
     dob: date = Field(title='Date of Birth', description='Your date of birth, this is required hence bold')
     size: SizeModel
 
+    address: tuple[
+        Annotated[str, Field(description='Main Address')],
+        Annotated[str | None, Field(description='Secondary Address')],
+        Annotated[str | None, Field(description='Business Address')]
+    ]
+
     @field_validator('name')
     def name_validator(cls, v: str | None) -> str:
         if v and v[0].islower():

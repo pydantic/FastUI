@@ -204,6 +204,11 @@ def json_schema_array_to_fields(
                 items_schema[field_name] = value  # type: ignore
         if field := special_string_field(items_schema, loc_to_name(loc), title, required, True):
             return [field]
+    elif 'minItems' in schema and schema.get('minItems') == schema.get('maxItems'):
+        if items := schema.get('prefixItems'):
+            for i, item in enumerate(items):
+                yield from json_schema_any_to_fields(item, loc + [i], title, required, defs)
+            return
     raise NotImplementedError('todo')
 
 
