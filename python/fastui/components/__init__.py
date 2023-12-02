@@ -47,6 +47,7 @@ __all__ = (
     'Table',
     'Display',
     'Details',
+    'Image',
 )
 
 
@@ -169,6 +170,15 @@ class ServerLoad(pydantic.BaseModel, extra='forbid'):
     sse: bool | None = None
     type: typing.Literal['ServerLoad'] = 'ServerLoad'
 
+class Image(pydantic.BaseModel, extra='forbid'):
+    src: str
+    alt: str | None = None
+    width: int | str | None = None
+    height: int | str | None = None
+    on_click: events.AnyEvent | None = pydantic.Field(default=None, serialization_alias='onClick')
+    class_name: _class_name.ClassName = None
+    type: typing.Literal['Image'] = 'Image'
+
 
 AnyComponent = typing.Annotated[
     Text
@@ -191,6 +201,7 @@ AnyComponent = typing.Annotated[
     | Details
     | Form
     | ModelForm
+    | Image
     | FormField,
     pydantic.Field(discriminator='type'),
 ]

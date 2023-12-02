@@ -160,6 +160,7 @@ print(m.dimensions)
             ],
             class_name='border-top mt-3 pt-1',
         ),
+        c.Image(src='https://avatars.githubusercontent.com/u/110818415', alt='Pydantic Logo'),
         title='Components',
     )
 
