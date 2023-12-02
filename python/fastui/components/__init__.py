@@ -173,8 +173,8 @@ class ServerLoad(pydantic.BaseModel, extra='forbid'):
 class Iframe(pydantic.BaseModel, extra='forbid'):
     src: pydantic.HttpUrl
     title: str | None = None
-    width: str | None = None
-    height: str | None = None
+    width: str | int | None = None
+    height: str | int | None = None
     type: typing.Literal['Iframe'] = 'Iframe'
 
 

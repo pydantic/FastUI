@@ -5,8 +5,8 @@ import { ClassName } from '../hooks/className'
 export interface IframeProps {
   type: 'Iframe'
   src: string
-  width?: string
-  height?: string
+  width?: string | number
+  height?: string | number
   title?: string
   className?: ClassName
 }
