@@ -38,6 +38,7 @@ import {
 } from './display'
 import { JsonComp, JsonProps } from './Json'
 import { ServerLoadComp, ServerLoadProps } from './ServerLoad'
+import { IframeComp, IframeProps } from './Iframe'
 
 export type {
   TextProps,
@@ -63,6 +64,7 @@ export type {
   DisplayPrimitiveProps,
   JsonProps,
   ServerLoadProps,
+  IframeProps,
 }
 
 // TODO some better way to export components
@@ -91,6 +93,7 @@ export type FastProps =
   | AllDisplayProps
   | JsonProps
   | ServerLoadProps
+  | IframeProps
 
 export type FastClassNameProps = Exclude<FastProps, TextProps | AllDisplayProps | ServerLoadProps | PageTitleProps>
 
@@ -169,6 +172,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <JsonComp {...props} />
       case 'ServerLoad':
         return <ServerLoadComp {...props} />
+      case 'Iframe':
+        return <IframeComp {...props} />
       default:
         unreachable('Unexpected component type', type, props)
         return <DisplayError title="Invalid Server Response" description={`Unknown component type: "${type}"`} />
