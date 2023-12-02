@@ -12,4 +12,5 @@ cd python
 pip install -r pip install -r requirements/all.txt
 uvicorn demo:app
 ```
+
 Then navigate to [http://127.0.0.1:8000](http://127.0.0.1:8000)
