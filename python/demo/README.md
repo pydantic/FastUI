@@ -5,6 +5,7 @@ This a simple demo app for FastUI, it's deployed at [fastui-demo.onrender.com](h
 ## Running
 
 To run the demo app execute the following commands
+
 ```bash
 #From Fast UI repo root
 cd python
