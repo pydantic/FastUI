@@ -1,8 +1,8 @@
 from __future__ import annotations as _annotations
 
+import enum
 from collections import defaultdict
 from datetime import date
-from enum import StrEnum
 from typing import Annotated, Literal, TypeAlias
 
 from fastapi import APIRouter, Request, UploadFile
@@ -123,7 +123,7 @@ async def login_form_post(form: Annotated[LoginForm, fastui_form(LoginForm)]) ->
     return FormResponse(event=GoToEvent(url='/'))
 
 
-class ToolEnum(StrEnum):
+class ToolEnum(str, enum.Enum):
     hammer = 'hammer'
     screwdriver = 'screwdriver'
     saw = 'saw'
