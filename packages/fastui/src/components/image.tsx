@@ -9,12 +9,22 @@ export interface ImageProps {
   alt?: string
   width?: number | string
   height?: number | string
+  referrerPolicy?:
+    | 'no-referrer'
+    | 'no-referrer-when-downgrade'
+    | 'origin'
+    | 'origin-when-cross-origin'
+    | 'same-origin'
+    | 'strict-origin'
+    | 'strict-origin-when-cross-origin'
+    | 'unsafe-url'
+  loading?: 'eager' | 'lazy'
   onClick?: AnyEvent
   className?: ClassName
 }
 
 export const ImageComp: FC<ImageProps> = (props) => {
-  const { src, alt, width, height, onClick } = props
+  const { src, alt, width, height, referrerPolicy, loading, onClick } = props
 
   const { fireEvent } = useFireEvent()
 
@@ -25,6 +35,8 @@ export const ImageComp: FC<ImageProps> = (props) => {
       alt={alt}
       width={width}
       height={height}
+      referrerPolicy={referrerPolicy}
+      loading={loading}
       onClick={() => fireEvent(onClick)}
     />
   )

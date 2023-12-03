@@ -174,8 +174,19 @@ class ServerLoad(pydantic.BaseModel, extra='forbid'):
 class Image(pydantic.BaseModel, extra='forbid'):
     src: str
     alt: str | None = None
-    width: int | str | None = None
-    height: int | str | None = None
+    width: int | float | str | None = None
+    height: int | float | str | None = None
+    referrerpolicy: typing.Literal[
+        'no-referrer',
+        'no-referrer-when-downgrade',
+        'origin',
+        'origin-when-cross-origin',
+        'same-origin',
+        'strict-origin',
+        'strict-origin-when-cross-origin',
+        'unsafe-url',
+    ] | None = None
+    loading: typing.Literal['eager', 'lazy'] | None = None
     on_click: events.AnyEvent | None = pydantic.Field(default=None, serialization_alias='onClick')
     class_name: _class_name.ClassName = None
     type: typing.Literal['Image'] = 'Image'
