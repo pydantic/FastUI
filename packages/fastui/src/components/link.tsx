@@ -9,7 +9,7 @@ import { FastProps, AnyCompList } from './index'
 export interface LinkProps {
   type: 'Link'
   components: FastProps[]
-  mode?: 'navbar' | 'tabs' | 'vertical' | 'pagination'
+  mode?: 'navbar' | 'footer' | 'tabs' | 'vertical' | 'pagination'
   active?: boolean | string
   locked?: boolean
   onClick?: AnyEvent

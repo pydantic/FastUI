@@ -35,4 +35,13 @@ def demo_page(*components: AnyComponent, title: str | None = None) -> list[AnyCo
                 *components,
             ],
         ),
+        c.Footer(
+            extra_text=c.Text(text='FastUI Demo - Extra footer text'),
+            links=[
+                c.Link(components=[c.Text(text='Home')], on_click=GoToEvent(url='/')),
+                c.Link(components=[c.Text(text='Components')], on_click=GoToEvent(url='/components')),
+                c.Link(components=[c.Text(text='Tables')], on_click=GoToEvent(url='/table/cities')),
+                c.Link(components=[c.Text(text='Forms')], on_click=GoToEvent(url='/forms/login')),
+            ],
+        ),
     ]

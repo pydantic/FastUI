@@ -38,6 +38,7 @@ __all__ = (
     'Button',
     'Modal',
     'ModelForm',
+    'Footer',
     'FormFieldInput',
     'FormFieldCheckbox',
     'FormFieldFile',
@@ -126,7 +127,7 @@ class Button(pydantic.BaseModel, extra='forbid'):
 class Link(pydantic.BaseModel, extra='forbid'):
     components: list[AnyComponent]
     on_click: events.AnyEvent | None = pydantic.Field(default=None, serialization_alias='onClick')
-    mode: typing.Literal['navbar', 'tabs', 'vertical', 'pagination'] | None = None
+    mode: typing.Literal['navbar', 'footer', 'tabs', 'vertical', 'pagination'] | None = None
     active: bool | str | None = None
     locked: bool | None = None
     class_name: _class_name.ClassName = None
@@ -146,6 +147,13 @@ class Navbar(pydantic.BaseModel, extra='forbid'):
     links: list[Link] = pydantic.Field(default_factory=list)
     class_name: _class_name.ClassName = None
     type: typing.Literal['Navbar'] = 'Navbar'
+
+
+class Footer(pydantic.BaseModel, extra='forbid'):
+    extra_text: Text | None = None
+    links: list[Link] = pydantic.Field(default_factory=list)
+    class_name: _class_name.ClassName = None
+    type: typing.Literal['Footer'] = 'Footer'
 
 
 class Modal(pydantic.BaseModel, extra='forbid'):
@@ -183,6 +191,7 @@ AnyComponent = typing.Annotated[
     | Link
     | LinkList
     | Navbar
+    | Footer
     | Modal
     | ServerLoad
     | Table

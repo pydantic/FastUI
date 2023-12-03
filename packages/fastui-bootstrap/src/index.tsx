@@ -92,10 +92,26 @@ export const classNameGenerator: ClassNameGenerator = ({ props, fullPath, subEle
         default:
           return 'border-bottom fixed-top bg-body'
       }
+    case 'Footer':
+      switch (subElement) {
+        case 'contents':
+          return 'border-top py-3 my-3'
+        case 'link-list':
+          return 'nav justify-content-center pb-3'
+        case 'link':
+          return 'nav-item'
+        case 'extra-separator':
+          return 'border-top'
+        case 'extra':
+          return 'text-center text-muted pt-3'
+        default:
+          return 'container'
+      }
     case 'Link':
       return {
         active: pathMatch(props.active, fullPath),
-        'nav-link': props.mode === 'navbar' || props.mode === 'tabs',
+        'nav-link': props.mode === 'navbar' || props.mode === 'tabs' || props.mode === 'footer',
+        'text-muted': props.mode === 'footer',
       }
     case 'LinkList':
       if (subElement === 'link-list-item' && props.mode) {

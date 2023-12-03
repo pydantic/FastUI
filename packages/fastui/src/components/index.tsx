@@ -38,6 +38,7 @@ import {
 } from './display'
 import { JsonComp, JsonProps } from './Json'
 import { ServerLoadComp, ServerLoadProps } from './ServerLoad'
+import { FooterComp, FooterProps } from './footer'
 
 export type {
   TextProps,
@@ -88,6 +89,7 @@ export type FastProps =
   | LinkProps
   | LinkListProps
   | NavbarProps
+  | FooterProps
   | AllDisplayProps
   | JsonProps
   | ServerLoadProps
@@ -136,6 +138,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <LinkListComp {...props} />
       case 'Navbar':
         return <NavbarComp {...props} />
+      case 'Footer':
+        return <FooterComp {...props} />
       case 'Form':
       case 'ModelForm':
         return <FormComp {...props} />
