@@ -137,7 +137,7 @@ def tabs() -> list[AnyComponent]:
     ]
 
 
-@router.get("/users/{id}/", response_model=FastUI, response_model_exclude_none=True)
+@router.get('/users/{id}/', response_model=FastUI, response_model_exclude_none=True)
 def user_profile(id: int) -> list[AnyComponent]:
     
     users = [
@@ -149,7 +149,7 @@ def user_profile(id: int) -> list[AnyComponent]:
     try:
         user = next(user for user in users if user.id == id)
     except StopIteration:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail='User not found')
 
     return demo_page(
         *tabs(),
