@@ -3,7 +3,7 @@ from functools import cache
 from pathlib import Path
 
 import pydantic
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastui import AnyComponent, FastUI
 from fastui import components as c
 from fastui.components.display import DisplayLookup, DisplayMode
@@ -107,7 +107,7 @@ def users_view() -> list[AnyComponent]:
                 MyTableRow(id=3, name='Jack', dob=date(1992, 1, 1)),
             ],
             columns=[
-                DisplayLookup(field='name', on_click=GoToEvent(url='/more/{id}/')),
+                DisplayLookup(field='name', on_click=GoToEvent(url='/table/users/{id}/')),
                 DisplayLookup(field='dob', mode=DisplayMode.date),
                 DisplayLookup(field='enabled'),
             ],
@@ -135,3 +135,25 @@ def tabs() -> list[AnyComponent]:
             class_name='+ mb-4',
         ),
     ]
+
+
+@router.get("/users/{id}/", response_model=FastUI, response_model_exclude_none=True)
+def user_profile(id: int) -> list[AnyComponent]:
+    
+    users = [
+        MyTableRow(id=1, name='John', dob=date(1990, 1, 1), enabled=True),
+        MyTableRow(id=2, name='Jane', dob=date(1991, 1, 1), enabled=False),
+        MyTableRow(id=3, name='Jack', dob=date(1992, 1, 1)),
+    ]
+
+    try:
+        user = next(user for user in users if user.id == id)
+    except StopIteration:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return demo_page(
+        *tabs(),
+        c.Link(components=[c.Text(text='Back')], on_click=BackEvent()),
+        c.Details(data=user),
+        title=user.name,
+    )
