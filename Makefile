@@ -1,5 +1,5 @@
 .DEFAULT_GOAL:=all
-path = packages/python-fastui
+path = src/python-fastui
 
 .PHONY: install
 install:

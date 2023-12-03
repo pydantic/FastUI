@@ -9,9 +9,9 @@ format.quote-style="single"
 target-version = "py38"
 
 [tool.pyright]
-include = ["packages/python-fastui/fastui"]
+include = ["src/python-fastui/fastui"]
 
 [tool.pytest.ini_options]
-testpaths = "packages/python-fastui/tests"
+testpaths = "src/python-fastui/tests"
 xfail_strict = true
 filterwarnings = ["error"]
