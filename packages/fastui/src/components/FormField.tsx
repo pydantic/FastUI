@@ -19,7 +19,7 @@ interface BaseFormFieldProps {
 
 export type FormFieldProps =
   | FormFieldInputProps
-  | FormFieldCheckboxProps
+  | FormFieldBooleanProps
   | FormFieldFileProps
   | FormFieldSelectProps
   | FormFieldSelectSearchProps
@@ -53,12 +53,13 @@ export const FormFieldInputComp: FC<FormFieldInputProps> = (props) => {
   )
 }
 
-interface FormFieldCheckboxProps extends BaseFormFieldProps {
-  type: 'FormFieldCheckbox'
+interface FormFieldBooleanProps extends BaseFormFieldProps {
+  type: 'FormFieldBoolean'
+  mode: 'checkbox' | 'switch'
   initial?: boolean
 }
 
-export const FormFieldCheckboxComp: FC<FormFieldCheckboxProps> = (props) => {
+export const FormFieldBooleanComp: FC<FormFieldBooleanProps> = (props) => {
   const { name, required, locked } = props
 
   return (

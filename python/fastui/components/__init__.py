@@ -17,7 +17,7 @@ from .display import Details, Display
 from .forms import (
     Form,
     FormField,
-    FormFieldCheckbox,
+    FormFieldBoolean,
     FormFieldFile,
     FormFieldInput,
     FormFieldSelect,
@@ -39,7 +39,7 @@ __all__ = (
     'Modal',
     'ModelForm',
     'FormFieldInput',
-    'FormFieldCheckbox',
+    'FormFieldBoolean',
     'FormFieldFile',
     'FormFieldSelect',
     'FormFieldSelectSearch',
