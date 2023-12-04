@@ -162,6 +162,14 @@ print(m.dimensions)
         ),
         c.Div(
             components=[
+                c.Heading(text='Iframe', level=2),
+                c.Markdown(text='`Iframe` can be used to embed external content.'),
+                c.Iframe(src='https://pydantic.dev', width='100%', height=400),
+            ],
+            class_name='border-top mt-3 pt-1',
+        ),
+        c.Div(
+            components=[
                 c.Heading(text='Image', level=2),
                 c.Paragraph(text='An image component.'),
                 c.Image(

@@ -17,7 +17,7 @@ from .display import Details, Display
 from .forms import (
     Form,
     FormField,
-    FormFieldCheckbox,
+    FormFieldBoolean,
     FormFieldFile,
     FormFieldInput,
     FormFieldSelect,
@@ -39,7 +39,7 @@ __all__ = (
     'Modal',
     'ModelForm',
     'FormFieldInput',
-    'FormFieldCheckbox',
+    'FormFieldBoolean',
     'FormFieldFile',
     'FormFieldSelect',
     'FormFieldSelectSearch',
@@ -190,6 +190,13 @@ class Image(pydantic.BaseModel, extra='forbid'):
     on_click: events.AnyEvent | None = pydantic.Field(default=None, serialization_alias='onClick')
     class_name: _class_name.ClassName = None
     type: typing.Literal['Image'] = 'Image'
+      
+class Iframe(pydantic.BaseModel, extra='forbid'):
+    src: pydantic.HttpUrl
+    title: str | None = None
+    width: str | int | None = None
+    height: str | int | None = None
+    type: typing.Literal['Iframe'] = 'Iframe'
 
 
 AnyComponent = typing.Annotated[
@@ -214,6 +221,7 @@ AnyComponent = typing.Annotated[
     | Form
     | ModelForm
     | Image
+    | Iframe
     | FormField,
     pydantic.Field(discriminator='type'),
 ]
