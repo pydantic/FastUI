@@ -58,8 +58,8 @@ export const classNameGenerator: ClassNameGenerator = ({ props, fullPath, subEle
             return 'col-md-4'
         }
       }
-    case 'FormFieldBoolean':
     case 'FormFieldInput':
+    case 'FormFieldBoolean':
     case 'FormFieldSelect':
     case 'FormFieldSelectSearch':
     case 'FormFieldFile':
