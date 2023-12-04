@@ -151,7 +151,7 @@ FastUI already defines the following components, all are shown in the [demo app]
 
 FastUI is an implementation of the RESTful principle; but not as it's usually understood, instead I mean the principle defined in the original [PhD dissertation](https://ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) by Roy Fielding, and excellently summarised in [this essay on htmx.org](https://htmx.org/essays/how-did-rest-come-to-mean-the-opposite-of-rest/) (HTMX people, I'm sorry to use your article to promote React which I know you despise 🙏).
 
-The RESTful principle as described in the HTMX article is that the frontend doesn't need to (and shouldn't) know anything about the application your building. Instead, it should just provide all the components you need to construct the interface, the backend can then tell the frontend what to do.
+The RESTful principle as described in the HTMX article is that the frontend doesn't need to (and shouldn't) know anything about the application you're building. Instead, it should just provide all the components you need to construct the interface, the backend can then tell the frontend what to do.
 
 Think of your frontend as a puppet, and the backend as the hand within it — the puppet doesn't need to know what to say, that's kind of the point.
 
