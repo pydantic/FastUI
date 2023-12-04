@@ -2,9 +2,9 @@ import enum
 import typing
 from abc import ABC
 
-import annotated_types
+import annotated_types as _at
 import pydantic
-import typing_extensions
+import typing_extensions as _te
 
 from .. import class_name as _class_name
 from .. import events
@@ -29,8 +29,8 @@ class DisplayMode(str, enum.Enum):
 
 
 class DisplayBase(pydantic.BaseModel, ABC, defer_build=True):
-    mode: DisplayMode | None = None
-    on_click: events.AnyEvent | None = pydantic.Field(default=None, serialization_alias='onClick')
+    mode: typing.Union[DisplayMode, None] = None
+    on_click: typing.Union[events.AnyEvent, None] = pydantic.Field(default=None, serialization_alias='onClick')
 
 
 class DisplayLookup(DisplayBase, extra='forbid'):
@@ -39,9 +39,9 @@ class DisplayLookup(DisplayBase, extra='forbid'):
     """
 
     field: str
-    title: str | None = None
+    title: typing.Union[str, None] = None
     # percentage width - 0 to 100, specific to tables
-    table_width_percent: typing.Annotated[int, annotated_types.Interval(ge=0, le=100)] | None = pydantic.Field(
+    table_width_percent: typing.Union[_te.Annotated[int, _at.Interval(ge=0, le=100)], None] = pydantic.Field(
         default=None, serialization_alias='tableWidthPercent'
     )
 
@@ -60,12 +60,12 @@ DataModel = typing.TypeVar('DataModel', bound=pydantic.BaseModel)
 
 class Details(pydantic.BaseModel, typing.Generic[DataModel], extra='forbid'):
     data: DataModel
-    fields: list[DisplayLookup] | None = None
+    fields: typing.Union[typing.List[DisplayLookup], None] = None
     class_name: _class_name.ClassName = None
     type: typing.Literal['Details'] = 'Details'
 
     @pydantic.model_validator(mode='after')
-    def fill_fields(self) -> typing_extensions.Self:
+    def fill_fields(self) -> _te.Self:
         if self.fields is None:
             self.fields = [
                 DisplayLookup(field=name, title=field.title) for name, field in self.data.model_fields.items()

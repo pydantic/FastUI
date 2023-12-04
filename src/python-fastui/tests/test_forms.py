@@ -1,7 +1,7 @@
 import asyncio
 from contextlib import asynccontextmanager
 from io import BytesIO
-from typing import Annotated
+from typing import List, Tuple, Union
 
 import pytest
 from fastapi import HTTPException
@@ -9,6 +9,7 @@ from fastui import components
 from fastui.forms import FormFile, fastui_form
 from pydantic import BaseModel
 from starlette.datastructures import FormData, Headers, UploadFile
+from typing_extensions import Annotated
 
 # todo use pytest-asyncio
 await_ = asyncio.run
@@ -24,7 +25,7 @@ class FakeRequest:
     TODO replace this with httpx or similar maybe, perhaps this is sufficient
     """
 
-    def __init__(self, form_data_list: list[tuple[str, str | UploadFile]]):
+    def __init__(self, form_data_list: List[Tuple[str, Union[str, UploadFile]]]):
         self._form_data = FormData(form_data_list)
 
     @asynccontextmanager
@@ -268,7 +269,7 @@ def test_file_constrained_submit_wrong_type():
 
 
 class FormMultipleFiles(BaseModel):
-    files: Annotated[list[UploadFile], FormFile()]
+    files: Annotated[List[UploadFile], FormFile()]
 
 
 def test_multiple_files():

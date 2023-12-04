@@ -1,3 +1,5 @@
+import typing
+
 import pydantic
 
 from .components import AnyComponent
@@ -11,7 +13,7 @@ class FastUI(pydantic.RootModel):
     The root component of a FastUI application.
     """
 
-    root: list[AnyComponent]
+    root: typing.List[AnyComponent]
 
 
 _PREBUILT_VERSION = '0.0.10'

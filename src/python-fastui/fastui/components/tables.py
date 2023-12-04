@@ -3,6 +3,7 @@ from __future__ import annotations as _annotations
 import typing
 
 import pydantic
+import typing_extensions as _te
 
 from .. import class_name as _class_name
 from . import display
@@ -13,13 +14,13 @@ DataModel = typing.TypeVar('DataModel', bound=pydantic.BaseModel)
 
 class Table(pydantic.BaseModel, typing.Generic[DataModel], extra='forbid'):
     data: list[DataModel]
-    columns: list[display.DisplayLookup] | None = None
-    no_data_message: str | None = pydantic.Field(default=None, serialization_alias='noDataMessage')
+    columns: typing.Union[list[display.DisplayLookup], None] = None
+    no_data_message: typing.Union[str, None] = pydantic.Field(default=None, serialization_alias='noDataMessage')
     class_name: _class_name.ClassName = None
     type: typing.Literal['Table'] = 'Table'
 
     @pydantic.model_validator(mode='after')
-    def fill_columns(self) -> typing.Self:
+    def fill_columns(self) -> _te.Self:
         args = self.__pydantic_generic_metadata__['args']
         try:
             data_model_type: type[DataModel] = args[0]

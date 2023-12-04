@@ -4,6 +4,7 @@ import typing
 from abc import ABC
 
 import pydantic
+import typing_extensions as _te
 
 from .. import class_name as _class_name
 from .. import forms
@@ -16,68 +17,68 @@ InputHtmlType = typing.Literal['text', 'date', 'datetime-local', 'time', 'email'
 
 class BaseFormField(pydantic.BaseModel, ABC, defer_build=True):
     name: str
-    title: str | list[str]
+    title: typing.Union[str, list[str]]
     required: bool = False
-    error: str | None = None
+    error: typing.Union[str, None] = None
     locked: bool = False
-    description: str | None = None
+    description: typing.Union[str, None] = None
     class_name: _class_name.ClassName = None
 
 
 class FormFieldInput(BaseFormField):
     html_type: InputHtmlType = pydantic.Field(default='text', serialization_alias='htmlType')
-    initial: str | int | float | None = None
-    placeholder: str | None = None
+    initial: typing.Union[str, int, float, None] = None
+    placeholder: typing.Union[str, None] = None
     type: typing.Literal['FormFieldInput'] = 'FormFieldInput'
 
 
 class FormFieldBoolean(BaseFormField):
-    initial: bool | None = None
+    initial: typing.Union[bool, None] = None
     mode: typing.Literal['checkbox', 'switch'] = 'checkbox'
     type: typing.Literal['FormFieldBoolean'] = 'FormFieldBoolean'
 
 
 class FormFieldFile(BaseFormField):
-    multiple: bool | None = None
-    accept: str | None = None
+    multiple: typing.Union[bool, None] = None
+    accept: typing.Union[str, None] = None
     type: typing.Literal['FormFieldFile'] = 'FormFieldFile'
 
 
 class FormFieldSelect(BaseFormField):
-    options: list[forms.SelectOption] | list[forms.SelectGroup]
-    multiple: bool | None = None
-    initial: str | None = None
-    vanilla: bool | None = None
-    placeholder: str | None = None
+    options: typing.Union[list[forms.SelectOption], list[forms.SelectGroup]]
+    multiple: typing.Union[bool, None] = None
+    initial: typing.Union[str, None] = None
+    vanilla: typing.Union[bool, None] = None
+    placeholder: typing.Union[str, None] = None
     type: typing.Literal['FormFieldSelect'] = 'FormFieldSelect'
 
 
 class FormFieldSelectSearch(BaseFormField):
     search_url: str = pydantic.Field(serialization_alias='searchUrl')
-    multiple: bool | None = None
-    initial: forms.SelectOption | None = None
+    multiple: typing.Union[bool, None] = None
+    initial: typing.Union[forms.SelectOption, None] = None
     # time in ms to debounce requests by, defaults to 300ms
-    debounce: int | None = None
-    placeholder: str | None = None
+    debounce: typing.Union[int, None] = None
+    placeholder: typing.Union[str, None] = None
     type: typing.Literal['FormFieldSelectSearch'] = 'FormFieldSelectSearch'
 
 
-FormField = FormFieldInput | FormFieldBoolean | FormFieldFile | FormFieldSelect | FormFieldSelectSearch
+FormField = typing.Union[FormFieldInput, FormFieldBoolean, FormFieldFile, FormFieldSelect, FormFieldSelectSearch]
 
 
 class BaseForm(pydantic.BaseModel, ABC, defer_build=True, extra='forbid'):
     submit_url: str = pydantic.Field(serialization_alias='submitUrl')
-    initial: dict[str, typing.Any] | None = None
+    initial: typing.Union[dict[str, typing.Any], None] = None
     method: typing.Literal['POST', 'GOTO', 'GET'] = 'POST'
-    display_mode: typing.Literal['default', 'inline'] | None = pydantic.Field(
+    display_mode: typing.Union[typing.Literal['default', 'inline'], None] = pydantic.Field(
         default=None, serialization_alias='displayMode'
     )
-    submit_on_change: bool | None = pydantic.Field(default=None, serialization_alias='submitOnChange')
-    footer: bool | list[AnyComponent] | None = None
+    submit_on_change: typing.Union[bool, None] = pydantic.Field(default=None, serialization_alias='submitOnChange')
+    footer: typing.Union[bool, list[AnyComponent], None] = None
     class_name: _class_name.ClassName = None
 
     @pydantic.model_validator(mode='after')
-    def default_footer(self) -> typing.Self:
+    def default_footer(self) -> _te.Self:
         if self.footer is None and self.display_mode == 'inline':
             self.footer = False
         return self

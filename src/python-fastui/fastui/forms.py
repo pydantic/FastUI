@@ -8,7 +8,7 @@ from operator import itemgetter
 
 import pydantic
 import pydantic_core
-import typing_extensions
+import typing_extensions as _te
 from pydantic_core import core_schema
 
 from . import events
@@ -56,7 +56,7 @@ def fastui_form(model: type[FormModel]) -> fastapi_params.Depends:
 class FormFile:
     __slots__ = 'accept', 'max_size'
 
-    def __init__(self, accept: str | None = None, max_size: int | None = None):
+    def __init__(self, accept: typing.Union[str, None] = None, max_size: typing.Union[int, None] = None):
         self.accept = accept
         self.max_size = max_size
 
@@ -122,12 +122,12 @@ class FormFile:
         )
 
     def __get_pydantic_core_schema__(self, source_type: type[typing.Any], *_args) -> core_schema.CoreSchema:
-        if issubclass(source_type, ds.UploadFile):
-            return core_schema.no_info_plain_validator_function(self.validate_single)
-        elif typing.get_origin(source_type) == list:
+        if typing.get_origin(source_type) == list:
             args = typing.get_args(source_type)
             if len(args) == 1 and issubclass(args[0], ds.UploadFile):
                 return core_schema.no_info_plain_validator_function(self.validate_multiple)
+        elif issubclass(source_type, ds.UploadFile):
+            return core_schema.no_info_plain_validator_function(self.validate_single)
 
         raise TypeError(f'FormFile can only be used with `UploadFile` or `list[UploadFile]`, not {source_type}')
 
@@ -162,21 +162,21 @@ class FormResponse(pydantic.BaseModel):
     type: typing.Literal['FormResponse'] = 'FormResponse'
 
 
-class SelectOption(typing_extensions.TypedDict):
+class SelectOption(_te.TypedDict):
     value: str
     label: str
 
 
-class SelectGroup(typing_extensions.TypedDict):
+class SelectGroup(_te.TypedDict):
     label: str
     options: list[SelectOption]
 
 
 class SelectSearchResponse(pydantic.BaseModel):
-    options: list[SelectOption] | list[SelectGroup]
+    options: typing.Union[list[SelectOption], list[SelectGroup]]
 
 
-NestedDict: typing.TypeAlias = 'dict[str | int, NestedDict | str | list[str] | ds.UploadFile | list[ds.UploadFile]]'
+NestedDict: _te.TypeAlias = 'dict[str | int, NestedDict | str | list[str] | ds.UploadFile | list[ds.UploadFile]]'
 
 
 def unflatten(form_data: ds.FormData) -> NestedDict:

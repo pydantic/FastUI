@@ -10,6 +10,7 @@ from __future__ import annotations as _annotations
 import typing
 
 import pydantic
+import typing_extensions as _te
 
 from .. import class_name as _class_name
 from .. import events
@@ -89,14 +90,14 @@ class Page(pydantic.BaseModel, extra='forbid'):
 class Heading(pydantic.BaseModel, extra='forbid'):
     text: str
     level: typing.Literal[1, 2, 3, 4, 5, 6] = 1
-    html_id: str | None = pydantic.Field(default=None, serialization_alias='htmlId')
+    html_id: typing.Union[str, None] = pydantic.Field(default=None, serialization_alias='htmlId')
     class_name: _class_name.ClassName = None
     type: typing.Literal['Heading'] = 'Heading'
 
 
 # see https://github.com/PrismJS/prism-themes
 # and https://cdn.jsdelivr.net/npm/react-syntax-highlighter@15.5.0/dist/esm/styles/prism/index.js
-CodeStyle = typing.Annotated[str | None, pydantic.Field(serialization_alias='codeStyle')]
+CodeStyle = _te.Annotated[typing.Union[str, None], pydantic.Field(serialization_alias='codeStyle')]
 
 
 class Markdown(pydantic.BaseModel, extra='forbid'):
@@ -108,7 +109,7 @@ class Markdown(pydantic.BaseModel, extra='forbid'):
 
 class Code(pydantic.BaseModel, extra='forbid'):
     text: str
-    language: str | None = None
+    language: typing.Union[str, None] = None
     code_style: CodeStyle = None
     class_name: _class_name.ClassName = None
     type: typing.Literal['Code'] = 'Code'
@@ -116,8 +117,8 @@ class Code(pydantic.BaseModel, extra='forbid'):
 
 class Button(pydantic.BaseModel, extra='forbid'):
     text: str
-    on_click: events.AnyEvent | None = pydantic.Field(default=None, serialization_alias='onClick')
-    html_type: typing.Literal['button', 'submit', 'reset'] | None = pydantic.Field(
+    on_click: typing.Union[events.AnyEvent, None] = pydantic.Field(default=None, serialization_alias='onClick')
+    html_type: typing.Union[typing.Literal['button', 'submit', 'reset'], None] = pydantic.Field(
         default=None, serialization_alias='htmlType'
     )
     class_name: _class_name.ClassName = None
@@ -126,24 +127,24 @@ class Button(pydantic.BaseModel, extra='forbid'):
 
 class Link(pydantic.BaseModel, extra='forbid'):
     components: list[AnyComponent]
-    on_click: events.AnyEvent | None = pydantic.Field(default=None, serialization_alias='onClick')
-    mode: typing.Literal['navbar', 'tabs', 'vertical', 'pagination'] | None = None
-    active: bool | str | None = None
-    locked: bool | None = None
+    on_click: typing.Union[events.AnyEvent, None] = pydantic.Field(default=None, serialization_alias='onClick')
+    mode: typing.Union[typing.Literal['navbar', 'tabs', 'vertical', 'pagination'], None] = None
+    active: typing.Union[bool, str, None] = None
+    locked: typing.Union[bool, None] = None
     class_name: _class_name.ClassName = None
     type: typing.Literal['Link'] = 'Link'
 
 
 class LinkList(pydantic.BaseModel, extra='forbid'):
     links: list[Link]
-    mode: typing.Literal['tabs', 'vertical', 'pagination'] | None = None
+    mode: typing.Union[typing.Literal['tabs', 'vertical', 'pagination'], None] = None
     class_name: _class_name.ClassName = None
     type: typing.Literal['LinkList'] = 'LinkList'
 
 
 class Navbar(pydantic.BaseModel, extra='forbid'):
-    title: str | None = None
-    title_event: events.AnyEvent | None = pydantic.Field(default=None, serialization_alias='titleEvent')
+    title: typing.Union[str, None] = None
+    title_event: typing.Union[events.AnyEvent, None] = pydantic.Field(default=None, serialization_alias='titleEvent')
     links: list[Link] = pydantic.Field(default_factory=list)
     class_name: _class_name.ClassName = None
     type: typing.Literal['Navbar'] = 'Navbar'
@@ -152,9 +153,11 @@ class Navbar(pydantic.BaseModel, extra='forbid'):
 class Modal(pydantic.BaseModel, extra='forbid'):
     title: str
     body: list[AnyComponent]
-    footer: list[AnyComponent] | None = None
-    open_trigger: events.PageEvent | None = pydantic.Field(default=None, serialization_alias='openTrigger')
-    open_context: events.EventContext | None = pydantic.Field(default=None, serialization_alias='openContext')
+    footer: typing.Union[list[AnyComponent], None] = None
+    open_trigger: typing.Union[events.PageEvent, None] = pydantic.Field(default=None, serialization_alias='openTrigger')
+    open_context: typing.Union[events.EventContext, None] = pydantic.Field(
+        default=None, serialization_alias='openContext'
+    )
     class_name: _class_name.ClassName = None
     type: typing.Literal['Modal'] = 'Modal'
 
@@ -165,9 +168,9 @@ class ServerLoad(pydantic.BaseModel, extra='forbid'):
     """
 
     path: str
-    load_trigger: events.PageEvent | None = pydantic.Field(default=None, serialization_alias='loadTrigger')
-    components: list[AnyComponent] | None = None
-    sse: bool | None = None
+    load_trigger: typing.Union[events.PageEvent, None] = pydantic.Field(default=None, serialization_alias='loadTrigger')
+    components: typing.Union[list[AnyComponent], None] = None
+    sse: typing.Union[bool, None] = None
     type: typing.Literal['ServerLoad'] = 'ServerLoad'
 
 
@@ -194,35 +197,37 @@ class Image(pydantic.BaseModel, extra='forbid'):
 
 class Iframe(pydantic.BaseModel, extra='forbid'):
     src: pydantic.HttpUrl
-    title: str | None = None
-    width: str | int | None = None
-    height: str | int | None = None
+    title: typing.Union[str, None] = None
+    width: typing.Union[str, int, None] = None
+    height: typing.Union[str, int, None] = None
     type: typing.Literal['Iframe'] = 'Iframe'
 
 
-AnyComponent = typing.Annotated[
-    Text
-    | Paragraph
-    | PageTitle
-    | Div
-    | Page
-    | Heading
-    | Markdown
-    | Code
-    | Button
-    | Link
-    | LinkList
-    | Navbar
-    | Modal
-    | ServerLoad
-    | Table
-    | Pagination
-    | Display
-    | Details
-    | Form
-    | ModelForm
-    | Image
-    | Iframe
-    | FormField,
+AnyComponent = _te.Annotated[
+    typing.Union[
+        Text,
+        Paragraph,
+        PageTitle,
+        Div,
+        Page,
+        Heading,
+        Markdown,
+        Code,
+        Button,
+        Link,
+        LinkList,
+        Navbar,
+        Modal,
+        ServerLoad,
+        Table,
+        Pagination,
+        Display,
+        Details,
+        Form,
+        ModelForm,
+        Image,
+        Iframe,
+        FormField,
+    ],
     pydantic.Field(discriminator='type'),
 ]

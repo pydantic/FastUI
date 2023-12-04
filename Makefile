@@ -5,6 +5,7 @@ path = src/python-fastui
 install:
 	pip install -U pip pre-commit pip-tools
 	pip install -r $(path)/requirements/all.txt
+	pip install -e $(path)
 	pre-commit install
 
 .PHONY: update-lockfiles

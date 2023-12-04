@@ -3,10 +3,10 @@ from __future__ import annotations as _annotations
 import json
 import re
 import typing
-from typing import Iterable, Literal, TypeAlias, TypedDict, TypeGuard, cast
+from typing import Iterable, Literal, TypedDict, cast
 
 from pydantic import BaseModel
-from typing_extensions import Required
+from typing_extensions import Required, TypeAlias, TypeGuard
 
 from .components.forms import (
     FormField,
@@ -109,14 +109,14 @@ class JsonSchemaArray(JsonSchemaBase, total=False):
     placeholder: str
 
 
-JsonSchemaDefs = dict[str, JsonSchemaConcrete]
+JsonSchemaDefs: TypeAlias = 'dict[str, JsonSchemaConcrete]'
 JsonSchemaObject = TypedDict(
     'JsonSchemaObject',
     {
         'type': Required[Literal['object']],
-        'properties': dict[str, JsonSchemaAny],
+        'properties': typing.Dict[str, JsonSchemaAny],
         '$defs': JsonSchemaDefs,
-        'required': list[str],
+        'required': typing.List[str],
         'title': str,
         'description': str,
     },
@@ -138,7 +138,7 @@ class JsonSchemaAllOf(JsonSchemaBase):
 
 JsonSchemaRef = TypedDict('JsonSchemaRef', {'$ref': str})
 
-SchemeLocation = list[str | int]
+SchemeLocation: TypeAlias = 'list[str | int]'
 
 
 def json_schema_obj_to_fields(
@@ -291,7 +291,7 @@ def deference_json_schema(
         else:
             raise NotImplementedError('`anyOf` schemas which are not simply `X | None` are not yet supported')
     elif all_of := schema.get('allOf'):
-        all_of = cast(list[JsonSchemaAny], all_of)
+        all_of = cast(typing.List[JsonSchemaAny], all_of)
         if len(all_of) == 1:
             new_schema, required = deference_json_schema(all_of[0], defs, required)
             new_schema.update({k: v for k, v in schema.items() if k != 'allOf'})  # type: ignore
