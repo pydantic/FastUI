@@ -5,7 +5,7 @@ import { TextComp, TextProps } from './text'
 
 export interface FooterProps {
   type: 'Footer'
-  extra_text?: TextProps
+  extraText?: TextProps
   links: LinkProps[]
   className?: ClassName
 }
@@ -28,11 +28,11 @@ export const FooterComp = (props: FooterProps) => {
             </li>
           ))}
         </ul>
-        {props.extra_text && props.links.length > 0 && <div className={extraSeparatorProp} />}
-        {props.extra_text && (
+        {props.extraText && props.links.length > 0 && <div className={extraSeparatorProp} />}
+        {props.extraText && (
           <>
             <div className={extraProp}>
-              <TextComp {...props.extra_text} />
+              <TextComp {...props.extraText} />
             </div>
           </>
         )}

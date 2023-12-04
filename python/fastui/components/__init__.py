@@ -150,7 +150,7 @@ class Navbar(pydantic.BaseModel, extra='forbid'):
 
 
 class Footer(pydantic.BaseModel, extra='forbid'):
-    extra_text: Text | None = None
+    extra_text: Text | None = pydantic.Field(default=None, serialization_alias='extraText')
     links: list[Link] = pydantic.Field(default_factory=list)
     class_name: _class_name.ClassName = None
     type: typing.Literal['Footer'] = 'Footer'
