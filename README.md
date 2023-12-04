@@ -133,6 +133,7 @@ FastUI already defines the following components, all are shown in the [demo app]
 - `Link` — renders a link `<a>`
 - `LinkList` — renders a list of links
 - `Navbar` — renders a navbar `<nav>`
+- `Footer` — renders a footer `<footer>` with links and/or text
 - `Modal` — renders a modal dialog that opens triggered by an event
 - `ServerLoad` — render components fetched from the server, also provides SSE mode to update components based on server sent events
 - `Table` — renders a table
