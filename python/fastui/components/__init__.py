@@ -190,7 +190,8 @@ class Image(pydantic.BaseModel, extra='forbid'):
     on_click: events.AnyEvent | None = pydantic.Field(default=None, serialization_alias='onClick')
     class_name: _class_name.ClassName = None
     type: typing.Literal['Image'] = 'Image'
-      
+
+
 class Iframe(pydantic.BaseModel, extra='forbid'):
     src: pydantic.HttpUrl
     title: str | None = None
