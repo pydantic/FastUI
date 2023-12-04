@@ -66,7 +66,7 @@ export const classNameGenerator: ClassNameGenerator = ({ props, fullPath, subEle
       switch (subElement) {
         case 'input':
           return {
-            'form-control': true,
+            'form-control': type !== 'FormFieldBoolean',
             'is-invalid': props.error != null,
             'form-check-input': type === 'FormFieldBoolean',
           }
