@@ -1,4 +1,0 @@
-npm-fastui
-npm-fastui-bootstrap
-npm-fastui-prebuilt
-python-fastui
