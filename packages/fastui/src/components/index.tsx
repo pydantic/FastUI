@@ -15,7 +15,7 @@ import { FormComp, FormProps, ModelFormProps } from './form'
 import {
   FormFieldProps,
   FormFieldInputComp,
-  FormFieldCheckboxComp,
+  FormFieldBooleanComp,
   FormFieldSelectComp,
   FormFieldSelectSearchComp,
   FormFieldFileComp,
@@ -39,6 +39,7 @@ import {
 import { JsonComp, JsonProps } from './Json'
 import { ServerLoadComp, ServerLoadProps } from './ServerLoad'
 import { FooterComp, FooterProps } from './footer'
+import { IframeComp, IframeProps } from './Iframe'
 
 export type {
   TextProps,
@@ -64,6 +65,7 @@ export type {
   DisplayPrimitiveProps,
   JsonProps,
   ServerLoadProps,
+  IframeProps,
 }
 
 // TODO some better way to export components
@@ -93,6 +95,7 @@ export type FastProps =
   | AllDisplayProps
   | JsonProps
   | ServerLoadProps
+  | IframeProps
 
 export type FastClassNameProps = Exclude<FastProps, TextProps | AllDisplayProps | ServerLoadProps | PageTitleProps>
 
@@ -145,8 +148,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <FormComp {...props} />
       case 'FormFieldInput':
         return <FormFieldInputComp {...props} />
-      case 'FormFieldCheckbox':
-        return <FormFieldCheckboxComp {...props} />
+      case 'FormFieldBoolean':
+        return <FormFieldBooleanComp {...props} />
       case 'FormFieldFile':
         return <FormFieldFileComp {...props} />
       case 'FormFieldSelect':
@@ -173,6 +176,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <JsonComp {...props} />
       case 'ServerLoad':
         return <ServerLoadComp {...props} />
+      case 'Iframe':
+        return <IframeComp {...props} />
       default:
         unreachable('Unexpected component type', type, props)
         return <DisplayError title="Invalid Server Response" description={`Unknown component type: "${type}"`} />

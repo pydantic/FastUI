@@ -59,13 +59,17 @@ export const classNameGenerator: ClassNameGenerator = ({ props, fullPath, subEle
         }
       }
     case 'FormFieldInput':
-    case 'FormFieldCheckbox':
+    case 'FormFieldBoolean':
     case 'FormFieldSelect':
     case 'FormFieldSelectSearch':
     case 'FormFieldFile':
       switch (subElement) {
         case 'input':
-          return props.error ? 'is-invalid form-control' : 'form-control'
+          return {
+            'form-control': type !== 'FormFieldBoolean',
+            'is-invalid': props.error != null,
+            'form-check-input': type === 'FormFieldBoolean',
+          }
         case 'select':
           return 'form-select'
         case 'select-react':
@@ -74,14 +78,18 @@ export const classNameGenerator: ClassNameGenerator = ({ props, fullPath, subEle
           if (props.displayMode === 'inline') {
             return 'visually-hidden'
           } else {
-            return { 'form-label': true, 'fw-bold': props.required }
+            return { 'form-label': true, 'fw-bold': props.required, 'form-check-label': type === 'FormFieldBoolean' }
           }
         case 'error':
           return 'invalid-feedback'
         case 'description':
           return 'form-text'
         default:
-          return 'mb-3'
+          return {
+            'mb-3': true,
+            'form-check': type === 'FormFieldBoolean',
+            'form-switch': type === 'FormFieldBoolean' && props.mode === 'switch',
+          }
       }
     case 'Navbar':
       switch (subElement) {
