@@ -4,6 +4,7 @@ from abc import ABC
 
 import annotated_types
 import pydantic
+import typing_extensions
 
 from .. import class_name as _class_name
 from .. import events
@@ -11,7 +12,7 @@ from .. import events
 __all__ = 'DisplayMode', 'DisplayLookup', 'Display', 'Details'
 
 
-class DisplayMode(enum.StrEnum):
+class DisplayMode(str, enum.Enum):
     """
     How to a value.
     """
@@ -64,7 +65,7 @@ class Details(pydantic.BaseModel, typing.Generic[DataModel], extra='forbid'):
     type: typing.Literal['Details'] = 'Details'
 
     @pydantic.model_validator(mode='after')
-    def fill_fields(self) -> typing.Self:
+    def fill_fields(self) -> typing_extensions.Self:
         if self.fields is None:
             self.fields = [
                 DisplayLookup(field=name, title=field.title) for name, field in self.data.model_fields.items()

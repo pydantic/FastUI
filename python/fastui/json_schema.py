@@ -3,13 +3,14 @@ from __future__ import annotations as _annotations
 import json
 import re
 import typing
-from typing import Iterable, Literal, Required, TypeAlias, TypedDict, TypeGuard, cast
+from typing import Iterable, Literal, TypeAlias, TypedDict, TypeGuard, cast
 
 from pydantic import BaseModel
+from typing_extensions import Required
 
 from .components.forms import (
     FormField,
-    FormFieldCheckbox,
+    FormFieldBoolean,
     FormFieldFile,
     FormFieldInput,
     FormFieldSelect,
@@ -31,9 +32,9 @@ def model_json_schema_to_fields(model: type[BaseModel]) -> list[FormField]:
     return list(json_schema_obj_to_fields(schema, [], [], defs))
 
 
-JsonSchemaInput: TypeAlias = (
-    'JsonSchemaString | JsonSchemaStringEnum | JsonSchemaFile | JsonSchemaInt | JsonSchemaNumber'
-)
+JsonSchemaInput: (
+    TypeAlias
+) = 'JsonSchemaString | JsonSchemaStringEnum | JsonSchemaFile | JsonSchemaInt | JsonSchemaNumber'
 JsonSchemaField: TypeAlias = 'JsonSchemaInput | JsonSchemaBool'
 JsonSchemaConcrete: TypeAlias = 'JsonSchemaField | JsonSchemaArray | JsonSchemaObject'
 JsonSchemaAny: TypeAlias = 'JsonSchemaConcrete | JsonSchemaAnyOf | JsonSchemaAllOf | JsonSchemaRef'
@@ -74,6 +75,7 @@ class JsonSchemaFile(JsonSchemaBase, total=False):
 class JsonSchemaBool(JsonSchemaBase, total=False):
     type: Required[Literal['boolean']]
     default: bool
+    mode: Literal['checkbox', 'switch']
 
 
 class JsonSchemaInt(JsonSchemaBase, total=False):
@@ -169,12 +171,13 @@ def json_schema_field_to_field(
 ) -> FormField:
     name = loc_to_name(loc)
     if schema['type'] == 'boolean':
-        return FormFieldCheckbox(
+        return FormFieldBoolean(
             name=name,
             title=title,
             required=required,
             initial=schema.get('default'),
             description=schema.get('description'),
+            mode=schema.get('mode', 'checkbox'),
         )
     elif field := special_string_field(schema, name, title, required, False):
         return field
@@ -278,10 +281,11 @@ def deference_json_schema(
             # If anyOf is a single type and null, then it is optional
             not_null_schema = next(s for s in any_of if s.get('type') != 'null')
 
-            # is there anything else apart from `default` we need to copy over?
-            for field in 'default', 'description':
-                if value := schema.get(field):
-                    not_null_schema[field] = value  # type: ignore
+            # copy everything except `anyOf` across to the new schema
+            # TODO is this right?
+            for key, value in schema.items():  # type: ignore
+                if key not in {'anyOf'}:
+                    not_null_schema[key] = value  # type: ignore
 
             return deference_json_schema(not_null_schema, defs, False)
         else:

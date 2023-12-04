@@ -17,7 +17,7 @@ from .display import Details, Display
 from .forms import (
     Form,
     FormField,
-    FormFieldCheckbox,
+    FormFieldBoolean,
     FormFieldFile,
     FormFieldInput,
     FormFieldSelect,
@@ -39,7 +39,7 @@ __all__ = (
     'Modal',
     'ModelForm',
     'FormFieldInput',
-    'FormFieldCheckbox',
+    'FormFieldBoolean',
     'FormFieldFile',
     'FormFieldSelect',
     'FormFieldSelectSearch',
@@ -170,6 +170,14 @@ class ServerLoad(pydantic.BaseModel, extra='forbid'):
     type: typing.Literal['ServerLoad'] = 'ServerLoad'
 
 
+class Iframe(pydantic.BaseModel, extra='forbid'):
+    src: pydantic.HttpUrl
+    title: str | None = None
+    width: str | int | None = None
+    height: str | int | None = None
+    type: typing.Literal['Iframe'] = 'Iframe'
+
+
 AnyComponent = typing.Annotated[
     Text
     | Paragraph
@@ -191,6 +199,7 @@ AnyComponent = typing.Annotated[
     | Details
     | Form
     | ModelForm
+    | Iframe
     | FormField,
     pydantic.Field(discriminator='type'),
 ]
