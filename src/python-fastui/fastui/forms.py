@@ -3,6 +3,7 @@ from __future__ import annotations as _annotations
 import json
 import typing
 from itertools import groupby
+from mimetypes import MimeTypes
 from operator import itemgetter
 
 import pydantic
@@ -14,6 +15,7 @@ from . import events
 
 try:
     import fastapi
+    from fastapi import params as fastapi_params
     from starlette import datastructures as ds
 except ImportError as e:
     raise ImportError('fastui.dev requires fastapi to be installed, install with `pip install fastui[fastapi]`') from e
@@ -31,13 +33,11 @@ class FastUIForm(typing.Generic[FormModel]):
     TODO mypy, pyright and pycharm don't understand the model type if this is used, is there a way to get it to work?
     """
 
-    def __class_getitem__(
-        cls, model: type[FormModel]
-    ) -> typing.Callable[[fastapi.Request], typing.Awaitable[FormModel]]:
+    def __class_getitem__(cls, model: type[FormModel]) -> fastapi_params.Depends:
         return fastui_form(model)
 
 
-def fastui_form(model: type[FormModel]) -> typing.Callable[[fastapi.Request], typing.Awaitable[FormModel]]:
+def fastui_form(model: type[FormModel]) -> fastapi_params.Depends:
     async def run_fastui_form(request: fastapi.Request):
         async with request.form() as form_data:
             model_data = unflatten(form_data)
@@ -77,7 +77,7 @@ class FormFile:
     def _validate_file(self, file: ds.UploadFile) -> None:
         """
         See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#unique_file_type_specifiers
-        for details on what's allowed
+        for details on what's allowed.
         """
         if file.size == 0:
             # FIXME is this right???
@@ -85,7 +85,7 @@ class FormFile:
 
         if self.max_size is not None and file.size is not None and file.size > self.max_size:
             raise pydantic_core.PydanticCustomError(
-                'file_no_big',
+                'file_too_big',
                 'File size was {file_size}, exceeding maximum allowed size of {max_size}',
                 {
                     'file_size': pydantic.ByteSize(file.size).human_readable(),
@@ -104,13 +104,13 @@ class FormFile:
                 # this is a file extension
                 if file.filename and file.filename.endswith(accept):
                     return
-            elif file.content_type is None:
-                continue
-            elif accept.endswith('/*'):
-                if file.content_type.startswith(accept[:-1]):
+
+            if content_type := get_content_type(file):
+                if accept.endswith('/*'):
+                    if content_type.startswith(accept[:-1]):
+                        return
+                elif content_type == accept:
                     return
-            elif file.content_type == accept:
-                return
 
         raise pydantic_core.PydanticCustomError(
             'accept_mismatch',
@@ -145,6 +145,16 @@ class FormFile:
 
     def __repr__(self):
         return f'FormFile(accept={self.accept!r})'
+
+
+_mime_types = MimeTypes()
+
+
+def get_content_type(file: ds.UploadFile) -> str | None:
+    if file.content_type:
+        return file.content_type
+    elif file.filename:
+        return _mime_types.guess_type(file.filename)[0]
 
 
 class FormResponse(pydantic.BaseModel):

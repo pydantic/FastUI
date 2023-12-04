@@ -65,7 +65,7 @@ class FormFieldSelectSearch(BaseFormField):
 FormField = FormFieldInput | FormFieldBoolean | FormFieldFile | FormFieldSelect | FormFieldSelectSearch
 
 
-class BaseForm(pydantic.BaseModel, ABC, defer_build=True):
+class BaseForm(pydantic.BaseModel, ABC, defer_build=True, extra='forbid'):
     submit_url: str = pydantic.Field(serialization_alias='submitUrl')
     initial: dict[str, typing.Any] | None = None
     method: typing.Literal['POST', 'GOTO', 'GET'] = 'POST'
@@ -92,6 +92,8 @@ FormFieldsModel = typing.TypeVar('FormFieldsModel', bound=pydantic.BaseModel)
 
 
 class ModelForm(BaseForm, typing.Generic[FormFieldsModel]):
+    #  TODO should we change this to simply have
+    # model: type[pydantic.BaseModel] = pydantic.Field(exclude=True)
     type: typing.Literal['ModelForm'] = 'ModelForm'
 
     @pydantic.computed_field(alias='formFields')

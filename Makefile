@@ -11,7 +11,8 @@ install:
 update-lockfiles:
 	@echo "Updating requirements files using pip-compile"
 	pip-compile -q --strip-extras -o $(path)/requirements/lint.txt $(path)/requirements/lint.in
-	pip-compile -q --strip-extras -o $(path)/requirements/pyproject.txt pyproject.toml --extra=fastapi
+	pip-compile -q --strip-extras -o $(path)/requirements/test.txt $(path)/requirements/test.in
+	pip-compile -q --strip-extras -o $(path)/requirements/pyproject.txt $(path)/pyproject.toml --extra=fastapi
 	pip install --dry-run -r $(path)/requirements/all.txt
 
 .PHONY: format
@@ -30,7 +31,7 @@ typecheck:
 
 .PHONY: test
 test:
-	coverage run -m pytest tests
+	coverage run -m pytest
 
 .PHONY: testcov
 testcov: test

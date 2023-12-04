@@ -33,6 +33,39 @@ jobs:
           extra_args: --all-files
         env:
           SKIP: no-commit-to-branch
+  test:
+    name: test ${{ matrix.python-version }} on ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu, macos]
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+
+    runs-on: ${{ matrix.os }}-latest
+
+    env:
+      PYTHON: ${{ matrix.python-version }}
+      OS: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: set up python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - run: pip install -r src/python-fastui/requirements/test.txt
+    - run: pip install -r src/python-fastui/requirements/pyproject.txt
+
+    - run: make test
+
+    - run: coverage xml
+
+    - uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        env_vars: PYTHON,OS
 
   packages-build:
     runs-on: ubuntu-latest
