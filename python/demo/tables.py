@@ -3,7 +3,7 @@ from functools import cache
 from pathlib import Path
 
 import pydantic
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from fastui import AnyComponent, FastUI
 from fastui import components as c
 from fastui.components.display import DisplayLookup, DisplayMode
@@ -84,28 +84,46 @@ def city_view(city_id: int) -> list[AnyComponent]:
     return demo_page(
         *tabs(),
         c.Link(components=[c.Text(text='Back')], on_click=BackEvent()),
-        c.Details(data=city),
+        c.Details(
+            data=city,
+            fields=[
+                DisplayLookup(field='id'),
+                DisplayLookup(field='city'),
+                DisplayLookup(field='city_ascii'),
+                DisplayLookup(field='lat'),
+                DisplayLookup(field='lng'),
+                DisplayLookup(field='country'),
+                DisplayLookup(field='iso2'),
+                DisplayLookup(field='iso3'),
+                DisplayLookup(field='admin_name'),
+                DisplayLookup(field='capital'),
+                DisplayLookup(field='population'),
+            ],
+        ),
         title=city.city,
     )
 
 
-class MyTableRow(BaseModel):
+class User(BaseModel):
     id: int = Field(title='ID')
     name: str = Field(title='Name')
     dob: date = Field(title='Date of Birth')
     enabled: bool | None = None
 
 
+users: list[User] = [
+    User(id=1, name='John', dob=date(1990, 1, 1), enabled=True),
+    User(id=2, name='Jane', dob=date(1991, 1, 1), enabled=False),
+    User(id=3, name='Jack', dob=date(1992, 1, 1)),
+]
+
+
 @router.get('/users', response_model=FastUI, response_model_exclude_none=True)
 def users_view() -> list[AnyComponent]:
     return demo_page(
         *tabs(),
-        c.Table[MyTableRow](
-            data=[
-                MyTableRow(id=1, name='John', dob=date(1990, 1, 1), enabled=True),
-                MyTableRow(id=2, name='Jane', dob=date(1991, 1, 1), enabled=False),
-                MyTableRow(id=3, name='Jack', dob=date(1992, 1, 1)),
-            ],
+        c.Table[User](
+            data=users,
             columns=[
                 DisplayLookup(field='name', on_click=GoToEvent(url='/table/users/{id}/')),
                 DisplayLookup(field='dob', mode=DisplayMode.date),
@@ -139,18 +157,18 @@ def tabs() -> list[AnyComponent]:
 
 @router.get('/users/{id}/', response_model=FastUI, response_model_exclude_none=True)
 def user_profile(id: int) -> list[AnyComponent]:
-    users = [
-        MyTableRow(id=1, name='John', dob=date(1990, 1, 1), enabled=True),
-        MyTableRow(id=2, name='Jane', dob=date(1991, 1, 1), enabled=False),
-        MyTableRow(id=3, name='Jack', dob=date(1992, 1, 1)),
-    ]
-    try:
-        user = next(user for user in users if user.id == id)
-    except StopIteration:
-        raise HTTPException(status_code=404, detail='User not found')
+    user: User | None = users[id - 1] if id <= len(users) else None
     return demo_page(
         *tabs(),
         c.Link(components=[c.Text(text='Back')], on_click=BackEvent()),
-        c.Details(data=user),
+        c.Details(
+            data=user,
+            fields=[
+                DisplayLookup(field='id'),
+                DisplayLookup(field='name'),
+                DisplayLookup(field='dob', mode=DisplayMode.date),
+                DisplayLookup(field='enabled'),
+            ],
+        ),
         title=user.name,
     )
