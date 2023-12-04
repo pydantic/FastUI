@@ -33,6 +33,7 @@ jobs:
           extra_args: --all-files
         env:
           SKIP: no-commit-to-branch
+
   test:
     name: test ${{ matrix.python-version }} on ${{ matrix.os }}
     strategy:
@@ -57,6 +58,7 @@ jobs:
 
     - run: pip install -r src/python-fastui/requirements/test.txt
     - run: pip install -r src/python-fastui/requirements/pyproject.txt
+    - run: pip install src/python-fastui
 
     - run: make test
 
