@@ -127,7 +127,7 @@ class Button(pydantic.BaseModel, extra='forbid'):
 class Link(pydantic.BaseModel, extra='forbid'):
     components: '_t.List[AnyComponent]'
     on_click: _t.Union[events.AnyEvent, None] = pydantic.Field(default=None, serialization_alias='onClick')
-    mode: _t.Union[_t.Literal['navbar', 'tabs', 'vertical', 'pagination'], None] = None
+    mode: _t.Union[_t.Literal['navbar', 'footer', 'tabs', 'vertical', 'pagination'], None] = None
     active: _t.Union[bool, str, None] = None
     locked: _t.Union[bool, None] = None
     class_name: _class_name.ClassName = None
