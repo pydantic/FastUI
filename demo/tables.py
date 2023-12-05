@@ -84,22 +84,7 @@ def city_view(city_id: int) -> list[AnyComponent]:
     return demo_page(
         *tabs(),
         c.Link(components=[c.Text(text='Back')], on_click=BackEvent()),
-        c.Details(
-            data=city,
-            fields=[
-                DisplayLookup(field='id'),
-                DisplayLookup(field='city'),
-                DisplayLookup(field='city_ascii'),
-                DisplayLookup(field='lat'),
-                DisplayLookup(field='lng'),
-                DisplayLookup(field='country'),
-                DisplayLookup(field='iso2'),
-                DisplayLookup(field='iso3'),
-                DisplayLookup(field='admin_name'),
-                DisplayLookup(field='capital'),
-                DisplayLookup(field='population'),
-            ],
-        ),
+        c.Details(data=city),
         title=city.city,
     )
 
@@ -164,7 +149,6 @@ def user_profile(id: int) -> list[AnyComponent]:
         c.Details(
             data=user,
             fields=[
-                DisplayLookup(field='id'),
                 DisplayLookup(field='name'),
                 DisplayLookup(field='dob', mode=DisplayMode.date),
                 DisplayLookup(field='enabled'),
