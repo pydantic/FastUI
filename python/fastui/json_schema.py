@@ -3,8 +3,7 @@ from __future__ import annotations as _annotations
 import json
 import re
 import typing
-from typing_extensions import Required
-from typing import Iterable, Literal, TypeAlias, TypedDict, TypeGuard, cast
+from typing import Iterable, Literal, Required, TypeAlias, TypedDict, TypeGuard, cast
 
 from pydantic import BaseModel
 
