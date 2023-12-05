@@ -184,6 +184,19 @@ print(m.dimensions)
             ],
             class_name='border-top mt-3 pt-1',
         ),
+        c.Div(
+            components=[
+                c.Heading(text='Video', level=2),
+                c.Paragraph(text='A video component.'),
+                c.Video(
+                    sources=['https://www.w3schools.com/html/mov_bbb.mp4'],
+                    autoplay=True,
+                    controls=True,
+                    loop=False,
+                ),
+            ],
+            class_name='border-top mt-3 pt-1',
+        ),
         title='Components',
     )
 

@@ -202,6 +202,18 @@ class Iframe(pydantic.BaseModel, extra='forbid'):
     type: _t.Literal['Iframe'] = 'Iframe'
 
 
+class Video(pydantic.BaseModel, extra='forbid'):
+    sources: _t.List[pydantic.AnyUrl]
+    autoplay: _t.Union[bool, None] = None
+    controls: _t.Union[bool, None] = None
+    loop: _t.Union[bool, None] = None
+    muted: _t.Union[bool, None] = None
+    poster: _t.Union[pydantic.AnyUrl, None] = None
+    width: _t.Union[str, int, None] = None
+    height: _t.Union[str, int, None] = None
+    type: _t.Literal['Video'] = 'Video'
+
+
 AnyComponent = _te.Annotated[
     _t.Union[
         Text,
@@ -226,6 +238,7 @@ AnyComponent = _te.Annotated[
         ModelForm,
         Image,
         Iframe,
+        Video,
         FormField,
     ],
     pydantic.Field(discriminator='type'),
