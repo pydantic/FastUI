@@ -1,4 +1,4 @@
-import typing
+import typing as _t
 
 import pydantic
 import typing_extensions as _te
@@ -7,21 +7,21 @@ from .. import class_name as _class_name
 from . import display
 
 # TODO allow dataclasses and typed dicts here too
-DataModel = typing.TypeVar('DataModel', bound=pydantic.BaseModel)
+DataModel = _t.TypeVar('DataModel', bound=pydantic.BaseModel)
 
 
-class Table(pydantic.BaseModel, typing.Generic[DataModel], extra='forbid'):
-    data: typing.List[DataModel]
-    columns: typing.Union[typing.List[display.DisplayLookup], None] = None
-    no_data_message: typing.Union[str, None] = pydantic.Field(default=None, serialization_alias='noDataMessage')
+class Table(pydantic.BaseModel, _t.Generic[DataModel], extra='forbid'):
+    data: _t.List[DataModel]
+    columns: _t.Union[_t.List[display.DisplayLookup], None] = None
+    no_data_message: _t.Union[str, None] = pydantic.Field(default=None, serialization_alias='noDataMessage')
     class_name: _class_name.ClassName = None
-    type: typing.Literal['Table'] = 'Table'
+    type: _t.Literal['Table'] = 'Table'
 
     @pydantic.model_validator(mode='after')
     def fill_columns(self) -> _te.Self:
         args = self.__pydantic_generic_metadata__['args']
         try:
-            data_model_type: typing.Type[DataModel] = args[0]
+            data_model_type: _t.Type[DataModel] = args[0]
         except IndexError:
             raise ValueError('`Table` must be parameterized with a pydantic model, i.e. `Table[MyModel]()`.')
 
@@ -44,7 +44,7 @@ class Pagination(pydantic.BaseModel):
     page_size: int
     total: int
     class_name: _class_name.ClassName = None
-    type: typing.Literal['Pagination'] = 'Pagination'
+    type: _t.Literal['Pagination'] = 'Pagination'
 
     @pydantic.computed_field(alias='pageCount')
     def page_count(self) -> int:

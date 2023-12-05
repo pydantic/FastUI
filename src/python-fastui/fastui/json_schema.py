@@ -1,12 +1,9 @@
-from __future__ import annotations as _annotations
-
 import json
 import re
-import typing
-from typing import Iterable, Literal, TypedDict, cast
+import typing as _t
 
+import typing_extensions as _ta
 from pydantic import BaseModel
-from typing_extensions import Required, TypeAlias, TypeGuard
 
 from .components.forms import (
     FormField,
@@ -18,7 +15,7 @@ from .components.forms import (
     InputHtmlType,
 )
 
-if typing.TYPE_CHECKING:
+if _t.TYPE_CHECKING:
     from .forms import SelectOption
 else:
     SelectOption = dict
@@ -26,60 +23,60 @@ else:
 __all__ = 'model_json_schema_to_fields', 'SchemeLocation'
 
 
-def model_json_schema_to_fields(model: type[BaseModel]) -> list[FormField]:
-    schema = cast(JsonSchemaObject, model.model_json_schema())
+def model_json_schema_to_fields(model: _t.Type[BaseModel]) -> _t.List[FormField]:
+    schema = _t.cast(JsonSchemaObject, model.model_json_schema())
     defs = schema.get('$defs', {})
     return list(json_schema_obj_to_fields(schema, [], [], defs))
 
 
-JsonSchemaInput: (
-    TypeAlias
-) = 'JsonSchemaString | JsonSchemaStringEnum | JsonSchemaFile | JsonSchemaInt | JsonSchemaNumber'
-JsonSchemaField: TypeAlias = 'JsonSchemaInput | JsonSchemaBool'
-JsonSchemaConcrete: TypeAlias = 'JsonSchemaField | JsonSchemaArray | JsonSchemaObject'
-JsonSchemaAny: TypeAlias = 'JsonSchemaConcrete | JsonSchemaAnyOf | JsonSchemaAllOf | JsonSchemaRef'
+JsonSchemaInput: _ta.TypeAlias = (
+    'JsonSchemaString | JsonSchemaStringEnum | JsonSchemaFile | JsonSchemaInt | JsonSchemaNumber'
+)
+JsonSchemaField: _ta.TypeAlias = 'JsonSchemaInput | JsonSchemaBool'
+JsonSchemaConcrete: _ta.TypeAlias = 'JsonSchemaField | JsonSchemaArray | JsonSchemaObject'
+JsonSchemaAny: _ta.TypeAlias = 'JsonSchemaConcrete | JsonSchemaAnyOf | JsonSchemaAllOf | JsonSchemaRef'
 
 
-class JsonSchemaBase(TypedDict, total=False):
+class JsonSchemaBase(_t.TypedDict, total=False):
     title: str
     description: str
 
 
 class JsonSchemaString(JsonSchemaBase):
-    type: Required[Literal['string']]
+    type: _ta.Required[_t.Literal['string']]
     default: str
-    format: Literal['date', 'date-time', 'time', 'email', 'uri', 'uuid', 'password']
+    format: _t.Literal['date', 'date-time', 'time', 'email', 'uri', 'uuid', 'password']
 
 
 class JsonSchemaStringEnum(JsonSchemaBase, total=False):
-    type: Required[Literal['string']]
-    enum: Required[list[str]]
+    type: _ta.Required[_t.Literal['string']]
+    enum: _ta.Required[_t.List[str]]
     default: str
     placeholder: str
-    enum_labels: dict[str, str]
+    enum_labels: _t.Dict[str, str]
 
 
 class JsonSchemaStringSearch(JsonSchemaBase, total=False):
-    type: Required[Literal['string']]
-    search_url: Required[str]
+    type: _ta.Required[_t.Literal['string']]
+    search_url: _ta.Required[str]
     placeholder: str
     initial: SelectOption
 
 
 class JsonSchemaFile(JsonSchemaBase, total=False):
-    type: Required[Literal['string']]
-    format: Required[Literal['binary']]
+    type: _ta.Required[_t.Literal['string']]
+    format: _ta.Required[_t.Literal['binary']]
     accept: str
 
 
 class JsonSchemaBool(JsonSchemaBase, total=False):
-    type: Required[Literal['boolean']]
+    type: _ta.Required[_t.Literal['boolean']]
     default: bool
-    mode: Literal['checkbox', 'switch']
+    mode: _t.Literal['checkbox', 'switch']
 
 
 class JsonSchemaInt(JsonSchemaBase, total=False):
-    type: Required[Literal['integer']]
+    type: _ta.Required[_t.Literal['integer']]
     default: int
     minimum: int
     exclusiveMinimum: int
@@ -89,7 +86,7 @@ class JsonSchemaInt(JsonSchemaBase, total=False):
 
 
 class JsonSchemaNumber(JsonSchemaBase, total=False):
-    type: Required[Literal['number']]
+    type: _ta.Required[_t.Literal['number']]
     default: float
     minimum: float
     exclusiveMinimum: float
@@ -99,24 +96,24 @@ class JsonSchemaNumber(JsonSchemaBase, total=False):
 
 
 class JsonSchemaArray(JsonSchemaBase, total=False):
-    type: Required[Literal['array']]
+    type: _ta.Required[_t.Literal['array']]
     uniqueItems: bool
     minItems: int
     maxItems: int
-    prefixItems: list[JsonSchemaAny]
+    prefixItems: _t.List[JsonSchemaAny]
     items: JsonSchemaAny
     search_url: str
     placeholder: str
 
 
-JsonSchemaDefs: TypeAlias = 'dict[str, JsonSchemaConcrete]'
-JsonSchemaObject = TypedDict(
+JsonSchemaDefs: _ta.TypeAlias = 'dict[str, JsonSchemaConcrete]'
+JsonSchemaObject = _t.TypedDict(
     'JsonSchemaObject',
     {
-        'type': Required[Literal['object']],
-        'properties': typing.Dict[str, JsonSchemaAny],
+        'type': _ta.Required[_t.Literal['object']],
+        'properties': _t.Dict[str, JsonSchemaAny],
         '$defs': JsonSchemaDefs,
-        'required': typing.List[str],
+        'required': _t.List[str],
         'title': str,
         'description': str,
     },
@@ -125,25 +122,25 @@ JsonSchemaObject = TypedDict(
 
 
 class JsonSchemaNull(JsonSchemaBase):
-    type: Literal['null']
+    type: _t.Literal['null']
 
 
 class JsonSchemaAnyOf(JsonSchemaBase):
-    anyOf: list[JsonSchemaAny]
+    anyOf: _t.List[JsonSchemaAny]
 
 
 class JsonSchemaAllOf(JsonSchemaBase):
-    allOf: list[JsonSchemaAny]
+    allOf: _t.List[JsonSchemaAny]
 
 
-JsonSchemaRef = TypedDict('JsonSchemaRef', {'$ref': str})
+JsonSchemaRef = _t.TypedDict('JsonSchemaRef', {'$ref': str})
 
-SchemeLocation: TypeAlias = 'list[str | int]'
+SchemeLocation: _ta.TypeAlias = '_t.List[str | int]'
 
 
 def json_schema_obj_to_fields(
-    schema: JsonSchemaObject, loc: SchemeLocation, title: list[str], defs: JsonSchemaDefs
-) -> Iterable[FormField]:
+    schema: JsonSchemaObject, loc: SchemeLocation, title: _t.List[str], defs: JsonSchemaDefs
+) -> _t.Iterable[FormField]:
     required = set(schema.get('required', []))
     if properties := schema.get('properties'):
         for key, value in properties.items():
@@ -151,8 +148,8 @@ def json_schema_obj_to_fields(
 
 
 def json_schema_any_to_fields(
-    schema: JsonSchemaAny, loc: SchemeLocation, title: list[str], required: bool, defs: JsonSchemaDefs
-) -> Iterable[FormField]:
+    schema: JsonSchemaAny, loc: SchemeLocation, title: _t.List[str], required: bool, defs: JsonSchemaDefs
+) -> _t.Iterable[FormField]:
     schema, required = deference_json_schema(schema, defs, required)
     title = title + [schema.get('title') or loc_to_title(loc)]
 
@@ -167,7 +164,7 @@ def json_schema_any_to_fields(
 
 
 def json_schema_field_to_field(
-    schema: JsonSchemaField, loc: SchemeLocation, title: list[str], required: bool
+    schema: JsonSchemaField, loc: SchemeLocation, title: _t.List[str], required: bool
 ) -> FormField:
     name = loc_to_name(loc)
     if schema['type'] == 'boolean':
@@ -197,8 +194,8 @@ def loc_to_title(loc: SchemeLocation) -> str:
 
 
 def json_schema_array_to_fields(
-    schema: JsonSchemaArray, loc: SchemeLocation, title: list[str], required: bool, defs: JsonSchemaDefs
-) -> Iterable[FormField]:
+    schema: JsonSchemaArray, loc: SchemeLocation, title: _t.List[str], required: bool, defs: JsonSchemaDefs
+) -> _t.Iterable[FormField]:
     items_schema = schema.get('items')
     if items_schema:
         items_schema, required = deference_json_schema(items_schema, defs, required)
@@ -211,8 +208,8 @@ def json_schema_array_to_fields(
 
 
 def special_string_field(
-    schema: JsonSchemaConcrete, name: str, title: list[str], required: bool, multiple: bool
-) -> FormField | None:
+    schema: JsonSchemaConcrete, name: str, title: _t.List[str], required: bool, multiple: bool
+) -> _t.Union[FormField, None]:
     if schema['type'] == 'string':
         if schema.get('format') == 'binary':
             return FormFieldFile(
@@ -265,7 +262,7 @@ def loc_to_name(loc: SchemeLocation) -> str:
 
 def deference_json_schema(
     schema: JsonSchemaAny, defs: JsonSchemaDefs, required: bool
-) -> tuple[JsonSchemaConcrete, bool]:
+) -> _t.Tuple[JsonSchemaConcrete, bool]:
     """
     Convert a schema which might be a reference or union to a concrete schema.
     """
@@ -291,7 +288,7 @@ def deference_json_schema(
         else:
             raise NotImplementedError('`anyOf` schemas which are not simply `X | None` are not yet supported')
     elif all_of := schema.get('allOf'):
-        all_of = cast(typing.List[JsonSchemaAny], all_of)
+        all_of = _t.cast(_t.List[JsonSchemaAny], all_of)
         if len(all_of) == 1:
             new_schema, required = deference_json_schema(all_of[0], defs, required)
             new_schema.update({k: v for k, v in schema.items() if k != 'allOf'})  # type: ignore
@@ -299,14 +296,14 @@ def deference_json_schema(
         else:
             raise NotImplementedError('`allOf` schemas with more than 1 choice are not yet supported')
     else:
-        return cast(JsonSchemaConcrete, schema), required
+        return _t.cast(JsonSchemaConcrete, schema), required
 
 
-def as_title(s: typing.Any) -> str:
+def as_title(s: _t.Any) -> str:
     return re.sub(r'[\-_]', ' ', str(s)).title()
 
 
-type_lookup: dict[str, InputHtmlType] = {
+type_lookup: _t.Dict[str, InputHtmlType] = {
     'string': 'text',
     'string-date': 'date',
     'string-date-time': 'datetime-local',
@@ -335,21 +332,21 @@ def input_html_type(schema: JsonSchemaField) -> InputHtmlType:
         raise ValueError(f'Unknown schema: {schema}') from e
 
 
-def schema_is_field(schema: JsonSchemaConcrete) -> TypeGuard[JsonSchemaField]:
+def schema_is_field(schema: JsonSchemaConcrete) -> _ta.TypeGuard[JsonSchemaField]:
     """
     Determine if a schema is a field `JsonSchemaField`
     """
     return schema['type'] in {'string', 'number', 'integer', 'boolean'}
 
 
-def schema_is_array(schema: JsonSchemaConcrete) -> TypeGuard[JsonSchemaArray]:
+def schema_is_array(schema: JsonSchemaConcrete) -> _ta.TypeGuard[JsonSchemaArray]:
     """
     Determine if a schema is an array `JsonSchemaArray`
     """
     return schema['type'] == 'array'
 
 
-def schema_is_object(schema: JsonSchemaConcrete) -> TypeGuard[JsonSchemaObject]:
+def schema_is_object(schema: JsonSchemaConcrete) -> _ta.TypeGuard[JsonSchemaObject]:
     """
     Determine if a schema is an object `JsonSchemaObject`
     """

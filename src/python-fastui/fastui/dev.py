@@ -1,9 +1,7 @@
-from __future__ import annotations as _annotations
-
 import asyncio
 import os
 import signal
-import typing
+import typing as _t
 from contextlib import asynccontextmanager
 
 try:
@@ -23,7 +21,7 @@ def dev_fastapi_app(reload_path: str = '/api/__dev__/reload', **fastapi_kwargs) 
 
 
 class DevReload:
-    def __init__(self, default_lifespan: types.Lifespan[FastAPI] | None):
+    def __init__(self, default_lifespan: _t.Union[types.Lifespan[FastAPI], None]):
         self.default_lifespan = default_lifespan
         self.stop = asyncio.Event()
 
@@ -39,7 +37,7 @@ class DevReload:
     async def dev_reload_endpoints(self):
         return StreamingResponse(self.ping())
 
-    def _on_signal(self, *_args: typing.Any):
+    def _on_signal(self, *_args: _t.Any):
         # print('setting stop', _args)
         self.stop.set()
 

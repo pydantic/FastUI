@@ -1,5 +1,5 @@
 import json
-import typing
+import typing as _t
 from itertools import groupby
 from mimetypes import MimeTypes
 from operator import itemgetter
@@ -18,24 +18,24 @@ try:
 except ImportError as _e:
     raise ImportError('fastui.dev requires fastapi to be installed, install with `pip install fastui[fastapi]`') from _e
 
-if typing.TYPE_CHECKING:
+if _t.TYPE_CHECKING:
     from . import json_schema
 
 __all__ = 'FastUIForm', 'fastui_form', 'FormResponse', 'FormFile', 'SelectSearchResponse', 'SelectOption'
 
-FormModel = typing.TypeVar('FormModel', bound=pydantic.BaseModel)
+FormModel = _t.TypeVar('FormModel', bound=pydantic.BaseModel)
 
 
-class FastUIForm(typing.Generic[FormModel]):
+class FastUIForm(_t.Generic[FormModel]):
     """
     TODO mypy, pyright and pycharm don't understand the model type if this is used, is there a way to get it to work?
     """
 
-    def __class_getitem__(cls, model: typing.Type[FormModel]) -> fastapi_params.Depends:
+    def __class_getitem__(cls, model: _t.Type[FormModel]) -> fastapi_params.Depends:
         return fastui_form(model)
 
 
-def fastui_form(model: typing.Type[FormModel]) -> fastapi_params.Depends:
+def fastui_form(model: _t.Type[FormModel]) -> fastapi_params.Depends:
     async def run_fastui_form(request: fastapi.Request):
         async with request.form() as form_data:
             model_data = unflatten(form_data)
@@ -54,11 +54,11 @@ def fastui_form(model: typing.Type[FormModel]) -> fastapi_params.Depends:
 class FormFile:
     __slots__ = 'accept', 'max_size'
 
-    def __init__(self, accept: typing.Union[str, None] = None, max_size: typing.Union[int, None] = None):
+    def __init__(self, accept: _t.Union[str, None] = None, max_size: _t.Union[int, None] = None):
         self.accept = accept
         self.max_size = max_size
 
-    def validate_single(self, input_value: typing.Any) -> ds.UploadFile:
+    def validate_single(self, input_value: _t.Any) -> ds.UploadFile:
         if isinstance(input_value, ds.UploadFile):
             file = input_value
             self._validate_file(file)
@@ -66,7 +66,7 @@ class FormFile:
         else:
             raise pydantic_core.PydanticCustomError('not_file', 'Input is not a file')
 
-    def validate_multiple(self, input_value: typing.Any) -> typing.List[ds.UploadFile]:
+    def validate_multiple(self, input_value: _t.Any) -> _t.List[ds.UploadFile]:
         if isinstance(input_value, list):
             return [self.validate_single(v) for v in input_value]
         else:
@@ -119,9 +119,9 @@ class FormFile:
             {'filename': file.filename, 'content_type': file.content_type, 'accept': self.accept},
         )
 
-    def __get_pydantic_core_schema__(self, source_type: typing.Type[typing.Any], *_args) -> core_schema.CoreSchema:
-        if typing.get_origin(source_type) == list:
-            args = typing.get_args(source_type)
+    def __get_pydantic_core_schema__(self, source_type: _t.Type[_t.Any], *_args) -> core_schema.CoreSchema:
+        if _t.get_origin(source_type) == list:
+            args = _t.get_args(source_type)
             if len(args) == 1 and issubclass(args[0], ds.UploadFile):
                 return core_schema.no_info_plain_validator_function(self.validate_multiple)
         elif issubclass(source_type, ds.UploadFile):
@@ -148,7 +148,7 @@ class FormFile:
 _mime_types = MimeTypes()
 
 
-def get_content_type(file: ds.UploadFile) -> typing.Union[str, None]:
+def get_content_type(file: ds.UploadFile) -> _t.Union[str, None]:
     if file.content_type:
         return file.content_type
     elif file.filename:
@@ -157,7 +157,7 @@ def get_content_type(file: ds.UploadFile) -> typing.Union[str, None]:
 
 class FormResponse(pydantic.BaseModel):
     event: events.AnyEvent
-    type: typing.Literal['FormResponse'] = 'FormResponse'
+    type: _t.Literal['FormResponse'] = 'FormResponse'
 
 
 class SelectOption(_te.TypedDict):
@@ -167,11 +167,11 @@ class SelectOption(_te.TypedDict):
 
 class SelectGroup(_te.TypedDict):
     label: str
-    options: typing.List[SelectOption]
+    options: _t.List[SelectOption]
 
 
 class SelectSearchResponse(pydantic.BaseModel):
-    options: typing.Union[typing.List[SelectOption], typing.List[SelectGroup]]
+    options: _t.Union[_t.List[SelectOption], _t.List[SelectGroup]]
 
 
 NestedDict: _te.TypeAlias = 'dict[str | int, NestedDict | str | list[str] | ds.UploadFile | list[ds.UploadFile]]'
@@ -190,7 +190,7 @@ def unflatten(form_data: ds.FormData) -> NestedDict:
         if values == ['']:
             continue
 
-        d: typing.Dict[typing.Union[str, int], typing.Any] = result_dict
+        d: _t.Dict[_t.Union[str, int], _t.Any] = result_dict
 
         *path, last_key = name_to_loc(key)
         for part in path:
