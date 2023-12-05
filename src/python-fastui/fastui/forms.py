@@ -1,43 +1,41 @@
-from __future__ import annotations as _annotations
-
 import json
-import typing
+import typing as _t
 from itertools import groupby
+from mimetypes import MimeTypes
 from operator import itemgetter
 
 import pydantic
 import pydantic_core
-import typing_extensions
+import typing_extensions as _te
 from pydantic_core import core_schema
 
 from . import events
 
 try:
     import fastapi
+    from fastapi import params as fastapi_params
     from starlette import datastructures as ds
-except ImportError as e:
-    raise ImportError('fastui.dev requires fastapi to be installed, install with `pip install fastui[fastapi]`') from e
+except ImportError as _e:
+    raise ImportError('fastui.dev requires fastapi to be installed, install with `pip install fastui[fastapi]`') from _e
 
-if typing.TYPE_CHECKING:
+if _t.TYPE_CHECKING:
     from . import json_schema
 
 __all__ = 'FastUIForm', 'fastui_form', 'FormResponse', 'FormFile', 'SelectSearchResponse', 'SelectOption'
 
-FormModel = typing.TypeVar('FormModel', bound=pydantic.BaseModel)
+FormModel = _t.TypeVar('FormModel', bound=pydantic.BaseModel)
 
 
-class FastUIForm(typing.Generic[FormModel]):
+class FastUIForm(_t.Generic[FormModel]):
     """
     TODO mypy, pyright and pycharm don't understand the model type if this is used, is there a way to get it to work?
     """
 
-    def __class_getitem__(
-        cls, model: type[FormModel]
-    ) -> typing.Callable[[fastapi.Request], typing.Awaitable[FormModel]]:
+    def __class_getitem__(cls, model: _t.Type[FormModel]) -> fastapi_params.Depends:
         return fastui_form(model)
 
 
-def fastui_form(model: type[FormModel]) -> typing.Callable[[fastapi.Request], typing.Awaitable[FormModel]]:
+def fastui_form(model: _t.Type[FormModel]) -> fastapi_params.Depends:
     async def run_fastui_form(request: fastapi.Request):
         async with request.form() as form_data:
             model_data = unflatten(form_data)
@@ -56,11 +54,11 @@ def fastui_form(model: type[FormModel]) -> typing.Callable[[fastapi.Request], ty
 class FormFile:
     __slots__ = 'accept', 'max_size'
 
-    def __init__(self, accept: str | None = None, max_size: int | None = None):
+    def __init__(self, accept: _t.Union[str, None] = None, max_size: _t.Union[int, None] = None):
         self.accept = accept
         self.max_size = max_size
 
-    def validate_single(self, input_value: typing.Any) -> ds.UploadFile:
+    def validate_single(self, input_value: _t.Any) -> ds.UploadFile:
         if isinstance(input_value, ds.UploadFile):
             file = input_value
             self._validate_file(file)
@@ -68,7 +66,7 @@ class FormFile:
         else:
             raise pydantic_core.PydanticCustomError('not_file', 'Input is not a file')
 
-    def validate_multiple(self, input_value: typing.Any) -> list[ds.UploadFile]:
+    def validate_multiple(self, input_value: _t.Any) -> _t.List[ds.UploadFile]:
         if isinstance(input_value, list):
             return [self.validate_single(v) for v in input_value]
         else:
@@ -77,7 +75,7 @@ class FormFile:
     def _validate_file(self, file: ds.UploadFile) -> None:
         """
         See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#unique_file_type_specifiers
-        for details on what's allowed
+        for details on what's allowed.
         """
         if file.size == 0:
             # FIXME is this right???
@@ -85,7 +83,7 @@ class FormFile:
 
         if self.max_size is not None and file.size is not None and file.size > self.max_size:
             raise pydantic_core.PydanticCustomError(
-                'file_no_big',
+                'file_too_big',
                 'File size was {file_size}, exceeding maximum allowed size of {max_size}',
                 {
                     'file_size': pydantic.ByteSize(file.size).human_readable(),
@@ -104,13 +102,13 @@ class FormFile:
                 # this is a file extension
                 if file.filename and file.filename.endswith(accept):
                     return
-            elif file.content_type is None:
-                continue
-            elif accept.endswith('/*'):
-                if file.content_type.startswith(accept[:-1]):
+
+            if content_type := get_content_type(file):
+                if accept.endswith('/*'):
+                    if content_type.startswith(accept[:-1]):
+                        return
+                elif content_type == accept:
                     return
-            elif file.content_type == accept:
-                return
 
         raise pydantic_core.PydanticCustomError(
             'accept_mismatch',
@@ -121,17 +119,17 @@ class FormFile:
             {'filename': file.filename, 'content_type': file.content_type, 'accept': self.accept},
         )
 
-    def __get_pydantic_core_schema__(self, source_type: type[typing.Any], *_args) -> core_schema.CoreSchema:
-        if issubclass(source_type, ds.UploadFile):
-            return core_schema.no_info_plain_validator_function(self.validate_single)
-        elif typing.get_origin(source_type) == list:
-            args = typing.get_args(source_type)
+    def __get_pydantic_core_schema__(self, source_type: _t.Type[_t.Any], *_args) -> core_schema.CoreSchema:
+        if _t.get_origin(source_type) == list:
+            args = _t.get_args(source_type)
             if len(args) == 1 and issubclass(args[0], ds.UploadFile):
                 return core_schema.no_info_plain_validator_function(self.validate_multiple)
+        elif issubclass(source_type, ds.UploadFile):
+            return core_schema.no_info_plain_validator_function(self.validate_single)
 
         raise TypeError(f'FormFile can only be used with `UploadFile` or `list[UploadFile]`, not {source_type}')
 
-    def __get_pydantic_json_schema__(self, core_schema_: core_schema.CoreSchema, *_args) -> json_schema.JsonSchemaAny:
+    def __get_pydantic_json_schema__(self, core_schema_: core_schema.CoreSchema, *_args) -> 'json_schema.JsonSchemaAny':
         from . import json_schema
 
         s = json_schema.JsonSchemaFile(type='string', format='binary')
@@ -147,26 +145,36 @@ class FormFile:
         return f'FormFile(accept={self.accept!r})'
 
 
+_mime_types = MimeTypes()
+
+
+def get_content_type(file: ds.UploadFile) -> _t.Union[str, None]:
+    if file.content_type:
+        return file.content_type
+    elif file.filename:
+        return _mime_types.guess_type(file.filename)[0]
+
+
 class FormResponse(pydantic.BaseModel):
     event: events.AnyEvent
-    type: typing.Literal['FormResponse'] = 'FormResponse'
+    type: _t.Literal['FormResponse'] = 'FormResponse'
 
 
-class SelectOption(typing_extensions.TypedDict):
+class SelectOption(_te.TypedDict):
     value: str
     label: str
 
 
-class SelectGroup(typing_extensions.TypedDict):
+class SelectGroup(_te.TypedDict):
     label: str
-    options: list[SelectOption]
+    options: _t.List[SelectOption]
 
 
 class SelectSearchResponse(pydantic.BaseModel):
-    options: list[SelectOption] | list[SelectGroup]
+    options: _t.Union[_t.List[SelectOption], _t.List[SelectGroup]]
 
 
-NestedDict: typing.TypeAlias = 'dict[str | int, NestedDict | str | list[str] | ds.UploadFile | list[ds.UploadFile]]'
+NestedDict: _te.TypeAlias = 'dict[str | int, NestedDict | str | list[str] | ds.UploadFile | list[ds.UploadFile]]'
 
 
 def unflatten(form_data: ds.FormData) -> NestedDict:
@@ -182,7 +190,7 @@ def unflatten(form_data: ds.FormData) -> NestedDict:
         if values == ['']:
             continue
 
-        d: dict[str | int, typing.Any] = result_dict
+        d: _t.Dict[_t.Union[str, int], _t.Any] = result_dict
 
         *path, last_key = name_to_loc(key)
         for part in path:
@@ -198,11 +206,11 @@ def unflatten(form_data: ds.FormData) -> NestedDict:
     return result_dict
 
 
-def name_to_loc(name: str) -> json_schema.SchemeLocation:
+def name_to_loc(name: str) -> 'json_schema.SchemeLocation':
     if name.startswith('['):
         return json.loads(name)
     else:
-        loc: json_schema.SchemeLocation = []
+        loc: 'json_schema.SchemeLocation' = []
         for part in name.split('.'):
             if part.isdigit():
                 loc.append(int(part))

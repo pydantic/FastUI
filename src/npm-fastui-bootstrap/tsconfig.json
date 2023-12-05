@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "dist",
     "paths": {
-      "fastui": ["../fastui/src"]
+      "fastui": ["../npm-fastui/src"]
     }
   },
   "include": ["src"]

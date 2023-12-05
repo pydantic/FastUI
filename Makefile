@@ -1,36 +1,38 @@
 .DEFAULT_GOAL:=all
-paths = python
+path = src/python-fastui
 
 .PHONY: install
 install:
 	pip install -U pip pre-commit pip-tools
-	pip install -r python/requirements/all.txt
+	pip install -r $(path)/requirements/all.txt
+	pip install -e $(path)
 	pre-commit install
 
 .PHONY: update-lockfiles
 update-lockfiles:
 	@echo "Updating requirements files using pip-compile"
-	pip-compile -q --strip-extras -o python/requirements/lint.txt python/requirements/lint.in
-	pip-compile -q --strip-extras -o python/requirements/pyproject.txt pyproject.toml --extra=fastapi
-	pip install --dry-run -r python/requirements/all.txt
+	pip-compile -q --strip-extras -o $(path)/requirements/lint.txt $(path)/requirements/lint.in
+	pip-compile -q --strip-extras -o $(path)/requirements/test.txt $(path)/requirements/test.in
+	pip-compile -q --strip-extras -o $(path)/requirements/pyproject.txt $(path)/pyproject.toml --extra=fastapi
+	pip install --dry-run -r $(path)/requirements/all.txt
 
 .PHONY: format
 format:
-	ruff check --fix-only $(paths)
-	ruff format $(paths)
+	ruff check --fix-only $(path)
+	ruff format $(path)
 
 .PHONY: lint
 lint:
-	ruff check $(paths)
-	ruff format --check $(paths)
+	ruff check $(path)
+	ruff format --check $(path)
 
 .PHONY: typecheck
 typecheck:
-	pyright python/fastui
+	pyright
 
 .PHONY: test
 test:
-	coverage run -m pytest tests
+	coverage run -m pytest
 
 .PHONY: testcov
 testcov: test
@@ -38,7 +40,7 @@ testcov: test
 
 .PHONY: dev
 dev:
-	uvicorn python.demo:app --reload
+	uvicorn demo:app --reload
 
 .PHONY: all
 all: testcov lint

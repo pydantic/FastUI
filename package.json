@@ -2,13 +2,13 @@
   "private": true,
   "type": "module",
   "workspaces": [
-    "packages/*"
+    "src/*"
   ],
   "scripts": {
     "dev": "npm run --workspace=@pydantic/fastui-prebuilt dev",
     "build": "npm run --workspaces prepublishOnly",
     "typecheck": "npm run --workspaces typecheck",
-    "lint": "eslint packages --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint src --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
     "lint-fix": "npm run lint -- --fix",
     "prettier": "prettier --write",
     "format": "npm run prettier -- . && npm run lint-fix"

@@ -1,10 +1,10 @@
 import enum
-import typing
+import typing as _t
 from abc import ABC
 
-import annotated_types
+import annotated_types as _at
 import pydantic
-import typing_extensions
+import typing_extensions as _te
 
 from .. import class_name as _class_name
 from .. import events
@@ -29,8 +29,8 @@ class DisplayMode(str, enum.Enum):
 
 
 class DisplayBase(pydantic.BaseModel, ABC, defer_build=True):
-    mode: DisplayMode | None = None
-    on_click: events.AnyEvent | None = pydantic.Field(default=None, serialization_alias='onClick')
+    mode: _t.Union[DisplayMode, None] = None
+    on_click: _t.Union[events.AnyEvent, None] = pydantic.Field(default=None, serialization_alias='onClick')
 
 
 class DisplayLookup(DisplayBase, extra='forbid'):
@@ -39,9 +39,9 @@ class DisplayLookup(DisplayBase, extra='forbid'):
     """
 
     field: str
-    title: str | None = None
+    title: _t.Union[str, None] = None
     # percentage width - 0 to 100, specific to tables
-    table_width_percent: typing.Annotated[int, annotated_types.Interval(ge=0, le=100)] | None = pydantic.Field(
+    table_width_percent: _t.Union[_te.Annotated[int, _at.Interval(ge=0, le=100)], None] = pydantic.Field(
         default=None, serialization_alias='tableWidthPercent'
     )
 
@@ -51,21 +51,21 @@ class Display(DisplayBase, extra='forbid'):
     Description of how to display a value, either in a table or detail view.
     """
 
-    value: typing.Any
-    type: typing.Literal['Display'] = 'Display'
+    value: _t.Any
+    type: _t.Literal['Display'] = 'Display'
 
 
-DataModel = typing.TypeVar('DataModel', bound=pydantic.BaseModel)
+DataModel = _t.TypeVar('DataModel', bound=pydantic.BaseModel)
 
 
-class Details(pydantic.BaseModel, typing.Generic[DataModel], extra='forbid'):
+class Details(pydantic.BaseModel, _t.Generic[DataModel], extra='forbid'):
     data: DataModel
-    fields: list[DisplayLookup] | None = None
+    fields: _t.Union[_t.List[DisplayLookup], None] = None
     class_name: _class_name.ClassName = None
-    type: typing.Literal['Details'] = 'Details'
+    type: _t.Literal['Details'] = 'Details'
 
     @pydantic.model_validator(mode='after')
-    def fill_fields(self) -> typing_extensions.Self:
+    def fill_fields(self) -> _te.Self:
         if self.fields is None:
             self.fields = [
                 DisplayLookup(field=name, title=field.title) for name, field in self.data.model_fields.items()
