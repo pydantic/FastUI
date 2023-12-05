@@ -25,7 +25,7 @@ from .forms import (
     ModelForm,
 )
 from .tables import Pagination, Table
-
+from .DfViewer import DFViewer
 if typing.TYPE_CHECKING:
     import pydantic.fields
 
@@ -47,6 +47,7 @@ __all__ = (
     'Table',
     'Display',
     'Details',
+    'DFViewer'
 )
 
 
@@ -191,6 +192,7 @@ AnyComponent = typing.Annotated[
     | Details
     | Form
     | ModelForm
-    | FormField,
+    | FormField
+    | DFViewer,
     pydantic.Field(discriminator='type'),
 ]

@@ -73,7 +73,7 @@ export type {
 }
 
 // TODO some better way to export components
-export { LinkComp, LinkRender }
+export { LinkComp, LinkRender, DFViewer }
 
 export type FastProps =
   | TextProps
