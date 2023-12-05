@@ -1,5 +1,3 @@
-from __future__ import annotations as _annotations
-
 import typing
 from abc import ABC
 
@@ -74,7 +72,7 @@ class BaseForm(pydantic.BaseModel, ABC, defer_build=True, extra='forbid'):
         default=None, serialization_alias='displayMode'
     )
     submit_on_change: typing.Union[bool, None] = pydantic.Field(default=None, serialization_alias='submitOnChange')
-    footer: typing.Union[bool, typing.List[AnyComponent], None] = None
+    footer: 'typing.Union[bool, typing.List[AnyComponent], None]' = None
     class_name: _class_name.ClassName = None
 
     @pydantic.model_validator(mode='after')
@@ -103,7 +101,7 @@ class ModelForm(BaseForm, typing.Generic[FormFieldsModel]):
 
         args = self.__pydantic_generic_metadata__['args']
         try:
-            model: type[FormFieldsModel] = args[0]
+            model: typing.Type[FormFieldsModel] = args[0]
         except IndexError:
             raise ValueError('`ModelForm` must be parameterized with a pydantic model, i.e. `ModelForm[MyModel]()`.')
 

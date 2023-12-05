@@ -1,5 +1,3 @@
-from __future__ import annotations as _annotations
-
 import typing
 
 import pydantic
@@ -23,7 +21,7 @@ class Table(pydantic.BaseModel, typing.Generic[DataModel], extra='forbid'):
     def fill_columns(self) -> _te.Self:
         args = self.__pydantic_generic_metadata__['args']
         try:
-            data_model_type: type[DataModel] = args[0]
+            data_model_type: typing.Type[DataModel] = args[0]
         except IndexError:
             raise ValueError('`Table` must be parameterized with a pydantic model, i.e. `Table[MyModel]()`.')
 

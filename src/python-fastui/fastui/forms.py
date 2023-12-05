@@ -1,5 +1,3 @@
-from __future__ import annotations as _annotations
-
 import json
 import typing
 from itertools import groupby
@@ -17,8 +15,8 @@ try:
     import fastapi
     from fastapi import params as fastapi_params
     from starlette import datastructures as ds
-except ImportError as e:
-    raise ImportError('fastui.dev requires fastapi to be installed, install with `pip install fastui[fastapi]`') from e
+except ImportError as _e:
+    raise ImportError('fastui.dev requires fastapi to be installed, install with `pip install fastui[fastapi]`') from _e
 
 if typing.TYPE_CHECKING:
     from . import json_schema
@@ -33,11 +31,11 @@ class FastUIForm(typing.Generic[FormModel]):
     TODO mypy, pyright and pycharm don't understand the model type if this is used, is there a way to get it to work?
     """
 
-    def __class_getitem__(cls, model: type[FormModel]) -> fastapi_params.Depends:
+    def __class_getitem__(cls, model: typing.Type[FormModel]) -> fastapi_params.Depends:
         return fastui_form(model)
 
 
-def fastui_form(model: type[FormModel]) -> fastapi_params.Depends:
+def fastui_form(model: typing.Type[FormModel]) -> fastapi_params.Depends:
     async def run_fastui_form(request: fastapi.Request):
         async with request.form() as form_data:
             model_data = unflatten(form_data)
@@ -68,7 +66,7 @@ class FormFile:
         else:
             raise pydantic_core.PydanticCustomError('not_file', 'Input is not a file')
 
-    def validate_multiple(self, input_value: typing.Any) -> list[ds.UploadFile]:
+    def validate_multiple(self, input_value: typing.Any) -> typing.List[ds.UploadFile]:
         if isinstance(input_value, list):
             return [self.validate_single(v) for v in input_value]
         else:
@@ -121,7 +119,7 @@ class FormFile:
             {'filename': file.filename, 'content_type': file.content_type, 'accept': self.accept},
         )
 
-    def __get_pydantic_core_schema__(self, source_type: type[typing.Any], *_args) -> core_schema.CoreSchema:
+    def __get_pydantic_core_schema__(self, source_type: typing.Type[typing.Any], *_args) -> core_schema.CoreSchema:
         if typing.get_origin(source_type) == list:
             args = typing.get_args(source_type)
             if len(args) == 1 and issubclass(args[0], ds.UploadFile):
@@ -131,7 +129,7 @@ class FormFile:
 
         raise TypeError(f'FormFile can only be used with `UploadFile` or `list[UploadFile]`, not {source_type}')
 
-    def __get_pydantic_json_schema__(self, core_schema_: core_schema.CoreSchema, *_args) -> json_schema.JsonSchemaAny:
+    def __get_pydantic_json_schema__(self, core_schema_: core_schema.CoreSchema, *_args) -> 'json_schema.JsonSchemaAny':
         from . import json_schema
 
         s = json_schema.JsonSchemaFile(type='string', format='binary')
@@ -150,7 +148,7 @@ class FormFile:
 _mime_types = MimeTypes()
 
 
-def get_content_type(file: ds.UploadFile) -> str | None:
+def get_content_type(file: ds.UploadFile) -> typing.Union[str, None]:
     if file.content_type:
         return file.content_type
     elif file.filename:
@@ -192,7 +190,7 @@ def unflatten(form_data: ds.FormData) -> NestedDict:
         if values == ['']:
             continue
 
-        d: dict[str | int, typing.Any] = result_dict
+        d: typing.Dict[typing.Union[str, int], typing.Any] = result_dict
 
         *path, last_key = name_to_loc(key)
         for part in path:
@@ -208,11 +206,11 @@ def unflatten(form_data: ds.FormData) -> NestedDict:
     return result_dict
 
 
-def name_to_loc(name: str) -> json_schema.SchemeLocation:
+def name_to_loc(name: str) -> 'json_schema.SchemeLocation':
     if name.startswith('['):
         return json.loads(name)
     else:
-        loc: json_schema.SchemeLocation = []
+        loc: 'json_schema.SchemeLocation' = []
         for part in name.split('.'):
             if part.isdigit():
                 loc.append(int(part))
