@@ -37,6 +37,7 @@ __all__ = (
     'Button',
     'Modal',
     'ModelForm',
+    'Footer',
     'FormFieldInput',
     'FormFieldBoolean',
     'FormFieldFile',
@@ -148,6 +149,13 @@ class Navbar(pydantic.BaseModel, extra='forbid'):
     type: _t.Literal['Navbar'] = 'Navbar'
 
 
+class Footer(pydantic.BaseModel, extra='forbid'):
+    extra_text: Text | None = pydantic.Field(default=None, serialization_alias='extraText')
+    links: list[Link] = pydantic.Field(default_factory=list)
+    class_name: _class_name.ClassName = None
+    type: _t.Literal['Footer'] = 'Footer'
+
+
 class Modal(pydantic.BaseModel, extra='forbid'):
     title: str
     body: '_t.List[AnyComponent]'
@@ -216,6 +224,7 @@ AnyComponent = _te.Annotated[
         Link,
         LinkList,
         Navbar,
+        Footer,
         Modal,
         ServerLoad,
         Table,
