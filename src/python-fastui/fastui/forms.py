@@ -169,11 +169,11 @@ class SelectOption(_te.TypedDict):
 
 class SelectGroup(_te.TypedDict):
     label: str
-    options: list[SelectOption]
+    options: typing.List[SelectOption]
 
 
 class SelectSearchResponse(pydantic.BaseModel):
-    options: typing.Union[list[SelectOption], list[SelectGroup]]
+    options: typing.Union[typing.List[SelectOption], typing.List[SelectGroup]]
 
 
 NestedDict: _te.TypeAlias = 'dict[str | int, NestedDict | str | list[str] | ds.UploadFile | list[ds.UploadFile]]'

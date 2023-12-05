@@ -72,7 +72,7 @@ class PageTitle(pydantic.BaseModel, extra='forbid'):
 
 
 class Div(pydantic.BaseModel, extra='forbid'):
-    components: list[AnyComponent]
+    components: typing.List[AnyComponent]
     class_name: _class_name.ClassName = None
     type: typing.Literal['Div'] = 'Div'
 
@@ -82,7 +82,7 @@ class Page(pydantic.BaseModel, extra='forbid'):
     Similar to `container` in many UI frameworks, this should be a reasonable root component for most pages.
     """
 
-    components: list[AnyComponent]
+    components: typing.List[AnyComponent]
     class_name: _class_name.ClassName = None
     type: typing.Literal['Page'] = 'Page'
 
@@ -126,7 +126,7 @@ class Button(pydantic.BaseModel, extra='forbid'):
 
 
 class Link(pydantic.BaseModel, extra='forbid'):
-    components: list[AnyComponent]
+    components: typing.List[AnyComponent]
     on_click: typing.Union[events.AnyEvent, None] = pydantic.Field(default=None, serialization_alias='onClick')
     mode: typing.Union[typing.Literal['navbar', 'tabs', 'vertical', 'pagination'], None] = None
     active: typing.Union[bool, str, None] = None
@@ -136,7 +136,7 @@ class Link(pydantic.BaseModel, extra='forbid'):
 
 
 class LinkList(pydantic.BaseModel, extra='forbid'):
-    links: list[Link]
+    links: typing.List[Link]
     mode: typing.Union[typing.Literal['tabs', 'vertical', 'pagination'], None] = None
     class_name: _class_name.ClassName = None
     type: typing.Literal['LinkList'] = 'LinkList'
@@ -145,15 +145,15 @@ class LinkList(pydantic.BaseModel, extra='forbid'):
 class Navbar(pydantic.BaseModel, extra='forbid'):
     title: typing.Union[str, None] = None
     title_event: typing.Union[events.AnyEvent, None] = pydantic.Field(default=None, serialization_alias='titleEvent')
-    links: list[Link] = pydantic.Field(default_factory=list)
+    links: typing.List[Link] = pydantic.Field(default_factory=list)
     class_name: _class_name.ClassName = None
     type: typing.Literal['Navbar'] = 'Navbar'
 
 
 class Modal(pydantic.BaseModel, extra='forbid'):
     title: str
-    body: list[AnyComponent]
-    footer: typing.Union[list[AnyComponent], None] = None
+    body: typing.List[AnyComponent]
+    footer: typing.Union[typing.List[AnyComponent], None] = None
     open_trigger: typing.Union[events.PageEvent, None] = pydantic.Field(default=None, serialization_alias='openTrigger')
     open_context: typing.Union[events.EventContext, None] = pydantic.Field(
         default=None, serialization_alias='openContext'
@@ -169,7 +169,7 @@ class ServerLoad(pydantic.BaseModel, extra='forbid'):
 
     path: str
     load_trigger: typing.Union[events.PageEvent, None] = pydantic.Field(default=None, serialization_alias='loadTrigger')
-    components: typing.Union[list[AnyComponent], None] = None
+    components: typing.Union[typing.List[AnyComponent], None] = None
     sse: typing.Union[bool, None] = None
     type: typing.Literal['ServerLoad'] = 'ServerLoad'
 

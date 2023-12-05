@@ -13,8 +13,8 @@ DataModel = typing.TypeVar('DataModel', bound=pydantic.BaseModel)
 
 
 class Table(pydantic.BaseModel, typing.Generic[DataModel], extra='forbid'):
-    data: list[DataModel]
-    columns: typing.Union[list[display.DisplayLookup], None] = None
+    data: typing.List[DataModel]
+    columns: typing.Union[typing.List[display.DisplayLookup], None] = None
     no_data_message: typing.Union[str, None] = pydantic.Field(default=None, serialization_alias='noDataMessage')
     class_name: _class_name.ClassName = None
     type: typing.Literal['Table'] = 'Table'

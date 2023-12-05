@@ -17,7 +17,7 @@ InputHtmlType = typing.Literal['text', 'date', 'datetime-local', 'time', 'email'
 
 class BaseFormField(pydantic.BaseModel, ABC, defer_build=True):
     name: str
-    title: typing.Union[str, list[str]]
+    title: typing.Union[str, typing.List[str]]
     required: bool = False
     error: typing.Union[str, None] = None
     locked: bool = False
@@ -45,7 +45,7 @@ class FormFieldFile(BaseFormField):
 
 
 class FormFieldSelect(BaseFormField):
-    options: typing.Union[list[forms.SelectOption], list[forms.SelectGroup]]
+    options: typing.Union[typing.List[forms.SelectOption], typing.List[forms.SelectGroup]]
     multiple: typing.Union[bool, None] = None
     initial: typing.Union[str, None] = None
     vanilla: typing.Union[bool, None] = None
@@ -68,13 +68,13 @@ FormField = typing.Union[FormFieldInput, FormFieldBoolean, FormFieldFile, FormFi
 
 class BaseForm(pydantic.BaseModel, ABC, defer_build=True, extra='forbid'):
     submit_url: str = pydantic.Field(serialization_alias='submitUrl')
-    initial: typing.Union[dict[str, typing.Any], None] = None
+    initial: typing.Union[typing.Dict[str, typing.Any], None] = None
     method: typing.Literal['POST', 'GOTO', 'GET'] = 'POST'
     display_mode: typing.Union[typing.Literal['default', 'inline'], None] = pydantic.Field(
         default=None, serialization_alias='displayMode'
     )
     submit_on_change: typing.Union[bool, None] = pydantic.Field(default=None, serialization_alias='submitOnChange')
-    footer: typing.Union[bool, list[AnyComponent], None] = None
+    footer: typing.Union[bool, typing.List[AnyComponent], None] = None
     class_name: _class_name.ClassName = None
 
     @pydantic.model_validator(mode='after')
@@ -85,7 +85,7 @@ class BaseForm(pydantic.BaseModel, ABC, defer_build=True, extra='forbid'):
 
 
 class Form(BaseForm):
-    form_fields: list[FormField] = pydantic.Field(serialization_alias='formFields')
+    form_fields: typing.List[FormField] = pydantic.Field(serialization_alias='formFields')
     type: typing.Literal['Form'] = 'Form'
 
 
@@ -98,7 +98,7 @@ class ModelForm(BaseForm, typing.Generic[FormFieldsModel]):
     type: typing.Literal['ModelForm'] = 'ModelForm'
 
     @pydantic.computed_field(alias='formFields')
-    def form_fields(self) -> list[FormField]:
+    def form_fields(self) -> typing.List[FormField]:
         from ..json_schema import model_json_schema_to_fields
 
         args = self.__pydantic_generic_metadata__['args']
