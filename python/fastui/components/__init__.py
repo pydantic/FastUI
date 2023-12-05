@@ -13,6 +13,7 @@ import pydantic
 
 from .. import class_name as _class_name
 from .. import events
+from .DfViewer import DFViewer
 from .display import Details, Display
 from .forms import (
     Form,
@@ -25,7 +26,7 @@ from .forms import (
     ModelForm,
 )
 from .tables import Pagination, Table
-from .DfViewer import DFViewer
+
 if typing.TYPE_CHECKING:
     import pydantic.fields
 
@@ -47,7 +48,7 @@ __all__ = (
     'Table',
     'Display',
     'Details',
-    'DFViewer'
+    'DFViewer',
 )
 
 

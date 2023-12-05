@@ -22,17 +22,22 @@ def panel(*components: AnyComponent) -> AnyComponent:
 @router.get('', response_model=FastUI, response_model_exclude_none=True)
 def components_view() -> list[AnyComponent]:
     return demo_page(
-        c.Div(
-            components=[c.Heading(text='DFViewer', level=2)]
-        ),
+        c.Div(components=[c.Heading(text='DFViewer', level=2)]),
         c.DFViewer(
-            df={'schema': {'fields':[{'name':'foo', 'type':'integer'}],
-                           'primaryKey':['foo'], 'pandas_version':'1.4.0'},
-                'table_hints': {'foo':{'type':'string', 'histogram':[]},
-                                'bar':{'type':'integer', 'min_digits':2, 'max_digits':4, 'histogram':[]},
-                                'baz':{'type':'obj', 'histogram':[]}},
-                'data': [{'foo': 'hello', 'bar':8},
-                         {'foo': 'world', 'bar':10}]}),
+            df={
+                'schema': {
+                    'fields': [{'name': 'foo', 'type': 'integer'}],
+                    'primaryKey': ['foo'],
+                    'pandas_version': '1.4.0',
+                },
+                'table_hints': {
+                    'foo': {'type': 'string', 'histogram': []},
+                    'bar': {'type': 'integer', 'min_digits': 2, 'max_digits': 4, 'histogram': []},
+                    'baz': {'type': 'obj', 'histogram': []},
+                },
+                'data': [{'foo': 'hello', 'bar': 8}, {'foo': 'world', 'bar': 10}],
+            }
+        ),
         c.Div(
             components=[
                 c.Heading(text='Text', level=2),

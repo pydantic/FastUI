@@ -1,4 +1,5 @@
 import { useContext, FC } from 'react'
+import { DFViewer, DFWhole } from 'buckaroo-dfviewer'
 
 import { ErrorContext } from '../hooks/error'
 import { useCustomRender } from '../hooks/config'
@@ -38,13 +39,11 @@ import {
 } from './display'
 import { JsonComp, JsonProps } from './Json'
 import { ServerLoadComp, ServerLoadProps } from './ServerLoad'
-import { DFViewer, DFWhole } from 'buckaroo-dfviewer'
 
 export interface DFViewerProps {
   type: 'DFViewer'
-  df: DFWhole;
+  df: DFWhole
 }
-
 
 export type {
   TextProps,
@@ -69,7 +68,7 @@ export type {
   AllDisplayProps,
   DisplayPrimitiveProps,
   JsonProps,
-  ServerLoadProps
+  ServerLoadProps,
 }
 
 // TODO some better way to export components
@@ -100,7 +99,10 @@ export type FastProps =
   | ServerLoadProps
   | DFViewerProps
 
-export type FastClassNameProps = Exclude<FastProps, TextProps | AllDisplayProps | ServerLoadProps | PageTitleProps| DFViewerProps>
+export type FastClassNameProps = Exclude<
+  FastProps,
+  TextProps | AllDisplayProps | ServerLoadProps | PageTitleProps | DFViewerProps
+>
 
 export const AnyCompList: FC<{ propsList: FastProps[] }> = ({ propsList }) => (
   <>
@@ -181,7 +183,7 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <DFViewer {...props} />
       default:
         unreachable('Unexpected component type', type, props)
-        return <DisplayError title="Invalid Server Response" description={`Unknown component type: "${type}"`} />
+        return <DisplayError title="Invalid Server Response" description={`Unknown paddy component type: "${type}"`} />
     }
   } catch (e) {
     // TODO maybe we shouldn't catch this error (by default)?

@@ -1,10 +1,12 @@
 from __future__ import annotations as _annotations
 
+import os
 import sys
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, PlainTextResponse
+from fastapi.staticfiles import StaticFiles
 from fastui import prebuilt_html
 from fastui.dev import dev_fastapi_app
 from httpx import AsyncClient
@@ -28,6 +30,10 @@ if frontend_reload:
     app = dev_fastapi_app(lifespan=lifespan)
 else:
     app = FastAPI(lifespan=lifespan)
+
+app.mount(
+    '/static_js', StaticFiles(directory=f'{os.getcwd()}/../packages/fastui-prebuilt/dist/assets'), name='static_js'
+)
 
 app.include_router(components_router, prefix='/api/components')
 app.include_router(table_router, prefix='/api/table')

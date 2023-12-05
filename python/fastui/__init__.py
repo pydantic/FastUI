@@ -15,7 +15,8 @@ class FastUI(pydantic.RootModel):
 
 
 _PREBUILT_VERSION = '0.0.10'
-_PREBUILT_CDN_URL = f'https://cdn.jsdelivr.net/npm/@pydantic/fastui-prebuilt@{_PREBUILT_VERSION}/dist/assets'
+# _PREBUILT_CDN_URL = f'https://cdn.jsdelivr.net/npm/@pydantic/fastui-prebuilt@{_PREBUILT_VERSION}/dist/assets'
+_PREBUILT_CDN_URL = './static_js'
 
 
 def prebuilt_html(title: str = ''):
