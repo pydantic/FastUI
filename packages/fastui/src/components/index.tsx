@@ -38,6 +38,7 @@ import {
 } from './display'
 import { JsonComp, JsonProps } from './Json'
 import { ServerLoadComp, ServerLoadProps } from './ServerLoad'
+import { ImageComp, ImageProps } from './image'
 import { IframeComp, IframeProps } from './Iframe'
 
 export type {
@@ -64,6 +65,7 @@ export type {
   DisplayPrimitiveProps,
   JsonProps,
   ServerLoadProps,
+  ImageProps,
   IframeProps,
 }
 
@@ -93,6 +95,7 @@ export type FastProps =
   | AllDisplayProps
   | JsonProps
   | ServerLoadProps
+  | ImageProps
   | IframeProps
 
 export type FastClassNameProps = Exclude<FastProps, TextProps | AllDisplayProps | ServerLoadProps | PageTitleProps>
@@ -172,6 +175,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <JsonComp {...props} />
       case 'ServerLoad':
         return <ServerLoadComp {...props} />
+      case 'Image':
+        return <ImageComp {...props} />
       case 'Iframe':
         return <IframeComp {...props} />
       default:

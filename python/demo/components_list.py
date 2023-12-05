@@ -168,6 +168,22 @@ print(m.dimensions)
             ],
             class_name='border-top mt-3 pt-1',
         ),
+        c.Div(
+            components=[
+                c.Heading(text='Image', level=2),
+                c.Paragraph(text='An image component.'),
+                c.Image(
+                    src='https://avatars.githubusercontent.com/u/110818415',
+                    alt='Pydantic Logo',
+                    width=200,
+                    height=200,
+                    loading='lazy',
+                    referrerpolicy='no-referrer',
+                    class_name='border rounded',
+                ),
+            ],
+            class_name='border-top mt-3 pt-1',
+        ),
         title='Components',
     )
 

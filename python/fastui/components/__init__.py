@@ -47,6 +47,7 @@ __all__ = (
     'Table',
     'Display',
     'Details',
+    'Image',
 )
 
 
@@ -170,6 +171,27 @@ class ServerLoad(pydantic.BaseModel, extra='forbid'):
     type: typing.Literal['ServerLoad'] = 'ServerLoad'
 
 
+class Image(pydantic.BaseModel, extra='forbid'):
+    src: str
+    alt: str | None = None
+    width: int | float | str | None = None
+    height: int | float | str | None = None
+    referrerpolicy: typing.Literal[
+        'no-referrer',
+        'no-referrer-when-downgrade',
+        'origin',
+        'origin-when-cross-origin',
+        'same-origin',
+        'strict-origin',
+        'strict-origin-when-cross-origin',
+        'unsafe-url',
+    ] | None = None
+    loading: typing.Literal['eager', 'lazy'] | None = None
+    on_click: events.AnyEvent | None = pydantic.Field(default=None, serialization_alias='onClick')
+    class_name: _class_name.ClassName = None
+    type: typing.Literal['Image'] = 'Image'
+
+
 class Iframe(pydantic.BaseModel, extra='forbid'):
     src: pydantic.HttpUrl
     title: str | None = None
@@ -199,6 +221,7 @@ AnyComponent = typing.Annotated[
     | Details
     | Form
     | ModelForm
+    | Image
     | Iframe
     | FormField,
     pydantic.Field(discriminator='type'),
