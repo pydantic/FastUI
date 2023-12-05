@@ -1,0 +1,4 @@
+coverage
+pytest
+pytest-pretty
+dirty-equals
