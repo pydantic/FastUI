@@ -3,7 +3,8 @@ from __future__ import annotations as _annotations
 import json
 import re
 import typing
-from typing import Iterable, Literal, Required, TypeAlias, TypedDict, TypeGuard, cast
+from typing_extensions import Required
+from typing import Iterable, Literal, TypeAlias, TypedDict, TypeGuard, cast
 
 from pydantic import BaseModel
 
@@ -207,7 +208,10 @@ def json_schema_array_to_fields(
     elif 'minItems' in schema and schema.get('minItems') == schema.get('maxItems'):
         if items := schema.get('prefixItems'):
             for i, item in enumerate(items):
-                yield from json_schema_any_to_fields(item, loc + [i], title, required, defs)
+                fields = list(json_schema_any_to_fields(item, loc + [i], title, required, defs))
+                if any((not f.required for f in fields)):
+                    raise NotImplementedError('Optional `prefixItems` are not yet supported')
+                yield from fields
             return
     raise NotImplementedError('todo')
 
