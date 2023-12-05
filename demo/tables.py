@@ -24,8 +24,8 @@ class City(BaseModel):
     country: str = Field(title='Country')
     iso2: str = Field(title='ISO2')
     iso3: str = Field(title='ISO3')
-    admin_name: Union[str, None] = Field(title='Admin Name')
-    capital: Union[str, None] = Field(title='Capital')
+    admin_name: str | None = Field(title='Admin Name')
+    capital: str | None = Field(title='Capital')
     population: float = Field(title='Population')
 
 
