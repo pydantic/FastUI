@@ -1,9 +1,8 @@
 from __future__ import annotations as _annotations
 
-import json
 from collections import defaultdict
 from datetime import date
-from enum import Enum
+from enum import StrEnum
 from typing import Annotated, Literal, TypeAlias
 
 from fastapi import APIRouter, Request, UploadFile
@@ -114,7 +113,7 @@ def form_content(kind: FormKind):
 
 class LoginForm(BaseModel):
     email: EmailStr = Field(title='Email Address', description="Try 'x@y' to trigger server side validation")
-    pin: tuple[int, int, int, int] = Field(title='PIN', description='4 digit PIN')
+    password: SecretStr
 
 
 @router.post('/login')
@@ -123,7 +122,7 @@ async def login_form_post(form: Annotated[LoginForm, fastui_form(LoginForm)]) ->
     return FormResponse(event=GoToEvent(url='/'))
 
 
-class ToolEnum(str, Enum):
+class ToolEnum(StrEnum):
     hammer = 'hammer'
     screwdriver = 'screwdriver'
     saw = 'saw'
@@ -160,7 +159,7 @@ class BigModel(BaseModel):
     )
 
     dob: date = Field(title='Date of Birth', description='Your date of birth, this is required hence bold')
-    size: SizeModel | None = Field(None, description='This is a nested model')
+    size: SizeModel
 
     position: tuple[
         Annotated[int, Field(description='X Coordinate')],
