@@ -10,13 +10,7 @@ from pandas.io.json import dumps as pdumps
 if typing.TYPE_CHECKING:
     pass
 
-InputHtmlType = typing.Literal['text', 'date', 'datetime-local', 'time', 'email', 'url', 'number', 'password']
-
-import json
 from typing import Dict, List, Literal, Optional, Union
-
-import pandas as pd
-from pandas.io.json import dumps as pdumps
 
 EMPTY_DF_OBJ = {
     'schema': {'fields': [{'name': 'index', 'type': 'string'}], 'primaryKey': ['index'], 'pandas_version': '1.4.0'},
@@ -56,16 +50,6 @@ def df_to_obj(df, order=None, table_hints=None):
         fields.append({'name': str(c), 'type': 'unused'})
     obj['schema'] = dict(fields=fields, primaryKey=[index_name], pandas_version='1.4.0')
     return obj
-
-
-# class BaseFormField(pydantic.BaseModel, ABC, defer_build=True):
-#     name: str
-#     title: str | list[str]
-#     required: bool = False
-#     error: str | None = None
-#     locked: bool = False
-#     description: str | None = None
-#     class_name: _class_name.ClassName = None
 
 
 class HistogramModel(pydantic.BaseModel):
@@ -146,12 +130,8 @@ class DFWhole(pydantic.BaseModel):
     schema__: DFSchema = pydantic.Field(alias='schema')
     table_hints: dict[str, ColumnHint]
     data: DFData
-    # data
 
 
 class DFViewer(pydantic.BaseModel):
     type: Literal['DFViewer'] = 'DFViewer'
     df: DFWhole
-
-    # Ilike the serialization_alias... but luckily I avoid the need because I don't have any snake cased fields
-    # form_fields: list[FormField] = pydantic.Field(serialization_alias='formFields')

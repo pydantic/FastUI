@@ -183,7 +183,7 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <DFViewer {...props} />
       default:
         unreachable('Unexpected component type', type, props)
-        return <DisplayError title="Invalid Server Response" description={`Unknown paddy component type: "${type}"`} />
+        return <DisplayError title="Invalid Server Response" description={`Unknown component type: "${type}"`} />
     }
   } catch (e) {
     // TODO maybe we shouldn't catch this error (by default)?
