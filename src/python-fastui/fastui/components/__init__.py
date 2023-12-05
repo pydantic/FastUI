@@ -57,6 +57,7 @@ class Text(pydantic.BaseModel, extra='forbid'):
 
 class Paragraph(pydantic.BaseModel, extra='forbid'):
     text: str
+    class_name: _class_name.ClassName = None
     type: _t.Literal['Paragraph'] = 'Paragraph'
 
 

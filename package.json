@@ -1,4 +1,5 @@
 {
+  "name": "FastUI",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -11,7 +12,8 @@
     "lint": "eslint src --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
     "lint-fix": "npm run lint -- --fix",
     "prettier": "prettier --write",
-    "format": "npm run prettier -- . && npm run lint-fix"
+    "format": "npm run prettier -- . && npm run lint-fix",
+    "generate-json-schema": "typescript-json-schema src/npm-fastui/tsconfig.json FastProps > src/python-fastui/tests/react-fastui-json-schema.json"
   },
   "prettier": {
     "singleQuote": true,
@@ -35,6 +37,7 @@
     "eslint-plugin-react-refresh": "^0.4.4",
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "prettier": "^3.0.3",
-    "typescript": "^5.0.2"
+    "typescript": "^5.0.2",
+    "typescript-json-schema": "^0.62.0"
   }
 }
