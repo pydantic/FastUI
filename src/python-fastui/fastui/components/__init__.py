@@ -172,23 +172,26 @@ class ServerLoad(pydantic.BaseModel, extra='forbid'):
 
 class Image(pydantic.BaseModel, extra='forbid'):
     src: str
-    alt: str | None = None
-    width: int | float | str | None = None
-    height: int | float | str | None = None
-    referrerpolicy: typing.Literal[
-        'no-referrer',
-        'no-referrer-when-downgrade',
-        'origin',
-        'origin-when-cross-origin',
-        'same-origin',
-        'strict-origin',
-        'strict-origin-when-cross-origin',
-        'unsafe-url',
-    ] | None = None
-    loading: typing.Literal['eager', 'lazy'] | None = None
-    on_click: events.AnyEvent | None = pydantic.Field(default=None, serialization_alias='onClick')
+    alt: _t.Union[str, None] = None
+    width: _t.Union[int, float, str, None] = None
+    height: _t.Union[int, float, str, None] = None
+    referrerpolicy: _t.Union[
+        _t.Literal[
+            'no-referrer',
+            'no-referrer-when-downgrade',
+            'origin',
+            'origin-when-cross-origin',
+            'same-origin',
+            'strict-origin',
+            'strict-origin-when-cross-origin',
+            'unsafe-url',
+        ],
+        None,
+    ] = None
+    loading: _t.Union[_t.Literal['eager', 'lazy'], None] = None
+    on_click: _t.Union[events.AnyEvent, None] = pydantic.Field(default=None, serialization_alias='onClick')
     class_name: _class_name.ClassName = None
-    type: typing.Literal['Image'] = 'Image'
+    type: _t.Literal['Image'] = 'Image'
 
 
 class Iframe(pydantic.BaseModel, extra='forbid'):
