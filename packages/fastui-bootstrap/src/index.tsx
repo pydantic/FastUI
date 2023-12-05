@@ -5,12 +5,15 @@ import type { ClassNameGenerator, CustomRender, ClassName } from 'fastui'
 import { Modal } from './modal'
 import { Navbar } from './navbar'
 import { Pagination } from './pagination'
+import { Footer } from './footer'
 
 export const customRender: CustomRender = (props) => {
   const { type } = props
   switch (type) {
     case 'Navbar':
       return () => <Navbar {...props} />
+    case 'Footer':
+      return () => <Footer {...props} />
     case 'Modal':
       return () => <Modal {...props} />
     case 'Pagination':
@@ -106,8 +109,6 @@ export const classNameGenerator: ClassNameGenerator = ({ props, fullPath, subEle
           return 'border-top py-3 my-3'
         case 'link-list':
           return 'nav justify-content-center pb-3'
-        case 'link':
-          return 'nav-item'
         case 'extra-separator':
           return 'border-top'
         case 'extra':

@@ -61,6 +61,7 @@ export type {
   LinkProps,
   LinkListProps,
   NavbarProps,
+  FooterProps,
   AllDisplayProps,
   DisplayPrimitiveProps,
   JsonProps,
