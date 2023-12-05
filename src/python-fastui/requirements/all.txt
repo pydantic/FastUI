@@ -1,0 +1,5 @@
+-r ./lint.txt
+-r ./test.txt
+-r ./pyproject.txt
+uvicorn[standard]
+httpx

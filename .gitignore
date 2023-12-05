@@ -6,6 +6,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+/**/*.egg-info
 
 node_modules
 dist
@@ -31,3 +32,4 @@ __pycache__/
 /frontend-dist/
 /scratch/
 /packages-dist/
+/.coverage

@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: 18
 
-      - run: pip install -r python/requirements/all.txt
+      - run: pip install -r src/python-fastui/requirements/all.txt
 
       - run: npm install
 
@@ -34,7 +34,42 @@ jobs:
         env:
           SKIP: no-commit-to-branch
 
-  packages-build:
+  test:
+    name: test ${{ matrix.python-version }} on ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu, macos]
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+
+    runs-on: ${{ matrix.os }}-latest
+
+    env:
+      PYTHON: ${{ matrix.python-version }}
+      OS: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: set up python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - run: pip install -r src/python-fastui/requirements/test.txt
+    - run: pip install -r src/python-fastui/requirements/pyproject.txt
+    - run: pip install src/python-fastui
+
+    - run: make test
+
+    - run: coverage xml
+
+    - uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        env_vars: PYTHON,OS
+
+  npm-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -46,11 +81,11 @@ jobs:
 
       - run: npm install
       - run: npm run build
-      - run: tree packages
+      - run: tree src
 
   check: # This job does nothing and is only used for the branch protection
     if: always()
-    needs: [lint, packages-build]
+    needs: [lint, npm-build]
     runs-on: ubuntu-latest
 
     steps:
