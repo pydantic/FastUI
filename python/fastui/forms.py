@@ -195,6 +195,17 @@ def unflatten(form_data: ds.FormData) -> NestedDict:
         else:
             d[last_key] = values
 
+    dicts = [result_dict]
+    while dicts:
+        d = dicts.pop()
+        for key, value in d.items():
+            if isinstance(value, dict):
+                if all(isinstance(k, int) for k in value.keys()):
+                    list_value = [v for _, v in sorted(value.items())]
+                    d[key] = list_value
+                else:
+                    dicts.append(value)
+
     return result_dict
 
 
