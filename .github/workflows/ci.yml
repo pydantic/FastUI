@@ -69,7 +69,7 @@ jobs:
         file: ./coverage.xml
         env_vars: PYTHON,OS
 
-  packages-build:
+  npm-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -81,11 +81,11 @@ jobs:
 
       - run: npm install
       - run: npm run build
-      - run: tree packages
+      - run: tree src
 
   check: # This job does nothing and is only used for the branch protection
     if: always()
-    needs: [lint, packages-build]
+    needs: [lint, npm-build]
     runs-on: ubuntu-latest
 
     steps:
