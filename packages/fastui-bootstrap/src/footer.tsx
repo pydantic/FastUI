@@ -1,7 +1,5 @@
 import { FC } from 'react'
 import { components, useClassName } from 'fastui'
-import { LinkComp } from '@pydantic/fastui/src/components'
-import { TextComp } from '@pydantic/fastui/src/components/text'
 
 export const Footer: FC<components.FooterProps> = (props) => {
   const links = props.links.map((link) => {
@@ -16,14 +14,14 @@ export const Footer: FC<components.FooterProps> = (props) => {
         <ul className={useClassName(props, { el: 'link-list' })}>
           {links.map((link, i) => (
             <li className="nav-item">
-              <LinkComp key={i} {...link} />
+              <components.LinkComp key={i} {...link} />
             </li>
           ))}
         </ul>
         {props.extraText && props.links.length > 0 && <div className={extraSeparatorProp} />}
         {props.extraText && (
           <div className={extraProp}>
-            <TextComp {...props.extraText} />
+            <components.TextComp {...props.extraText} />
           </div>
         )}
       </footer>
