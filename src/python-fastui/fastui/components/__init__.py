@@ -202,6 +202,17 @@ class Iframe(pydantic.BaseModel, extra='forbid'):
     type: _t.Literal['Iframe'] = 'Iframe'
 
 
+class FormattedText(pydantic.BaseModel, extra='forbid'):
+    text: str
+    text_format: _t.Literal['bold', 'italic', 'underline', 'strikethrough'] | None = pydantic.Field(
+        None, serialization_alias='textFormat'
+    )
+    # TODO, use pydantic-extra-types Color?
+    text_color: str | None = pydantic.Field(None, serialization_alias='color')
+    background_color: str | None = pydantic.Field(None, serialization_alias='backgroundColor')
+    type: _t.Literal['FormattedText'] = 'FormattedText'
+
+
 AnyComponent = _te.Annotated[
     _t.Union[
         Text,

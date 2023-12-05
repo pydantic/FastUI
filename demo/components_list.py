@@ -30,6 +30,14 @@ def components_view() -> list[AnyComponent]:
         ),
         c.Div(
             components=[
+                c.Heading(text='FormattedText', level=2),
+                c.Markdown(text='`FormattedText` can be used to change the style of the text.'),
+                c.FormattedText(text='hola', text_color='red', background_color='blue', text_format='italic'),
+            ],
+            class_name='border-top mt-3 pt-1',
+        ),
+        c.Div(
+            components=[
                 c.Heading(text='Paragraph', level=2),
                 c.Paragraph(text='This is a paragraph component.'),
             ],
