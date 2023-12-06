@@ -2,3 +2,4 @@ coverage
 pytest
 pytest-pretty
 dirty-equals
+pytest-asyncio

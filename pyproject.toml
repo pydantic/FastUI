@@ -15,3 +15,4 @@ include = ["src/python-fastui/fastui"]
 testpaths = "src/python-fastui/tests"
 xfail_strict = true
 filterwarnings = ["error"]
+asyncio_mode = "auto"
