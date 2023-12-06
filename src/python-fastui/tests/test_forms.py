@@ -1,4 +1,3 @@
-import asyncio
 from contextlib import asynccontextmanager
 from io import BytesIO
 from typing import List, Tuple, Union
@@ -59,8 +58,6 @@ def test_simple_form_fields():
     }
 
 
-@pytest.mark.asyncio
-@pytest.mark.filterwarnings('ignore::DeprecationWarning')
 async def test_simple_form_submit():
     form_dep = fastui_form(SimpleForm)
 
@@ -71,8 +68,6 @@ async def test_simple_form_submit():
     assert m.model_dump() == {'name': 'bar', 'size': 123}
 
 
-@pytest.mark.asyncio
-@pytest.mark.filterwarnings('ignore::DeprecationWarning')
 async def test_simple_form_submit_repeat():
     form_dep = fastui_form(SimpleForm)
 
@@ -125,8 +120,6 @@ def test_w_nested_form_fields():
     }
 
 
-@pytest.mark.asyncio
-@pytest.mark.filterwarnings('ignore::DeprecationWarning')
 async def test_w_nested_form_submit():
     form_dep = fastui_form(FormWithNested)
 
@@ -162,8 +155,6 @@ def test_file():
     }
 
 
-@pytest.mark.asyncio
-@pytest.mark.filterwarnings('ignore::DeprecationWarning')
 async def test_file_submit():
     file = UploadFile(BytesIO(b'foobar'), size=6, filename='testing.txt')
     request = FakeRequest([('profile_pic', file)])
@@ -172,8 +163,6 @@ async def test_file_submit():
     assert m.model_dump() == {'profile_pic': file}
 
 
-@pytest.mark.asyncio
-@pytest.mark.filterwarnings('ignore::DeprecationWarning')
 async def test_file_submit_repeat():
     file1 = UploadFile(BytesIO(b'foobar'), size=6, filename='testing1.txt')
     file2 = UploadFile(BytesIO(b'foobar'), size=6, filename='testing2.txt')
@@ -214,8 +203,6 @@ def test_file_constrained():
     }
 
 
-@pytest.mark.asyncio
-@pytest.mark.filterwarnings('ignore::DeprecationWarning')
 async def test_file_constrained_submit():
     headers = Headers({'content-type': 'image/png'})
     file = UploadFile(BytesIO(b'foobar'), size=16_000, headers=headers)
@@ -225,8 +212,6 @@ async def test_file_constrained_submit():
     assert m.model_dump() == {'profile_pic': file}
 
 
-@pytest.mark.asyncio
-@pytest.mark.filterwarnings('ignore::DeprecationWarning')
 async def test_file_constrained_submit_filename():
     file = UploadFile(BytesIO(b'foobar'), size=16_000, filename='image.png')
     request = FakeRequest([('profile_pic', file)])
@@ -235,8 +220,6 @@ async def test_file_constrained_submit_filename():
     assert m.model_dump() == {'profile_pic': file}
 
 
-@pytest.mark.asyncio
-@pytest.mark.filterwarnings('ignore::DeprecationWarning')
 async def test_file_constrained_submit_too_big():
     headers = Headers({'content-type': 'image/png'})
     file = UploadFile(BytesIO(b'foobar'), size=16_001, filename='image.png', headers=headers)
@@ -257,8 +240,6 @@ async def test_file_constrained_submit_too_big():
     }
 
 
-@pytest.mark.asyncio
-@pytest.mark.filterwarnings('ignore::DeprecationWarning')
 async def test_file_constrained_submit_wrong_type():
     headers = Headers({'content-type': 'text/plain'})
     file = UploadFile(BytesIO(b'foobar'), size=16, filename='testing.txt', headers=headers)
@@ -307,8 +288,6 @@ def test_multiple_files():
     }
 
 
-@pytest.mark.asyncio
-@pytest.mark.filterwarnings('ignore::DeprecationWarning')
 async def test_multiple_files_single():
     file = UploadFile(BytesIO(b'foobar'), size=16_000, filename='image.png')
     request = FakeRequest([('files', file)])
@@ -317,8 +296,6 @@ async def test_multiple_files_single():
     assert m.model_dump() == {'files': [file]}
 
 
-@pytest.mark.asyncio
-@pytest.mark.filterwarnings('ignore::DeprecationWarning')
 async def test_multiple_files_multiple():
     file1 = UploadFile(BytesIO(b'foobar'), size=6, filename='image1.png')
     file2 = UploadFile(BytesIO(b'foobar'), size=6, filename='image2.png')
