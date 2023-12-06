@@ -117,7 +117,7 @@ class Code(pydantic.BaseModel, extra='forbid'):
 class Button(pydantic.BaseModel, extra='forbid'):
     text: str
     on_click: _t.Union[events.AnyEvent, None] = pydantic.Field(default=None, serialization_alias='onClick')
-    html_type: _t.Union[_t.Literal['button', 'submit', 'reset'], None] = pydantic.Field(
+    html_type: _t.Union[_t.Literal['button', 'reset', 'submit'], None] = pydantic.Field(
         default=None, serialization_alias='htmlType'
     )
     class_name: _class_name.ClassName = None
