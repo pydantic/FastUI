@@ -1,6 +1,6 @@
 {
   "name": "@pydantic/fastui-bootstrap",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Boostrap renderer for FastUI",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -29,6 +29,6 @@
     "sass": "^1.69.5"
   },
   "peerDependencies": {
-    "@pydantic/fastui": "0.0.10"
+    "@pydantic/fastui": "0.0.11"
   }
 }
