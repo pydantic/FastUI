@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "author": "Samuel Colvin",
   "license": "MIT",
-  "homepage": "https://github.com/samuelcolvin/fastui",
+  "homepage": "https://github.com/pydantic/fastui",
   "private": false,
   "keywords": [
     "fastui",
