@@ -56,7 +56,7 @@ class Text(pydantic.BaseModel, extra='forbid'):
 
 
 class Paragraph(pydantic.BaseModel, extra='forbid'):
-    text: str
+    text: '_t.List[_t.Union[str, FormattedText, Link]]'
     type: _t.Literal['Paragraph'] = 'Paragraph'
 
 
@@ -114,7 +114,7 @@ class Code(pydantic.BaseModel, extra='forbid'):
 
 
 class Button(pydantic.BaseModel, extra='forbid'):
-    text: str
+    text: '_t.List[_t.Union[str, FormattedText, Link]]'
     on_click: _t.Union[events.AnyEvent, None] = pydantic.Field(default=None, serialization_alias='onClick')
     html_type: _t.Union[_t.Literal['button', 'submit', 'reset'], None] = pydantic.Field(
         default=None, serialization_alias='htmlType'
@@ -200,6 +200,17 @@ class Iframe(pydantic.BaseModel, extra='forbid'):
     width: _t.Union[str, int, None] = None
     height: _t.Union[str, int, None] = None
     type: _t.Literal['Iframe'] = 'Iframe'
+
+
+class FormattedText(pydantic.BaseModel, extra='forbid'):
+    text: str
+    text_format: _t.Union[_t.Literal['bold', 'italic', 'underline', 'strikethrough'], None] = pydantic.Field(
+        None, serialization_alias='textFormat'
+    )
+    # TODO, use pydantic-extra-types Color?
+    text_color: _t.Union[str, None] = pydantic.Field(None, serialization_alias='color')
+    background_color: _t.Union[str, None] = pydantic.Field(None, serialization_alias='backgroundColor')
+    type: _t.Literal['FormattedText'] = 'FormattedText'
 
 
 AnyComponent = _te.Annotated[

@@ -20,6 +20,7 @@ The following components are demonstrated:
 
 * `Markdown` — that's me :-)
 * `Text`— example [here](/components#text)
+* `FormattedText`— example [here](/components#FormattedText)
 * `Paragraph` — example [here](/components#paragraph)
 * `PageTitle` — you'll see the title in the browser tab change when you navigate through the site
 * `Heading` — example [here](/components#heading)
