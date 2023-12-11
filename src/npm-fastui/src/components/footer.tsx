@@ -1,11 +1,10 @@
 import { ClassName, useClassName } from '../hooks/className'
 
 import { LinkProps, LinkComp } from './link'
-import { TextComp, TextProps } from './text'
 
 export interface FooterProps {
   type: 'Footer'
-  extraText?: TextProps
+  extraText?: string
   links: LinkProps[]
   className?: ClassName
 }
@@ -21,11 +20,7 @@ export const FooterComp = (props: FooterProps) => {
       {links.map((link, i) => (
         <LinkComp key={i} {...link} />
       ))}
-      {props.extraText && (
-        <div className={extraTextClassName}>
-          <TextComp {...props.extraText} />
-        </div>
-      )}
+      {props.extraText && <div className={extraTextClassName}>{props.extraText}</div>}
     </footer>
   )
 }

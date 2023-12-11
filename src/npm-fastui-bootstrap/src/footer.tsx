@@ -19,11 +19,7 @@ export const Footer: FC<components.FooterProps> = (props) => {
           ))}
         </ul>
         {props.extraText && props.links.length > 0 && <div className={extraSeparatorProp} />}
-        {props.extraText && (
-          <div className={extraProp}>
-            <components.TextComp {...props.extraText} />
-          </div>
-        )}
+        {props.extraText && <div className={extraProp}>{props.extraText}</div>}
       </footer>
     </div>
   )

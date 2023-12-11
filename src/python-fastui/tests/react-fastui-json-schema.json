@@ -324,6 +324,9 @@
           "$ref": "#/definitions/NavbarProps"
         },
         {
+          "$ref": "#/definitions/FooterProps"
+        },
+        {
           "$ref": "#/definitions/DisplayProps"
         },
         {
@@ -348,6 +351,28 @@
           "$ref": "#/definitions/IframeProps"
         }
       ]
+    },
+    "FooterProps": {
+      "properties": {
+        "className": {
+          "$ref": "#/definitions/ClassName"
+        },
+        "extraText": {
+          "type": "string"
+        },
+        "links": {
+          "items": {
+            "$ref": "#/definitions/LinkProps"
+          },
+          "type": "array"
+        },
+        "type": {
+          "const": "Footer",
+          "type": "string"
+        }
+      },
+      "required": ["links", "type"],
+      "type": "object"
     },
     "FormFieldBooleanProps": {
       "properties": {
@@ -911,7 +936,7 @@
           "type": "boolean"
         },
         "mode": {
-          "enum": ["navbar", "pagination", "tabs", "vertical"],
+          "enum": ["footer", "navbar", "pagination", "tabs", "vertical"],
           "type": "string"
         },
         "onClick": {
