@@ -1,9 +1,9 @@
 # FastUI
 
-[![CI](https://github.com/samuelcolvin/FastUI/actions/workflows/ci.yml/badge.svg)](https://github.com/samuelcolvin/FastUI/actions?query=event%3Apush+branch%3Amain+workflow%3ACI)
+[![CI](https://github.com/pydantic/FastUI/actions/workflows/ci.yml/badge.svg)](https://github.com/pydantic/FastUI/actions?query=event%3Apush+branch%3Amain+workflow%3ACI)
 [![pypi](https://img.shields.io/pypi/v/fastui.svg)](https://pypi.python.org/pypi/fastui)
-[![versions](https://img.shields.io/pypi/pyversions/fastui.svg)](https://github.com/samuelcolvin/FastUI)
-[![license](https://img.shields.io/github/license/samuelcolvin/FastUI.svg)](https://github.com/samuelcolvin/FastUI/blob/main/LICENSE)
+[![versions](https://img.shields.io/pypi/pyversions/fastui.svg)](https://github.com/pydantic/FastUI)
+[![license](https://img.shields.io/github/license/pydantic/FastUI.svg)](https://github.com/pydantic/FastUI/blob/main/LICENSE)
 
 **Please note:** FastUI is still an active work in progress, do not expect it to be complete.
 
@@ -113,7 +113,7 @@ async def html_landing() -> HTMLResponse:
 
 Which renders like this:
 
-![screenshot](https://raw.githubusercontent.com/samuelcolvin/FastUI/main/screenshot.png)
+![screenshot](https://raw.githubusercontent.com/pydantic/FastUI/main/screenshot.png)
 
 Of course, that's a very simple application, the [full demo](https://fastui-demo.onrender.com) is more complete.
 
@@ -161,7 +161,7 @@ Building an application this way has a number of significant advantages:
 - You only need to write code in one place to build a new feature — add a new view, change the behavior of an existing view or alter the URL structure
 - Deploying the front and backend can be completely decoupled, provided the frontend knows how to render all the components the backend is going to ask it to use, you're good to go
 - You should be able to reuse a rich set of opensource components, they should end up being better tested and more reliable than anything you could build yourself, this is possible because the components need no context about how they're going to be used (note: since FastUI is brand new, this isn't true yet, hopefully we get there)
-- We can use Pydantic, TypeScript and JSON Schema to provide guarantees that the two sides are communicating with an agreed schema (note: this is not complete yet, see [#18](https://github.com/samuelcolvin/FastUI/issues/18))
+- We can use Pydantic, TypeScript and JSON Schema to provide guarantees that the two sides are communicating with an agreed schema (note: this is not complete yet, see [#18](https://github.com/pydantic/FastUI/issues/18))
 
 In the abstract, FastUI is like the opposite of GraphQL but with the same goal — GraphQL lets frontend developers extend an application without any new backend development; FastUI lets backend developers extend an application without any new frontend development.
 

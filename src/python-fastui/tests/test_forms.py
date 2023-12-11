@@ -1,4 +1,3 @@
-import asyncio
 from contextlib import asynccontextmanager
 from io import BytesIO
 from typing import List, Tuple, Union
@@ -10,9 +9,6 @@ from fastui.forms import FormFile, fastui_form
 from pydantic import BaseModel
 from starlette.datastructures import FormData, Headers, UploadFile
 from typing_extensions import Annotated
-
-# todo use pytest-asyncio
-await_ = asyncio.run
 
 
 class SimpleForm(BaseModel):
@@ -62,23 +58,23 @@ def test_simple_form_fields():
     }
 
 
-def test_simple_form_submit():
+async def test_simple_form_submit():
     form_dep = fastui_form(SimpleForm)
 
     request = FakeRequest([('name', 'bar'), ('size', '123')])
 
-    m = await_(form_dep.dependency(request))
+    m = await form_dep.dependency(request)
     assert isinstance(m, SimpleForm)
     assert m.model_dump() == {'name': 'bar', 'size': 123}
 
 
-def test_simple_form_submit_repeat():
+async def test_simple_form_submit_repeat():
     form_dep = fastui_form(SimpleForm)
 
     request = FakeRequest([('name', 'bar'), ('size', '123'), ('size', '456')])
 
     with pytest.raises(HTTPException) as exc_info:
-        await_(form_dep.dependency(request))
+        await form_dep.dependency(request)
 
     # insert_assert(exc_info.value.detail)
     assert exc_info.value.detail == {
@@ -124,13 +120,12 @@ def test_w_nested_form_fields():
     }
 
 
-def test_w_nested_form_submit():
+async def test_w_nested_form_submit():
     form_dep = fastui_form(FormWithNested)
 
     request = FakeRequest([('name', 'bar'), ('nested.x', '123')])
 
-    # todo use pytest-asyncio
-    m = await_(form_dep.dependency(request))
+    m = await form_dep.dependency(request)
     assert isinstance(m, FormWithNested)
     assert m.model_dump() == {'name': 'bar', 'nested': {'x': 123}}
 
@@ -160,21 +155,21 @@ def test_file():
     }
 
 
-def test_file_submit():
+async def test_file_submit():
     file = UploadFile(BytesIO(b'foobar'), size=6, filename='testing.txt')
     request = FakeRequest([('profile_pic', file)])
 
-    m = await_(fastui_form(FormWithFile).dependency(request))
+    m = await fastui_form(FormWithFile).dependency(request)
     assert m.model_dump() == {'profile_pic': file}
 
 
-def test_file_submit_repeat():
+async def test_file_submit_repeat():
     file1 = UploadFile(BytesIO(b'foobar'), size=6, filename='testing1.txt')
     file2 = UploadFile(BytesIO(b'foobar'), size=6, filename='testing2.txt')
     request = FakeRequest([('profile_pic', file1), ('profile_pic', file2)])
 
     with pytest.raises(HTTPException) as exc_info:
-        await_(fastui_form(FormWithFile).dependency(request))
+        await fastui_form(FormWithFile).dependency(request)
 
     # insert_assert(exc_info.value.detail)
     assert exc_info.value.detail == {
@@ -208,30 +203,30 @@ def test_file_constrained():
     }
 
 
-def test_file_constrained_submit():
+async def test_file_constrained_submit():
     headers = Headers({'content-type': 'image/png'})
     file = UploadFile(BytesIO(b'foobar'), size=16_000, headers=headers)
     request = FakeRequest([('profile_pic', file)])
 
-    m = await_(fastui_form(FormWithFileConstraint).dependency(request))
+    m = await fastui_form(FormWithFileConstraint).dependency(request)
     assert m.model_dump() == {'profile_pic': file}
 
 
-def test_file_constrained_submit_filename():
+async def test_file_constrained_submit_filename():
     file = UploadFile(BytesIO(b'foobar'), size=16_000, filename='image.png')
     request = FakeRequest([('profile_pic', file)])
 
-    m = await_(fastui_form(FormWithFileConstraint).dependency(request))
+    m = await fastui_form(FormWithFileConstraint).dependency(request)
     assert m.model_dump() == {'profile_pic': file}
 
 
-def test_file_constrained_submit_too_big():
+async def test_file_constrained_submit_too_big():
     headers = Headers({'content-type': 'image/png'})
     file = UploadFile(BytesIO(b'foobar'), size=16_001, filename='image.png', headers=headers)
     request = FakeRequest([('profile_pic', file)])
 
     with pytest.raises(HTTPException) as exc_info:
-        await_(fastui_form(FormWithFileConstraint).dependency(request))
+        await fastui_form(FormWithFileConstraint).dependency(request)
 
     # insert_assert(exc_info.value.detail)
     assert exc_info.value.detail == {
@@ -245,13 +240,13 @@ def test_file_constrained_submit_too_big():
     }
 
 
-def test_file_constrained_submit_wrong_type():
+async def test_file_constrained_submit_wrong_type():
     headers = Headers({'content-type': 'text/plain'})
     file = UploadFile(BytesIO(b'foobar'), size=16, filename='testing.txt', headers=headers)
     request = FakeRequest([('profile_pic', file)])
 
     with pytest.raises(HTTPException) as exc_info:
-        await_(fastui_form(FormWithFileConstraint).dependency(request))
+        await fastui_form(FormWithFileConstraint).dependency(request)
 
     # insert_assert(exc_info.value.detail)
     assert exc_info.value.detail == {
@@ -293,18 +288,18 @@ def test_multiple_files():
     }
 
 
-def test_multiple_files_single():
+async def test_multiple_files_single():
     file = UploadFile(BytesIO(b'foobar'), size=16_000, filename='image.png')
     request = FakeRequest([('files', file)])
 
-    m = await_(fastui_form(FormMultipleFiles).dependency(request))
+    m = await fastui_form(FormMultipleFiles).dependency(request)
     assert m.model_dump() == {'files': [file]}
 
 
-def test_multiple_files_multiple():
+async def test_multiple_files_multiple():
     file1 = UploadFile(BytesIO(b'foobar'), size=6, filename='image1.png')
     file2 = UploadFile(BytesIO(b'foobar'), size=6, filename='image2.png')
     request = FakeRequest([('files', file1), ('files', file2)])
 
-    m = await_(fastui_form(FormMultipleFiles).dependency(request))
+    m = await fastui_form(FormMultipleFiles).dependency(request)
     assert m.model_dump() == {'files': [file1, file2]}

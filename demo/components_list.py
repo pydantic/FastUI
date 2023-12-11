@@ -178,7 +178,7 @@ print(m.dimensions)
                     width=200,
                     height=200,
                     loading='lazy',
-                    referrerpolicy='no-referrer',
+                    referrer_policy='no-referrer',
                     class_name='border rounded',
                 ),
             ],

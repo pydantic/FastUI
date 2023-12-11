@@ -5,6 +5,10 @@ import { slugify } from '../tools'
 
 export interface HeadingProps {
   type: 'Heading'
+  /**
+   * @TJS-enum [1, 2, 3, 4, 5, 6]
+   * @TJS-type integer
+   */
   level: 1 | 2 | 3 | 4 | 5 | 6
   htmlId?: string
   className?: ClassName

@@ -7,9 +7,13 @@ import { LinkListComp } from './LinkList'
 
 export interface PaginationProps {
   type: 'Pagination'
+  /** @TJS-type integer */
   page: number
+  /** @TJS-type integer */
   pageSize: number
+  /** @TJS-type integer */
   total: number
+  /** @TJS-type integer */
   pageCount: number
   className?: ClassName
 }

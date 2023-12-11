@@ -38,4 +38,4 @@ fastapi = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/samuelcolvin/FastUI"
+Homepage = "https://github.com/pydantic/FastUI"
