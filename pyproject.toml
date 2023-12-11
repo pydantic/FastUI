@@ -12,7 +12,10 @@ target-version = "py38"
 include = ["src/python-fastui/fastui"]
 
 [tool.pytest.ini_options]
-testpaths = "src/python-fastui/tests"
+testpaths = [
+    "src/python-fastui/tests",
+    "demo/tests.py",
+]
 xfail_strict = true
 filterwarnings = ["error"]
 asyncio_mode = "auto"

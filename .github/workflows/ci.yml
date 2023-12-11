@@ -60,7 +60,11 @@ jobs:
     - run: pip install -r src/python-fastui/requirements/pyproject.txt
     - run: pip install src/python-fastui
 
-    - run: make test
+    - run: coverage run -m pytest src
+
+    # test demo on 3.11 and 3.12, these tests are intentionally omitted from coverage
+    - if: matrix.python-version == '3.11' || matrix.python-version == '3.12'
+      run: pytest demo/tests.py
 
     - run: coverage xml
 
