@@ -12,8 +12,8 @@ install:
 update-lockfiles:
 	@echo "Updating requirements files using pip-compile"
 	pip-compile -q --strip-extras -o $(path)/requirements/lint.txt $(path)/requirements/lint.in
-	pip-compile -q --strip-extras -o $(path)/requirements/test.txt $(path)/requirements/test.in
-	pip-compile -q --strip-extras -o $(path)/requirements/pyproject.txt $(path)/pyproject.toml --extra=fastapi
+	pip-compile -q --strip-extras -o $(path)/requirements/pyproject.txt -c $(path)/requirements/lint.txt $(path)/pyproject.toml --extra=fastapi
+	pip-compile -q --strip-extras -o $(path)/requirements/test.txt -c $(path)/requirements/lint.txt -c $(path)/requirements/pyproject.txt $(path)/requirements/test.in
 	pip install --dry-run -r $(path)/requirements/all.txt
 
 .PHONY: format
