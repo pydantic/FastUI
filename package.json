@@ -13,7 +13,7 @@
     "lint-fix": "npm run lint -- --fix",
     "prettier": "prettier --write",
     "format": "npm run prettier -- . && npm run lint-fix",
-    "generate-json-schema": "typescript-json-schema --required src/npm-fastui/tsconfig.json FastProps > src/python-fastui/tests/react-fastui-json-schema.json"
+    "generate-json-schema": "./src/python-fastui/tests/react-fastui-json-schema.sh"
   },
   "prettier": {
     "singleQuote": true,
