@@ -62,17 +62,17 @@ jobs:
 
     - run: coverage run -m pytest src
 
+    # test demo on 3.11 and 3.12, intentionally here as these tests shouldn't contribute to coverage
+    - name: test demo
+      if: matrix.python-version == '3.11' || matrix.python-version == '3.12'
+      run: pytest demo
+
     - run: coverage xml
 
     - uses: codecov/codecov-action@v3
       with:
         file: ./coverage.xml
         env_vars: PYTHON,OS
-
-    # test demo on 3.11 and 3.12, intentionally here as these tests shouldn't contribute to coverage
-    - name: test demo
-      if: matrix.python-version == '3.11' || matrix.python-version == '3.12'
-      run: coverage run -m pytest demo
 
   npm-build:
     runs-on: ubuntu-latest
