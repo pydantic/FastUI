@@ -13,10 +13,6 @@ __all__ = 'DisplayMode', 'DisplayLookup', 'Display', 'Details'
 
 
 class DisplayMode(str, enum.Enum):
-    """
-    How to a value.
-    """
-
     auto = 'auto'  # default, same as None below
     plain = 'plain'
     datetime = 'datetime'
@@ -30,6 +26,7 @@ class DisplayMode(str, enum.Enum):
 
 class DisplayBase(pydantic.BaseModel, ABC, defer_build=True):
     mode: _t.Union[DisplayMode, None] = None
+    title: _t.Union[str, None] = None
     on_click: _t.Union[events.AnyEvent, None] = pydantic.Field(default=None, serialization_alias='onClick')
 
 
@@ -39,7 +36,6 @@ class DisplayLookup(DisplayBase, extra='forbid'):
     """
 
     field: str
-    title: _t.Union[str, None] = None
     # percentage width - 0 to 100, specific to tables
     table_width_percent: _t.Union[_te.Annotated[int, _at.Interval(ge=0, le=100)], None] = pydantic.Field(
         default=None, serialization_alias='tableWidthPercent'
@@ -51,7 +47,7 @@ class Display(DisplayBase, extra='forbid'):
     Description of how to display a value, either in a table or detail view.
     """
 
-    value: _t.Any
+    value: _t.Any = pydantic.Field(json_schema_extra={'type': 'JSON'})
     type: _t.Literal['Display'] = 'Display'
 
 

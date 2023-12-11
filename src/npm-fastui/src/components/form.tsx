@@ -12,6 +12,7 @@ import { FormFieldProps } from './FormField'
 
 interface BaseFormProps {
   formFields: FormFieldProps[]
+  /** @TJS-type object */
   initial?: Record<string, any>
   submitUrl: string
   footer?: boolean | FastProps[]

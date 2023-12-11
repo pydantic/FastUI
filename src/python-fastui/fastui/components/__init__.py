@@ -128,7 +128,7 @@ class Link(pydantic.BaseModel, extra='forbid'):
     components: '_t.List[AnyComponent]'
     on_click: _t.Union[events.AnyEvent, None] = pydantic.Field(default=None, serialization_alias='onClick')
     mode: _t.Union[_t.Literal['navbar', 'tabs', 'vertical', 'pagination'], None] = None
-    active: _t.Union[bool, str, None] = None
+    active: _t.Union[str, bool, None] = None
     locked: _t.Union[bool, None] = None
     class_name: _class_name.ClassName = None
     type: _t.Literal['Link'] = 'Link'
@@ -154,7 +154,7 @@ class Modal(pydantic.BaseModel, extra='forbid'):
     body: '_t.List[AnyComponent]'
     footer: '_t.Union[_t.List[AnyComponent], None]' = None
     open_trigger: _t.Union[events.PageEvent, None] = pydantic.Field(default=None, serialization_alias='openTrigger')
-    open_context: _t.Union[events.EventContext, None] = pydantic.Field(default=None, serialization_alias='openContext')
+    open_context: _t.Union[events.ContextType, None] = pydantic.Field(default=None, serialization_alias='openContext')
     class_name: _class_name.ClassName = None
     type: _t.Literal['Modal'] = 'Modal'
 
@@ -174,9 +174,9 @@ class ServerLoad(pydantic.BaseModel, extra='forbid'):
 class Image(pydantic.BaseModel, extra='forbid'):
     src: str
     alt: _t.Union[str, None] = None
-    width: _t.Union[int, float, str, None] = None
-    height: _t.Union[int, float, str, None] = None
-    referrerpolicy: _t.Union[
+    width: _t.Union[str, int, None] = None
+    height: _t.Union[str, int, None] = None
+    referrer_policy: _t.Union[
         _t.Literal[
             'no-referrer',
             'no-referrer-when-downgrade',
@@ -188,7 +188,7 @@ class Image(pydantic.BaseModel, extra='forbid'):
             'unsafe-url',
         ],
         None,
-    ] = None
+    ] = pydantic.Field(None, serialization_alias='referrerPolicy')
     loading: _t.Union[_t.Literal['eager', 'lazy'], None] = None
     on_click: _t.Union[events.AnyEvent, None] = pydantic.Field(default=None, serialization_alias='onClick')
     class_name: _class_name.ClassName = None
@@ -200,37 +200,32 @@ class Iframe(pydantic.BaseModel, extra='forbid'):
     title: _t.Union[str, None] = None
     width: _t.Union[str, int, None] = None
     height: _t.Union[str, int, None] = None
+    class_name: _class_name.ClassName = None
     type: _t.Literal['Iframe'] = 'Iframe'
 
 
-AnyComponent = _te.TypeAliasType(
-    'AnyComponent',
-    _te.Annotated[
-        _t.Union[
-            Text,
-            Paragraph,
-            PageTitle,
-            Div,
-            Page,
-            Heading,
-            Markdown,
-            Code,
-            Button,
-            Link,
-            LinkList,
-            Navbar,
-            Modal,
-            ServerLoad,
-            Table,
-            Pagination,
-            Display,
-            Details,
-            Form,
-            ModelForm,
-            Image,
-            Iframe,
-            FormField,
-        ],
-        pydantic.Field(discriminator='type'),
-    ],
-)
+AnyComponent = _t.Union[
+    Text,
+    Paragraph,
+    PageTitle,
+    Div,
+    Page,
+    Heading,
+    Markdown,
+    Code,
+    Button,
+    Link,
+    LinkList,
+    Navbar,
+    Modal,
+    ServerLoad,
+    Table,
+    Pagination,
+    Display,
+    Details,
+    Form,
+    ModelForm,
+    Image,
+    Iframe,
+    FormField,
+]

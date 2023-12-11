@@ -41,7 +41,7 @@ class Table(pydantic.BaseModel, _t.Generic[DataModel], extra='forbid'):
 
 class Pagination(pydantic.BaseModel):
     page: int
-    page_size: int
+    page_size: int = pydantic.Field(serialization_alias='pageSize')
     total: int
     class_name: _class_name.ClassName = None
     type: _t.Literal['Pagination'] = 'Pagination'

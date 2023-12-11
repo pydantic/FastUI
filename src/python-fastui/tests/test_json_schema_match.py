@@ -3,6 +3,7 @@ import typing
 from pathlib import Path
 
 import pytest
+from dirty_equals import IsList
 from fastui import AnyComponent
 from pydantic import TypeAdapter
 
@@ -12,7 +13,7 @@ with (THIS_DIR / 'react-fastui-json-schema.json').open('rb') as npm_file:
 
 ta = TypeAdapter(AnyComponent)
 json_schema = ta.json_schema(by_alias=True, mode='serialization', ref_template='#/definitions/{model}')
-components_union = json_schema['oneOf']
+components_union = json_schema['anyOf']
 components_union_set = set(d['$ref'] for d in components_union)
 
 
@@ -23,36 +24,84 @@ def python_model_iter():
         yield pytest.param(python_defs[key], id=key)
 
 
+NULL_TYPE = {'type': 'null'}
+
+
+def any_of_simple(any_of: list[typing.Any]) -> list[typing.Any] | None:
+    new_types = []
+    simple = True
+    for s in any_of:
+        if s == NULL_TYPE:
+            continue
+        elif len(s) == 1 and (value := s.get('type')):
+            new_types.append(value)
+        else:
+            simple = False
+
+    if simple:
+        return new_types
+
+
 def fix_pydantic_schema(s: typing.Any):
     """
-    * convert pydantic's `anyOf` all components to typescripts `'$ref': '#/definitions/FastProps'`
-    * switch "type": "integer" to "type": "number"
-    * switch `{"anyOf": [{"type": "XXX"}, {"type": "null"}]}` to `{"type": "XXX"}`
-    * switch `{"oneOf": ..., "discriminator": ...}` to `{"anyOf": ...}`
+    Convert pydantic JSON schema to match `typescript-json-schema`.
     """
     if isinstance(s, dict):
-        for k, v in s.items():
-            if k == 'type' and v == 'integer':
-                s[k] = 'number'
-            if isinstance(v, dict):
-                if any_of := v.get('anyOf'):
-                    refs = [d.get('$ref') for d in any_of]
-                    if set(refs) == components_union_set:
-                        v.pop('anyOf')
-                        v['$ref'] = '#/definitions/FastProps'
+        s.pop('readOnly', None)
+
+        if len(s) == 2 and 'discriminator' in s and (one_of := s.get('oneOf')):
+            s.clear()
+            s['anyOf'] = one_of
+        else:
+            for k, v in list(s.items()):
+                if k == '$ref':
+                    if v in {'#/definitions/DisplayLookup', '#/definitions/Link'}:
+                        s['$ref'] = f'{v}Props'
+                    elif v == '#/definitions/BaseModel':
+                        s['$ref'] = '#/definitions/ModelData'
+                    elif v == '#/definitions/DisplayMode':
+                        display_mode = json_schema['$defs']['DisplayMode']
+                        s.clear()
+                        s.update(
+                            enum=IsList(*display_mode['enum'], check_order=False),
+                            type='string',
+                        )
+
+                    continue
+
+                if isinstance(v, dict):
+                    if any_of := v.get('anyOf'):
+                        refs = [d.get('$ref') for d in any_of]
+                        if set(refs) == components_union_set:
+                            v.pop('anyOf')
+                            v['$ref'] = '#/definitions/FastProps'
+                            continue
+
+                        if NULL_TYPE in any_of and len(any_of) == 2:
+                            other = next(d for d in any_of if d != NULL_TYPE)
+                            fix_pydantic_schema(other)
+                            v.clear()
+                            v.update(other)
+                            continue
+
+                        if (new_types := any_of_simple(any_of)) is not None:
+                            v.clear()
+                            v['type'] = new_types
+                            continue
+
+                        if NULL_TYPE in any_of:
+                            any_of.remove(NULL_TYPE)
+
+                    if k == 'formFields':
+                        # hack until we fix `customise_form_fields`
+                        v.clear()
+                        v.update({'items': {'$ref': '#/definitions/FormFieldProps'}, 'type': 'array'})
                         continue
 
-                    null_type = {'type': 'null'}
-                    if null_type in any_of and len(any_of) == 2:
-                        other = next(d for d in any_of if d != null_type)
-                        v.clear()
-                        v.update(other)
+                if k == 'enum':
+                    s[k] = IsList(*v, check_order=False)
 
-                if 'discriminator' in v and (one_of := v.get('oneOf')):
-                    v.clear()
-                    v['anyOf'] = one_of
-
-            fix_pydantic_schema(v)
+                fix_pydantic_schema(v)
     elif isinstance(s, list):
         for item in s:
             fix_pydantic_schema(item)
@@ -68,13 +117,6 @@ def test_components_match(model_schema: typing.Dict[str, typing.Any]):
         title = ref.split('/')[-1]
         model_schema = model_schema['$defs'][title]
 
-    react_title = f'{title}Props'
-
-    try:
-        react_schema = REACT_SCHEMA_DEFS[react_title]
-    except KeyError as e:
-        pytest.fail(f'No react model found with name {e}')
-
     model_properties = model_schema['properties']
     for value in model_properties.values():
         value.pop('title', None)
@@ -82,16 +124,24 @@ def test_components_match(model_schema: typing.Dict[str, typing.Any]):
 
     fix_pydantic_schema(model_properties)
 
+    try:
+        react_schema = REACT_SCHEMA_DEFS[f'{title}Props']
+    except KeyError as e:
+        pytest.fail(f'No react model found with name {e}')
+
     react_properties = react_schema['properties']
     # typescript-json-schema adds type to `const` properties while pydantic does not,
     # pydantic matches the example from JSON Schema's docs
     # https://json-schema.org/understanding-json-schema/reference/const
     react_properties['type'].pop('type')
 
+    # `onChange` is a frontend only attribute
+    react_properties.pop('onChange', None)
+
     if 'className' in model_properties and 'className' in react_properties:
         # class name doesn't match due to recursive type
         model_properties.pop('className')
         react_properties.pop('className')
 
-    # debug(model_properties, react_properties)
+    debug(model_properties, react_properties)
     assert model_properties == react_properties

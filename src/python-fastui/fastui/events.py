@@ -1,15 +1,15 @@
 from typing import Dict, Literal, Union
 
 from pydantic import BaseModel, Field
-from typing_extensions import Annotated, TypeAlias
+from typing_extensions import Annotated, TypeAliasType
 
-EventContext: TypeAlias = Dict[str, Union[str, int]]
+ContextType = TypeAliasType('ContextType', Dict[str, Union[str, int]])
 
 
 class PageEvent(BaseModel):
     name: str
     push_path: Union[str, None] = Field(default=None, serialization_alias='pushPath')
-    context: Union[EventContext, None] = None
+    context: Union[ContextType, None] = None
     clear: Union[bool, None] = None
     type: Literal['page'] = 'page'
 

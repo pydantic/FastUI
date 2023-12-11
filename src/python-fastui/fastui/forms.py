@@ -170,8 +170,11 @@ class SelectGroup(_te.TypedDict):
     options: _t.List[SelectOption]
 
 
+SelectOptions = _te.TypeAliasType('SelectOptions', _t.Union[_t.List[SelectOption], _t.List[SelectGroup]])
+
+
 class SelectSearchResponse(pydantic.BaseModel):
-    options: _t.Union[_t.List[SelectOption], _t.List[SelectGroup]]
+    options: SelectOptions
 
 
 NestedDict: _te.TypeAlias = 'dict[str | int, NestedDict | str | list[str] | ds.UploadFile | list[ds.UploadFile]]'

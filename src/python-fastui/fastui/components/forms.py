@@ -10,22 +10,27 @@ from .. import forms
 if _t.TYPE_CHECKING:
     from . import AnyComponent
 
+# # alphabetical order matches typescript-json-schema
+# InputHtmlType = _t.Literal['date', 'datetime-local', 'email', 'number', 'password', 'text', 'time', 'url']
 InputHtmlType = _t.Literal['text', 'date', 'datetime-local', 'time', 'email', 'url', 'number', 'password']
 
 
 class BaseFormField(pydantic.BaseModel, ABC, defer_build=True):
     name: str
-    title: _t.Union[str, _t.List[str]]
+    title: _t.Union[_t.List[str], str]
     required: bool = False
     error: _t.Union[str, None] = None
     locked: bool = False
     description: _t.Union[str, None] = None
+    display_mode: _t.Union[_t.Literal['default', 'inline'], None] = pydantic.Field(
+        default=None, serialization_alias='displayMode'
+    )
     class_name: _class_name.ClassName = None
 
 
 class FormFieldInput(BaseFormField):
     html_type: InputHtmlType = pydantic.Field(default='text', serialization_alias='htmlType')
-    initial: _t.Union[str, int, float, None] = None
+    initial: _t.Union[str, float, None] = None
     placeholder: _t.Union[str, None] = None
     type: _t.Literal['FormFieldInput'] = 'FormFieldInput'
 
@@ -43,7 +48,7 @@ class FormFieldFile(BaseFormField):
 
 
 class FormFieldSelect(BaseFormField):
-    options: _t.Union[_t.List[forms.SelectOption], _t.List[forms.SelectGroup]]
+    options: forms.SelectOptions
     multiple: _t.Union[bool, None] = None
     initial: _t.Union[str, None] = None
     vanilla: _t.Union[bool, None] = None
@@ -72,7 +77,7 @@ class BaseForm(pydantic.BaseModel, ABC, defer_build=True, extra='forbid'):
         default=None, serialization_alias='displayMode'
     )
     submit_on_change: _t.Union[bool, None] = pydantic.Field(default=None, serialization_alias='submitOnChange')
-    footer: '_t.Union[bool, _t.List[AnyComponent], None]' = None
+    footer: '_t.Union[_t.List[AnyComponent], bool, None]' = None
     class_name: _class_name.ClassName = None
 
     @pydantic.model_validator(mode='after')

@@ -219,23 +219,7 @@
           "type": "string"
         },
         "value": {
-          "anyOf": [
-            {
-              "items": {
-                "$ref": "#/definitions/JsonData"
-              },
-              "type": "array"
-            },
-            {
-              "additionalProperties": {
-                "$ref": "#/definitions/JsonData"
-              },
-              "type": "object"
-            },
-            {
-              "type": ["null", "string", "number", "boolean"]
-            }
-          ]
+          "type": "JSON"
         }
       },
       "type": "object"
@@ -390,10 +374,17 @@
           "type": "boolean"
         },
         "title": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "type": {
           "const": "FormFieldBoolean",
@@ -436,10 +427,17 @@
           "type": "boolean"
         },
         "title": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "type": {
           "const": "FormFieldFile",
@@ -486,10 +484,17 @@
           "type": "boolean"
         },
         "title": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "type": {
           "const": "FormFieldInput",
@@ -557,10 +562,17 @@
           "type": "boolean"
         },
         "title": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "type": {
           "const": "FormFieldSelect",
@@ -578,7 +590,7 @@
           "$ref": "#/definitions/ClassName"
         },
         "debounce": {
-          "type": "number"
+          "type": "integer"
         },
         "description": {
           "type": "string"
@@ -615,10 +627,17 @@
           "type": "string"
         },
         "title": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "type": {
           "const": "FormFieldSelectSearch",
@@ -656,7 +675,7 @@
           "type": "array"
         },
         "initial": {
-          "$ref": "#/definitions/Record<string,any>"
+          "type": "object"
         },
         "method": {
           "enum": ["GET", "GOTO", "POST"],
@@ -700,7 +719,7 @@
         },
         "level": {
           "enum": [1, 2, 3, 4, 5, 6],
-          "type": "number"
+          "type": "integer"
         },
         "text": {
           "type": "string"
@@ -718,9 +737,12 @@
           "$ref": "#/definitions/ClassName"
         },
         "height": {
-          "type": ["string", "number"]
+          "type": ["string", "integer"]
         },
         "src": {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
           "type": "string"
         },
         "title": {
@@ -731,7 +753,7 @@
           "type": "string"
         },
         "width": {
-          "type": ["string", "number"]
+          "type": ["string", "integer"]
         }
       },
       "type": "object"
@@ -745,7 +767,7 @@
           "$ref": "#/definitions/ClassName"
         },
         "height": {
-          "type": ["string", "number"]
+          "type": ["string", "integer"]
         },
         "loading": {
           "enum": ["eager", "lazy"],
@@ -785,7 +807,7 @@
           "type": "string"
         },
         "width": {
-          "type": ["string", "number"]
+          "type": ["string", "integer"]
         }
       },
       "type": "object"
@@ -973,7 +995,7 @@
           "type": "array"
         },
         "initial": {
-          "$ref": "#/definitions/Record<string,any>"
+          "type": "object"
         },
         "method": {
           "enum": ["GET", "GOTO", "POST"],
@@ -1083,16 +1105,16 @@
           "$ref": "#/definitions/ClassName"
         },
         "page": {
-          "type": "number"
+          "type": "integer"
         },
         "pageCount": {
-          "type": "number"
+          "type": "integer"
         },
         "pageSize": {
-          "type": "number"
+          "type": "integer"
         },
         "total": {
-          "type": "number"
+          "type": "integer"
         },
         "type": {
           "const": "Pagination",
@@ -1114,9 +1136,6 @@
           "type": "string"
         }
       },
-      "type": "object"
-    },
-    "Record<string,any>": {
       "type": "object"
     },
     "Record<string,boolean|null>": {
