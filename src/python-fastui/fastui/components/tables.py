@@ -14,7 +14,7 @@ class Table(pydantic.BaseModel, _t.Generic[DataModel], extra='forbid'):
     data: _t.List[DataModel]
     columns: _t.Union[_t.List[display.DisplayLookup], None] = None
     no_data_message: _t.Union[str, None] = pydantic.Field(default=None, serialization_alias='noDataMessage')
-    class_name: _class_name.ClassName = None
+    class_name: _class_name.ClassNameField = None
     type: _t.Literal['Table'] = 'Table'
 
     @pydantic.model_validator(mode='after')
@@ -43,7 +43,7 @@ class Pagination(pydantic.BaseModel):
     page: int
     page_size: int = pydantic.Field(serialization_alias='pageSize')
     total: int
-    class_name: _class_name.ClassName = None
+    class_name: _class_name.ClassNameField = None
     type: _t.Literal['Pagination'] = 'Pagination'
 
     @pydantic.computed_field(alias='pageCount')

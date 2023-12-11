@@ -47,7 +47,7 @@ class Display(DisplayBase, extra='forbid'):
     Description of how to display a value, either in a table or detail view.
     """
 
-    value: _t.Any = pydantic.Field(json_schema_extra={'type': 'JSON'})
+    value: _t.Any = pydantic.Field(None, json_schema_extra={'type': 'JSON'})
     type: _t.Literal['Display'] = 'Display'
 
 
@@ -57,7 +57,7 @@ DataModel = _t.TypeVar('DataModel', bound=pydantic.BaseModel)
 class Details(pydantic.BaseModel, _t.Generic[DataModel], extra='forbid'):
     data: DataModel
     fields: _t.Union[_t.List[DisplayLookup], None] = None
-    class_name: _class_name.ClassName = None
+    class_name: _class_name.ClassNameField = None
     type: _t.Literal['Details'] = 'Details'
 
     @pydantic.model_validator(mode='after')

@@ -25,7 +25,7 @@ class BaseFormField(pydantic.BaseModel, ABC, defer_build=True):
     display_mode: _t.Union[_t.Literal['default', 'inline'], None] = pydantic.Field(
         default=None, serialization_alias='displayMode'
     )
-    class_name: _class_name.ClassName = None
+    class_name: _class_name.ClassNameField = None
 
 
 class FormFieldInput(BaseFormField):
@@ -78,7 +78,7 @@ class BaseForm(pydantic.BaseModel, ABC, defer_build=True, extra='forbid'):
     )
     submit_on_change: _t.Union[bool, None] = pydantic.Field(default=None, serialization_alias='submitOnChange')
     footer: '_t.Union[_t.List[AnyComponent], bool, None]' = None
-    class_name: _class_name.ClassName = None
+    class_name: _class_name.ClassNameField = None
 
     @pydantic.model_validator(mode='after')
     def default_footer(self) -> _te.Self:

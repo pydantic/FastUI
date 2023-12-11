@@ -66,7 +66,6 @@ def fix_pydantic_schema(s: typing.Any):
                             enum=IsList(*display_mode['enum'], check_order=False),
                             type='string',
                         )
-
                     continue
 
                 if isinstance(v, dict):
@@ -91,6 +90,12 @@ def fix_pydantic_schema(s: typing.Any):
 
                         if NULL_TYPE in any_of:
                             any_of.remove(NULL_TYPE)
+
+                    if all_of := v.get('allOf'):
+                        if len(all_of) == 1:
+                            v.clear()
+                            v.update(all_of[0])
+                            continue
 
                     if k == 'formFields':
                         # hack until we fix `customise_form_fields`
@@ -118,9 +123,19 @@ def test_components_match(model_schema: typing.Dict[str, typing.Any]):
         model_schema = model_schema['$defs'][title]
 
     model_properties = model_schema['properties']
-    for value in model_properties.values():
+    debug(model_properties)
+    model_filled = set(model_schema.get('required', []))
+    for key, value in model_properties.items():
         value.pop('title', None)
-        value.pop('default', None)
+        if value.pop('default', None) is not None:
+            model_filled.add(key)
+
+    if title == 'Table':
+        # special case for `Table` as `columns` is filled by a validator in pydantic
+        model_filled.add('columns')
+    elif title == 'Details':
+        # same for `Details` and `fields`
+        model_filled.add('fields')
 
     fix_pydantic_schema(model_properties)
 
@@ -130,18 +145,14 @@ def test_components_match(model_schema: typing.Dict[str, typing.Any]):
         pytest.fail(f'No react model found with name {e}')
 
     react_properties = react_schema['properties']
+    react_required = set(react_schema.get('required', []))
     # typescript-json-schema adds type to `const` properties while pydantic does not,
     # pydantic matches the example from JSON Schema's docs
     # https://json-schema.org/understanding-json-schema/reference/const
     react_properties['type'].pop('type')
-
     # `onChange` is a frontend only attribute
     react_properties.pop('onChange', None)
 
-    if 'className' in model_properties and 'className' in react_properties:
-        # class name doesn't match due to recursive type
-        model_properties.pop('className')
-        react_properties.pop('className')
-
-    debug(model_properties, react_properties)
     assert model_properties == react_properties
+
+    assert model_filled == react_required
