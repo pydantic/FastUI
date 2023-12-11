@@ -27,7 +27,7 @@ def python_model_iter():
 NULL_TYPE = {'type': 'null'}
 
 
-def any_of_simple(any_of: typing.List[typing.Any]) -> typing.List[typing.Any] | None:
+def any_of_simple(any_of: typing.List[typing.Any]) -> typing.Union[typing.List[typing.Any], None]:
     new_types = []
     simple = True
     for s in any_of:
@@ -42,7 +42,7 @@ def any_of_simple(any_of: typing.List[typing.Any]) -> typing.List[typing.Any] | 
         return new_types
 
 
-def fix_pydantic_schema(s: typing.Any):
+def fix_pydantic_schema(s: typing.Any) -> None:
     """
     Convert pydantic JSON schema to match `typescript-json-schema`.
     """
