@@ -5,16 +5,18 @@ import Select, { StylesConfig } from 'react-select'
 import { ClassName, useClassName } from '../hooks/className'
 import { debounce, useRequest } from '../tools'
 
+type PrivateOnChange = () => void
+
 interface BaseFormFieldProps {
   name: string
-  title: string[]
+  title: string | string[]
   required: boolean
   locked: boolean
   error?: string
   description?: string
   displayMode?: 'default' | 'inline'
   className?: ClassName
-  onChange?: () => void
+  onChange?: PrivateOnChange
 }
 
 export type FormFieldProps =
@@ -26,7 +28,7 @@ export type FormFieldProps =
 
 interface FormFieldInputProps extends BaseFormFieldProps {
   type: 'FormFieldInput'
-  htmlType?: 'text' | 'date' | 'datetime-local' | 'time' | 'email' | 'url' | 'number' | 'password'
+  htmlType: 'text' | 'date' | 'datetime-local' | 'time' | 'email' | 'url' | 'number' | 'password'
   initial?: string | number
   placeholder?: string
 }
@@ -239,6 +241,7 @@ function findDefault(options: SelectOptions, value?: string): SelectOption | und
 interface FormFieldSelectSearchProps extends BaseFormFieldProps {
   type: 'FormFieldSelectSearch'
   searchUrl: string
+  /** @TJS-type integer */
   debounce?: number
   initial?: SelectOption
   multiple?: boolean
@@ -302,7 +305,10 @@ export const FormFieldSelectSearchComp: FC<FormFieldSelectSearchProps> = (props)
 }
 
 const Label: FC<FormFieldProps> = (props) => {
-  const { title } = props
+  let { title } = props
+  if (!Array.isArray(title)) {
+    title = [title]
+  }
   return (
     <label htmlFor={inputId(props)} className={useClassName(props, { el: 'label' })}>
       {title.map((t, i) => (

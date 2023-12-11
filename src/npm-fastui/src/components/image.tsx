@@ -7,7 +7,9 @@ export interface ImageProps {
   type: 'Image'
   src: string
   alt?: string
+  /** @TJS-type ["string", "integer"] */
   width?: number | string
+  /** @TJS-type ["string", "integer"] */
   height?: number | string
   referrerPolicy?:
     | 'no-referrer'

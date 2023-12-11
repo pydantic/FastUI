@@ -39,3 +39,9 @@ repos:
         entry: npm run typecheck
         language: system
         pass_filenames: false
+      - id: js-json-schema
+        name: js-json-schema
+        types_or: [ts, tsx]
+        entry: npm run generate-json-schema
+        language: system
+        pass_filenames: false

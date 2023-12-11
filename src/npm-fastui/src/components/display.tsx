@@ -21,6 +21,7 @@ export enum DisplayMode {
 
 export interface DisplayProps {
   type: 'Display'
+  /** @TJS-type JSON */
   value?: JsonData
   mode?: DisplayMode
   title?: string
