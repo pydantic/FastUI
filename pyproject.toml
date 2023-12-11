@@ -16,3 +16,6 @@ testpaths = "src/python-fastui/tests"
 xfail_strict = true
 filterwarnings = ["error"]
 asyncio_mode = "auto"
+
+[tool.coverage.run]
+source = ["src/python-fastui/fastui"]
