@@ -27,7 +27,7 @@ def python_model_iter():
 NULL_TYPE = {'type': 'null'}
 
 
-def any_of_simple(any_of: list[typing.Any]) -> list[typing.Any] | None:
+def any_of_simple(any_of: typing.List[typing.Any]) -> typing.List[typing.Any] | None:
     new_types = []
     simple = True
     for s in any_of:
@@ -123,7 +123,6 @@ def test_components_match(model_schema: typing.Dict[str, typing.Any]):
         model_schema = model_schema['$defs'][title]
 
     model_properties = model_schema['properties']
-    debug(model_properties)
     model_filled = set(model_schema.get('required', []))
     for key, value in model_properties.items():
         value.pop('title', None)
