@@ -119,7 +119,7 @@ jobs:
         id: check-version
         uses: samuelcolvin/check-python-version@v4.1
         with:
-          version_file_path: 'python/fastui/__init__.py'
+          version_file_path: 'src/python-fastui/fastui/__init__.py'
 
       - name: build
         run: python -m build
