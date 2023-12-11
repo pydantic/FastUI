@@ -9,4 +9,5 @@ export interface CodeProps {
   className?: ClassName
   codeStyle?: string
 }
+
 export const CodeComp = lazy(() => import('./CodeLazy'))

@@ -118,5 +118,7 @@ export const classNameGenerator: ClassNameGenerator = ({ props, fullPath, subEle
             return ''
         }
       }
+    case 'Code':
+      return 'rounded'
   }
 }

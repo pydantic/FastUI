@@ -19,7 +19,7 @@ def panel(*components: AnyComponent) -> AnyComponent:
     return c.Div(class_name='col border rounded m-1 p-2 pb-3', components=list(components))
 
 
-@router.get('', response_model=FastUI, response_model_exclude_none=True)
+@router.get('', response_model=FastUI, response_model_exclude_none=True, response_model_by_alias=True)
 def components_view() -> list[AnyComponent]:
     return demo_page(
         c.Div(
@@ -181,6 +181,18 @@ print(m.dimensions)
                     referrer_policy='no-referrer',
                     class_name='border rounded',
                 ),
+            ],
+            class_name='border-top mt-3 pt-1',
+        ),
+        c.Div(
+            components=[
+                c.Heading(text='Custom', level=2),
+                c.Markdown(text="""\
+Below is a custom component, in this case it implements [cowsay](https://en.wikipedia.org/wiki/Cowsay),
+but you might be able to do something even more useful with it.
+
+The statement spoken by the famous cow is provided by the backend."""),
+                c.Custom(data='This is a custom component', sub_type='cowsay'),
             ],
             class_name='border-top mt-3 pt-1',
         ),

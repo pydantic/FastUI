@@ -86,6 +86,28 @@
     "ContextType": {
       "type": "object"
     },
+    "CustomProps": {
+      "properties": {
+        "className": {
+          "$ref": "#/definitions/ClassName"
+        },
+        "data": {
+          "$ref": "#/definitions/JsonData"
+        },
+        "library": {
+          "type": "string"
+        },
+        "subType": {
+          "type": "string"
+        },
+        "type": {
+          "const": "Custom",
+          "type": "string"
+        }
+      },
+      "required": ["data", "subType", "type"],
+      "type": "object"
+    },
     "DetailsProps": {
       "properties": {
         "className": {
@@ -346,6 +368,9 @@
         },
         {
           "$ref": "#/definitions/IframeProps"
+        },
+        {
+          "$ref": "#/definitions/CustomProps"
         }
       ]
     },
