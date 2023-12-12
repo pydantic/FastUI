@@ -64,7 +64,7 @@ users = [
 def users_table() -> list[AnyComponent]:
     """
     Show a table of four users, `/api` is the endpoint the frontend will connect to
-    when a user fixes `/` to fetch components to render.
+    when a user visits `/` to fetch components to render.
     """
     return [
         c.Page(  # Page provides a basic container for components
@@ -119,33 +119,9 @@ Of course, that's a very simple application, the [full demo](https://fastui-demo
 
 ### Components
 
-FastUI already defines the following components, all are shown in the [demo app](https://fastui-demo.onrender.com):
+FastUI already defines a rich set of components.
 
-- `Text` — renders a string
-- `Paragraph` — renders a string as a paragraph
-- `PageTitle` — renders nothing, sets the HTML page title
-- `Div` — renders a `<div>` with arbitrary components inside
-- `Page` — a container for components
-- `Heading` — renders a heading `<h1>` to `<h6>`
-- `Markdown` — renders markdown, [example](https://fastui-demo.onrender.com)
-- `Code` — renders code with highlighting in a `<pre>`
-- `Button` — renders a `<button>`
-- `Link` — renders a link `<a>`
-- `LinkList` — renders a list of links
-- `Navbar` — renders a navbar `<nav>`
-- `Modal` — renders a modal dialog that opens triggered by an event
-- `ServerLoad` — render components fetched from the server, also provides SSE mode to update components based on server sent events
-- `Table` — renders a table
-- `Details` — renders a table of key/value pairs as a `<dl>`
-- `Display` — renders a value based on a display mode
-- `Table` — renders a table from a list of Pydantic models
-- `Pagination` — renders a pagination component
-- `FormFieldInput` — renders a form field using `<input>`
-- `FormFieldBoolean` — renders a form field for a boolean using `<input type="checkbox">`
-- `FormFieldSelect` — renders a form field using `<select>` or [react-select](https://react-select.com)
-- `FormFieldSelectSearch` — renders a form field using [react-select](https://react-select.com) with options updated from the server on search
-- `Form` — renders a form using a list of `FormField` components
-- `ModelForm` — renders a form based on a Pydantic model; the model's JSON Schema is used to build a list of `FormField` components
+All components are listed in the [demo app](https://fastui-demo.onrender.com).
 
 ## The Principle (long version)
 

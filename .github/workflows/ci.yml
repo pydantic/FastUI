@@ -89,7 +89,7 @@ jobs:
 
   check: # This job does nothing and is only used for the branch protection
     if: always()
-    needs: [lint, npm-build]
+    needs: [lint, test, npm-build]
     runs-on: ubuntu-latest
 
     steps:

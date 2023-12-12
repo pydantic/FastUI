@@ -26,24 +26,40 @@ from .forms import (
 from .tables import Pagination, Table
 
 __all__ = (
-    'AnyComponent',
+    # first we include everything from `AnyComponent`
     'Text',
+    'Paragraph',
+    'PageTitle',
     'Div',
     'Page',
     'Heading',
+    'Markdown',
+    'Code',
+    'Json',
     'Button',
+    'Link',
+    'LinkList',
+    'Navbar',
     'Modal',
-    'ModelForm',
-    'FormFieldInput',
-    'FormFieldBoolean',
-    'FormFieldFile',
-    'FormFieldSelect',
-    'FormFieldSelectSearch',
-    'Form',
+    'ServerLoad',
+    'Image',
+    'Iframe',
+    'Custom',
     'Table',
+    'Pagination',
     'Display',
     'Details',
-    'Image',
+    'Form',
+    'FormField',
+    'ModelForm',
+    # then `AnyComponent` itself
+    'AnyComponent',
+    # then the other form field types which are included in `AnyComponent` via the `FormField` union
+    'FormFieldBoolean',
+    'FormFieldFile',
+    'FormFieldInput',
+    'FormFieldSelect',
+    'FormFieldSelectSearch',
 )
 
 

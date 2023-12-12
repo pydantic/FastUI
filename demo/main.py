@@ -30,6 +30,7 @@ The following components are demonstrated:
 * `Navbar` — see the top of this page
 * `Modal` — static example [here](/components#button-and-modal), dynamic content example [here](/components#dynamic-modal)
 * `ServerLoad` — see [dynamic modal example](/components#dynamic-modal) and [SSE example](/components#server-load-sse)
+* `Image` - example [here](/components#image)
 * `Iframe` - example [here](/components#iframe)
 * `Table` — See [cities table](/table/cities) and [users table](/table/users)
 * `Pagination` — See the bottom of the [cities table](/table/cities)
