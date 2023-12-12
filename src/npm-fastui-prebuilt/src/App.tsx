@@ -1,4 +1,4 @@
-import { FastUI, renderClassName } from 'fastui'
+import { CustomRender, FastUI, renderClassName } from 'fastui'
 import * as bootstrap from 'fastui-bootstrap'
 import { FC, ReactNode } from 'react'
 
@@ -8,7 +8,7 @@ export default function App() {
       <FastUI
         rootUrl="/api"
         classNameGenerator={bootstrap.classNameGenerator}
-        customRender={bootstrap.customRender}
+        customRender={customRender}
         NotFound={NotFound}
         Spinner={Spinner}
         Transition={Transition}
@@ -38,3 +38,31 @@ const Transition: FC<{ children: ReactNode; transitioning: boolean }> = ({ child
     {children}
   </div>
 )
+
+const customRender: CustomRender = (props) => {
+  const { type } = props
+  if (type === 'Custom' && props.library === undefined && props.subType === 'cowsay') {
+    console.assert(typeof props.data === 'string', 'cowsay data must be a string')
+    const text = props.data as string
+    return () => <Cowsay text={text} />
+  } else {
+    return bootstrap.customRender(props)
+  }
+}
+
+const COWSAY = ` {above}
+< {text} >
+ {below}
+        \\   ^__^
+         \\  (oo)\\_______
+            (__)\\       )\\/\\
+                ||----w |
+                ||     ||`
+
+const Cowsay: FC<{ text: string }> = ({ text }) => {
+  const len = text.length
+  const cowsay = COWSAY.replace('{text}', text)
+    .replace('{above}', '_'.repeat(len + 2))
+    .replace('{below}', '-'.repeat(len + 2))
+  return <pre>{cowsay}</pre>
+}
