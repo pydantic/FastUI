@@ -210,7 +210,7 @@ class Iframe(_p.BaseModel, extra='forbid'):
 class Custom(_p.BaseModel, extra='forbid'):
     data: json_schema.JsonData
     sub_type: str = _p.Field(serialization_alias='subType')
-    library: str | None = None
+    library: _t.Union[str, None] = None
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['Custom'] = 'Custom'
 
