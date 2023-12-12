@@ -26,7 +26,7 @@ from .forms import (
 from .tables import Pagination, Table
 
 __all__ = (
-    'AnyComponent',
+    # first we include everything from `AnyComponent`
     'Text',
     'Paragraph',
     'PageTitle',
@@ -52,6 +52,9 @@ __all__ = (
     'Form',
     'FormField',
     'ModelForm',
+    # then `AnyComponent` itself
+    'AnyComponent',
+    # then the other form field types which are included in `AnyComponent` via the `FormField` union
     'FormFieldBoolean',
     'FormFieldFile',
     'FormFieldInput',
