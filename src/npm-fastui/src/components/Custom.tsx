@@ -17,14 +17,14 @@ export const CustomComp: FC<CustomProps> = (props) => {
   const { data, subType, library } = props
   const { DisplayError } = useContext(ErrorContext)
 
-  let description = `Custom component "${subType}"`
+  const description = [`The custom component "${subType}"`]
   if (library) {
-    description += ` from library "${library}"`
+    description.push(`from library "${library}"`)
   }
-  description += ` has no custom implementation.`
+  description.push(`has no implementation with this frontend app.`)
 
   return (
-    <DisplayError title="Custom component without implementation" description={description}>
+    <DisplayError title="Custom component without implementation" description={description.join(' ')}>
       Custom component data:
       <JsonComp type="JSON" value={data} />
     </DisplayError>

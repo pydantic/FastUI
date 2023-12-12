@@ -19,7 +19,7 @@ def panel(*components: AnyComponent) -> AnyComponent:
     return c.Div(class_name='col border rounded m-1 p-2 pb-3', components=list(components))
 
 
-@router.get('', response_model=FastUI, response_model_exclude_none=True, response_model_by_alias=True)
+@router.get('', response_model=FastUI, response_model_exclude_none=True)
 def components_view() -> list[AnyComponent]:
     return demo_page(
         c.Div(

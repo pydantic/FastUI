@@ -22,6 +22,7 @@ else:
 
 __all__ = 'JsonData', 'model_json_schema_to_fields', 'SchemeLocation'
 
+# JsonData is defined this way to make comparison to frontend interfaces easier
 JsonData = _ta.TypeAliasType('JsonData', _t.Any)
 
 
