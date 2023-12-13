@@ -31,8 +31,16 @@ def components_view() -> list[AnyComponent]:
         c.Div(
             components=[
                 c.Heading(text='FormattedText', level=2),
-                c.Markdown(text='`FormattedText` can be used to change the style of the text.'),
-                c.FormattedText(text='This is a FormattedText component.', text_color='red', background_color='blue', text_format='italic'),
+                c.Markdown(
+                    text="""`FormattedText` can be used to change the style of the text, this is particularly
+                    useful to avoid the overhead of loading the markdown renderer, or when you're including user
+                    generated content that you don't want to escape styling."""),
+                c.FormattedText(
+                    text='This is a FormattedText component.',
+                    text_color='red',
+                    background_color='blue',
+                    text_format='italic'
+                    ),
             ],
             class_name='border-top mt-3 pt-1',
         ),
