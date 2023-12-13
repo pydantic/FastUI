@@ -7,6 +7,7 @@ export interface FireEventProps {
   type: 'FireEvent'
   event: AnyEvent
   message?: string
+  // className is not used, but it's here to satisfy ClassName hooks type checks
   className?: ClassName
 }
 

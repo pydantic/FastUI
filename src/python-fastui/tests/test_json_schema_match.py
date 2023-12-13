@@ -152,6 +152,15 @@ def test_components_match(model_schema: typing.Dict[str, typing.Any]):
     # `onChange` is a frontend only attribute
     react_properties.pop('onChange', None)
 
+    # ClassName is sometimes defined on props just to satisfy typescript, doesn't need to be included the model
+    if 'className' not in model_properties:
+        react_properties.pop('className', None)
+
+    # see https://github.com/YousefED/typescript-json-schema/issues/583
+    if key := next((k for k, v in react_properties.items() if v == {'$ref': '#/definitions/AnyEvent'}), None):
+        react_properties[key] = REACT_SCHEMA_DEFS['AnyEvent']
+
+    # debug(model_properties, react_properties)
     assert model_properties == react_properties
 
     assert model_filled == react_required

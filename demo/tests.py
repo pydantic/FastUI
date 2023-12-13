@@ -28,7 +28,7 @@ def test_api_root():
         {
             'title': 'FastUI Demo',
             'titleEvent': {'url': '/', 'type': 'go-to'},
-            'links': IsList(length=3),
+            'links': IsList(length=4),
             'type': 'Navbar',
         },
         {
