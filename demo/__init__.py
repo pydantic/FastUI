@@ -9,11 +9,11 @@ from fastui import prebuilt_html
 from fastui.dev import dev_fastapi_app
 from httpx import AsyncClient
 
+from .auth import router as auth_router
 from .components_list import router as components_router
 from .forms import router as forms_router
 from .main import router as main_router
 from .tables import router as table_router
-from .auth import router as auth_router
 
 
 @asynccontextmanager

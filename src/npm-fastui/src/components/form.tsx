@@ -1,8 +1,9 @@
-import { FC, FormEvent, useContext, useState, useRef, useCallback } from 'react'
+import { FC, FormEvent, useContext, useState, useRef, useCallback, useEffect } from 'react'
 
 import { ClassName, useClassName } from '../hooks/className'
 import { useRequest, RequestArgs } from '../tools'
 import { LocationContext } from '../hooks/locationContext'
+import { PageEvent, usePageEventListen } from '../events'
 
 import { FastProps, AnyCompList } from './index'
 
@@ -14,10 +15,11 @@ interface BaseFormProps {
   /** @TJS-type object */
   initial?: Record<string, any>
   submitUrl: string
-  footer?: boolean | FastProps[]
+  footer?: FastProps[]
   method: 'GET' | 'GOTO' | 'POST'
   displayMode?: 'default' | 'inline'
   submitOnChange?: boolean
+  submitTrigger?: PageEvent
   className?: ClassName
 }
 
@@ -31,13 +33,16 @@ export interface ModelFormProps extends BaseFormProps {
 
 export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
   const formRef = useRef<HTMLFormElement>(null)
-  const { formFields, initial, submitUrl, method, footer, displayMode, submitOnChange } = props
+  const { formFields, initial, submitUrl, method, footer, displayMode, submitOnChange, submitTrigger } = props
 
   // mostly equivalent to `<input disabled`
   const [locked, setLocked] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [error, setError] = useState<string | null>(null)
   const [responseComponentProps, setResponseComponentProps] = useState<FastProps[] | null>(null)
+
+  const { eventContext } = usePageEventListen(submitTrigger)
+
   const request = useRequest()
   const { goto } = useContext(LocationContext)
 
@@ -101,6 +106,15 @@ export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
     }
   }, [submitOnChange, submit])
 
+  const submitEvent = !!eventContext
+
+  useEffect(() => {
+    if (submitEvent && formRef.current) {
+      const formData = new FormData(formRef.current)
+      submit(formData)
+    }
+  }, [submitEvent, submit])
+
   const fieldProps: FormFieldProps[] = formFields.map((formField) => {
     const f = {
       ...formField,
@@ -138,10 +152,8 @@ export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
   }
 }
 
-const Footer: FC<{ footer?: boolean | FastProps[] }> = ({ footer }) => {
-  if (footer === false) {
-    return null
-  } else if (footer === true || typeof footer === 'undefined') {
+const Footer: FC<{ footer?: FastProps[] }> = ({ footer }) => {
+  if (typeof footer === 'undefined') {
     return <ButtonComp type="Button" text="Submit" htmlType="submit" />
   } else {
     return <AnyCompList propsList={footer} />

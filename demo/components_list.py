@@ -200,11 +200,13 @@ print(m.dimensions)
         c.Div(
             components=[
                 c.Heading(text='Custom', level=2),
-                c.Markdown(text="""\
+                c.Markdown(
+                    text="""\
 Below is a custom component, in this case it implements [cowsay](https://en.wikipedia.org/wiki/Cowsay),
 but you might be able to do something even more useful with it.
 
-The statement spoken by the famous cow is provided by the backend."""),
+The statement spoken by the famous cow is provided by the backend."""
+                ),
                 c.Custom(data='This is a custom component', sub_type='cowsay'),
             ],
             class_name='border-top mt-3 pt-1',

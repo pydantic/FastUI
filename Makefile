@@ -18,13 +18,13 @@ update-lockfiles:
 
 .PHONY: format
 format:
-	ruff check --fix-only $(path)
-	ruff format $(path)
+	ruff check --fix-only $(path) demo
+	ruff format $(path) demo
 
 .PHONY: lint
 lint:
-	ruff check $(path)
-	ruff format --check $(path)
+	ruff check $(path) demo
+	ruff format --check $(path) demo
 
 .PHONY: typecheck
 typecheck:
