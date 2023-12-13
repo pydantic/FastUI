@@ -17,8 +17,8 @@ export const FormattedTextComp: FC<FormattedTextProps> = (props) => {
   const style = {
     backgroundColor,
     color,
-    fontWeight: textFormat === 'bold' ? 'bold' : 'normal',
-    fontStyle: textFormat === 'italic' ? 'italic' : 'normal',
+    fontWeight: textFormat,
+    fontStyle: textFormat,
     textDecoration:
       textFormat === 'underline' ? 'underline' : textFormat === 'strikethrough' ? 'line-through' : 'none',
   }
