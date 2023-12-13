@@ -40,8 +40,7 @@ function pageEventType(event: PageEvent): string {
 }
 
 export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
-  const rawLocation = useContext(LocationContext)
-  const [location] = useState(rawLocation)
+  const location = useContext(LocationContext)
 
   function fireEventImpl(event?: AnyEvent) {
     if (!event) {
@@ -68,10 +67,8 @@ export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
         break
       case 'auth':
         if (event.token) {
-          console.debug('Authorizing with token', event.token)
           sessionStorage.setItem(AUTH_TOKEN_KEY, event.token)
         } else {
-          console.debug('Removing Authorization token')
           sessionStorage.removeItem(AUTH_TOKEN_KEY)
         }
         if (event.url) {

@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useRef } from 'react'
 
 import { AnyEvent, useFireEvent } from '../events'
 import { ClassName } from '../hooks/className'
@@ -11,13 +11,16 @@ export interface FireEventProps {
 }
 
 export const FireEventComp: FC<FireEventProps> = ({ event, message }) => {
-  const [effectEvent] = useState(event)
-
   const { fireEvent } = useFireEvent()
+  const fireEventRef = useRef(fireEvent)
 
   useEffect(() => {
-    fireEvent(effectEvent)
-  }, [effectEvent, fireEvent])
+    fireEventRef.current = fireEvent
+  }, [fireEvent])
+
+  useEffect(() => {
+    fireEventRef.current(event)
+  }, [event, fireEventRef])
 
   return <>{message}</>
 }
