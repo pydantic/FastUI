@@ -25,4 +25,11 @@ class BackEvent(BaseModel):
     type: Literal['back'] = 'back'
 
 
-AnyEvent = Annotated[Union[PageEvent, GoToEvent, BackEvent], Field(discriminator='type')]
+class AuthEvent(BaseModel):
+    # False means clear the token and thereby logout the user
+    token: Union[str, Literal[False]]
+    url: Union[str, None] = None
+    type: Literal['auth'] = 'auth'
+
+
+AnyEvent = Annotated[Union[PageEvent, GoToEvent, BackEvent, AuthEvent], Field(discriminator='type')]

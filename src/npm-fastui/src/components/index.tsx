@@ -41,8 +41,7 @@ import { ServerLoadComp, ServerLoadProps } from './ServerLoad'
 import { ImageComp, ImageProps } from './image'
 import { IframeComp, IframeProps } from './Iframe'
 import { VideoComp, VideoProps } from './video'
-import { AuthorizationProps, AuthorizationComp } from './authorization'
-import { RedirectComp, RedirectProps } from './redirect'
+import { FireEventComp, FireEventProps } from './FireEvent'
 import { CustomComp, CustomProps } from './Custom'
 
 export type {
@@ -72,8 +71,7 @@ export type {
   ImageProps,
   IframeProps,
   VideoProps,
-  AuthorizationProps,
-  RedirectProps,
+  FireEventProps,
   CustomProps,
 }
 
@@ -106,8 +104,7 @@ export type FastProps =
   | ImageProps
   | IframeProps
   | VideoProps
-  | AuthorizationProps
-  | RedirectProps
+  | FireEventProps
   | CustomProps
 
 export type FastClassNameProps = Exclude<FastProps, TextProps | AllDisplayProps | ServerLoadProps | PageTitleProps>
@@ -193,10 +190,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <IframeComp {...props} />
       case 'Video':
         return <VideoComp {...props} />
-      case 'Authorization':
-        return <AuthorizationComp {...props} />
-      case 'Redirect':
-        return <RedirectComp {...props} />
+      case 'FireEvent':
+        return <FireEventComp {...props} />
       case 'Custom':
         return <CustomComp {...props} />
       default:

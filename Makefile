@@ -40,7 +40,7 @@ testcov: test
 
 .PHONY: dev
 dev:
-	uvicorn demo:app --reload
+	uvicorn demo:app --reload --reload-dir .
 
 .PHONY: all
 all: testcov lint

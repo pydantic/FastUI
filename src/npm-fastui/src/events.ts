@@ -2,6 +2,7 @@ import { useContext, useState, useEffect, useCallback } from 'react'
 
 import { LocationContext } from './hooks/locationContext'
 import { ContextType } from './hooks/eventContext'
+import { AUTH_TOKEN_KEY } from './tools'
 
 export interface PageEvent {
   type: 'page'
@@ -21,7 +22,13 @@ export interface BackEvent {
   type: 'back'
 }
 
-export type AnyEvent = PageEvent | GoToEvent | BackEvent
+export interface AuthEvent {
+  type: 'auth'
+  token: string | false
+  url?: string
+}
+
+export type AnyEvent = PageEvent | GoToEvent | BackEvent | AuthEvent
 
 export interface PageEventDetail {
   clear: boolean
@@ -57,6 +64,18 @@ export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
         }
         if (event.query) {
           location.setQuery(event.query)
+        }
+        break
+      case 'auth':
+        if (event.token) {
+          console.debug('Authorizing with token', event.token)
+          sessionStorage.setItem(AUTH_TOKEN_KEY, event.token)
+        } else {
+          console.debug('Removing Authorization token')
+          sessionStorage.removeItem(AUTH_TOKEN_KEY)
+        }
+        if (event.url) {
+          location.goto(event.url)
         }
         break
       case 'back':

@@ -12,36 +12,34 @@
         },
         {
           "$ref": "#/definitions/BackEvent"
+        },
+        {
+          "$ref": "#/definitions/AuthEvent"
         }
       ]
     },
-    "AuthorizationProps": {
+    "AuthEvent": {
       "properties": {
-        "afterAuthorize": {
+        "token": {
           "anyOf": [
             {
-              "$ref": "#/definitions/PageEvent"
+              "const": false,
+              "type": "boolean"
             },
             {
-              "$ref": "#/definitions/GoToEvent"
-            },
-            {
-              "$ref": "#/definitions/BackEvent"
+              "type": "string"
             }
           ]
         },
-        "className": {
-          "$ref": "#/definitions/ClassName"
-        },
-        "token": {
+        "type": {
+          "const": "auth",
           "type": "string"
         },
-        "type": {
-          "const": "Authorization",
+        "url": {
           "type": "string"
         }
       },
-      "required": ["type"],
+      "required": ["token", "type"],
       "type": "object"
     },
     "BackEvent": {
@@ -73,6 +71,9 @@
             },
             {
               "$ref": "#/definitions/BackEvent"
+            },
+            {
+              "$ref": "#/definitions/AuthEvent"
             }
           ]
         },
@@ -211,6 +212,9 @@
             },
             {
               "$ref": "#/definitions/BackEvent"
+            },
+            {
+              "$ref": "#/definitions/AuthEvent"
             }
           ]
         },
@@ -280,6 +284,9 @@
             },
             {
               "$ref": "#/definitions/BackEvent"
+            },
+            {
+              "$ref": "#/definitions/AuthEvent"
             }
           ]
         },
@@ -415,15 +422,31 @@
           "$ref": "#/definitions/VideoProps"
         },
         {
-          "$ref": "#/definitions/AuthorizationProps"
-        },
-        {
-          "$ref": "#/definitions/RedirectProps"
+          "$ref": "#/definitions/FireEventProps"
         },
         {
           "$ref": "#/definitions/CustomProps"
         }
       ]
+    },
+    "FireEventProps": {
+      "properties": {
+        "className": {
+          "$ref": "#/definitions/ClassName"
+        },
+        "event": {
+          "$ref": "#/definitions/AnyEvent"
+        },
+        "message": {
+          "type": "string"
+        },
+        "type": {
+          "const": "FireEvent",
+          "type": "string"
+        }
+      },
+      "required": ["event", "type"],
+      "type": "object"
     },
     "FormFieldBooleanProps": {
       "properties": {
@@ -878,6 +901,9 @@
             },
             {
               "$ref": "#/definitions/BackEvent"
+            },
+            {
+              "$ref": "#/definitions/AuthEvent"
             }
           ]
         },
@@ -1000,6 +1026,9 @@
             },
             {
               "$ref": "#/definitions/BackEvent"
+            },
+            {
+              "$ref": "#/definitions/AuthEvent"
             }
           ]
         },
@@ -1140,6 +1169,9 @@
             },
             {
               "$ref": "#/definitions/BackEvent"
+            },
+            {
+              "$ref": "#/definitions/AuthEvent"
             }
           ]
         },
@@ -1250,25 +1282,6 @@
       "type": "object"
     },
     "Record<string,string|number|null>": {
-      "type": "object"
-    },
-    "RedirectProps": {
-      "properties": {
-        "className": {
-          "$ref": "#/definitions/ClassName"
-        },
-        "event": {
-          "$ref": "#/definitions/AnyEvent"
-        },
-        "message": {
-          "type": "string"
-        },
-        "type": {
-          "const": "Redirect",
-          "type": "string"
-        }
-      },
-      "required": ["event", "type"],
       "type": "object"
     },
     "SelectGroup": {

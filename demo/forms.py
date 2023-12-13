@@ -111,7 +111,7 @@ class LoginForm(BaseModel):
 @router.post('/login', response_model=FastUI, response_model_exclude_none=True)
 async def login_form_post(form: Annotated[LoginForm, fastui_form(LoginForm)]):
     # print(form)
-    return [c.Redirect(event=GoToEvent(url='/'))]
+    return [c.FireEvent(event=GoToEvent(url='/'))]
 
 
 class ToolEnum(str, enum.Enum):
@@ -131,7 +131,7 @@ class SelectForm(BaseModel):
 @router.post('/select', response_model=FastUI, response_model_exclude_none=True)
 async def select_form_post(form: Annotated[SelectForm, fastui_form(SelectForm)]):
     # print(form)
-    return [c.Redirect(event=GoToEvent(url='/'))]
+    return [c.FireEvent(event=GoToEvent(url='/'))]
 
 
 class SizeModel(BaseModel):
@@ -165,4 +165,4 @@ class BigModel(BaseModel):
 @router.post('/big', response_model=FastUI, response_model_exclude_none=True)
 async def big_form_post(form: Annotated[BigModel, fastui_form(BigModel)]):
     # print(form)
-    return [c.Redirect(event=GoToEvent(url='/'))]
+    return [c.FireEvent(event=GoToEvent(url='/'))]
