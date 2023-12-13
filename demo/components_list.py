@@ -190,7 +190,7 @@ print(m.dimensions)
                 c.Paragraph(text='A video component.'),
                 c.Video(
                     sources=['https://www.w3schools.com/html/mov_bbb.mp4'],
-                    autoplay=True,
+                    autoplay=False,
                     controls=True,
                     loop=False,
                 ),
