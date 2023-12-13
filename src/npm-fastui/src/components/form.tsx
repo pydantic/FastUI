@@ -12,10 +12,11 @@ import { FormFieldProps } from './FormField'
 
 interface BaseFormProps {
   formFields: FormFieldProps[]
+  /** @TJS-type object */
   initial?: Record<string, any>
   submitUrl: string
   footer?: boolean | FastProps[]
-  method?: 'GET' | 'GOTO' | 'POST'
+  method: 'GET' | 'GOTO' | 'POST'
   displayMode?: 'default' | 'inline'
   submitOnChange?: boolean
   className?: ClassName

@@ -41,6 +41,7 @@ import { ServerLoadComp, ServerLoadProps } from './ServerLoad'
 import { ImageComp, ImageProps } from './image'
 import { IframeComp, IframeProps } from './Iframe'
 import { VideoComp, VideoProps } from './video'
+import { CustomComp, CustomProps } from './Custom'
 
 export type {
   TextProps,
@@ -69,6 +70,7 @@ export type {
   ImageProps,
   IframeProps,
   VideoProps,
+  CustomProps,
 }
 
 // TODO some better way to export components
@@ -100,6 +102,7 @@ export type FastProps =
   | ImageProps
   | IframeProps
   | VideoProps
+  | CustomProps
 
 export type FastClassNameProps = Exclude<FastProps, TextProps | AllDisplayProps | ServerLoadProps | PageTitleProps>
 
@@ -184,6 +187,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <IframeComp {...props} />
       case 'Video':
         return <VideoComp {...props} />
+      case 'Custom':
+        return <CustomComp {...props} />
       default:
         unreachable('Unexpected component type', type, props)
         return <DisplayError title="Invalid Server Response" description={`Unknown component type: "${type}"`} />

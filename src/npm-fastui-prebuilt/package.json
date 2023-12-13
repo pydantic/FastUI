@@ -1,12 +1,12 @@
 {
   "name": "@pydantic/fastui-prebuilt",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Pre-built files for FastUI",
   "main": "dist/index.html",
   "type": "module",
   "author": "Samuel Colvin",
   "license": "MIT",
-  "homepage": "https://github.com/samuelcolvin/fastui",
+  "homepage": "https://github.com/pydantic/fastui",
   "private": false,
   "keywords": [
     "fastui",
@@ -23,6 +23,6 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react-swc": "^3.3.2",
-    "vite": "^4.4.5"
+    "vite": "^5.0.7"
   }
 }

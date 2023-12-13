@@ -4,7 +4,7 @@ import pydantic
 
 from .components import AnyComponent
 
-__version__ = '0.2.0'
+__version__ = '0.3.0'
 __all__ = 'AnyComponent', 'FastUI', 'prebuilt_html'
 
 
@@ -16,7 +16,7 @@ class FastUI(pydantic.RootModel):
     root: _t.List[AnyComponent]
 
 
-_PREBUILT_VERSION = '0.0.11'
+_PREBUILT_VERSION = '0.0.12'
 _PREBUILT_CDN_URL = f'https://cdn.jsdelivr.net/npm/@pydantic/fastui-prebuilt@{_PREBUILT_VERSION}/dist/assets'
 
 

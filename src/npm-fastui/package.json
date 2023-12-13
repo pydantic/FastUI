@@ -1,12 +1,12 @@
 {
   "name": "@pydantic/fastui",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Build better UIs faster.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "Samuel Colvin",
   "license": "MIT",
-  "homepage": "https://github.com/samuelcolvin/fastui",
+  "homepage": "https://github.com/pydantic/fastui",
   "private": false,
   "keywords": [
     "fastui",

@@ -20,7 +20,10 @@ if _t.TYPE_CHECKING:
 else:
     SelectOption = dict
 
-__all__ = 'model_json_schema_to_fields', 'SchemeLocation'
+__all__ = 'JsonData', 'model_json_schema_to_fields', 'SchemeLocation'
+
+# JsonData is defined this way to make comparison to frontend interfaces easier
+JsonData = _ta.TypeAliasType('JsonData', _t.Any)
 
 
 def model_json_schema_to_fields(model: _t.Type[BaseModel]) -> _t.List[FormField]:

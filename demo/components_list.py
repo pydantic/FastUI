@@ -178,7 +178,7 @@ print(m.dimensions)
                     width=200,
                     height=200,
                     loading='lazy',
-                    referrerpolicy='no-referrer',
+                    referrer_policy='no-referrer',
                     class_name='border rounded',
                 ),
             ],
@@ -194,6 +194,18 @@ print(m.dimensions)
                     controls=True,
                     loop=False,
                 ),
+            ],
+            class_name='border-top mt-3 pt-1',
+        ),
+        c.Div(
+            components=[
+                c.Heading(text='Custom', level=2),
+                c.Markdown(text="""\
+Below is a custom component, in this case it implements [cowsay](https://en.wikipedia.org/wiki/Cowsay),
+but you might be able to do something even more useful with it.
+
+The statement spoken by the famous cow is provided by the backend."""),
+                c.Custom(data='This is a custom component', sub_type='cowsay'),
             ],
             class_name='border-top mt-3 pt-1',
         ),

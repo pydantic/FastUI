@@ -49,25 +49,29 @@ jobs:
       OS: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: set up python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
+      - name: set up python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - run: pip install -r src/python-fastui/requirements/test.txt
-    - run: pip install -r src/python-fastui/requirements/pyproject.txt
-    - run: pip install src/python-fastui
+      - run: pip install -r src/python-fastui/requirements/test.txt
+      - run: pip install -r src/python-fastui/requirements/pyproject.txt
+      - run: pip install src/python-fastui
 
-    - run: make test
+      - run: coverage run -m pytest src
 
-    - run: coverage xml
+      # test demo on 3.11 and 3.12, these tests are intentionally omitted from coverage
+      - if: matrix.python-version == '3.11' || matrix.python-version == '3.12'
+        run: pytest demo/tests.py
 
-    - uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.xml
-        env_vars: PYTHON,OS
+      - run: coverage xml
+
+      - uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+          env_vars: PYTHON,OS
 
   npm-build:
     runs-on: ubuntu-latest
@@ -85,7 +89,7 @@ jobs:
 
   check: # This job does nothing and is only used for the branch protection
     if: always()
-    needs: [lint, npm-build]
+    needs: [lint, test, npm-build]
     runs-on: ubuntu-latest
 
     steps:
@@ -107,22 +111,19 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: set up python
-        uses: actions/setup-python@v4
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
-      - name: install
-        run: pip install -U build
+      - run: pip install -U build
 
-      - name: check version
-        id: check-version
+      - id: check-version
         uses: samuelcolvin/check-python-version@v4.1
         with:
-          version_file_path: 'python/fastui/__init__.py'
+          version_file_path: 'src/python-fastui/fastui/__init__.py'
 
-      - name: build
-        run: python -m build
+      - run: python -m build --outdir dist src/python-fastui
 
-      - name: Upload package to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+      - run: ls -lh dist
+
+      - uses: pypa/gh-action-pypi-publish@release/v1

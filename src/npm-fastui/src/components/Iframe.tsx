@@ -4,8 +4,15 @@ import { ClassName } from '../hooks/className'
 
 export interface IframeProps {
   type: 'Iframe'
+  /**
+   * @format uri
+   * @maxLength 2083
+   * @minLength 1
+   */
   src: string
+  /** @TJS-type ["string", "integer"] */
   width?: string | number
+  /** @TJS-type ["string", "integer"] */
   height?: string | number
   title?: string
   className?: ClassName
