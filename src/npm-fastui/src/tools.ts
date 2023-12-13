@@ -2,6 +2,8 @@ import { useCallback, useContext, useEffect } from 'react'
 
 import { ErrorContext } from './hooks/error'
 
+export const AUTH_TOKEN_KEY = 'fastui-auth-token'
+
 export function useRequest(): (args: RequestArgs) => Promise<[number, any]> {
   const { setError } = useContext(ErrorContext)
 
@@ -49,7 +51,7 @@ export interface RequestArgs {
   query?: Record<string, string> | URLSearchParams
   json?: Record<string, any>
   formData?: FormData
-  headers?: Record<string, string>
+  headers?: Record<string, string> | Headers
 }
 
 class RequestError extends Error {
@@ -89,17 +91,21 @@ async function request({
     url = `${url}?${searchParams.toString()}`
   }
 
-  headers = headers ?? {}
-  if (contentType && !headers['Content-Type']) {
-    headers['Content-Type'] = contentType
+  init.headers = new Headers(headers)
+  if (contentType && !init.headers.get('Content-Type')) {
+    init.headers.set('Content-Type', contentType)
   }
+
+  const authToken = sessionStorage.getItem(AUTH_TOKEN_KEY)
+  console.log('got auth token', authToken)
+  if (authToken) {
+    // we use a custom auth-schema as well-known values like `Basic` and `Bearer` are not correct here
+    init.headers.set('Authorization', `Token ${authToken}`)
+  }
+  console.log('headers:', Object.fromEntries(init.headers))
 
   if (method) {
     init.method = method
-  }
-
-  if (headers) {
-    init.headers = headers
   }
 
   let response

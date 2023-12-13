@@ -2,6 +2,48 @@
   "$ref": "#/definitions/FastProps",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
+    "AnyEvent": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/PageEvent"
+        },
+        {
+          "$ref": "#/definitions/GoToEvent"
+        },
+        {
+          "$ref": "#/definitions/BackEvent"
+        }
+      ]
+    },
+    "AuthorizationProps": {
+      "properties": {
+        "afterAuthorize": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/PageEvent"
+            },
+            {
+              "$ref": "#/definitions/GoToEvent"
+            },
+            {
+              "$ref": "#/definitions/BackEvent"
+            }
+          ]
+        },
+        "className": {
+          "$ref": "#/definitions/ClassName"
+        },
+        "token": {
+          "type": "string"
+        },
+        "type": {
+          "const": "Authorization",
+          "type": "string"
+        }
+      },
+      "required": ["type"],
+      "type": "object"
+    },
     "BackEvent": {
       "properties": {
         "type": {
@@ -371,6 +413,12 @@
         },
         {
           "$ref": "#/definitions/VideoProps"
+        },
+        {
+          "$ref": "#/definitions/AuthorizationProps"
+        },
+        {
+          "$ref": "#/definitions/RedirectProps"
         },
         {
           "$ref": "#/definitions/CustomProps"
@@ -1202,6 +1250,25 @@
       "type": "object"
     },
     "Record<string,string|number|null>": {
+      "type": "object"
+    },
+    "RedirectProps": {
+      "properties": {
+        "className": {
+          "$ref": "#/definitions/ClassName"
+        },
+        "event": {
+          "$ref": "#/definitions/AnyEvent"
+        },
+        "message": {
+          "type": "string"
+        },
+        "type": {
+          "const": "Redirect",
+          "type": "string"
+        }
+      },
+      "required": ["event", "type"],
       "type": "object"
     },
     "SelectGroup": {

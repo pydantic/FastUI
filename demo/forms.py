@@ -9,7 +9,7 @@ from fastapi import APIRouter, Request, UploadFile
 from fastui import AnyComponent, FastUI
 from fastui import components as c
 from fastui.events import GoToEvent, PageEvent
-from fastui.forms import FormFile, FormResponse, SelectSearchResponse, fastui_form
+from fastui.forms import FormFile, SelectSearchResponse, fastui_form
 from httpx import AsyncClient
 from pydantic import BaseModel, EmailStr, Field, SecretStr, field_validator
 from pydantic_core import PydanticCustomError
@@ -108,10 +108,10 @@ class LoginForm(BaseModel):
     password: SecretStr
 
 
-@router.post('/login')
-async def login_form_post(form: Annotated[LoginForm, fastui_form(LoginForm)]) -> FormResponse:
+@router.post('/login', response_model=FastUI, response_model_exclude_none=True)
+async def login_form_post(form: Annotated[LoginForm, fastui_form(LoginForm)]):
     # print(form)
-    return FormResponse(event=GoToEvent(url='/'))
+    return [c.Redirect(event=GoToEvent(url='/'))]
 
 
 class ToolEnum(str, enum.Enum):
@@ -128,10 +128,10 @@ class SelectForm(BaseModel):
     search_select_multiple: list[str] = Field(json_schema_extra={'search_url': '/api/forms/search'})
 
 
-@router.post('/select')
-async def select_form_post(form: Annotated[SelectForm, fastui_form(SelectForm)]) -> FormResponse:
+@router.post('/select', response_model=FastUI, response_model_exclude_none=True)
+async def select_form_post(form: Annotated[SelectForm, fastui_form(SelectForm)]):
     # print(form)
-    return FormResponse(event=GoToEvent(url='/'))
+    return [c.Redirect(event=GoToEvent(url='/'))]
 
 
 class SizeModel(BaseModel):
@@ -162,7 +162,7 @@ class BigModel(BaseModel):
         return v
 
 
-@router.post('/big')
-async def big_form_post(form: Annotated[BigModel, fastui_form(BigModel)]) -> FormResponse:
+@router.post('/big', response_model=FastUI, response_model_exclude_none=True)
+async def big_form_post(form: Annotated[BigModel, fastui_form(BigModel)]):
     # print(form)
-    return FormResponse(event=GoToEvent(url='/'))
+    return [c.Redirect(event=GoToEvent(url='/'))]

@@ -33,9 +33,10 @@ function pageEventType(event: PageEvent): string {
 }
 
 export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
-  const location = useContext(LocationContext)
+  const rawLocation = useContext(LocationContext)
+  const [location] = useState(rawLocation)
 
-  function fireEvent(event?: AnyEvent) {
+  function fireEventImpl(event?: AnyEvent) {
     if (!event) {
       return
     }
@@ -63,6 +64,8 @@ export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
         break
     }
   }
+
+  const fireEvent = useCallback(fireEventImpl, [location])
 
   return { fireEvent }
 }

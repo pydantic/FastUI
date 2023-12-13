@@ -1,7 +1,6 @@
 import { FC, FormEvent, useContext, useState, useRef, useCallback } from 'react'
 
 import { ClassName, useClassName } from '../hooks/className'
-import { useFireEvent, AnyEvent } from '../events'
 import { useRequest, RequestArgs } from '../tools'
 import { LocationContext } from '../hooks/locationContext'
 
@@ -30,11 +29,6 @@ export interface ModelFormProps extends BaseFormProps {
   type: 'ModelForm'
 }
 
-interface FormResponse {
-  type: 'FormResponse'
-  event: AnyEvent
-}
-
 export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
   const formRef = useRef<HTMLFormElement>(null)
   const { formFields, initial, submitUrl, method, footer, displayMode, submitOnChange } = props
@@ -43,7 +37,7 @@ export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
   const [locked, setLocked] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [error, setError] = useState<string | null>(null)
-  const { fireEvent } = useFireEvent()
+  const [responseComponentProps, setResponseComponentProps] = useState<FastProps[] | null>(null)
   const request = useRequest()
   const { goto } = useContext(LocationContext)
 
@@ -77,13 +71,9 @@ export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
 
       const [status, data] = await request(requestArgs)
       if (status === 200) {
-        if (data.type !== 'FormResponse') {
-          throw new Error(`Expected FormResponse, got ${JSON.stringify(data)}`)
-        }
-        const { event } = data as FormResponse
-        fireEvent(event)
+        setResponseComponentProps(data as FastProps[])
       } else {
-        // status === 422
+        console.assert(status === 422)
         const errorResponse = data as ErrorResponse
         const formErrors = errorResponse.detail.form
         if (formErrors) {
@@ -95,7 +85,7 @@ export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
       }
       setLocked(false)
     },
-    [goto, method, request, submitUrl, fireEvent],
+    [goto, method, request, submitUrl],
   )
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -126,15 +116,26 @@ export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
     return f
   })
 
-  return (
-    <div className={useClassName(props, { el: 'form-container' })}>
-      <form ref={formRef} className={useClassName(props)} onSubmit={onSubmit}>
-        <AnyCompList propsList={fieldProps} />
-        {error ? <div>Error: {error}</div> : null}
-        <Footer footer={footer} />
-      </form>
-    </div>
-  )
+  const containerClassName = useClassName(props, { el: 'form-container' })
+  const formClassName = useClassName(props)
+
+  if (responseComponentProps) {
+    return (
+      <div className={containerClassName}>
+        <AnyCompList propsList={responseComponentProps} />
+      </div>
+    )
+  } else {
+    return (
+      <div className={containerClassName}>
+        <form ref={formRef} className={formClassName} onSubmit={onSubmit}>
+          <AnyCompList propsList={fieldProps} />
+          {error ? <div>Error: {error}</div> : null}
+          <Footer footer={footer} />
+        </form>
+      </div>
+    )
+  }
 }
 
 const Footer: FC<{ footer?: boolean | FastProps[] }> = ({ footer }) => {
