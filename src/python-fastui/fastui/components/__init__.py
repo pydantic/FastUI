@@ -51,12 +51,12 @@ __all__ = (
 
 
 class Text(pydantic.BaseModel, extra='forbid'):
-    text: str
+    text: '_t.Union[str, _t.List[_t.Union[str, FormattedText, Link]]]'
     type: _t.Literal['Text'] = 'Text'
 
 
 class Paragraph(pydantic.BaseModel, extra='forbid'):
-    text: '_t.List[_t.Union[str, FormattedText, Link]]'
+    text: '_t.Union[str, _t.List[_t.Union[str, FormattedText, Link]]]'
     type: _t.Literal['Paragraph'] = 'Paragraph'
 
 
@@ -114,7 +114,7 @@ class Code(pydantic.BaseModel, extra='forbid'):
 
 
 class Button(pydantic.BaseModel, extra='forbid'):
-    text: '_t.List[_t.Union[str, FormattedText, Link]]'
+    text: '_t.Union[str, _t.List[_t.Union[str, FormattedText, Link]]]'
     on_click: _t.Union[events.AnyEvent, None] = pydantic.Field(default=None, serialization_alias='onClick')
     html_type: _t.Union[_t.Literal['button', 'submit', 'reset'], None] = pydantic.Field(
         default=None, serialization_alias='htmlType'
