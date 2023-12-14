@@ -26,7 +26,7 @@ At its heart, FastUI is a set of matching [Pydantic](https://docs.pydantic.dev) 
 FastUI is made up of 4 things:
 
 - [`fastui` PyPI package](https://pypi.python.org/pypi/fastui) — Pydantic models for UI components, and some utilities. While it works well with [FastAPI](https://fastapi.tiangolo.com) it doesn't depend on FastAPI, and most of it could be used with any python web framework.
-- [`@pydantic/fastui` npm package](https://www.npmjs.com/package/@pydantic/fastui) — a React TypeScript package that let's you reuse the machinery and types of FastUI while implementing your own components
+- [`@pydantic/fastui` npm package](https://www.npmjs.com/package/@pydantic/fastui) — a React TypeScript package that lets you reuse the machinery and types of FastUI while implementing your own components
 - [`@pydantic/fastui-bootstrap` npm package](https://www.npmjs.com/package/@pydantic/fastui-bootstrap) — implementation/customisation of all FastUI components using [Bootstrap](https://getbootstrap.com)
 - [`@pydantic/fastui-prebuilt` npm package](https://www.jsdelivr.com/package/npm/@pydantic/fastui-prebuilt) (available on [jsdelivr.com CDN](https://www.jsdelivr.com/package/npm/@pydantic/fastui-prebuilt)) providing a pre-built version of the FastUI React app so you can use it without installing any npm packages or building anything yourself. The Python package provides a simple HTML page to serve this app.
 
