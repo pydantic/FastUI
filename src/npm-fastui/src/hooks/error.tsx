@@ -20,7 +20,7 @@ interface ErrorContextType {
 const DefaultErrorDisplay: ErrorDisplayType = ({ title, description, children }) => (
   <>
     <div className="alert alert-danger m-3" role="alert">
-      <h2>{title}</h2>
+      <h4>{title}</h4>
       {description}
     </div>
     {children}
