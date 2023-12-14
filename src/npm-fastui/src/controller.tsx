@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from 'react'
+import { Toaster } from 'sonner'
 
 import { LocationContext } from './hooks/locationContext'
 import { ServerLoadFetch } from './components/ServerLoad'
@@ -24,5 +25,10 @@ export function FastUIController() {
     }
   }, [fullPath])
 
-  return <ServerLoadFetch path={path} devReload={reloadValue} />
+  return (
+    <>
+      <Toaster richColors />
+      <ServerLoadFetch path={path} devReload={reloadValue} />
+    </>
+  )
 }

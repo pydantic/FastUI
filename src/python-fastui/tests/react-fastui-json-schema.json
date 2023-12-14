@@ -31,6 +31,9 @@
             },
             {
               "$ref": "#/definitions/BackEvent"
+            },
+            {
+              "$ref": "#/definitions/ToastEvent"
             }
           ]
         },
@@ -169,6 +172,9 @@
             },
             {
               "$ref": "#/definitions/BackEvent"
+            },
+            {
+              "$ref": "#/definitions/ToastEvent"
             }
           ]
         },
@@ -238,6 +244,9 @@
             },
             {
               "$ref": "#/definitions/BackEvent"
+            },
+            {
+              "$ref": "#/definitions/ToastEvent"
             }
           ]
         },
@@ -827,6 +836,9 @@
             },
             {
               "$ref": "#/definitions/BackEvent"
+            },
+            {
+              "$ref": "#/definitions/ToastEvent"
             }
           ]
         },
@@ -949,6 +961,9 @@
             },
             {
               "$ref": "#/definitions/BackEvent"
+            },
+            {
+              "$ref": "#/definitions/ToastEvent"
             }
           ]
         },
@@ -1089,6 +1104,9 @@
             },
             {
               "$ref": "#/definitions/BackEvent"
+            },
+            {
+              "$ref": "#/definitions/ToastEvent"
             }
           ]
         },
@@ -1308,6 +1326,35 @@
         }
       },
       "required": ["text", "type"],
+      "type": "object"
+    },
+    "ToastEvent": {
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "dismissible": {
+          "type": "boolean"
+        },
+        "duration": {
+          "type": "number"
+        },
+        "invert": {
+          "type": "boolean"
+        },
+        "position": {
+          "enum": ["bottom-center", "bottom-left", "bottom-right", "top-center", "top-left", "top-right"],
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "const": "toast",
+          "type": "string"
+        }
+      },
+      "required": ["title", "type"],
       "type": "object"
     }
   }

@@ -25,4 +25,17 @@ class BackEvent(BaseModel):
     type: Literal['back'] = 'back'
 
 
-AnyEvent = Annotated[Union[PageEvent, GoToEvent, BackEvent], Field(discriminator='type')]
+class ToastEvent(BaseModel):
+    type: Literal['toast'] = 'toast'
+    title: str
+    # variant: Union[Literal['normal', 'action', 'success', 'info', 'warning', 'error', 'loading'], None] = None
+    invert: Union[bool, None] = None
+    dismissible: Union[bool, None] = None
+    description: Union[str, None] = None
+    duration: Union[int, None] = None
+    position: Union[
+        Literal['top-left', 'top-right', 'bottom-left', 'bottom-right', 'top-center', 'bottom-center'], None
+    ] = None
+
+
+AnyEvent = Annotated[Union[PageEvent, GoToEvent, BackEvent, ToastEvent], Field(discriminator='type')]

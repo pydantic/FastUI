@@ -8,7 +8,7 @@ from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from fastui import AnyComponent, FastUI
 from fastui import components as c
-from fastui.events import GoToEvent, PageEvent
+from fastui.events import GoToEvent, PageEvent, ToastEvent
 
 from .shared import demo_page
 
@@ -195,6 +195,11 @@ The statement spoken by the famous cow is provided by the backend."""),
                 c.Custom(data='This is a custom component', sub_type='cowsay'),
             ],
             class_name='border-top mt-3 pt-1',
+        ),
+        c.Div(
+            components=[
+                c.Button(text='Show toast', on_click=ToastEvent(title='This is a toast', description='Hello toast!')),
+            ]
         ),
         title='Components',
     )

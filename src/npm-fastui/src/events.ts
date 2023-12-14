@@ -1,4 +1,5 @@
 import { useContext, useState, useEffect, useCallback } from 'react'
+import { toast } from 'sonner'
 
 import { LocationContext } from './hooks/locationContext'
 import { ContextType } from './hooks/eventContext'
@@ -21,7 +22,18 @@ export interface BackEvent {
   type: 'back'
 }
 
-export type AnyEvent = PageEvent | GoToEvent | BackEvent
+export interface ToastEvent {
+  type: 'toast'
+  title: string
+  // variant?: 'normal' | 'action' | 'success' | 'info' | 'warning' | 'error' | 'loading'
+  invert?: boolean
+  dismissible?: boolean
+  description?: string
+  duration?: number
+  position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'top-center' | 'bottom-center'
+}
+
+export type AnyEvent = PageEvent | GoToEvent | BackEvent | ToastEvent
 
 export interface PageEventDetail {
   clear: boolean
@@ -60,6 +72,11 @@ export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
         break
       case 'back':
         location.back()
+        break
+      case 'toast':
+        toast(event.title, {
+          ...event,
+        })
         break
     }
   }
