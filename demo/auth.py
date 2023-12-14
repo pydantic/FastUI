@@ -90,7 +90,7 @@ async def profile(user: Annotated[User | None, Depends(get_user)]) -> list[AnyCo
 @router.post('/logout', response_model=FastUI, response_model_exclude_none=True)
 async def logout_form_post(user: Annotated[User | None, Depends(get_user)]) -> list[AnyComponent]:
     if user is not None:
-        await user_db.save_user(user)
+        await user_db.delete_user(user)
     return [c.FireEvent(event=AuthEvent(token=False, url='/auth/login'))]
 
 
@@ -118,6 +118,9 @@ class UserDatabase:
         return op_user
 
     async def save_user(self, user: User) -> None:
+        for k, v in list(self._users.items()):
+            if v.email == user.email:
+                del self._users[k]
         self._users[user.token] = user
         self._sync()
 
@@ -126,15 +129,15 @@ class UserDatabase:
         self._sync()
 
     async def count(self):
+        self._sync()
         return len(self._users)
 
     def _sync(self) -> None:
         # keep only the most recently active 1000 users
-        if len(self._users) > 1000:
-            active = datetime.now() - timedelta(minutes=30)
-            users = [u for u in self._users.values() if u.last_active > active]
-            users.sort(key=lambda u: u.last_active, reverse=True)
-            self._users = {u.token: u for u in users[:1000]}
+        active = datetime.now() - timedelta(minutes=30)
+        users = [u for u in self._users.values() if u.last_active > active]
+        users.sort(key=lambda u: u.last_active, reverse=True)
+        self._users = {u.token: u for u in users[:1000]}
 
         # save
         self._file.write_bytes(self._ta.dump_json(list(self._users.values()), indent=2))
