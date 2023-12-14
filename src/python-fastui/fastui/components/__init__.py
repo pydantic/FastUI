@@ -169,9 +169,9 @@ class Navbar(_p.BaseModel, extra='forbid'):
     type: _t.Literal['Navbar'] = 'Navbar'
 
 
-class Footer(pydantic.BaseModel, extra='forbid'):
-    extra_text: _t.Union[str, None] = pydantic.Field(default=None, serialization_alias='extraText')
-    links: _t.List[Link] = pydantic.Field()
+class Footer(_p.BaseModel, extra='forbid'):
+    extra_text: _t.Union[str, None] = _p.Field(default=None, serialization_alias='extraText')
+    links: _t.List[Link] = _p.Field()
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['Footer'] = 'Footer'
 
