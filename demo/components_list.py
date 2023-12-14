@@ -198,7 +198,14 @@ The statement spoken by the famous cow is provided by the backend."""),
         ),
         c.Div(
             components=[
-                c.Button(text='Show toast', on_click=ToastEvent(title='This is a toast', description='Hello toast!')),
+                c.Button(
+                    text='Show toast',
+                    on_click=ToastEvent(
+                        title='This is a toast',
+                        description='Hello toast!',
+                        variant='success'
+                    )
+                ),
             ]
         ),
         title='Components',

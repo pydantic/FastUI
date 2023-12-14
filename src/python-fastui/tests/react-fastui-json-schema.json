@@ -1352,6 +1352,10 @@
         "type": {
           "const": "toast",
           "type": "string"
+        },
+        "variant": {
+          "enum": ["error", "info", "normal", "success", "warning"],
+          "type": "string"
         }
       },
       "required": ["title", "type"],

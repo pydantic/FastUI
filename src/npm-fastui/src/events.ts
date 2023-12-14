@@ -25,7 +25,7 @@ export interface BackEvent {
 export interface ToastEvent {
   type: 'toast'
   title: string
-  // variant?: 'normal' | 'action' | 'success' | 'info' | 'warning' | 'error' | 'loading'
+  variant?: 'normal' | 'success' | 'info' | 'warning' | 'error'
   invert?: boolean
   dismissible?: boolean
   description?: string
@@ -74,9 +74,32 @@ export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
         location.back()
         break
       case 'toast':
-        toast(event.title, {
-          ...event,
-        })
+        switch (event.variant) {
+          case 'success':
+            toast.success(event.title, {
+              ...event,
+            })
+            break
+          case 'info':
+            toast.info(event.title, {
+              ...event,
+            })
+            break
+          case 'warning':
+            toast.warning(event.title, {
+              ...event,
+            })
+            break
+          case 'error':
+            toast.error(event.title, {
+              ...event,
+            })
+            break
+          default:
+            toast(event.title, {
+              ...event,
+            })
+        }
         break
     }
   }
