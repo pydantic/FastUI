@@ -34,9 +34,9 @@ const ServerLoadDefer: FC<{ path: string; components: FastProps[]; loadTrigger?:
   loadTrigger,
   sse,
 }) => {
-  const { eventContext } = usePageEventListen(loadTrigger)
+  const { eventContext, fireId } = usePageEventListen(loadTrigger)
 
-  if (eventContext) {
+  if (fireId) {
     return (
       <EventContextProvider context={eventContext}>
         {sse ? <ServerLoadSSE path={path} /> : <ServerLoadFetch path={path} />}

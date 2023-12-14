@@ -5,11 +5,11 @@ import BootstrapModal from 'react-bootstrap/Modal'
 export const Modal: FC<components.ModalProps> = (props) => {
   const { className, title, body, footer, openTrigger, openContext } = props
 
-  const { eventContext, clear } = events.usePageEventListen(openTrigger, openContext)
+  const { eventContext, fireId, clear } = events.usePageEventListen(openTrigger, openContext)
 
   return (
     <EventContextProvider context={eventContext}>
-      <BootstrapModal className={renderClassName(className)} show={!!eventContext} onHide={clear}>
+      <BootstrapModal className={renderClassName(className)} show={!!fireId} onHide={clear}>
         <BootstrapModal.Header closeButton>
           <BootstrapModal.Title>{title}</BootstrapModal.Title>
         </BootstrapModal.Header>

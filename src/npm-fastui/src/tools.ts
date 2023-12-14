@@ -97,12 +97,10 @@ async function request({
   }
 
   const authToken = sessionStorage.getItem(AUTH_TOKEN_KEY)
-  console.log('got auth token', authToken)
   if (authToken) {
     // we use a custom auth-schema as well-known values like `Basic` and `Bearer` are not correct here
     init.headers.set('Authorization', `Token ${authToken}`)
   }
-  console.log('headers:', Object.fromEntries(init.headers))
 
   if (method) {
     init.method = method

@@ -33,3 +33,4 @@ __pycache__/
 /scratch/
 /packages-dist/
 /.coverage
+/users.json

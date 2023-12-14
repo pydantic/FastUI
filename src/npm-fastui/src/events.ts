@@ -97,34 +97,45 @@ export function fireLoadEvent(detail: LoadEventDetail) {
   document.dispatchEvent(new CustomEvent(loadEvent, { detail }))
 }
 
-export function usePageEventListen(
-  event?: PageEvent,
-  initialContext: ContextType | null = null,
-): { eventContext: ContextType | null; clear: () => void } {
-  const [eventContext, setEventContext] = useState<ContextType | null>(initialContext)
+interface EventDetails {
+  eventContext: ContextType | null
+  fireId: string | null
+  clear: () => void
+}
 
-  const onEvent = useCallback((e: Event) => {
-    const { context, clear } = (e as CustomEvent<PageEventDetail>).detail
-    if (clear) {
-      setEventContext(null)
-    } else {
-      setEventContext(context ?? {})
-    }
-  }, [])
+export function usePageEventListen(event?: PageEvent, initialContext: ContextType | null = null): EventDetails {
+  const [eventContext, setEventContext] = useState<ContextType | null>(initialContext)
+  const [fireId, setFireId] = useState<string | null>(null)
+
+  const eventType = event && pageEventType(event)
 
   useEffect(() => {
-    if (!event) {
+    if (!eventType) {
+      setEventContext(null)
+      setFireId(null)
       return
     }
 
-    const eventType = pageEventType(event)
+    const onEvent = (e: Event) => {
+      console.log('event:', e)
+      const event = e as CustomEvent<PageEventDetail>
+      const { context, clear } = event.detail
+      if (clear) {
+        setEventContext(null)
+        setFireId(null)
+      } else {
+        setEventContext(context || {})
+        setFireId(`${event.type}:${event.timeStamp}`)
+      }
+    }
 
     document.addEventListener(eventType, onEvent)
     return () => document.removeEventListener(eventType, onEvent)
-  }, [event, onEvent])
+  }, [eventType])
 
   return {
     eventContext,
+    fireId,
     clear: useCallback(() => setEventContext(null), []),
   }
 }

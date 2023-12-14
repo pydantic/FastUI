@@ -41,7 +41,10 @@ export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
   const [error, setError] = useState<string | null>(null)
   const [responseComponentProps, setResponseComponentProps] = useState<FastProps[] | null>(null)
 
-  const { eventContext } = usePageEventListen(submitTrigger)
+  // if form fields change or the submit url changes, clear the response
+  useEffect(() => {
+    setResponseComponentProps(null)
+  }, [formFields, submitUrl])
 
   const request = useRequest()
   const { goto } = useContext(LocationContext)
@@ -106,14 +109,14 @@ export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
     }
   }, [submitOnChange, submit])
 
-  const submitEvent = !!eventContext
+  const { fireId } = usePageEventListen(submitTrigger)
 
   useEffect(() => {
-    if (submitEvent && formRef.current) {
+    if (fireId && formRef.current) {
       const formData = new FormData(formRef.current)
       submit(formData)
     }
-  }, [submitEvent, submit])
+  }, [fireId, submit])
 
   const fieldProps: FormFieldProps[] = formFields.map((formField) => {
     const f = {

@@ -2,7 +2,7 @@ from __future__ import annotations as _annotations
 
 import secrets
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Annotated
 
@@ -69,12 +69,13 @@ async def login_form_post(form: Annotated[LoginForm, fastui_form(LoginForm)]) ->
 
 
 @router.get('/profile', response_model=FastUI, response_model_exclude_none=True)
-def profile(user: Annotated[User | None, Depends(get_user)]) -> list[AnyComponent]:
+async def profile(user: Annotated[User | None, Depends(get_user)]) -> list[AnyComponent]:
     if user is None:
         return [c.FireEvent(event=GoToEvent(url='/auth/login'))]
     else:
+        active_count = await user_db.count()
         return demo_page(
-            c.Paragraph(text=f'You are logged in as "{user.email}".'),
+            c.Paragraph(text=f'You are logged in as "{user.email}", {active_count} active users right now.'),
             c.Button(text='Logout', on_click=PageEvent(name='submit-form')),
             c.Form(
                 submit_url='/api/auth/logout',
@@ -124,11 +125,16 @@ class UserDatabase:
         self._users.pop(user.token)
         self._sync()
 
+    async def count(self):
+        return len(self._users)
+
     def _sync(self) -> None:
         # keep only the most recently active 1000 users
         if len(self._users) > 1000:
-            users = sorted(self._users.values(), key=lambda u: u.last_active, reverse=True)[:1000]
-            self._users = {u.token: u for u in users}
+            active = datetime.now() - timedelta(minutes=30)
+            users = [u for u in self._users.values() if u.last_active > active]
+            users.sort(key=lambda u: u.last_active, reverse=True)
+            self._users = {u.token: u for u in users[:1000]}
 
         # save
         self._file.write_bytes(self._ta.dump_json(list(self._users.values()), indent=2))
