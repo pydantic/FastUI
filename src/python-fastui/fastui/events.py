@@ -28,7 +28,7 @@ class BackEvent(BaseModel):
 class ToastEvent(BaseModel):
     type: Literal['toast'] = 'toast'
     title: str
-    variant: Union[Literal['normal', 'action', 'success', 'info', 'warning', 'error', 'loading'], None] = None
+    variant: Union[Literal['normal', 'success', 'info', 'warning', 'error'], None] = None
     invert: Union[bool, None] = None
     dismissible: Union[bool, None] = None
     description: Union[str, None] = None
