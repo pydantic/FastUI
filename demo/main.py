@@ -35,6 +35,7 @@ The following components are demonstrated:
 * `Table` — See [cities table](/table/cities) and [users table](/table/users)
 * `Pagination` — See the bottom of the [cities table](/table/cities)
 * `ModelForm` — See [forms](/forms/login)
+* `Toast` - See [toast](/components#toast)
 """
     return demo_page(c.Markdown(text=markdown))
 

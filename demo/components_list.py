@@ -198,6 +198,9 @@ The statement spoken by the famous cow is provided by the backend."""),
         ),
         c.Div(
             components=[
+                c.Heading(text='Toast', level=2),
+                c.Markdown(text="""\
+The toast component is a lightweight notification that appears briefly to convey important information."""),
                 c.Button(
                     text='Show toast',
                     on_click=ToastEvent(
@@ -206,7 +209,8 @@ The statement spoken by the famous cow is provided by the backend."""),
                         variant='success'
                     )
                 ),
-            ]
+            ],
+            class_name='border-top mt-3 pt-1',
         ),
         title='Components',
     )
