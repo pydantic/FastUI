@@ -110,7 +110,7 @@ class LoginForm(BaseModel):
 
 @router.post('/login', response_model=FastUI, response_model_exclude_none=True)
 async def login_form_post(form: Annotated[LoginForm, fastui_form(LoginForm)]):
-    # print(form)
+    print(form)
     return [c.FireEvent(event=GoToEvent(url='/'))]
 
 
@@ -164,5 +164,5 @@ class BigModel(BaseModel):
 
 @router.post('/big', response_model=FastUI, response_model_exclude_none=True)
 async def big_form_post(form: Annotated[BigModel, fastui_form(BigModel)]):
-    # print(form)
+    print(form)
     return [c.FireEvent(event=GoToEvent(url='/'))]
