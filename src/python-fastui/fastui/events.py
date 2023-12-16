@@ -29,19 +29,21 @@ class ToastEvent(BaseModel):
     type: Literal['toast'] = 'toast'
     title: str = Field(..., description='Title of the toast.')
     variant: Union[Literal['normal', 'success', 'info', 'warning', 'error'], None] = Field(
-        None, description='Variant of the toast.'
+        default=None, description='Variant of the toast.'
     )
-    invert: Union[bool, None] = Field(None, description='Dark toast in light mode and vice versa.')
+    invert: Union[bool, None] = Field(default=None, description='Dark toast in light mode and vice versa.')
     dismissible: Union[bool, None] = Field(
-        None, description="If false, it'll prevent the user from dismissing the toast."
+        default=None, description="If false, it'll prevent the user from dismissing the toast."
     )
-    description: Union[str, None] = Field(None, description="Toast's description, renders underneath the title.")
+    description: Union[str, None] = Field(
+        default=None, description="Toast's description, renders underneath the title."
+    )
     duration: Union[int, None] = Field(
-        None, description='Time in milliseconds that should elapse before automatically closing the toast.'
+        default=None, description='Time in milliseconds that should elapse before automatically closing the toast.'
     )
     position: Union[
         Literal['top-left', 'top-right', 'bottom-left', 'bottom-right', 'top-center', 'bottom-center'], None
-    ] = Field(None, description='Position of the toast.')
+    ] = Field(default=None, description='Position of the toast.')
 
 
 AnyEvent = Annotated[Union[PageEvent, GoToEvent, BackEvent, ToastEvent], Field(discriminator='type')]
