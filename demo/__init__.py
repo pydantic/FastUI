@@ -11,6 +11,7 @@ from httpx import AsyncClient
 
 from .auth import router as auth_router
 from .components_list import router as components_router
+from .db import create_db
 from .forms import router as forms_router
 from .main import router as main_router
 from .tables import router as table_router
@@ -18,6 +19,7 @@ from .tables import router as table_router
 
 @asynccontextmanager
 async def lifespan(app_: FastAPI):
+    await create_db()
     async with AsyncClient() as client:
         app_.state.httpx_client = client
         yield
