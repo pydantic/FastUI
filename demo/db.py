@@ -22,13 +22,11 @@ async def get_user(token: str) -> User | None:
             return User(*rs.rows[0])
 
 
-async def save_user(email: str) -> str:
+async def create_user(email: str) -> str:
     async with _connect() as conn:
+        await _delete_old_users(conn)
         token = secrets.token_hex()
-        await conn.execute(
-            'insert into users (token, email) values (?, ?)',
-            (token, email),
-        )
+        await conn.execute('insert into users (token, email) values (?, ?)', (token, email))
         return token
 
 
@@ -39,8 +37,8 @@ async def delete_user(user: User) -> None:
 
 async def count_users() -> int:
     async with _connect() as conn:
-        sql = "select count(*) from users where last_active > datetime(current_timestamp, '-1 hour')"
-        rs = await conn.execute(sql)
+        await _delete_old_users(conn)
+        rs = await conn.execute('select count(*) from users')
         return rs.rows[0][0]
 
 
@@ -58,6 +56,10 @@ create table if not exists users (
     last_active timestamp not null default current_timestamp
 );
 """
+
+
+async def _delete_old_users(conn: libsql_client.Client) -> None:
+    await conn.execute('delete from users where last_active < datetime(current_timestamp, "-1 hour")')
 
 
 @asynccontextmanager

@@ -53,7 +53,7 @@ class LoginForm(BaseModel):
 
 @router.post('/login', response_model=FastUI, response_model_exclude_none=True)
 async def login_form_post(form: Annotated[LoginForm, fastui_form(LoginForm)]) -> list[AnyComponent]:
-    token = await db.save_user(form.email)
+    token = await db.create_user(form.email)
     return [c.FireEvent(event=AuthEvent(token=token, url='/auth/profile'))]
 
 
