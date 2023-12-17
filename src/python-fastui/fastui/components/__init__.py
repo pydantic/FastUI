@@ -236,6 +236,7 @@ class Video(_p.BaseModel, extra='forbid'):
     type: _t.Literal['Video'] = 'Video'
     class_name: _class_name.ClassNameField = None
 
+
 class FireEvent(_p.BaseModel, extra='forbid'):
     event: events.AnyEvent
     message: _t.Union[str, None] = None  # defaults to blank
