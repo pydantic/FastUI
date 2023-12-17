@@ -10,26 +10,26 @@ from starlette.responses import StreamingResponse
 router = APIRouter()
 
 
-async def ai_response_generator() -> AsyncIterable[str]:
+async def canned_ai_response_generator() -> AsyncIterable[str]:
     prompt = '**User:** What is SSE? Please include a javascript code example.\n\n**AI:** '
     output = ''
-    for time, text in chain([(1.0, prompt)], CANNED_RESPONSE):
+    msg = ''
+    for time, text in chain([(0.5, prompt)], CANNED_RESPONSE):
+        await asyncio.sleep(time)
         output += text
         m = FastUI(root=[c.Markdown(text=output)])
-        yield f'data: {m.model_dump_json(by_alias=True, exclude_none=True)}\n\n'
-        await asyncio.sleep(time)
+        msg = f'data: {m.model_dump_json(by_alias=True, exclude_none=True)}\n\n'
+        yield msg
 
     # avoid the browser reconnecting
-    m = FastUI(root=[c.Markdown(text=output)])
-    final_response = f'data: {m.model_dump_json(by_alias=True, exclude_none=True)}\n\n'
     while True:
-        yield final_response
+        yield msg
         await asyncio.sleep(10)
 
 
 @router.get('/sse')
 async def sse_ai_response() -> StreamingResponse:
-    return StreamingResponse(ai_response_generator(), media_type='text/event-stream')
+    return StreamingResponse(canned_ai_response_generator(), media_type='text/event-stream')
 
 
 async def run_openai():
@@ -71,7 +71,7 @@ if __name__ == '__main__':
 
 
 CANNED_RESPONSE: list[tuple[float, str]] = [
-    (0, ''),
+    (0.00000, ''),
     (0.07685, 'Server'),
     (0.00111, '-S'),
     (0.00081, 'ent'),
