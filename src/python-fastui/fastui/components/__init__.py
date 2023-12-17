@@ -44,6 +44,7 @@ __all__ = (
     'ServerLoad',
     'Image',
     'Iframe',
+    'FireEvent',
     'Custom',
     'Table',
     'Pagination',
@@ -236,6 +237,12 @@ class Video(_p.BaseModel, extra='forbid'):
     class_name: _class_name.ClassNameField = None
 
 
+class FireEvent(_p.BaseModel, extra='forbid'):
+    event: events.AnyEvent
+    message: _t.Union[str, None] = None  # defaults to blank
+    type: _t.Literal['FireEvent'] = 'FireEvent'
+
+
 class Custom(_p.BaseModel, extra='forbid'):
     data: json_schema.JsonData
     sub_type: str = _p.Field(serialization_alias='subType')
@@ -264,6 +271,7 @@ AnyComponent = _te.Annotated[
         Image,
         Iframe,
         Video,
+        FireEvent,
         Custom,
         Table,
         Pagination,

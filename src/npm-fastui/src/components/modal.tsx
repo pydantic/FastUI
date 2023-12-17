@@ -19,17 +19,16 @@ export interface ModalProps {
 export const ModalComp: FC<ModalProps> = (props) => {
   const { title, openTrigger, openContext } = props
 
-  const { eventContext, clear } = usePageEventListen(openTrigger, openContext)
-  const open = !!eventContext
+  const { fireId, clear } = usePageEventListen(openTrigger, openContext)
 
   useEffect(() => {
-    if (open) {
+    if (fireId) {
       setTimeout(() => {
         alert(`${title}\n\nNote: modals are not implemented by pure FastUI, implement a component for 'ModalProps'.`)
         clear()
       })
     }
-  }, [open, title, clear])
+  }, [fireId, title, clear])
 
   return <></>
 }

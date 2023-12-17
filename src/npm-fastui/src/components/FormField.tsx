@@ -28,7 +28,7 @@ export type FormFieldProps =
 
 interface FormFieldInputProps extends BaseFormFieldProps {
   type: 'FormFieldInput'
-  htmlType: 'text' | 'date' | 'datetime-local' | 'time' | 'email' | 'url' | 'number' | 'password'
+  htmlType: 'text' | 'date' | 'datetime-local' | 'time' | 'email' | 'url' | 'number' | 'password' | 'hidden'
   initial?: string | number
   placeholder?: string
 }

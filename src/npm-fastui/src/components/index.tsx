@@ -41,6 +41,7 @@ import { ServerLoadComp, ServerLoadProps } from './ServerLoad'
 import { ImageComp, ImageProps } from './image'
 import { IframeComp, IframeProps } from './Iframe'
 import { VideoComp, VideoProps } from './video'
+import { FireEventComp, FireEventProps } from './FireEvent'
 import { CustomComp, CustomProps } from './Custom'
 
 export type {
@@ -70,6 +71,7 @@ export type {
   ImageProps,
   IframeProps,
   VideoProps,
+  FireEventProps,
   CustomProps,
 }
 
@@ -102,6 +104,7 @@ export type FastProps =
   | ImageProps
   | IframeProps
   | VideoProps
+  | FireEventProps
   | CustomProps
 
 export type FastClassNameProps = Exclude<FastProps, TextProps | AllDisplayProps | ServerLoadProps | PageTitleProps>
@@ -187,6 +190,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <IframeComp {...props} />
       case 'Video':
         return <VideoComp {...props} />
+      case 'FireEvent':
+        return <FireEventComp {...props} />
       case 'Custom':
         return <CustomComp {...props} />
       default:

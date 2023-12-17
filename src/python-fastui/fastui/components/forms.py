@@ -5,14 +5,12 @@ import pydantic
 import typing_extensions as _te
 
 from .. import class_name as _class_name
-from .. import forms
+from .. import events, forms
 
 if _t.TYPE_CHECKING:
     from . import AnyComponent
 
-# # alphabetical order matches typescript-json-schema
-# InputHtmlType = _t.Literal['date', 'datetime-local', 'email', 'number', 'password', 'text', 'time', 'url']
-InputHtmlType = _t.Literal['text', 'date', 'datetime-local', 'time', 'email', 'url', 'number', 'password']
+InputHtmlType = _t.Literal['text', 'date', 'datetime-local', 'time', 'email', 'url', 'number', 'password', 'hidden']
 
 
 class BaseFormField(pydantic.BaseModel, ABC, defer_build=True):
@@ -77,13 +75,14 @@ class BaseForm(pydantic.BaseModel, ABC, defer_build=True, extra='forbid'):
         default=None, serialization_alias='displayMode'
     )
     submit_on_change: _t.Union[bool, None] = pydantic.Field(default=None, serialization_alias='submitOnChange')
-    footer: '_t.Union[_t.List[AnyComponent], bool, None]' = None
+    submit_trigger: _t.Union[events.PageEvent, None] = pydantic.Field(default=None, serialization_alias='submitTrigger')
+    footer: '_t.Union[_t.List[AnyComponent], None]' = None
     class_name: _class_name.ClassNameField = None
 
     @pydantic.model_validator(mode='after')
     def default_footer(self) -> _te.Self:
         if self.footer is None and self.display_mode == 'inline':
-            self.footer = False
+            self.footer = []
         return self
 
 

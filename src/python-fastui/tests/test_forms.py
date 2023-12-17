@@ -58,6 +58,37 @@ def test_simple_form_fields():
     }
 
 
+def test_inline_form_fields():
+    m = components.ModelForm[SimpleForm](submit_url='/foobar/', display_mode='inline')
+
+    assert m.model_dump(by_alias=True, exclude_none=True) == {
+        'submitUrl': '/foobar/',
+        'method': 'POST',
+        'type': 'ModelForm',
+        'displayMode': 'inline',
+        'footer': [],
+        'formFields': [
+            {
+                'name': 'name',
+                'title': ['Name'],
+                'required': True,
+                'locked': False,
+                'htmlType': 'text',
+                'type': 'FormFieldInput',
+            },
+            {
+                'name': 'size',
+                'title': ['Size'],
+                'initial': 4,
+                'required': False,
+                'locked': False,
+                'htmlType': 'number',
+                'type': 'FormFieldInput',
+            },
+        ],
+    }
+
+
 async def test_simple_form_submit():
     form_dep = fastui_form(SimpleForm)
 

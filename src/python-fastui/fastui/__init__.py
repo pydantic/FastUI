@@ -15,6 +15,13 @@ class FastUI(pydantic.RootModel):
 
     root: _t.List[AnyComponent]
 
+    @pydantic.field_validator('root', mode='before')
+    def coerce_to_list(cls, v):
+        if isinstance(v, list):
+            return v
+        else:
+            return [v]
+
 
 _PREBUILT_VERSION = '0.0.12'
 _PREBUILT_CDN_URL = f'https://cdn.jsdelivr.net/npm/@pydantic/fastui-prebuilt@{_PREBUILT_VERSION}/dist/assets'
