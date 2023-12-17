@@ -170,8 +170,8 @@ class Navbar(_p.BaseModel, extra='forbid'):
 
 
 class Footer(_p.BaseModel, extra='forbid'):
+    links: _t.List[Link]
     extra_text: _t.Union[str, None] = _p.Field(default=None, serialization_alias='extraText')
-    links: _t.List[Link] = _p.Field()
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['Footer'] = 'Footer'
 
