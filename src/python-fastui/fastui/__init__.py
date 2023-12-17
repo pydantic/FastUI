@@ -23,7 +23,7 @@ class FastUI(pydantic.RootModel):
             return [v]
 
 
-_PREBUILT_VERSION = '0.0.12'
+_PREBUILT_VERSION = '0.0.13'
 _PREBUILT_CDN_URL = f'https://cdn.jsdelivr.net/npm/@pydantic/fastui-prebuilt@{_PREBUILT_VERSION}/dist/assets'
 
 
