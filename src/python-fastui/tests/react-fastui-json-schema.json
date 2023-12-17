@@ -370,6 +370,9 @@
           "$ref": "#/definitions/IframeProps"
         },
         {
+          "$ref": "#/definitions/VideoProps"
+        },
+        {
           "$ref": "#/definitions/CustomProps"
         }
       ]
@@ -1308,6 +1311,50 @@
         }
       },
       "required": ["text", "type"],
+      "type": "object"
+    },
+    "VideoProps": {
+      "properties": {
+        "autoplay": {
+          "type": "boolean"
+        },
+        "className": {
+          "$ref": "#/definitions/ClassName"
+        },
+        "controls": {
+          "type": "boolean"
+        },
+        "height": {
+          "type": ["string", "integer"]
+        },
+        "loop": {
+          "type": "boolean"
+        },
+        "muted": {
+          "type": "boolean"
+        },
+        "poster": {
+          "format": "uri",
+          "minLength": 1,
+          "type": "string"
+        },
+        "sources": {
+          "items": {
+            "format": "uri",
+            "minLength": 1,
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "type": {
+          "const": "Video",
+          "type": "string"
+        },
+        "width": {
+          "type": ["string", "integer"]
+        }
+      },
+      "required": ["sources", "type"],
       "type": "object"
     }
   }

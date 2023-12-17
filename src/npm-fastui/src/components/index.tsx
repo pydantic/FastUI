@@ -40,6 +40,7 @@ import { JsonComp, JsonProps } from './Json'
 import { ServerLoadComp, ServerLoadProps } from './ServerLoad'
 import { ImageComp, ImageProps } from './image'
 import { IframeComp, IframeProps } from './Iframe'
+import { VideoComp, VideoProps } from './video'
 import { CustomComp, CustomProps } from './Custom'
 
 export type {
@@ -68,6 +69,7 @@ export type {
   ServerLoadProps,
   ImageProps,
   IframeProps,
+  VideoProps,
   CustomProps,
 }
 
@@ -99,6 +101,7 @@ export type FastProps =
   | ServerLoadProps
   | ImageProps
   | IframeProps
+  | VideoProps
   | CustomProps
 
 export type FastClassNameProps = Exclude<FastProps, TextProps | AllDisplayProps | ServerLoadProps | PageTitleProps>
@@ -182,6 +185,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <ImageComp {...props} />
       case 'Iframe':
         return <IframeComp {...props} />
+      case 'Video':
+        return <VideoComp {...props} />
       case 'Custom':
         return <CustomComp {...props} />
       default:

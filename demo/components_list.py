@@ -186,6 +186,19 @@ print(m.dimensions)
         ),
         c.Div(
             components=[
+                c.Heading(text='Video', level=2),
+                c.Paragraph(text='A video component.'),
+                c.Video(
+                    sources=['https://www.w3schools.com/html/mov_bbb.mp4'],
+                    autoplay=False,
+                    controls=True,
+                    loop=False,
+                ),
+            ],
+            class_name='border-top mt-3 pt-1',
+        ),
+        c.Div(
+            components=[
                 c.Heading(text='Custom', level=2),
                 c.Markdown(text="""\
 Below is a custom component, in this case it implements [cowsay](https://en.wikipedia.org/wiki/Cowsay),
