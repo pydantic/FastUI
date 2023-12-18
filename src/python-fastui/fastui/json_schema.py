@@ -68,7 +68,7 @@ class JsonSchemaStringSearch(JsonSchemaBase, total=False):
 
 class JsonSchemaFile(JsonSchemaBase, total=False):
     type: _ta.Required[_t.Literal['string']]
-    format: _ta.Required[_t.Literal['binary']]
+    format: _ta.Required[_t.Literal['data-url']]
     accept: str
 
 
@@ -214,7 +214,7 @@ def special_string_field(
     schema: JsonSchemaConcrete, name: str, title: _t.List[str], required: bool, multiple: bool
 ) -> _t.Union[FormField, None]:
     if schema['type'] == 'string':
-        if schema.get('format') == 'binary':
+        if schema.get('format') == 'data-url':
             return FormFieldFile(
                 name=name,
                 title=title,
@@ -315,6 +315,8 @@ type_lookup: _t.Dict[str, InputHtmlType] = {
     'string-uri': 'url',
     'string-uuid': 'text',
     'string-password': 'password',
+    'string-binary': 'text',
+    'string-base64': 'text',
     'number': 'number',
     'integer': 'number',
 }
