@@ -14,7 +14,8 @@ from typing_extensions import Annotated
 class SimpleForm(BaseModel):
     name: str
     size: int = 4
-    base64: Base64Str = 'ZmFzdHVp'
+    bytes_: bytes = b'fastui'
+    base64: Base64Str = 'fastui'
 
 
 class FakeRequest:
@@ -56,9 +57,18 @@ def test_simple_form_fields():
                 'type': 'FormFieldInput',
             },
             {
+                'name': 'bytes_',
+                'title': ['Bytes '],
+                'initial': 'fastui',
+                'required': False,
+                'locked': False,
+                'htmlType': 'text',
+                'type': 'FormFieldInput',
+            },
+            {
                 'name': 'base64',
                 'title': ['Base64'],
-                'initial': 'ZmFzdHVp',
+                'initial': 'fastui',
                 'required': False,
                 'locked': False,
                 'htmlType': 'text',
@@ -96,9 +106,18 @@ def test_inline_form_fields():
                 'type': 'FormFieldInput',
             },
             {
+                'name': 'bytes_',
+                'title': ['Bytes '],
+                'initial': 'fastui',
+                'required': False,
+                'locked': False,
+                'htmlType': 'text',
+                'type': 'FormFieldInput',
+            },
+            {
                 'name': 'base64',
                 'title': ['Base64'],
-                'initial': 'ZmFzdHVp',
+                'initial': 'fastui',
                 'required': False,
                 'locked': False,
                 'htmlType': 'text',
@@ -111,11 +130,11 @@ def test_inline_form_fields():
 async def test_simple_form_submit():
     form_dep = fastui_form(SimpleForm)
 
-    request = FakeRequest([('name', 'bar'), ('size', '123'), ('base64', 'ZmFzdHVp')])
+    request = FakeRequest([('name', 'bar'), ('size', '123')])
 
     m = await form_dep.dependency(request)
     assert isinstance(m, SimpleForm)
-    assert m.model_dump() == {'name': 'bar', 'size': 123, 'base64': 'ZmFzdHVp\n'}
+    assert m.model_dump() == {'name': 'bar', 'size': 123, 'bytes_': b'fastui', 'base64': 'ZmFzdHVp\n'}
 
 
 async def test_simple_form_submit_repeat():
