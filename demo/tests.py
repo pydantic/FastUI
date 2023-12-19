@@ -41,31 +41,31 @@ def test_api_root():
             'type': 'Page',
         },
         {
-            "extraText": "FastUI Demo - Extra footer text",
-            "links": [
+            'extraText': 'FastUI Demo - Extra footer text',
+            'links': [
                 {
-                    "components": [{"text": "Home", "type": "Text"}],
-                    "onClick": {"url": "/", "type": "go-to"},
-                    "type": "Link"
+                    'components': [{'text': 'Home', 'type': 'Text'}],
+                    'onClick': {'url': '/', 'type': 'go-to'},
+                    'type': 'Link',
                 },
                 {
-                    "components": [{"text": "Components", "type": "Text"}],
-                    "onClick": {"url": "/components", "type": "go-to"},
-                    "type": "Link"
+                    'components': [{'text': 'Components', 'type': 'Text'}],
+                    'onClick': {'url': '/components', 'type': 'go-to'},
+                    'type': 'Link',
                 },
                 {
-                    "components": [{"text": "Tables", "type": "Text"}],
-                    "onClick": {"url": "/table/cities", "type": "go-to"},
-                    "type": "Link"
+                    'components': [{'text': 'Tables', 'type': 'Text'}],
+                    'onClick': {'url': '/table/cities', 'type': 'go-to'},
+                    'type': 'Link',
                 },
                 {
-                    "components": [{"text": "Forms", "type": "Text"}],
-                    "onClick": {"url": "/forms/login", "type": "go-to"},
-                    "type": "Link"
-                }
+                    'components': [{'text': 'Forms', 'type': 'Text'}],
+                    'onClick': {'url': '/forms/login', 'type': 'go-to'},
+                    'type': 'Link',
+                },
             ],
-            "type": "Footer"
-        }
+            'type': 'Footer',
+        },
     ]
 
 
@@ -87,5 +87,6 @@ def test_menu_links(url: str):
     assert r.status_code == 200
     data = r.json()
     assert isinstance(data, list)
+
 
 # TODO tests for forms, including submission
