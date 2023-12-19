@@ -3,11 +3,11 @@ import { FC, CSSProperties } from 'react'
 import { asTitle } from '../tools'
 import { ClassName, useClassName } from '../hooks/className'
 
-import { DisplayComp, DisplayLookupProps, ModelData, renderEvent } from './display'
+import { DisplayComp, DisplayLookupProps, DataModel, renderEvent } from './display'
 
 export interface TableProps {
   type: 'Table'
-  data: ModelData[]
+  data: DataModel[]
   columns: DisplayLookupProps[]
   noDataMessage?: string
   className?: ClassName
@@ -44,7 +44,7 @@ export const TableComp: FC<TableProps> = (props) => {
 
 const colWidth = (w: number | undefined): CSSProperties | undefined => (w ? { width: `${w}%` } : undefined)
 
-const Cell: FC<{ row: ModelData; column: DisplayLookupProps }> = ({ row, column }) => {
+const Cell: FC<{ row: DataModel; column: DisplayLookupProps }> = ({ row, column }) => {
   const { field, onClick, ...rest } = column
   const value = row[field]
   const renderedOnClick = renderEvent(onClick, row)

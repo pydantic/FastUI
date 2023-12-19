@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Any
+import subprocess
 
 from fastui import FastUI
 from pydantic.json_schema import GenerateJsonSchema, JsonSchemaValue
@@ -30,9 +31,9 @@ class CustomGenerateJsonSchema(GenerateJsonSchema):
         return super().default_schema(schema)
 
     def field_is_required(
-            self,
-            field: core_schema.ModelField | core_schema.DataclassField | core_schema.TypedDictField,
-            total: bool,
+        self,
+        field: core_schema.ModelField | core_schema.DataclassField | core_schema.TypedDictField,
+        total: bool,
     ) -> bool:
         inner = field['schema']
         if inner.get('type') == 'default' and is_type_schema(inner):
@@ -55,31 +56,69 @@ class CustomGenerateJsonSchema(GenerateJsonSchema):
                 schema['ref'] = 'fastui.events.AnyEvent'
         return super().tagged_union_schema(schema)
 
+    # def get_defs_ref(self, core_mode_ref: str) -> str:
+    #     json_scheam_ref = super().get_defs_ref(core_mode_ref)
+    #     debug(core_mode_ref, json_scheam_ref)
+    #     return json_scheam_ref
 
-fastui_schema = FastUI.model_json_schema(by_alias=True, mode='serialization', schema_generator=CustomGenerateJsonSchema)
-any_comp_def = fastui_schema['$defs']['Div']['properties']['components']['items'].copy()
-any_comp_ref = {'$ref': '#/$defs/AnyComponent'}
+    # def normalize_name(self, name: str) -> str:
+    #     if name == 'BaseModel':
+    #         return 'DataModel'
+    #     return super().normalize_name(name)
 
 
-def replace_any_comp(s: Any):
-    if isinstance(s, dict):
-        if s == any_comp_def:
-            return any_comp_ref
-        else:
-            return {k: replace_any_comp(v) for k, v in s.items()}
-    elif isinstance(s, list):
-        return [replace_any_comp(v) for v in s]
+def json2ts(input_file: Path, output_file: Path):
+    args = (
+        'npx',
+        'json2ts',
+        str(input_file),
+        str(output_file),
+        '--additionalProperties',
+        'false',
+        '--no-style.semi',
+        '--style.singleQuote',
+        '--no-unknownAny',
+    )
+    try:
+        subprocess.run(args, check=True)
+    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+        raise RuntimeError(
+            "Failed to run json2ts, you'll need to install `npx` and `json-schema-to-typescript`, "
+            f"then run the command:\n\n    {' '.join(args)}\n\n"
+        ) from e
     else:
-        return s
+        input_file.unlink()
 
 
-fastui_schema['items'] = any_comp_ref
-fastui_schema = replace_any_comp(fastui_schema)
-fastui_schema['$defs']['AnyComponent'] = any_comp_def
-Path('schema.json').write_bytes(to_json(fastui_schema, indent=2))
+def main():
+    fastui_schema = FastUI.model_json_schema(
+        by_alias=True, mode='serialization', schema_generator=CustomGenerateJsonSchema
+    )
+    # the following post-processing is a workaround for
+    # https://github.com/pydantic/pydantic/issues/8320
+    any_comp_def = fastui_schema['$defs']['Div']['properties']['components']['items'].copy()
+    any_comp_ref = {'$ref': '#/$defs/AnyComponent'}
 
-"""
-Then run
+    def replace_any_comp(value: Any) -> Any:
+        if isinstance(value, dict):
+            if value == any_comp_def:
+                return any_comp_ref
+            else:
 
-npx json2ts schema.json models.ts --additionalProperties false --no-style.semi --style.singleQuote
-"""
+                return {k: replace_any_comp(v) for k, v in value.items()}
+        elif isinstance(value, list):
+            return [replace_any_comp(v) for v in value]
+        else:
+            return value
+
+    fastui_schema['items'] = any_comp_ref
+    fastui_schema = replace_any_comp(fastui_schema)
+    fastui_schema['$defs']['AnyComponent'] = any_comp_def
+
+    json_schema_file = Path('fastui-json-schema.json')
+    json_schema_file.write_bytes(to_json(fastui_schema, indent=2))
+    json2ts(json_schema_file, Path('models.ts'))
+
+
+if __name__ == '__main__':
+    main()

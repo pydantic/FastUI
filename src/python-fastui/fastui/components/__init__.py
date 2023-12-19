@@ -11,7 +11,8 @@ import pydantic as _p
 import typing_extensions as _te
 
 from .. import class_name as _class_name
-from .. import events, json_schema
+from .. import events
+from .. import types as _types
 from .display import Details, Display
 from .forms import (
     Form,
@@ -129,7 +130,7 @@ class Code(_p.BaseModel, extra='forbid'):
 
 
 class Json(_p.BaseModel, extra='forbid'):
-    value: json_schema.JsonData
+    value: _types.JsonData
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['JSON'] = 'JSON'
 
@@ -244,7 +245,7 @@ class FireEvent(_p.BaseModel, extra='forbid'):
 
 
 class Custom(_p.BaseModel, extra='forbid'):
-    data: json_schema.JsonData
+    data: _types.JsonData
     sub_type: str = _p.Field(serialization_alias='subType')
     library: _t.Union[str, None] = None
     class_name: _class_name.ClassNameField = None

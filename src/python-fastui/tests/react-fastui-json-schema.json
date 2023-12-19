@@ -151,13 +151,16 @@
       "required": ["data", "subType", "type"],
       "type": "object"
     },
+    "DataModel": {
+      "type": "object"
+    },
     "DetailsProps": {
       "properties": {
         "className": {
           "$ref": "#/definitions/ClassName"
         },
         "data": {
-          "$ref": "#/definitions/ModelData"
+          "$ref": "#/definitions/DataModel"
         },
         "fields": {
           "items": {
@@ -1089,9 +1092,6 @@
       "required": ["body", "title", "type"],
       "type": "object"
     },
-    "ModelData": {
-      "type": "object"
-    },
     "ModelFormProps": {
       "properties": {
         "className": {
@@ -1357,7 +1357,7 @@
         },
         "data": {
           "items": {
-            "$ref": "#/definitions/ModelData"
+            "$ref": "#/definitions/DataModel"
           },
           "type": "array"
         },

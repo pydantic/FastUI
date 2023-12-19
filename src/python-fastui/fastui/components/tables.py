@@ -4,14 +4,14 @@ import pydantic
 import typing_extensions as _te
 
 from .. import class_name as _class_name
+from .. import types as _types
 from . import display
 
 # TODO allow dataclasses and typed dicts here too
-DataModel = _t.TypeVar('DataModel', bound=pydantic.BaseModel)
 
 
-class Table(pydantic.BaseModel, _t.Generic[DataModel], extra='forbid'):
-    data: _t.List[DataModel]
+class Table(pydantic.BaseModel, _t.Generic[_types.DataModelGeneric], extra='forbid'):
+    data: _t.List[_types.DataModelGeneric]
     columns: _t.Union[_t.List[display.DisplayLookup], None] = None
     no_data_message: _t.Union[str, None] = pydantic.Field(default=None, serialization_alias='noDataMessage')
     class_name: _class_name.ClassNameField = None
@@ -21,7 +21,7 @@ class Table(pydantic.BaseModel, _t.Generic[DataModel], extra='forbid'):
     def fill_columns(self) -> _te.Self:
         args = self.__pydantic_generic_metadata__['args']
         try:
-            data_model_type: _t.Type[DataModel] = args[0]
+            data_model_type: _t.Type[_types.DataModelGeneric] = args[0]
         except IndexError:
             raise ValueError('`Table` must be parameterized with a pydantic model, i.e. `Table[MyModel]()`.')
 

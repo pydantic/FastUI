@@ -228,14 +228,14 @@ const DisplayInlineCode: FC<{ value: JSONPrimitive }> = ({ value }) => {
   }
 }
 
-export type ModelData = Record<string, JsonData>
+export type DataModel = Record<string, JsonData>
 
 export interface DisplayLookupProps extends Omit<DisplayProps, 'type' | 'value'> {
   field: string
   tableWidthPercent?: number
 }
 
-export function renderEvent(event: AnyEvent | undefined, data: ModelData): AnyEvent | undefined {
+export function renderEvent(event: AnyEvent | undefined, data: DataModel): AnyEvent | undefined {
   let newEvent: AnyEvent | undefined = event ? { ...event } : undefined
   if (newEvent) {
     if (newEvent.type === 'go-to' && newEvent.url) {
@@ -251,7 +251,7 @@ export function renderEvent(event: AnyEvent | undefined, data: ModelData): AnyEv
   return newEvent
 }
 
-const subKeys = (template: string, row: ModelData): string | null => {
+const subKeys = (template: string, row: DataModel): string | null => {
   let returnNull = false
   const r = template.replace(/{(.+?)}/g, (_, key: string): string => {
     const v: JsonData | undefined = row[key]

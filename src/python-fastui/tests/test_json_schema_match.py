@@ -57,8 +57,6 @@ def fix_pydantic_schema(s: typing.Any) -> None:
                 if k == '$ref':
                     if v in {'#/definitions/DisplayLookup', '#/definitions/Link'}:
                         s['$ref'] = f'{v}Props'
-                    elif v == '#/definitions/BaseModel':
-                        s['$ref'] = '#/definitions/ModelData'
                     elif v == '#/definitions/DisplayMode':
                         display_mode = json_schema['$defs']['DisplayMode']
                         s.clear()

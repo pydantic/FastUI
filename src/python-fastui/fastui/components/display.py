@@ -8,6 +8,7 @@ import typing_extensions as _te
 
 from .. import class_name as _class_name
 from .. import events
+from .. import types as _types
 
 __all__ = 'DisplayMode', 'DisplayLookup', 'Display', 'Details'
 
@@ -51,11 +52,8 @@ class Display(DisplayBase, extra='forbid'):
     type: _t.Literal['Display'] = 'Display'
 
 
-DataModel = _t.TypeVar('DataModel', bound=pydantic.BaseModel)
-
-
-class Details(pydantic.BaseModel, _t.Generic[DataModel], extra='forbid'):
-    data: DataModel
+class Details(pydantic.BaseModel, _t.Generic[_types.DataModelGeneric], extra='forbid'):
+    data: _types.DataModelGeneric
     fields: _t.Union[_t.List[DisplayLookup], None] = None
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['Details'] = 'Details'

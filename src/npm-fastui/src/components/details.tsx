@@ -3,11 +3,11 @@ import { FC } from 'react'
 import { asTitle } from '../tools'
 import { ClassName, useClassName } from '../hooks/className'
 
-import { DisplayComp, DisplayLookupProps, ModelData, renderEvent } from './display'
+import { DisplayComp, DisplayLookupProps, DataModel, renderEvent } from './display'
 
 export interface DetailsProps {
   type: 'Details'
-  data: ModelData
+  data: DataModel
   fields: DisplayLookupProps[]
   className?: ClassName
 }
