@@ -13,7 +13,7 @@ with (THIS_DIR / 'react-fastui-json-schema.json').open('rb') as npm_file:
 
 ta = TypeAdapter(AnyComponent)
 json_schema = ta.json_schema(by_alias=True, mode='serialization', ref_template='#/definitions/{model}')
-components_union = json_schema['oneOf']
+components_union = json_schema['anyOf']
 components_union_set = set(d['$ref'] for d in components_union)
 
 
