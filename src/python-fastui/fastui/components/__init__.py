@@ -152,6 +152,7 @@ class Button(_p.BaseModel, extra='forbid'):
         default=None, serialization_alias='htmlType'
     )
     class_name: _class_name.ClassNameField = None
+    mode: _t.Union[_t.Literal['primary', 'secondary', 'warning'], None] = None
     type: _t.Literal['Button'] = 'Button'
 
 

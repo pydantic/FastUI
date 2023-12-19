@@ -28,7 +28,12 @@ export const classNameGenerator: ClassNameGenerator = ({
     case 'Page':
       return 'container mt-80'
     case 'Button':
-      return 'btn btn-primary'
+      return {
+        btn: true,
+        'btn-primary': !props.mode || props.mode === 'primary',
+        'btn-secondary': props.mode === 'secondary',
+        'btn-warning': props.mode === 'warning',
+      }
     case 'Table':
       switch (subElement) {
         case 'no-data-message':
