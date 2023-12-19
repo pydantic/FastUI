@@ -2,6 +2,7 @@ import { useContext, useState, useEffect, useCallback } from 'react'
 
 import { LocationContext } from './hooks/locationContext'
 import { ContextType } from './hooks/eventContext'
+import { AUTH_TOKEN_KEY } from './tools'
 
 export interface PageEvent {
   type: 'page'
@@ -21,7 +22,13 @@ export interface BackEvent {
   type: 'back'
 }
 
-export type AnyEvent = PageEvent | GoToEvent | BackEvent
+export interface AuthEvent {
+  type: 'auth'
+  token: string | false
+  url?: string
+}
+
+export type AnyEvent = PageEvent | GoToEvent | BackEvent | AuthEvent
 
 export interface PageEventDetail {
   clear: boolean
@@ -35,7 +42,7 @@ function pageEventType(event: PageEvent): string {
 export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
   const location = useContext(LocationContext)
 
-  function fireEvent(event?: AnyEvent) {
+  function fireEventImpl(event?: AnyEvent) {
     if (!event) {
       return
     }
@@ -58,11 +65,23 @@ export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
           location.setQuery(event.query)
         }
         break
+      case 'auth':
+        if (event.token) {
+          sessionStorage.setItem(AUTH_TOKEN_KEY, event.token)
+        } else {
+          sessionStorage.removeItem(AUTH_TOKEN_KEY)
+        }
+        if (event.url) {
+          location.goto(event.url)
+        }
+        break
       case 'back':
         location.back()
         break
     }
   }
+
+  const fireEvent = useCallback(fireEventImpl, [location])
 
   return { fireEvent }
 }
@@ -78,34 +97,45 @@ export function fireLoadEvent(detail: LoadEventDetail) {
   document.dispatchEvent(new CustomEvent(loadEvent, { detail }))
 }
 
-export function usePageEventListen(
-  event?: PageEvent,
-  initialContext: ContextType | null = null,
-): { eventContext: ContextType | null; clear: () => void } {
-  const [eventContext, setEventContext] = useState<ContextType | null>(initialContext)
+interface EventDetails {
+  eventContext: ContextType | null
+  fireId: string | null
+  clear: () => void
+}
 
-  const onEvent = useCallback((e: Event) => {
-    const { context, clear } = (e as CustomEvent<PageEventDetail>).detail
-    if (clear) {
-      setEventContext(null)
-    } else {
-      setEventContext(context ?? {})
-    }
-  }, [])
+export function usePageEventListen(event?: PageEvent, initialContext: ContextType | null = null): EventDetails {
+  const [eventContext, setEventContext] = useState<ContextType | null>(initialContext)
+  const [fireId, setFireId] = useState<string | null>(null)
+
+  const eventType = event && pageEventType(event)
 
   useEffect(() => {
-    if (!event) {
+    if (!eventType) {
+      setEventContext(null)
+      setFireId(null)
       return
     }
 
-    const eventType = pageEventType(event)
+    const onEvent = (e: Event) => {
+      console.log('event:', e)
+      const event = e as CustomEvent<PageEventDetail>
+      const { context, clear } = event.detail
+      if (clear) {
+        setEventContext(null)
+        setFireId(null)
+      } else {
+        setEventContext(context || {})
+        setFireId(`${event.type}:${event.timeStamp}`)
+      }
+    }
 
     document.addEventListener(eventType, onEvent)
     return () => document.removeEventListener(eventType, onEvent)
-  }, [event, onEvent])
+  }, [eventType])
 
   return {
     eventContext,
+    fireId,
     clear: useCallback(() => setEventContext(null), []),
   }
 }

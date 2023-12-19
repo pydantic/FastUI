@@ -44,6 +44,7 @@ __all__ = (
     'ServerLoad',
     'Image',
     'Iframe',
+    'FireEvent',
     'Custom',
     'Table',
     'Pagination',
@@ -231,6 +232,25 @@ class Iframe(_p.BaseModel, extra='forbid'):
     type: _t.Literal['Iframe'] = 'Iframe'
 
 
+class Video(_p.BaseModel, extra='forbid'):
+    sources: _t.List[_p.AnyUrl]
+    autoplay: _t.Union[bool, None] = None
+    controls: _t.Union[bool, None] = None
+    loop: _t.Union[bool, None] = None
+    muted: _t.Union[bool, None] = None
+    poster: _t.Union[_p.AnyUrl, None] = None
+    width: _t.Union[str, int, None] = None
+    height: _t.Union[str, int, None] = None
+    type: _t.Literal['Video'] = 'Video'
+    class_name: _class_name.ClassNameField = None
+
+
+class FireEvent(_p.BaseModel, extra='forbid'):
+    event: events.AnyEvent
+    message: _t.Union[str, None] = None  # defaults to blank
+    type: _t.Literal['FireEvent'] = 'FireEvent'
+
+
 class Custom(_p.BaseModel, extra='forbid'):
     data: json_schema.JsonData
     sub_type: str = _p.Field(serialization_alias='subType')
@@ -259,6 +279,8 @@ AnyComponent = _te.Annotated[
         ServerLoad,
         Image,
         Iframe,
+        Video,
+        FireEvent,
         Custom,
         Table,
         Pagination,

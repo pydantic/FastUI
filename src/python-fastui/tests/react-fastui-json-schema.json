@@ -2,6 +2,46 @@
   "$ref": "#/definitions/FastProps",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
+    "AnyEvent": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/PageEvent"
+        },
+        {
+          "$ref": "#/definitions/GoToEvent"
+        },
+        {
+          "$ref": "#/definitions/BackEvent"
+        },
+        {
+          "$ref": "#/definitions/AuthEvent"
+        }
+      ]
+    },
+    "AuthEvent": {
+      "properties": {
+        "token": {
+          "anyOf": [
+            {
+              "const": false,
+              "type": "boolean"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "type": {
+          "const": "auth",
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "required": ["token", "type"],
+      "type": "object"
+    },
     "BackEvent": {
       "properties": {
         "type": {
@@ -31,6 +71,9 @@
             },
             {
               "$ref": "#/definitions/BackEvent"
+            },
+            {
+              "$ref": "#/definitions/AuthEvent"
             }
           ]
         },
@@ -169,6 +212,9 @@
             },
             {
               "$ref": "#/definitions/BackEvent"
+            },
+            {
+              "$ref": "#/definitions/AuthEvent"
             }
           ]
         },
@@ -238,6 +284,9 @@
             },
             {
               "$ref": "#/definitions/BackEvent"
+            },
+            {
+              "$ref": "#/definitions/AuthEvent"
             }
           ]
         },
@@ -373,9 +422,34 @@
           "$ref": "#/definitions/IframeProps"
         },
         {
+          "$ref": "#/definitions/VideoProps"
+        },
+        {
+          "$ref": "#/definitions/FireEventProps"
+        },
+        {
           "$ref": "#/definitions/CustomProps"
         }
       ]
+    },
+    "FireEventProps": {
+      "properties": {
+        "className": {
+          "$ref": "#/definitions/ClassName"
+        },
+        "event": {
+          "$ref": "#/definitions/AnyEvent"
+        },
+        "message": {
+          "type": "string"
+        },
+        "type": {
+          "const": "FireEvent",
+          "type": "string"
+        }
+      },
+      "required": ["event", "type"],
+      "type": "object"
     },
     "FooterProps": {
       "properties": {
@@ -524,7 +598,7 @@
           "type": "string"
         },
         "htmlType": {
-          "enum": ["date", "datetime-local", "email", "number", "password", "text", "time", "url"],
+          "enum": ["date", "datetime-local", "email", "hidden", "number", "password", "text", "time", "url"],
           "type": "string"
         },
         "initial": {
@@ -721,17 +795,10 @@
           "type": "string"
         },
         "footer": {
-          "anyOf": [
-            {
-              "items": {
-                "$ref": "#/definitions/FastProps"
-              },
-              "type": "array"
-            },
-            {
-              "type": "boolean"
-            }
-          ]
+          "items": {
+            "$ref": "#/definitions/FastProps"
+          },
+          "type": "array"
         },
         "formFields": {
           "items": {
@@ -748,6 +815,9 @@
         },
         "submitOnChange": {
           "type": "boolean"
+        },
+        "submitTrigger": {
+          "$ref": "#/definitions/PageEvent"
         },
         "submitUrl": {
           "type": "string"
@@ -852,6 +922,9 @@
             },
             {
               "$ref": "#/definitions/BackEvent"
+            },
+            {
+              "$ref": "#/definitions/AuthEvent"
             }
           ]
         },
@@ -974,6 +1047,9 @@
             },
             {
               "$ref": "#/definitions/BackEvent"
+            },
+            {
+              "$ref": "#/definitions/AuthEvent"
             }
           ]
         },
@@ -1051,17 +1127,10 @@
           "type": "string"
         },
         "footer": {
-          "anyOf": [
-            {
-              "items": {
-                "$ref": "#/definitions/FastProps"
-              },
-              "type": "array"
-            },
-            {
-              "type": "boolean"
-            }
-          ]
+          "items": {
+            "$ref": "#/definitions/FastProps"
+          },
+          "type": "array"
         },
         "formFields": {
           "items": {
@@ -1078,6 +1147,9 @@
         },
         "submitOnChange": {
           "type": "boolean"
+        },
+        "submitTrigger": {
+          "$ref": "#/definitions/PageEvent"
         },
         "submitUrl": {
           "type": "string"
@@ -1114,6 +1186,9 @@
             },
             {
               "$ref": "#/definitions/BackEvent"
+            },
+            {
+              "$ref": "#/definitions/AuthEvent"
             }
           ]
         },
@@ -1333,6 +1408,50 @@
         }
       },
       "required": ["text", "type"],
+      "type": "object"
+    },
+    "VideoProps": {
+      "properties": {
+        "autoplay": {
+          "type": "boolean"
+        },
+        "className": {
+          "$ref": "#/definitions/ClassName"
+        },
+        "controls": {
+          "type": "boolean"
+        },
+        "height": {
+          "type": ["string", "integer"]
+        },
+        "loop": {
+          "type": "boolean"
+        },
+        "muted": {
+          "type": "boolean"
+        },
+        "poster": {
+          "format": "uri",
+          "minLength": 1,
+          "type": "string"
+        },
+        "sources": {
+          "items": {
+            "format": "uri",
+            "minLength": 1,
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "type": {
+          "const": "Video",
+          "type": "string"
+        },
+        "width": {
+          "type": ["string", "integer"]
+        }
+      },
+      "required": ["sources", "type"],
       "type": "object"
     }
   }

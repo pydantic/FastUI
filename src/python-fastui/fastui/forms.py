@@ -9,8 +9,6 @@ import pydantic_core
 import typing_extensions as _te
 from pydantic_core import core_schema
 
-from . import events
-
 try:
     import fastapi
     from fastapi import params as fastapi_params
@@ -21,7 +19,7 @@ except ImportError as _e:
 if _t.TYPE_CHECKING:
     from . import json_schema
 
-__all__ = 'FastUIForm', 'fastui_form', 'FormResponse', 'FormFile', 'SelectSearchResponse', 'SelectOption'
+__all__ = 'FastUIForm', 'fastui_form', 'FormFile', 'SelectSearchResponse', 'SelectOption'
 
 FormModel = _t.TypeVar('FormModel', bound=pydantic.BaseModel)
 
@@ -153,11 +151,6 @@ def get_content_type(file: ds.UploadFile) -> _t.Union[str, None]:
         return file.content_type
     elif file.filename:
         return _mime_types.guess_type(file.filename)[0]
-
-
-class FormResponse(pydantic.BaseModel):
-    event: events.AnyEvent
-    type: _t.Literal['FormResponse'] = 'FormResponse'
 
 
 class SelectOption(_te.TypedDict):

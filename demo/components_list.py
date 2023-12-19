@@ -1,11 +1,8 @@
 from __future__ import annotations as _annotations
 
 import asyncio
-from datetime import datetime
-from typing import AsyncIterable
 
 from fastapi import APIRouter
-from fastapi.responses import StreamingResponse
 from fastui import AnyComponent, FastUI
 from fastui import components as c
 from fastui.events import GoToEvent, PageEvent
@@ -144,7 +141,12 @@ print(m.dimensions)
         c.Div(
             components=[
                 c.Heading(text='Server Load SSE', level=2),
-                c.Markdown(text='`ServerLoad` can also be used to load content from an SSE stream.'),
+                c.Markdown(
+                    text=(
+                        '`ServerLoad` can also be used to load content from an SSE stream.\n\n'
+                        "Here the response is the streamed output from OpenAI's GPT-4 chat model."
+                    )
+                ),
                 c.Button(text='Load SSE content', on_click=PageEvent(name='server-load-sse')),
                 c.Div(
                     components=[
@@ -186,12 +188,27 @@ print(m.dimensions)
         ),
         c.Div(
             components=[
+                c.Heading(text='Video', level=2),
+                c.Paragraph(text='A video component.'),
+                c.Video(
+                    sources=['https://www.w3schools.com/html/mov_bbb.mp4'],
+                    autoplay=False,
+                    controls=True,
+                    loop=False,
+                ),
+            ],
+            class_name='border-top mt-3 pt-1',
+        ),
+        c.Div(
+            components=[
                 c.Heading(text='Custom', level=2),
-                c.Markdown(text="""\
+                c.Markdown(
+                    text="""\
 Below is a custom component, in this case it implements [cowsay](https://en.wikipedia.org/wiki/Cowsay),
 but you might be able to do something even more useful with it.
 
-The statement spoken by the famous cow is provided by the backend."""),
+The statement spoken by the famous cow is provided by the backend."""
+                ),
                 c.Custom(data='This is a custom component', sub_type='cowsay'),
             ],
             class_name='border-top mt-3 pt-1',
@@ -204,21 +221,3 @@ The statement spoken by the famous cow is provided by the backend."""),
 async def modal_view() -> list[AnyComponent]:
     await asyncio.sleep(0.5)
     return [c.Paragraph(text='This is some dynamic content. Open devtools to see me being fetched from the server.')]
-
-
-async def sse_generator() -> AsyncIterable[str]:
-    while True:
-        d = datetime.now()
-        m = FastUI(
-            root=[
-                c.Div(components=[c.Text(text=f'Time {d:%H:%M:%S}')], class_name='font-monospace'),
-                c.Paragraph(text='This content is updated every second using an SSE stream.'),
-            ]
-        )
-        yield f'data: {m.model_dump_json(by_alias=True)}\n\n'
-        await asyncio.sleep(1)
-
-
-@router.get('/sse')
-async def sse_experiment() -> StreamingResponse:
-    return StreamingResponse(sse_generator(), media_type='text/event-stream')

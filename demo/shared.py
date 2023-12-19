@@ -23,6 +23,11 @@ def demo_page(*components: AnyComponent, title: str | None = None) -> list[AnyCo
                     active='startswith:/table',
                 ),
                 c.Link(
+                    components=[c.Text(text='Auth')],
+                    on_click=GoToEvent(url='/auth/login'),
+                    active='startswith:/auth',
+                ),
+                c.Link(
                     components=[c.Text(text='Forms')],
                     on_click=GoToEvent(url='/forms/login'),
                     active='startswith:/forms',

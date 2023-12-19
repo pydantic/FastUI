@@ -4,7 +4,7 @@ Simple tests of component creation.
 NOTE: we do NOT want to exhaustively construct every component just for the same of it -
 that's just testing pydantic!
 """
-from fastui import components
+from fastui import FastUI, components
 
 
 def test_div_text():
@@ -29,3 +29,24 @@ def test_div_class_name():
         'className': 'foobar',
         'type': 'Div',
     }
+
+
+def test_root_model():
+    m = FastUI(root=[components.Text(text='hello world')])
+    assert m.model_dump(by_alias=True, exclude_none=True) == [
+        {
+            'text': 'hello world',
+            'type': 'Text',
+        }
+    ]
+
+
+def test_root_model_single():
+    # fixed by validator
+    m = FastUI(root=components.Text(text='hello world'))
+    assert m.model_dump(by_alias=True, exclude_none=True) == [
+        {
+            'text': 'hello world',
+            'type': 'Text',
+        }
+    ]
