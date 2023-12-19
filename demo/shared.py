@@ -38,10 +38,7 @@ def demo_page(*components: AnyComponent, title: str | None = None) -> list[AnyCo
         c.Footer(
             extra_text='FastUI Demo',
             links=[
-                c.Link(components=[c.Text(text='Home')], on_click=GoToEvent(url='/')),
-                c.Link(components=[c.Text(text='Components')], on_click=GoToEvent(url='/components')),
-                c.Link(components=[c.Text(text='Tables')], on_click=GoToEvent(url='/table/cities')),
-                c.Link(components=[c.Text(text='Forms')], on_click=GoToEvent(url='/forms/login')),
+                c.Link(components=[c.Text(text='Github')], on_click=GoToEvent(url='https://github.com/pydantic/FastUI')),
             ],
         ),
     ]
