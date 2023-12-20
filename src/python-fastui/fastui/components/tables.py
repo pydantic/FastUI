@@ -1,6 +1,7 @@
 import typing as _t
 
 import pydantic
+import typing_extensions as _te
 from pydantic_core import core_schema as _core_schema
 
 from .. import class_name as _class_name
@@ -18,28 +19,28 @@ class Table(pydantic.BaseModel, extra='forbid'):
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['Table'] = 'Table'
 
-    @pydantic.field_serializer('columns')
-    def _fill_columns(self, columns: _t.Union[_t.List[display.DisplayLookup], None]) -> _t.List[display.DisplayLookup]:
+    @pydantic.model_validator(mode='after')
+    def _fill_columns(self) -> _te.Self:
         if self.data_model:
             data_model_type = self.data_model
         else:
             try:
-                data_model_type = self.data[0]
+                data_model_type = type(self.data[0])
             except IndexError:
                 raise ValueError('Cannot infer model from empty data, please set `Table(..., model=MyModel)`')
 
-        if columns is None:
-            return [
+        if self.columns is None:
+            self.columns = [
                 display.DisplayLookup(field=name, title=field.title)
                 for name, field in data_model_type.model_fields.items()
             ]
         else:
             # add pydantic titles to columns that don't have them
-            for column in (c for c in columns if c.title is None):
+            for column in (c for c in self.columns if c.title is None):
                 field = data_model_type.model_fields.get(column.field)
                 if field and field.title:
                     column.title = field.title
-            return columns
+        return self
 
     @pydantic.field_serializer('data')
     def _serialize_data(self, v: _t.List[_types.DataModel]) -> _t.List[_t.Dict[str, _types.JsonData]]:
