@@ -96,7 +96,7 @@ FormFieldsModel = _t.TypeVar('FormFieldsModel', bound=pydantic.BaseModel)
 
 
 class ModelForm(BaseForm):
-    model: type[pydantic.BaseModel] = pydantic.Field(exclude=True)
+    model: _t.Type[pydantic.BaseModel] = pydantic.Field(exclude=True)
     type: _t.Literal['ModelForm'] = 'ModelForm'
 
     @pydantic.computed_field(alias='formFields')

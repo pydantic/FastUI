@@ -1,3 +1,5 @@
+from __future__ import annotations as _annotations
+
 import re
 import subprocess
 from pathlib import Path
