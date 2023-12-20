@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { components, ClassName, renderClassName, events } from 'fastui'
+import { components, models, renderClassName } from 'fastui'
 
 interface Link {
   Display: FC
@@ -9,7 +9,7 @@ interface Link {
   page?: number
 }
 
-export const Pagination: FC<components.PaginationProps> = (props) => {
+export const Pagination: FC<models.Pagination> = (props) => {
   const { page, pageCount } = props
 
   if (pageCount === 1) return null
@@ -81,10 +81,10 @@ const PaginationLink: FC<Link> = ({ Display, ariaLabel, locked, active, page }) 
       </li>
     )
   }
-  const className = renderClassName({ 'page-link': true, disabled: locked && !active, active } as ClassName)
-  let onClick: events.GoToEvent
+  const className = renderClassName({ 'page-link': true, disabled: locked && !active, active } as models.ClassName)
+  let onClick: models.GoToEvent
   if (page === 1) {
-    onClick = { type: 'go-to', query: { page: null } }
+    onClick = { type: 'go-to', query: {} }
   } else {
     onClick = { type: 'go-to', query: { page } }
   }

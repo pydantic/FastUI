@@ -1,30 +1,8 @@
 import { FC } from 'react'
 
-import { ClassName } from '../hooks/className'
+import type { Video } from '../models'
 
-export interface VideoProps {
-  type: 'Video'
-  /**
-   * @items {"type":"string", "format": "uri", "minLength": 1}
-   */
-  sources: string[]
-  autoplay?: boolean
-  controls?: boolean
-  loop?: boolean
-  muted?: boolean
-  /**
-   * @format uri
-   * @minLength 1
-   */
-  poster?: string
-  /** @TJS-type ["string", "integer"] */
-  width?: string | number
-  /** @TJS-type ["string", "integer"] */
-  height?: string | number
-  className?: ClassName
-}
-
-export const VideoComp: FC<VideoProps> = (props) => {
+export const VideoComp: FC<Video> = (props) => {
   const { sources, autoplay, controls, loop, muted, poster, width, height } = props
   return (
     <video

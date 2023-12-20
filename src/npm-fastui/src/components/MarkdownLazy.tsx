@@ -1,16 +1,16 @@
 import { FC, MouseEventHandler, ReactNode } from 'react'
-import Markdown, { Components } from 'react-markdown'
+import ReactMarkdown, { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
-import type { MarkdownProps } from './Markdown'
+import type { Markdown, Code, AnyEvent } from '../models'
 
 import { useClassName } from '../hooks/className'
-import { useFireEvent, AnyEvent } from '../events'
+import { useFireEvent } from '../events'
 import { useCustomRender } from '../hooks/config'
 
-import { CodeProps, CodeComp } from './Code'
+import { CodeComp } from './Code'
 
-const MarkdownComp: FC<MarkdownProps> = (props) => {
+const MarkdownComp: FC<Markdown> = (props) => {
   const { text, codeStyle } = props
   const components: Components = {
     a({ children, href }) {
@@ -26,13 +26,13 @@ const MarkdownComp: FC<MarkdownProps> = (props) => {
   }
 
   return (
-    <Markdown
+    <ReactMarkdown
       className={useClassName(props, { dft: 'fastui-markdown' })}
       remarkPlugins={[remarkGfm]}
       components={components}
     >
       {text}
-    </Markdown>
+    </ReactMarkdown>
   )
 }
 
@@ -97,7 +97,7 @@ interface MarkdownCodeHighlightProps {
 }
 
 const MarkdownCodeHighlight: FC<MarkdownCodeHighlightProps> = ({ children, codeStyle, language }) => {
-  const codeProps: CodeProps = {
+  const codeProps: Code = {
     type: 'Code',
     text: String(children).replace(/\n$/, ''),
     language,

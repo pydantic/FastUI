@@ -1,8 +1,8 @@
 import { FC } from 'react'
-import { components, useClassName } from 'fastui'
+import { components, useClassName, models } from 'fastui'
 import BootstrapNavbar from 'react-bootstrap/Navbar'
 
-export const Navbar: FC<components.NavbarProps> = (props) => {
+export const Navbar: FC<models.Navbar> = (props) => {
   const links = props.links.map((link) => {
     link.mode = link.mode || 'navbar'
     return link
@@ -26,7 +26,7 @@ export const Navbar: FC<components.NavbarProps> = (props) => {
   )
 }
 
-const NavbarTitle = (props: components.NavbarProps) => {
+const NavbarTitle = (props: models.Navbar) => {
   const { title, titleEvent } = props
   const className = useClassName(props, { el: 'title' })
   if (title) {

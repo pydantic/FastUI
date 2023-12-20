@@ -1,17 +1,11 @@
 import { FC } from 'react'
 
-import { ClassName, useClassName } from '../hooks/className'
-import { useFireEvent, AnyEvent } from '../events'
+import type { Button } from '../models'
 
-export interface ButtonProps {
-  type: 'Button'
-  text: string
-  onClick?: AnyEvent
-  htmlType?: 'button' | 'submit' | 'reset'
-  className?: ClassName
-}
+import { useClassName } from '../hooks/className'
+import { useFireEvent } from '../events'
 
-export const ButtonComp: FC<ButtonProps> = (props) => {
+export const ButtonComp: FC<Button> = (props) => {
   const { text, onClick, htmlType } = props
 
   const { fireEvent } = useFireEvent()

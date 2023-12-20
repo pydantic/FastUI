@@ -85,19 +85,19 @@ def form_content(kind: FormKind):
             return [
                 c.Heading(text='Login Form', level=2),
                 c.Paragraph(text='Simple login form with email and password.'),
-                c.ModelForm[LoginForm](submit_url='/api/forms/login'),
+                c.ModelForm(model=LoginForm, submit_url='/api/forms/login'),
             ]
         case 'select':
             return [
                 c.Heading(text='Select Form', level=2),
                 c.Paragraph(text='Form showing different ways of doing select.'),
-                c.ModelForm[SelectForm](submit_url='/api/forms/select'),
+                c.ModelForm(model=SelectForm, submit_url='/api/forms/select'),
             ]
         case 'big':
             return [
                 c.Heading(text='Large Form', level=2),
                 c.Paragraph(text='Form with a lot of fields.'),
-                c.ModelForm[BigModel](submit_url='/api/forms/big'),
+                c.ModelForm(model=BigModel, submit_url='/api/forms/big'),
             ]
         case _:
             raise ValueError(f'Invalid kind {kind!r}')

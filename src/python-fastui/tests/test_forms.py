@@ -30,7 +30,7 @@ class FakeRequest:
 
 
 def test_simple_form_fields():
-    m = components.ModelForm[SimpleForm](submit_url='/foobar/')
+    m = components.ModelForm(model=SimpleForm, submit_url='/foobar/')
 
     assert m.model_dump(by_alias=True, exclude_none=True) == {
         'submitUrl': '/foobar/',
@@ -59,7 +59,7 @@ def test_simple_form_fields():
 
 
 def test_inline_form_fields():
-    m = components.ModelForm[SimpleForm](submit_url='/foobar/', display_mode='inline')
+    m = components.ModelForm(model=SimpleForm, submit_url='/foobar/', display_mode='inline')
 
     assert m.model_dump(by_alias=True, exclude_none=True) == {
         'submitUrl': '/foobar/',
@@ -123,7 +123,7 @@ class FormWithNested(BaseModel):
 
 
 def test_w_nested_form_fields():
-    m = components.ModelForm[FormWithNested](submit_url='/foobar/')
+    m = components.ModelForm(model=FormWithNested, submit_url='/foobar/')
 
     # insert_assert(m.model_dump(by_alias=True, exclude_none=True))
     assert m.model_dump(by_alias=True, exclude_none=True) == {
@@ -166,7 +166,7 @@ class FormWithFile(BaseModel):
 
 
 def test_file():
-    m = components.ModelForm[FormWithFile](submit_url='/foobar/')
+    m = components.ModelForm(model=FormWithFile, submit_url='/foobar/')
 
     # insert_assert(m.model_dump(by_alias=True, exclude_none=True))
     assert m.model_dump(by_alias=True, exclude_none=True) == {
@@ -213,7 +213,7 @@ class FormWithFileConstraint(BaseModel):
 
 
 def test_file_constrained():
-    m = components.ModelForm[FormWithFileConstraint](submit_url='/foobar/')
+    m = components.ModelForm(model=FormWithFileConstraint, submit_url='/foobar/')
 
     # insert_assert(m.model_dump(by_alias=True, exclude_none=True))
     assert m.model_dump(by_alias=True, exclude_none=True) == {
@@ -299,7 +299,7 @@ class FormMultipleFiles(BaseModel):
 
 
 def test_multiple_files():
-    m = components.ModelForm[FormMultipleFiles](submit_url='/foobar/')
+    m = components.ModelForm(model=FormMultipleFiles, submit_url='/foobar/')
 
     # insert_assert(m.model_dump(by_alias=True, exclude_none=True))
     assert m.model_dump(by_alias=True, exclude_none=True) == {

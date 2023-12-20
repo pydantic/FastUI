@@ -1,8 +1,5 @@
 import { FC } from 'react'
 
-export interface TextProps {
-  type: 'Text'
-  text: string
-}
+import type { Text } from '../models'
 
-export const TextComp: FC<TextProps> = ({ text }) => <>{text}</>
+export const TextComp: FC<Text> = ({ text }) => <>{text}</>
