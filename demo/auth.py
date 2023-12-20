@@ -35,7 +35,7 @@ def auth_login(user: Annotated[str | None, Depends(get_user)]) -> list[AnyCompon
                 )
             ),
             c.Heading(text='Login'),
-            c.ModelForm[LoginForm](submit_url='/api/auth/login'),
+            c.ModelForm(model=LoginForm, submit_url='/api/auth/login'),
             title='Authentication',
         )
     else:

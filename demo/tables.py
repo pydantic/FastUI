@@ -58,7 +58,8 @@ def cities_view(page: int = 1, country: str | None = None) -> list[AnyComponent]
         filter_form_initial['country'] = {'value': country, 'label': country_name}
     return demo_page(
         *tabs(),
-        c.ModelForm[FilterForm](
+        c.ModelForm(
+            model=FilterForm,
             submit_url='.',
             initial=filter_form_initial,
             method='GOTO',
