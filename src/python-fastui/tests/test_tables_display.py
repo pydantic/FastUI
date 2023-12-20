@@ -50,3 +50,27 @@ def test_table_empty_data_model():
         'columns': [{'field': 'id'}, {'title': 'Name', 'field': 'name'}],
         'type': 'Table',
     }
+
+
+def test_display_no_fields():
+    d = components.Details(data=users[0])
+
+    # insert_assert(d.model_dump(by_alias=True, exclude_none=True))
+    assert d.model_dump(by_alias=True, exclude_none=True) == {
+        'data': {'id': 1, 'name': 'john'},
+        'fields': [{'field': 'id'}, {'title': 'Name', 'field': 'name'}],
+        'type': 'Details',
+    }
+
+
+def test_display_fields():
+    d = components.Details(
+        data=users[0], fields=[display.DisplayLookup(field='id', title='ID'), display.DisplayLookup(field='name')]
+    )
+
+    # insert_assert(d.model_dump(by_alias=True, exclude_none=True))
+    assert d.model_dump(by_alias=True, exclude_none=True) == {
+        'data': {'id': 1, 'name': 'john'},
+        'fields': [{'title': 'ID', 'field': 'id'}, {'title': 'Name', 'field': 'name'}],
+        'type': 'Details',
+    }
