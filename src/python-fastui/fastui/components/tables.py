@@ -12,7 +12,7 @@ from . import display
 
 
 class Table(pydantic.BaseModel, extra='forbid'):
-    data: _t.Sequence[_types.DataModel]
+    data: _t.Sequence[pydantic.SerializeAsAny[_types.DataModel]]
     columns: _t.Union[_t.List[display.DisplayLookup], None] = None
     data_model: _t.Union[_t.Type[pydantic.BaseModel], None] = pydantic.Field(default=None, exclude=True)
     no_data_message: _t.Union[str, None] = pydantic.Field(default=None, serialization_alias='noDataMessage')
@@ -42,11 +42,6 @@ class Table(pydantic.BaseModel, extra='forbid'):
                     column.title = field.title
         return self
 
-    @pydantic.field_serializer('data')
-    def _serialize_data(self, v: _t.List[_types.DataModel]) -> _t.List[_t.Dict[str, _types.JsonData]]:
-        # waiting for a https://github.com/pydantic/pydantic/issues/6423 flag
-        return [row.model_dump(by_alias=True) for row in v]
-
     @classmethod
     def __get_pydantic_json_schema__(
         cls, core_schema: _core_schema.CoreSchema, handler: pydantic.GetJsonSchemaHandler
@@ -55,14 +50,6 @@ class Table(pydantic.BaseModel, extra='forbid'):
         schema_def = handler.resolve_ref_schema(json_schema)
         # columns are filled by `_fill_columns`
         schema_def['required'].append('columns')
-        # the idea here is to revert the return type of `_serialize_data` changing the schema for `data`
-        # TODO this is super hacky, but it gives use the right schema, can we do better
-        schema_def['properties']['data'] = {
-            'type': 'array',
-            'items': {
-                '$ref': '#/$defs/DataModel-Output__1',
-            },
-        }
         return json_schema
 
 

@@ -54,7 +54,7 @@ class Display(DisplayBase, extra='forbid'):
 
 
 class Details(pydantic.BaseModel, extra='forbid'):
-    data: _types.DataModel
+    data: pydantic.SerializeAsAny[_types.DataModel]
     fields: _t.Union[_t.List[DisplayLookup], None] = None
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['Details'] = 'Details'
@@ -72,11 +72,6 @@ class Details(pydantic.BaseModel, extra='forbid'):
                 if pydantic_field and pydantic_field.title:
                     field.title = pydantic_field.title
         return self
-
-    @pydantic.field_serializer('data')
-    def _serialize_data(self, v: _types.DataModel) -> _t.Dict[str, _types.JsonData]:
-        # waiting for a https://github.com/pydantic/pydantic/issues/6423 flag
-        return v.model_dump(by_alias=True)
 
     @classmethod
     def __get_pydantic_json_schema__(
