@@ -53,14 +53,14 @@ class Display(DisplayBase, extra='forbid'):
     type: _t.Literal['Display'] = 'Display'
 
 
-class Details(pydantic.BaseModel, _t.Generic[_types.DataModelGeneric], extra='forbid'):
-    data: _types.DataModelGeneric
+class Details(pydantic.BaseModel, extra='forbid'):
+    data: _types.DataModel
     fields: _t.Union[_t.List[DisplayLookup], None] = None
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['Details'] = 'Details'
 
     @pydantic.model_validator(mode='after')
-    def fill_fields(self) -> _te.Self:
+    def _fill_fields(self) -> _te.Self:
         if self.fields is None:
             self.fields = [
                 DisplayLookup(field=name, title=field.title) for name, field in self.data.model_fields.items()
@@ -72,6 +72,11 @@ class Details(pydantic.BaseModel, _t.Generic[_types.DataModelGeneric], extra='fo
                 if pydantic_field and pydantic_field.title:
                     field.title = pydantic_field.title
         return self
+
+    @pydantic.field_serializer('data')
+    def _serialize_data(self, v: _types.DataModel) -> _t.Dict[str, _types.JsonData]:
+        # waiting for a https://github.com/pydantic/pydantic/issues/6423 flag
+        return v.model_dump(by_alias=True)
 
     @classmethod
     def __get_pydantic_json_schema__(

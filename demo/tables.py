@@ -66,8 +66,9 @@ def cities_view(page: int = 1, country: str | None = None) -> list[AnyComponent]
             submit_on_change=True,
             display_mode='inline',
         ),
-        c.Table[City](
+        c.Table(
             data=cities[(page - 1) * page_size : page * page_size],
+            data_model=City,
             columns=[
                 DisplayLookup(field='city', on_click=GoToEvent(url='./{id}'), table_width_percent=33),
                 DisplayLookup(field='country', table_width_percent=33),
@@ -108,7 +109,7 @@ users: list[User] = [
 def users_view() -> list[AnyComponent]:
     return demo_page(
         *tabs(),
-        c.Table[User](
+        c.Table(
             data=users,
             columns=[
                 DisplayLookup(field='name', on_click=GoToEvent(url='/table/users/{id}/')),
