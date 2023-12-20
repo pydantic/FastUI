@@ -7,12 +7,17 @@ from pydantic import ImportString, TypeAdapter
 from pydantic.json_schema import GenerateJsonSchema, JsonSchemaValue
 from pydantic_core import core_schema, to_json
 
-THIS_DIR = Path(__file__).parent
+
+def main(python_object_str: str, typescript_output_file: Path):  # pragma: no cover
+    root_model = TypeAdapter(ImportString).validate_python(python_object_str)
+    json_schema = generate_json_schema(root_model)
+    json_schema_file = Path('fastui-json-schema.json')
+    json_schema_file.write_bytes(to_json(json_schema, indent=2))
+    json2ts(json_schema_file, typescript_output_file)
 
 
-def main(python_object_str: str, typescript_output_file: Path):
-    python_object = TypeAdapter(ImportString).validate_python(python_object_str)
-    fastui_schema = TypeAdapter(python_object).json_schema(
+def generate_json_schema(root_model: Any) -> JsonSchemaValue:
+    fastui_schema = TypeAdapter(root_model).json_schema(
         by_alias=True, mode='serialization', schema_generator=CustomGenerateJsonSchema
     )
     # the following post-processing is a workaround for
@@ -35,10 +40,7 @@ def main(python_object_str: str, typescript_output_file: Path):
     fastui_schema = replace_any_comp(fastui_schema)
     fastui_schema['$defs']['FastProps'] = any_comp_def
     fastui_schema.pop('description')
-
-    json_schema_file = Path('fastui-json-schema.json')
-    json_schema_file.write_bytes(to_json(fastui_schema, indent=2))
-    json2ts(json_schema_file, typescript_output_file)
+    return fastui_schema
 
 
 class CustomGenerateJsonSchema(GenerateJsonSchema):
@@ -100,7 +102,7 @@ TS_PREFIX = b"""\
  */"""
 
 
-def json2ts(input_file: Path, output_file: Path):
+def json2ts(input_file: Path, output_file: Path):  # pragma: no cover
     args = (
         'npx',
         'json2ts',
