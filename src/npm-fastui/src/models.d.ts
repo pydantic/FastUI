@@ -52,6 +52,16 @@ export type JsonData =
       [k: string]: JsonData
     }
 export type AnyEvent = PageEvent | GoToEvent | BackEvent | AuthEvent
+export type DisplayMode =
+  | 'auto'
+  | 'plain'
+  | 'datetime'
+  | 'date'
+  | 'duration'
+  | 'as_title'
+  | 'markdown'
+  | 'json'
+  | 'inline_code'
 export type SelectOptions = SelectOption[] | SelectGroup[]
 
 export interface Text {
@@ -383,16 +393,4 @@ export interface ModelForm {
   className?: ClassName
   type: 'ModelForm'
   formFields: (FormFieldInput | FormFieldBoolean | FormFieldFile | FormFieldSelect | FormFieldSelectSearch)[]
-}
-
-export const enum DisplayMode {
-  auto = 'auto',
-  plain = 'plain',
-  datetime = 'datetime',
-  date = 'date',
-  duration = 'duration',
-  as_title = 'as_title',
-  markdown = 'markdown',
-  json = 'json',
-  inline_code = 'inline_code'
 }

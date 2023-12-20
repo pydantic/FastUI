@@ -118,7 +118,7 @@ def main():
 
     json_schema_file = Path('fastui-json-schema.json')
     json_schema_file.write_bytes(to_json(fastui_schema, indent=2))
-    json2ts(json_schema_file, Path('src/npm-fastui/src/models.ts'))
+    json2ts(json_schema_file, Path('src/npm-fastui/src/models.d.ts'))
 
 
 if __name__ == '__main__':

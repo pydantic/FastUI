@@ -11,7 +11,7 @@ interface ClassNameGeneratorArgs {
   subElement?: string
 }
 
-export type ClassNameGenerator = (args: ClassNameGeneratorArgs) => ClassName
+export type ClassNameGenerator = (args: ClassNameGeneratorArgs) => ClassName | undefined
 export const ClassNameContext = createContext<ClassNameGenerator | null>(null)
 
 interface UseClassNameExtra {

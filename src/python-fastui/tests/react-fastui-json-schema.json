@@ -52,10 +52,26 @@
       "required": ["type"],
       "type": "object"
     },
-    "ButtonProps": {
+    "Button": {
       "properties": {
         "className": {
-          "$ref": "#/definitions/ClassName"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "htmlType": {
           "enum": ["button", "reset", "submit"],
@@ -97,17 +113,36 @@
           "type": "array"
         },
         {
-          "$ref": "#/definitions/Record<string,boolean|null>"
+          "additionalProperties": {
+            "type": "boolean"
+          },
+          "type": "object"
         },
         {
           "type": "string"
         }
       ]
     },
-    "CodeProps": {
+    "Code": {
       "properties": {
         "className": {
-          "$ref": "#/definitions/ClassName"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "codeStyle": {
           "type": "string"
@@ -127,12 +162,31 @@
       "type": "object"
     },
     "ContextType": {
+      "additionalProperties": {
+        "type": ["string", "number"]
+      },
       "type": "object"
     },
-    "CustomProps": {
+    "Custom": {
       "properties": {
         "className": {
-          "$ref": "#/definitions/ClassName"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "data": {
           "$ref": "#/definitions/JsonData"
@@ -152,19 +206,38 @@
       "type": "object"
     },
     "DataModel": {
+      "additionalProperties": {
+        "$ref": "#/definitions/JsonData"
+      },
       "type": "object"
     },
-    "DetailsProps": {
+    "Details": {
       "properties": {
         "className": {
-          "$ref": "#/definitions/ClassName"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "data": {
           "$ref": "#/definitions/DataModel"
         },
         "fields": {
           "items": {
-            "$ref": "#/definitions/DisplayLookupProps"
+            "$ref": "#/definitions/DisplayLookup"
           },
           "type": "array"
         },
@@ -176,27 +249,45 @@
       "required": ["data", "fields", "type"],
       "type": "object"
     },
-    "DisplayArrayProps": {
+    "Display": {
+      "description": "Description of how to display a value, either in a table or detail view.",
       "properties": {
         "mode": {
           "enum": ["as_title", "auto", "date", "datetime", "duration", "inline_code", "json", "markdown", "plain"],
           "type": "string"
         },
+        "onClick": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/PageEvent"
+            },
+            {
+              "$ref": "#/definitions/GoToEvent"
+            },
+            {
+              "$ref": "#/definitions/BackEvent"
+            },
+            {
+              "$ref": "#/definitions/AuthEvent"
+            }
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
         "type": {
-          "const": "DisplayArray",
+          "const": "Display",
           "type": "string"
         },
         "value": {
-          "items": {
-            "$ref": "#/definitions/JsonData"
-          },
-          "type": "array"
+          "$ref": "#/definitions/JsonData"
         }
       },
       "required": ["type", "value"],
       "type": "object"
     },
-    "DisplayLookupProps": {
+    "DisplayLookup": {
+      "description": "Description of how to display a value looked up from data, either in a table or detail view.",
       "properties": {
         "field": {
           "type": "string"
@@ -231,86 +322,26 @@
       "required": ["field"],
       "type": "object"
     },
-    "DisplayMode": {
-      "enum": ["auto", "plain", "datetime", "date", "duration", "as_title", "markdown", "json", "inline_code"],
-      "type": "string"
-    },
-    "DisplayObjectProps": {
-      "properties": {
-        "mode": {
-          "enum": ["as_title", "auto", "date", "datetime", "duration", "inline_code", "json", "markdown", "plain"],
-          "type": "string"
-        },
-        "type": {
-          "const": "DisplayObject",
-          "type": "string"
-        },
-        "value": {
-          "additionalProperties": {
-            "$ref": "#/definitions/JsonData"
-          },
-          "type": "object"
-        }
-      },
-      "required": ["type", "value"],
-      "type": "object"
-    },
-    "DisplayPrimitiveProps": {
-      "properties": {
-        "mode": {
-          "$ref": "#/definitions/DisplayMode"
-        },
-        "type": {
-          "const": "DisplayPrimitive",
-          "type": "string"
-        },
-        "value": {
-          "$ref": "#/definitions/JSONPrimitive"
-        }
-      },
-      "required": ["mode", "type", "value"],
-      "type": "object"
-    },
-    "DisplayProps": {
-      "properties": {
-        "mode": {
-          "enum": ["as_title", "auto", "date", "datetime", "duration", "inline_code", "json", "markdown", "plain"],
-          "type": "string"
-        },
-        "onClick": {
-          "anyOf": [
-            {
-              "$ref": "#/definitions/PageEvent"
-            },
-            {
-              "$ref": "#/definitions/GoToEvent"
-            },
-            {
-              "$ref": "#/definitions/BackEvent"
-            },
-            {
-              "$ref": "#/definitions/AuthEvent"
-            }
-          ]
-        },
-        "title": {
-          "type": "string"
-        },
-        "type": {
-          "const": "Display",
-          "type": "string"
-        },
-        "value": {
-          "type": "JSON"
-        }
-      },
-      "required": ["type"],
-      "type": "object"
-    },
-    "DivProps": {
+    "Div": {
       "properties": {
         "className": {
-          "$ref": "#/definitions/ClassName"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "components": {
           "items": {
@@ -329,114 +360,103 @@
     "FastProps": {
       "anyOf": [
         {
-          "$ref": "#/definitions/TextProps"
+          "$ref": "#/definitions/Text"
         },
         {
-          "$ref": "#/definitions/ParagraphProps"
+          "$ref": "#/definitions/Paragraph"
         },
         {
-          "$ref": "#/definitions/PageTitleProps"
+          "$ref": "#/definitions/PageTitle"
         },
         {
-          "$ref": "#/definitions/DivProps"
+          "$ref": "#/definitions/Div"
         },
         {
-          "$ref": "#/definitions/PageProps"
+          "$ref": "#/definitions/Page"
         },
         {
-          "$ref": "#/definitions/HeadingProps"
+          "$ref": "#/definitions/Heading"
         },
         {
-          "$ref": "#/definitions/MarkdownProps"
+          "$ref": "#/definitions/Markdown"
         },
         {
-          "$ref": "#/definitions/CodeProps"
+          "$ref": "#/definitions/Code"
         },
         {
-          "$ref": "#/definitions/FormProps"
+          "$ref": "#/definitions/Json"
         },
         {
-          "$ref": "#/definitions/ModelFormProps"
+          "$ref": "#/definitions/Button"
         },
         {
-          "$ref": "#/definitions/FormFieldInputProps"
+          "$ref": "#/definitions/Link"
         },
         {
-          "$ref": "#/definitions/FormFieldBooleanProps"
+          "$ref": "#/definitions/LinkList"
         },
         {
-          "$ref": "#/definitions/FormFieldFileProps"
+          "$ref": "#/definitions/Navbar"
         },
         {
-          "$ref": "#/definitions/FormFieldSelectProps"
+          "$ref": "#/definitions/Modal"
         },
         {
-          "$ref": "#/definitions/FormFieldSelectSearchProps"
+          "$ref": "#/definitions/ServerLoad"
         },
         {
-          "$ref": "#/definitions/ButtonProps"
+          "$ref": "#/definitions/Image"
         },
         {
-          "$ref": "#/definitions/ModalProps"
+          "$ref": "#/definitions/Iframe"
         },
         {
-          "$ref": "#/definitions/TableProps"
+          "$ref": "#/definitions/Video"
         },
         {
-          "$ref": "#/definitions/PaginationProps"
+          "$ref": "#/definitions/FireEvent"
         },
         {
-          "$ref": "#/definitions/DetailsProps"
+          "$ref": "#/definitions/Custom"
         },
         {
-          "$ref": "#/definitions/LinkProps"
+          "$ref": "#/definitions/Table"
         },
         {
-          "$ref": "#/definitions/LinkListProps"
+          "$ref": "#/definitions/Pagination"
         },
         {
-          "$ref": "#/definitions/NavbarProps"
+          "$ref": "#/definitions/Display"
         },
         {
-          "$ref": "#/definitions/DisplayProps"
+          "$ref": "#/definitions/Details"
         },
         {
-          "$ref": "#/definitions/DisplayArrayProps"
+          "$ref": "#/definitions/Form"
         },
         {
-          "$ref": "#/definitions/DisplayObjectProps"
+          "$ref": "#/definitions/FormFieldInput"
         },
         {
-          "$ref": "#/definitions/DisplayPrimitiveProps"
+          "$ref": "#/definitions/FormFieldBoolean"
         },
         {
-          "$ref": "#/definitions/JsonProps"
+          "$ref": "#/definitions/FormFieldFile"
         },
         {
-          "$ref": "#/definitions/ServerLoadProps"
+          "$ref": "#/definitions/FormFieldSelect"
         },
         {
-          "$ref": "#/definitions/ImageProps"
+          "$ref": "#/definitions/FormFieldSelectSearch"
         },
         {
-          "$ref": "#/definitions/IframeProps"
-        },
-        {
-          "$ref": "#/definitions/VideoProps"
-        },
-        {
-          "$ref": "#/definitions/FireEventProps"
-        },
-        {
-          "$ref": "#/definitions/CustomProps"
+          "$ref": "#/definitions/ModelForm"
         }
-      ]
+      ],
+      "description": "This file was automatically generated by json-schema-to-typescript.\nDO NOT MODIFY IT BY HAND. Instead, modify the source JSONSchema file,\nand run json-schema-to-typescript to regenerate this file."
     },
-    "FireEventProps": {
+    "FireEvent": {
       "properties": {
-        "className": {
-          "$ref": "#/definitions/ClassName"
-        },
         "event": {
           "$ref": "#/definitions/AnyEvent"
         },
@@ -451,10 +471,106 @@
       "required": ["event", "type"],
       "type": "object"
     },
-    "FormFieldBooleanProps": {
+    "Form": {
       "properties": {
         "className": {
-          "$ref": "#/definitions/ClassName"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "displayMode": {
+          "enum": ["default", "inline"],
+          "type": "string"
+        },
+        "footer": {
+          "items": {
+            "$ref": "#/definitions/FastProps"
+          },
+          "type": "array"
+        },
+        "formFields": {
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/FormFieldInput"
+              },
+              {
+                "$ref": "#/definitions/FormFieldBoolean"
+              },
+              {
+                "$ref": "#/definitions/FormFieldFile"
+              },
+              {
+                "$ref": "#/definitions/FormFieldSelect"
+              },
+              {
+                "$ref": "#/definitions/FormFieldSelectSearch"
+              }
+            ]
+          },
+          "type": "array"
+        },
+        "initial": {
+          "additionalProperties": {
+            "$ref": "#/definitions/JsonData"
+          },
+          "type": "object"
+        },
+        "method": {
+          "enum": ["GET", "GOTO", "POST"],
+          "type": "string"
+        },
+        "submitOnChange": {
+          "type": "boolean"
+        },
+        "submitTrigger": {
+          "$ref": "#/definitions/PageEvent"
+        },
+        "submitUrl": {
+          "type": "string"
+        },
+        "type": {
+          "const": "Form",
+          "type": "string"
+        }
+      },
+      "required": ["formFields", "submitUrl", "type"],
+      "type": "object"
+    },
+    "FormFieldBoolean": {
+      "properties": {
+        "className": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "description": {
           "type": "string"
@@ -479,9 +595,6 @@
         "name": {
           "type": "string"
         },
-        "onChange": {
-          "type": "object"
-        },
         "required": {
           "type": "boolean"
         },
@@ -503,16 +616,32 @@
           "type": "string"
         }
       },
-      "required": ["locked", "mode", "name", "required", "title", "type"],
+      "required": ["name", "title", "type"],
       "type": "object"
     },
-    "FormFieldFileProps": {
+    "FormFieldFile": {
       "properties": {
         "accept": {
           "type": "string"
         },
         "className": {
-          "$ref": "#/definitions/ClassName"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "description": {
           "type": "string"
@@ -532,9 +661,6 @@
         },
         "name": {
           "type": "string"
-        },
-        "onChange": {
-          "type": "object"
         },
         "required": {
           "type": "boolean"
@@ -557,13 +683,29 @@
           "type": "string"
         }
       },
-      "required": ["locked", "name", "required", "title", "type"],
+      "required": ["name", "title", "type"],
       "type": "object"
     },
-    "FormFieldInputProps": {
+    "FormFieldInput": {
       "properties": {
         "className": {
-          "$ref": "#/definitions/ClassName"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "description": {
           "type": "string"
@@ -587,9 +729,6 @@
         },
         "name": {
           "type": "string"
-        },
-        "onChange": {
-          "type": "object"
         },
         "placeholder": {
           "type": "string"
@@ -615,32 +754,29 @@
           "type": "string"
         }
       },
-      "required": ["htmlType", "locked", "name", "required", "title", "type"],
+      "required": ["name", "title", "type"],
       "type": "object"
     },
-    "FormFieldProps": {
-      "anyOf": [
-        {
-          "$ref": "#/definitions/FormFieldInputProps"
-        },
-        {
-          "$ref": "#/definitions/FormFieldBooleanProps"
-        },
-        {
-          "$ref": "#/definitions/FormFieldFileProps"
-        },
-        {
-          "$ref": "#/definitions/FormFieldSelectProps"
-        },
-        {
-          "$ref": "#/definitions/FormFieldSelectSearchProps"
-        }
-      ]
-    },
-    "FormFieldSelectProps": {
+    "FormFieldSelect": {
       "properties": {
         "className": {
-          "$ref": "#/definitions/ClassName"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "description": {
           "type": "string"
@@ -663,9 +799,6 @@
         },
         "name": {
           "type": "string"
-        },
-        "onChange": {
-          "type": "object"
         },
         "options": {
           "$ref": "#/definitions/SelectOptions"
@@ -697,16 +830,32 @@
           "type": "boolean"
         }
       },
-      "required": ["locked", "name", "options", "required", "title", "type"],
+      "required": ["name", "options", "title", "type"],
       "type": "object"
     },
-    "FormFieldSelectSearchProps": {
+    "FormFieldSelectSearch": {
       "properties": {
         "className": {
-          "$ref": "#/definitions/ClassName"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "debounce": {
-          "type": "integer"
+          "type": "number"
         },
         "description": {
           "type": "string"
@@ -729,9 +878,6 @@
         },
         "name": {
           "type": "string"
-        },
-        "onChange": {
-          "type": "object"
         },
         "placeholder": {
           "type": "string"
@@ -760,58 +906,16 @@
           "type": "string"
         }
       },
-      "required": ["locked", "name", "required", "searchUrl", "title", "type"],
-      "type": "object"
-    },
-    "FormProps": {
-      "properties": {
-        "className": {
-          "$ref": "#/definitions/ClassName"
-        },
-        "displayMode": {
-          "enum": ["default", "inline"],
-          "type": "string"
-        },
-        "footer": {
-          "items": {
-            "$ref": "#/definitions/FastProps"
-          },
-          "type": "array"
-        },
-        "formFields": {
-          "items": {
-            "$ref": "#/definitions/FormFieldProps"
-          },
-          "type": "array"
-        },
-        "initial": {
-          "type": "object"
-        },
-        "method": {
-          "enum": ["GET", "GOTO", "POST"],
-          "type": "string"
-        },
-        "submitOnChange": {
-          "type": "boolean"
-        },
-        "submitTrigger": {
-          "$ref": "#/definitions/PageEvent"
-        },
-        "submitUrl": {
-          "type": "string"
-        },
-        "type": {
-          "const": "Form",
-          "type": "string"
-        }
-      },
-      "required": ["formFields", "method", "submitUrl", "type"],
+      "required": ["name", "searchUrl", "title", "type"],
       "type": "object"
     },
     "GoToEvent": {
       "properties": {
         "query": {
-          "$ref": "#/definitions/Record<string,string|number|null>"
+          "additionalProperties": {
+            "type": ["string", "number"]
+          },
+          "type": "object"
         },
         "type": {
           "const": "go-to",
@@ -824,17 +928,33 @@
       "required": ["type"],
       "type": "object"
     },
-    "HeadingProps": {
+    "Heading": {
       "properties": {
         "className": {
-          "$ref": "#/definitions/ClassName"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "htmlId": {
           "type": "string"
         },
         "level": {
           "enum": [1, 2, 3, 4, 5, 6],
-          "type": "integer"
+          "type": "number"
         },
         "text": {
           "type": "string"
@@ -847,18 +967,31 @@
       "required": ["level", "text", "type"],
       "type": "object"
     },
-    "IframeProps": {
+    "Iframe": {
       "properties": {
         "className": {
-          "$ref": "#/definitions/ClassName"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "height": {
-          "type": ["string", "integer"]
+          "type": ["string", "number"]
         },
         "src": {
-          "format": "uri",
-          "maxLength": 2083,
-          "minLength": 1,
           "type": "string"
         },
         "title": {
@@ -869,22 +1002,38 @@
           "type": "string"
         },
         "width": {
-          "type": ["string", "integer"]
+          "type": ["string", "number"]
         }
       },
       "required": ["src", "type"],
       "type": "object"
     },
-    "ImageProps": {
+    "Image": {
       "properties": {
         "alt": {
           "type": "string"
         },
         "className": {
-          "$ref": "#/definitions/ClassName"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "height": {
-          "type": ["string", "integer"]
+          "type": ["string", "number"]
         },
         "loading": {
           "enum": ["eager", "lazy"],
@@ -927,14 +1076,43 @@
           "type": "string"
         },
         "width": {
-          "type": ["string", "integer"]
+          "type": ["string", "number"]
         }
       },
       "required": ["src", "type"],
       "type": "object"
     },
-    "JSONPrimitive": {
-      "type": ["null", "string", "number", "boolean"]
+    "Json": {
+      "properties": {
+        "className": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "type": {
+          "const": "JSON",
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/definitions/JsonData"
+        }
+      },
+      "required": ["type", "value"],
+      "type": "object"
     },
     "JsonData": {
       "anyOf": [
@@ -955,52 +1133,29 @@
         }
       ]
     },
-    "JsonProps": {
-      "properties": {
-        "className": {
-          "$ref": "#/definitions/ClassName"
-        },
-        "type": {
-          "const": "JSON",
-          "type": "string"
-        },
-        "value": {
-          "$ref": "#/definitions/JsonData"
-        }
-      },
-      "required": ["type", "value"],
-      "type": "object"
-    },
-    "LinkListProps": {
-      "properties": {
-        "className": {
-          "$ref": "#/definitions/ClassName"
-        },
-        "links": {
-          "items": {
-            "$ref": "#/definitions/LinkProps"
-          },
-          "type": "array"
-        },
-        "mode": {
-          "enum": ["pagination", "tabs", "vertical"],
-          "type": "string"
-        },
-        "type": {
-          "const": "LinkList",
-          "type": "string"
-        }
-      },
-      "required": ["links", "type"],
-      "type": "object"
-    },
-    "LinkProps": {
+    "Link": {
       "properties": {
         "active": {
           "type": ["string", "boolean"]
         },
         "className": {
-          "$ref": "#/definitions/ClassName"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "components": {
           "items": {
@@ -1039,10 +1194,65 @@
       "required": ["components", "type"],
       "type": "object"
     },
-    "MarkdownProps": {
+    "LinkList": {
       "properties": {
         "className": {
-          "$ref": "#/definitions/ClassName"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "links": {
+          "items": {
+            "$ref": "#/definitions/Link"
+          },
+          "type": "array"
+        },
+        "mode": {
+          "enum": ["pagination", "tabs", "vertical"],
+          "type": "string"
+        },
+        "type": {
+          "const": "LinkList",
+          "type": "string"
+        }
+      },
+      "required": ["links", "type"],
+      "type": "object"
+    },
+    "Markdown": {
+      "properties": {
+        "className": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "codeStyle": {
           "type": "string"
@@ -1058,7 +1268,7 @@
       "required": ["text", "type"],
       "type": "object"
     },
-    "ModalProps": {
+    "Modal": {
       "properties": {
         "body": {
           "items": {
@@ -1067,7 +1277,23 @@
           "type": "array"
         },
         "className": {
-          "$ref": "#/definitions/ClassName"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "footer": {
           "items": {
@@ -1092,10 +1318,26 @@
       "required": ["body", "title", "type"],
       "type": "object"
     },
-    "ModelFormProps": {
+    "ModelForm": {
       "properties": {
         "className": {
-          "$ref": "#/definitions/ClassName"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "displayMode": {
           "enum": ["default", "inline"],
@@ -1109,11 +1351,30 @@
         },
         "formFields": {
           "items": {
-            "$ref": "#/definitions/FormFieldProps"
+            "anyOf": [
+              {
+                "$ref": "#/definitions/FormFieldInput"
+              },
+              {
+                "$ref": "#/definitions/FormFieldBoolean"
+              },
+              {
+                "$ref": "#/definitions/FormFieldFile"
+              },
+              {
+                "$ref": "#/definitions/FormFieldSelect"
+              },
+              {
+                "$ref": "#/definitions/FormFieldSelectSearch"
+              }
+            ]
           },
           "type": "array"
         },
         "initial": {
+          "additionalProperties": {
+            "$ref": "#/definitions/JsonData"
+          },
           "type": "object"
         },
         "method": {
@@ -1134,17 +1395,33 @@
           "type": "string"
         }
       },
-      "required": ["formFields", "method", "submitUrl", "type"],
+      "required": ["formFields", "submitUrl", "type"],
       "type": "object"
     },
-    "NavbarProps": {
+    "Navbar": {
       "properties": {
         "className": {
-          "$ref": "#/definitions/ClassName"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "links": {
           "items": {
-            "$ref": "#/definitions/LinkProps"
+            "$ref": "#/definitions/Link"
           },
           "type": "array"
         },
@@ -1175,6 +1452,42 @@
       "required": ["links", "type"],
       "type": "object"
     },
+    "Page": {
+      "description": "Similar to `container` in many UI frameworks, this should be a reasonable root component for most pages.",
+      "properties": {
+        "className": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "components": {
+          "items": {
+            "$ref": "#/definitions/FastProps"
+          },
+          "type": "array"
+        },
+        "type": {
+          "const": "Page",
+          "type": "string"
+        }
+      },
+      "required": ["components", "type"],
+      "type": "object"
+    },
     "PageEvent": {
       "properties": {
         "clear": {
@@ -1197,26 +1510,8 @@
       "required": ["name", "type"],
       "type": "object"
     },
-    "PageProps": {
-      "properties": {
-        "className": {
-          "$ref": "#/definitions/ClassName"
-        },
-        "components": {
-          "items": {
-            "$ref": "#/definitions/FastProps"
-          },
-          "type": "array"
-        },
-        "type": {
-          "const": "Page",
-          "type": "string"
-        }
-      },
-      "required": ["components", "type"],
-      "type": "object"
-    },
-    "PageTitleProps": {
+    "PageTitle": {
+      "description": "This sets the title of the HTML page via the `document.title` property.",
       "properties": {
         "text": {
           "type": "string"
@@ -1229,22 +1524,38 @@
       "required": ["text", "type"],
       "type": "object"
     },
-    "PaginationProps": {
+    "Pagination": {
       "properties": {
         "className": {
-          "$ref": "#/definitions/ClassName"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "page": {
-          "type": "integer"
+          "type": "number"
         },
         "pageCount": {
-          "type": "integer"
+          "type": "number"
         },
         "pageSize": {
-          "type": "integer"
+          "type": "number"
         },
         "total": {
-          "type": "integer"
+          "type": "number"
         },
         "type": {
           "const": "Pagination",
@@ -1254,10 +1565,26 @@
       "required": ["page", "pageCount", "pageSize", "total", "type"],
       "type": "object"
     },
-    "ParagraphProps": {
+    "Paragraph": {
       "properties": {
         "className": {
-          "$ref": "#/definitions/ClassName"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "text": {
           "type": "string"
@@ -1268,12 +1595,6 @@
         }
       },
       "required": ["text", "type"],
-      "type": "object"
-    },
-    "Record<string,boolean|null>": {
-      "type": "object"
-    },
-    "Record<string,string|number|null>": {
       "type": "object"
     },
     "SelectGroup": {
@@ -1319,7 +1640,8 @@
         }
       ]
     },
-    "ServerLoadProps": {
+    "ServerLoad": {
+      "description": "A component that will be replaced by the server with the component returned by the given URL.",
       "properties": {
         "components": {
           "items": {
@@ -1344,14 +1666,30 @@
       "required": ["path", "type"],
       "type": "object"
     },
-    "TableProps": {
+    "Table": {
       "properties": {
         "className": {
-          "$ref": "#/definitions/ClassName"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "columns": {
           "items": {
-            "$ref": "#/definitions/DisplayLookupProps"
+            "$ref": "#/definitions/DisplayLookup"
           },
           "type": "array"
         },
@@ -1372,7 +1710,7 @@
       "required": ["columns", "data", "type"],
       "type": "object"
     },
-    "TextProps": {
+    "Text": {
       "properties": {
         "text": {
           "type": "string"
@@ -1385,19 +1723,35 @@
       "required": ["text", "type"],
       "type": "object"
     },
-    "VideoProps": {
+    "Video": {
       "properties": {
         "autoplay": {
           "type": "boolean"
         },
         "className": {
-          "$ref": "#/definitions/ClassName"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/ClassName"
+              },
+              "type": "array"
+            },
+            {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "controls": {
           "type": "boolean"
         },
         "height": {
-          "type": ["string", "integer"]
+          "type": ["string", "number"]
         },
         "loop": {
           "type": "boolean"
@@ -1406,14 +1760,10 @@
           "type": "boolean"
         },
         "poster": {
-          "format": "uri",
-          "minLength": 1,
           "type": "string"
         },
         "sources": {
           "items": {
-            "format": "uri",
-            "minLength": 1,
             "type": "string"
           },
           "type": "array"
@@ -1423,11 +1773,12 @@
           "type": "string"
         },
         "width": {
-          "type": ["string", "integer"]
+          "type": ["string", "number"]
         }
       },
       "required": ["sources", "type"],
       "type": "object"
     }
-  }
+  },
+  "description": "This file was automatically generated by json-schema-to-typescript.\nDO NOT MODIFY IT BY HAND. Instead, modify the source JSONSchema file,\nand run json-schema-to-typescript to regenerate this file."
 }

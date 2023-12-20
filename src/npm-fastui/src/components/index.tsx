@@ -39,7 +39,38 @@ import { FireEventComp } from './FireEvent'
 import { CustomComp } from './Custom'
 
 // TODO some better way to export components
-export { LinkComp, LinkRender }
+export {
+  TextComp,
+  ParagraphComp,
+  PageTitleComp,
+  DivComp,
+  HeadingComp,
+  MarkdownComp,
+  CodeComp,
+  FormComp,
+  FormFieldInputComp,
+  FormFieldBooleanComp,
+  FormFieldSelectComp,
+  FormFieldSelectSearchComp,
+  FormFieldFileComp,
+  ButtonComp,
+  LinkComp,
+  LinkListComp,
+  NavbarComp,
+  ModalComp,
+  TableComp,
+  PaginationComp,
+  DetailsComp,
+  DisplayComp,
+  JsonComp,
+  ServerLoadComp,
+  ImageComp,
+  IframeComp,
+  VideoComp,
+  FireEventComp,
+  CustomComp,
+  LinkRender,
+}
 
 export type FastClassNameProps = Exclude<FastProps, Text | Display | ServerLoad | PageTitle | FireEvent>
 

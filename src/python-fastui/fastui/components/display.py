@@ -25,15 +25,6 @@ class DisplayMode(str, enum.Enum):
     json = 'json'
     inline_code = 'inline_code'
 
-    @classmethod
-    def __get_pydantic_json_schema__(
-        cls, core_schema: _core_schema.CoreSchema, handler: pydantic.GetJsonSchemaHandler
-    ) -> _t.Any:
-        json_schema = handler(core_schema)
-        # https://github.com/bcherny/json-schema-to-typescript/issues/200#issuecomment-575909933
-        json_schema['tsEnumNames'] = list(json_schema['enum'])
-        return json_schema
-
 
 class DisplayBase(pydantic.BaseModel, ABC, defer_build=True):
     mode: _t.Union[DisplayMode, None] = None

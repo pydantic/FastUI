@@ -1,8 +1,9 @@
 import { FC } from 'react'
 
+import type { AnyEvent, DisplayMode, Display, JsonData } from '../models'
+
 import { useCustomRender } from '../hooks/config'
 import { unreachable, asTitle } from '../tools'
-import { AnyEvent, DisplayMode, Display, JsonData } from '../models'
 
 import { JsonComp } from './Json'
 import { LinkRender } from './link'
@@ -26,9 +27,9 @@ export const DisplayComp: FC<Display> = (props) => {
 }
 
 const DisplayRender: FC<Display> = (props) => {
-  const mode = props.mode ?? DisplayMode.auto
+  const mode = props.mode ?? 'auto'
   const value = props.value ?? null
-  if (mode === DisplayMode.json) {
+  if (mode === 'json') {
     return <JsonComp type="JSON" value={value} />
   } else if (Array.isArray(value)) {
     return <DisplayArray mode={mode} value={value} />
@@ -88,22 +89,22 @@ export const DisplayPrimitive: FC<DisplayPrimitiveProps> = (props) => {
   const { mode, value } = props
 
   switch (mode) {
-    case DisplayMode.auto:
+    case 'auto':
       return <DisplayAuto value={value} />
-    case DisplayMode.plain:
+    case 'plain':
       return <DisplayPlain value={value} />
-    case DisplayMode.datetime:
+    case 'datetime':
       return <DisplayDateTime value={value} />
-    case DisplayMode.date:
+    case 'date':
       return <DisplayDate value={value} />
-    case DisplayMode.duration:
+    case 'duration':
       return <DisplayDuration value={value} />
-    case DisplayMode.as_title:
+    case 'as_title':
       return <DisplayAsTitle value={value} />
-    case DisplayMode.markdown:
+    case 'markdown':
       return <DisplayMarkdown value={value} />
-    case DisplayMode.json:
-    case DisplayMode.inline_code:
+    case 'json':
+    case 'inline_code':
       return <DisplayInlineCode value={value} />
     default:
       unreachable('Unexpected display type', mode, props)
