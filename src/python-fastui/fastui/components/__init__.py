@@ -9,6 +9,7 @@ import typing as _t
 
 import pydantic as _p
 import typing_extensions as _te
+from pydantic_core import core_schema as _core_schema
 
 from .. import class_name as _class_name
 from .. import events
@@ -108,6 +109,15 @@ class Heading(_p.BaseModel, extra='forbid'):
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['Heading'] = 'Heading'
 
+    @classmethod
+    def __get_pydantic_json_schema__(
+        cls, core_schema: _core_schema.CoreSchema, handler: _p.GetJsonSchemaHandler
+    ) -> _t.Any:
+        # until https://github.com/pydantic/pydantic/issues/8413 is fixed
+        json_schema = handler(core_schema)
+        json_schema['required'].append('level')
+        return json_schema
+
 
 # see https://github.com/PrismJS/prism-themes
 # and https://cdn.jsdelivr.net/npm/react-syntax-highlighter@15.5.0/dist/esm/styles/prism/index.js
@@ -168,6 +178,15 @@ class Navbar(_p.BaseModel, extra='forbid'):
     links: _t.List[Link] = _p.Field(default=[])
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['Navbar'] = 'Navbar'
+
+    @classmethod
+    def __get_pydantic_json_schema__(
+        cls, core_schema: _core_schema.CoreSchema, handler: _p.GetJsonSchemaHandler
+    ) -> _t.Any:
+        # until https://github.com/pydantic/pydantic/issues/8413 is fixed
+        json_schema = handler(core_schema)
+        json_schema['required'].append('links')
+        return json_schema
 
 
 class Modal(_p.BaseModel, extra='forbid'):

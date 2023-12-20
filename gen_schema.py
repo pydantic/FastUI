@@ -56,16 +56,6 @@ class CustomGenerateJsonSchema(GenerateJsonSchema):
                 schema['ref'] = 'fastui.events.AnyEvent'
         return super().tagged_union_schema(schema)
 
-    # def get_defs_ref(self, core_mode_ref: str) -> str:
-    #     json_scheam_ref = super().get_defs_ref(core_mode_ref)
-    #     debug(core_mode_ref, json_scheam_ref)
-    #     return json_scheam_ref
-
-    # def normalize_name(self, name: str) -> str:
-    #     if name == 'BaseModel':
-    #         return 'DataModel'
-    #     return super().normalize_name(name)
-
 
 def json2ts(input_file: Path, output_file: Path):
     args = (
@@ -87,6 +77,14 @@ def json2ts(input_file: Path, output_file: Path):
             f"then run the command:\n\n    {' '.join(args)}\n\n"
         ) from e
     else:
+        assert output_file.is_file()
+        # remove the root list type that we don't need
+        output = (
+            output_file.read_bytes()
+            .replace(b'export type FastUI = FastProps[]\n', b'')
+            .replace(b'/* eslint-disable */\n', b'')
+        )
+        output_file.write_bytes(output)
         input_file.unlink()
 
 
@@ -97,14 +95,13 @@ def main():
     # the following post-processing is a workaround for
     # https://github.com/pydantic/pydantic/issues/8320
     any_comp_def = fastui_schema['$defs']['Div']['properties']['components']['items'].copy()
-    any_comp_ref = {'$ref': '#/$defs/AnyComponent'}
+    any_comp_ref = {'$ref': '#/$defs/FastProps'}
 
     def replace_any_comp(value: Any) -> Any:
         if isinstance(value, dict):
             if value == any_comp_def:
                 return any_comp_ref
             else:
-
                 return {k: replace_any_comp(v) for k, v in value.items()}
         elif isinstance(value, list):
             return [replace_any_comp(v) for v in value]
@@ -113,11 +110,15 @@ def main():
 
     fastui_schema['items'] = any_comp_ref
     fastui_schema = replace_any_comp(fastui_schema)
-    fastui_schema['$defs']['AnyComponent'] = any_comp_def
+    fastui_schema['$defs']['FastProps'] = any_comp_def
+    fastui_schema.pop('description')
+
+    # fastui_schema.pop('discriminator')
+    # fastui_schema.pop('oneOf')
 
     json_schema_file = Path('fastui-json-schema.json')
     json_schema_file.write_bytes(to_json(fastui_schema, indent=2))
-    json2ts(json_schema_file, Path('models.ts'))
+    json2ts(json_schema_file, Path('src/npm-fastui/src/models.ts'))
 
 
 if __name__ == '__main__':

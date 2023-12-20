@@ -5,5 +5,4 @@ from pydantic import Field
 from typing_extensions import Annotated, TypeAliasType
 
 ClassName = TypeAliasType('ClassName', Union[str, List['ClassName'], Dict[str, Union[bool, None]], None])
-# should be `str | List[ClassName] | Dict[str, bool | None] | None`, but pydantic doesn't like that
 ClassNameField = Annotated[ClassName, Field(serialization_alias='className')]

@@ -1,14 +1,10 @@
 import { FC } from 'react'
 
-import { ClassName, useClassName } from '../hooks/className'
+import type { Paragraph } from '../models'
 
-export interface ParagraphProps {
-  type: 'Paragraph'
-  text: string
-  className?: ClassName
-}
+import { useClassName } from '../hooks/className'
 
-export const ParagraphComp: FC<ParagraphProps> = (props) => {
+export const ParagraphComp: FC<Paragraph> = (props) => {
   const { text } = props
 
   return <p className={useClassName(props)}>{text}</p>

@@ -2,33 +2,12 @@ import { FC } from 'react'
 
 import { useCustomRender } from '../hooks/config'
 import { unreachable, asTitle } from '../tools'
-import { AnyEvent } from '../events'
+import { AnyEvent, DisplayMode, Display, JsonData } from '../models'
 
-import { JsonComp, JsonData } from './Json'
+import { JsonComp } from './Json'
 import { LinkRender } from './link'
 
-export enum DisplayMode {
-  auto = 'auto',
-  plain = 'plain',
-  datetime = 'datetime',
-  date = 'date',
-  duration = 'duration',
-  as_title = 'as_title',
-  markdown = 'markdown',
-  json = 'json',
-  inline_code = 'inline_code',
-}
-
-export interface DisplayProps {
-  type: 'Display'
-  /** @TJS-type JSON */
-  value?: JsonData
-  mode?: DisplayMode
-  title?: string
-  onClick?: AnyEvent
-}
-
-export const DisplayComp: FC<DisplayProps> = (props) => {
+export const DisplayComp: FC<Display> = (props) => {
   const CustomRenderComp = useCustomRender(props)
   if (CustomRenderComp) {
     return <CustomRenderComp />
@@ -46,31 +25,26 @@ export const DisplayComp: FC<DisplayProps> = (props) => {
   }
 }
 
-const DisplayRender: FC<DisplayProps> = (props) => {
+const DisplayRender: FC<Display> = (props) => {
   const mode = props.mode ?? DisplayMode.auto
   const value = props.value ?? null
   if (mode === DisplayMode.json) {
     return <JsonComp type="JSON" value={value} />
   } else if (Array.isArray(value)) {
-    return <DisplayArray type="DisplayArray" mode={mode} value={value} />
+    return <DisplayArray mode={mode} value={value} />
   } else if (typeof value === 'object' && value !== null) {
-    return <DisplayObject type="DisplayObject" mode={mode} value={value} />
+    return <DisplayObject mode={mode} value={value} />
   } else {
-    return <DisplayPrimitive type="DisplayPrimitive" mode={mode} value={value} />
+    return <DisplayPrimitive mode={mode} value={value} />
   }
 }
 
 interface DisplayArrayProps {
   value: JsonData[]
   mode?: DisplayMode
-  type: 'DisplayArray'
 }
 
 export const DisplayArray: FC<DisplayArrayProps> = (props) => {
-  const CustomRenderComp = useCustomRender(props)
-  if (CustomRenderComp) {
-    return <CustomRenderComp />
-  }
   const { mode, value } = props
 
   return (
@@ -87,14 +61,9 @@ export const DisplayArray: FC<DisplayArrayProps> = (props) => {
 interface DisplayObjectProps {
   value: { [key: string]: JsonData }
   mode?: DisplayMode
-  type: 'DisplayObject'
 }
 
 export const DisplayObject: FC<DisplayObjectProps> = (props) => {
-  const CustomRenderComp = useCustomRender(props)
-  if (CustomRenderComp) {
-    return <CustomRenderComp />
-  }
   const { mode, value } = props
 
   return (
@@ -113,14 +82,9 @@ type JSONPrimitive = string | number | boolean | null
 export interface DisplayPrimitiveProps {
   value: JSONPrimitive
   mode: DisplayMode
-  type: 'DisplayPrimitive'
 }
 
 export const DisplayPrimitive: FC<DisplayPrimitiveProps> = (props) => {
-  const CustomRenderComp = useCustomRender(props)
-  if (CustomRenderComp) {
-    return <CustomRenderComp />
-  }
   const { mode, value } = props
 
   switch (mode) {
@@ -146,7 +110,7 @@ export const DisplayPrimitive: FC<DisplayPrimitiveProps> = (props) => {
   }
 }
 
-export type AllDisplayProps = DisplayProps | DisplayArrayProps | DisplayObjectProps | DisplayPrimitiveProps
+// export type AllDisplay = Display | DisplayArrayProps | DisplayObjectProps | DisplayPrimitiveProps
 
 const DisplayNull: FC = () => {
   return <span className="fu-null">&mdash;</span>
@@ -230,7 +194,7 @@ const DisplayInlineCode: FC<{ value: JSONPrimitive }> = ({ value }) => {
 
 export type DataModel = Record<string, JsonData>
 
-export interface DisplayLookupProps extends Omit<DisplayProps, 'type' | 'value'> {
+export interface DisplayLookupProps extends Omit<Display, 'type' | 'value'> {
   field: string
   tableWidthPercent?: number
 }

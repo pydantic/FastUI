@@ -1,113 +1,47 @@
 import { useContext, FC } from 'react'
 
+import type { FastProps, Display, Text, ServerLoad, PageTitle, FireEvent } from '../models'
+
 import { ErrorContext } from '../hooks/error'
 import { useCustomRender } from '../hooks/config'
 import { unreachable } from '../tools'
 
-import { TextProps, TextComp } from './text'
-import { ParagraphProps, ParagraphComp } from './paragraph'
-import { PageTitleProps, PageTitleComp } from './PageTitle'
-import { AllDivProps, DivComp, DivProps } from './div'
-import { HeadingComp, HeadingProps } from './heading'
-import { MarkdownComp, MarkdownProps } from './Markdown'
-import { CodeComp, CodeProps } from './Code'
-import { FormComp, FormProps, ModelFormProps } from './form'
+import { TextComp } from './text'
+import { ParagraphComp } from './paragraph'
+import { PageTitleComp } from './PageTitle'
+import { DivComp } from './div'
+import { HeadingComp } from './heading'
+import { MarkdownComp } from './Markdown'
+import { CodeComp } from './Code'
+import { FormComp } from './form'
 import {
-  FormFieldProps,
   FormFieldInputComp,
   FormFieldBooleanComp,
   FormFieldSelectComp,
   FormFieldSelectSearchComp,
   FormFieldFileComp,
 } from './FormField'
-import { ButtonComp, ButtonProps } from './button'
-import { LinkComp, LinkProps, LinkRender } from './link'
-import { LinkListProps, LinkListComp } from './LinkList'
-import { NavbarProps, NavbarComp } from './navbar'
-import { ModalComp, ModalProps } from './modal'
-import { TableComp, TableProps } from './table'
-import { PaginationProps, PaginationComp } from './pagination'
-import { DetailsProps, DetailsComp } from './details'
-import {
-  AllDisplayProps,
-  DisplayArray,
-  DisplayComp,
-  DisplayObject,
-  DisplayPrimitive,
-  DisplayPrimitiveProps,
-} from './display'
-import { JsonComp, JsonProps } from './Json'
-import { ServerLoadComp, ServerLoadProps } from './ServerLoad'
-import { ImageComp, ImageProps } from './image'
-import { IframeComp, IframeProps } from './Iframe'
-import { VideoComp, VideoProps } from './video'
-import { FireEventComp, FireEventProps } from './FireEvent'
-import { CustomComp, CustomProps } from './Custom'
-
-export type {
-  TextProps,
-  ParagraphProps,
-  PageTitleProps,
-  AllDivProps,
-  DivProps,
-  HeadingProps,
-  MarkdownProps,
-  CodeProps,
-  FormProps,
-  ModelFormProps,
-  FormFieldProps,
-  ButtonProps,
-  ModalProps,
-  TableProps,
-  PaginationProps,
-  DetailsProps,
-  LinkProps,
-  LinkListProps,
-  NavbarProps,
-  AllDisplayProps,
-  DisplayPrimitiveProps,
-  JsonProps,
-  ServerLoadProps,
-  ImageProps,
-  IframeProps,
-  VideoProps,
-  FireEventProps,
-  CustomProps,
-}
+import { ButtonComp } from './button'
+import { LinkComp, LinkRender } from './link'
+import { LinkListComp } from './LinkList'
+import { NavbarComp } from './navbar'
+import { ModalComp } from './modal'
+import { TableComp } from './table'
+import { PaginationComp } from './pagination'
+import { DetailsComp } from './details'
+import { DisplayComp } from './display'
+import { JsonComp } from './Json'
+import { ServerLoadComp } from './ServerLoad'
+import { ImageComp } from './image'
+import { IframeComp } from './Iframe'
+import { VideoComp } from './video'
+import { FireEventComp } from './FireEvent'
+import { CustomComp } from './Custom'
 
 // TODO some better way to export components
 export { LinkComp, LinkRender }
 
-export type FastProps =
-  | TextProps
-  | ParagraphProps
-  | PageTitleProps
-  | AllDivProps
-  | DivProps
-  | HeadingProps
-  | MarkdownProps
-  | CodeProps
-  | FormProps
-  | ModelFormProps
-  | FormFieldProps
-  | ButtonProps
-  | ModalProps
-  | TableProps
-  | PaginationProps
-  | DetailsProps
-  | LinkProps
-  | LinkListProps
-  | NavbarProps
-  | AllDisplayProps
-  | JsonProps
-  | ServerLoadProps
-  | ImageProps
-  | IframeProps
-  | VideoProps
-  | FireEventProps
-  | CustomProps
-
-export type FastClassNameProps = Exclude<FastProps, TextProps | AllDisplayProps | ServerLoadProps | PageTitleProps>
+export type FastClassNameProps = Exclude<FastProps, Text | Display | ServerLoad | PageTitle | FireEvent>
 
 export const AnyCompList: FC<{ propsList: FastProps[] }> = ({ propsList }) => (
   <>
@@ -174,12 +108,6 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <DetailsComp {...props} />
       case 'Display':
         return <DisplayComp {...props} />
-      case 'DisplayArray':
-        return <DisplayArray {...props} />
-      case 'DisplayObject':
-        return <DisplayObject {...props} />
-      case 'DisplayPrimitive':
-        return <DisplayPrimitive {...props} />
       case 'JSON':
         return <JsonComp {...props} />
       case 'ServerLoad':

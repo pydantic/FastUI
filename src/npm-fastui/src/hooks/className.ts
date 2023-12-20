@@ -1,10 +1,9 @@
 import { createContext, useContext } from 'react'
 
 import type { FastClassNameProps } from '../components'
+import type { ClassName } from '../models'
 
 import { LocationContext } from './locationContext'
-
-export type ClassName = string | ClassName[] | Record<string, boolean | null> | undefined
 
 interface ClassNameGeneratorArgs {
   props: FastClassNameProps
@@ -63,7 +62,7 @@ export function useClassName(props: FastClassNameProps, extra?: UseClassNameExtr
  * then we generate the default className and append the user's className to it.
  * @param classNameProp
  */
-function combineClassNameProp(classNameProp: ClassName): boolean {
+function combineClassNameProp(classNameProp?: ClassName): boolean {
   if (Array.isArray(classNameProp)) {
     // classNameProp is an array, check if it contains `+`
     return classNameProp.some((c) => c === '+')
@@ -79,7 +78,7 @@ function combineClassNameProp(classNameProp: ClassName): boolean {
   }
 }
 
-function combine(cn1: ClassName, cn2: ClassName): string {
+function combine(cn1?: ClassName, cn2?: ClassName): string {
   if (!cn1) {
     return renderClassName(cn2)
   } else if (!cn2) {
@@ -93,7 +92,7 @@ function combine(cn1: ClassName, cn2: ClassName): string {
  * Renders the className to a string, removing plus signs.
  * @param className
  */
-export function renderClassName(className: ClassName): string {
+export function renderClassName(className?: ClassName): string {
   if (typeof className === 'string') {
     return className.replace(/^\+ /, '')
   } else if (Array.isArray(className)) {

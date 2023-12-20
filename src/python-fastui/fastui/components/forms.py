@@ -6,6 +6,7 @@ import typing_extensions as _te
 
 from .. import class_name as _class_name
 from .. import events, forms
+from .. import types as _types
 
 if _t.TYPE_CHECKING:
     from . import AnyComponent
@@ -69,7 +70,7 @@ FormField = _t.Union[FormFieldInput, FormFieldBoolean, FormFieldFile, FormFieldS
 
 class BaseForm(pydantic.BaseModel, ABC, defer_build=True, extra='forbid'):
     submit_url: str = pydantic.Field(serialization_alias='submitUrl')
-    initial: _t.Union[_t.Dict[str, _t.Any], None] = None
+    initial: _t.Union[_t.Dict[str, _types.JsonData], None] = None
     method: _t.Literal['POST', 'GOTO', 'GET'] = 'POST'
     display_mode: _t.Union[_t.Literal['default', 'inline'], None] = pydantic.Field(
         default=None, serialization_alias='displayMode'

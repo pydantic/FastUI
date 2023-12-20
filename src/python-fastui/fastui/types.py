@@ -7,10 +7,6 @@ from pydantic_core import core_schema
 
 class JsonDataSchema:
     @staticmethod
-    def __get_pydantic_core_schema__(*args: _t.Any) -> core_schema.CoreSchema:
-        return core_schema.any_schema()
-
-    @staticmethod
     def __get_pydantic_json_schema__(
         _core_schema: core_schema.CoreSchema, handler: pydantic.GetJsonSchemaHandler
     ) -> _t.Any:
@@ -28,8 +24,7 @@ class JsonDataSchema:
         return handler(json_data_schema)
 
 
-_JsonData: _te.TypeAlias = '_t.Union[None, float, int, str, _t.List[_JsonData], _t.Dict[str, _JsonData]]'
-JsonData = _te.Annotated[_JsonData, JsonDataSchema()]
+JsonData = _te.Annotated[_t.Any, JsonDataSchema()]
 
 
 class PydanticModelSchema:

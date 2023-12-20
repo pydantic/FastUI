@@ -1,8 +1,7 @@
 import { createContext, FC, useContext } from 'react'
 
 import type { FastUIProps } from '../index'
-
-import { FastProps } from '../components'
+import type { FastProps } from '../models'
 
 type Config = Omit<FastUIProps, 'DisplayError' | 'classNameGenerator' | 'devMode'>
 

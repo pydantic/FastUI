@@ -2,6 +2,7 @@ import typing as _t
 
 import pydantic
 import typing_extensions as _te
+from pydantic_core import core_schema as _core_schema
 
 from .. import class_name as _class_name
 from .. import types as _types
@@ -37,6 +38,16 @@ class Table(pydantic.BaseModel, _t.Generic[_types.DataModelGeneric], extra='forb
                 if field and field.title:
                     column.title = field.title
         return self
+
+    @classmethod
+    def __get_pydantic_json_schema__(
+        cls, core_schema: _core_schema.CoreSchema, handler: pydantic.GetJsonSchemaHandler
+    ) -> _t.Any:
+        json_schema = handler(core_schema)
+        # columns are filled by `fill_columns`
+        schema_def = handler.resolve_ref_schema(json_schema)
+        schema_def['required'].append('columns')
+        return json_schema
 
 
 class Pagination(pydantic.BaseModel):

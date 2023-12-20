@@ -1,21 +1,11 @@
 import { FC } from 'react'
 
-import { ClassName, useClassName } from '../hooks/className'
+import type { Heading } from '../models'
+
+import { useClassName } from '../hooks/className'
 import { slugify } from '../tools'
 
-export interface HeadingProps {
-  type: 'Heading'
-  /**
-   * @TJS-enum [1, 2, 3, 4, 5, 6]
-   * @TJS-type integer
-   */
-  level: 1 | 2 | 3 | 4 | 5 | 6
-  htmlId?: string
-  className?: ClassName
-  text: string
-}
-
-export const HeadingComp: FC<HeadingProps> = (props) => {
+export const HeadingComp: FC<Heading> = (props) => {
   const { level, text, htmlId } = props
   const HeadingComponent = getComponent(level)
   return <HeadingComponent text={text} id={htmlId || slugify(text)} className={useClassName(props)} />
