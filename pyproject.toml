@@ -22,3 +22,7 @@ asyncio_mode = "auto"
 
 [tool.coverage.run]
 source = ["src/python-fastui/fastui"]
+omit = [
+    "src/python-fastui/fastui/__main__.py",
+    "src/python-fastui/fastui/generate_typescript.py",
+]
