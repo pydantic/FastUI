@@ -25,6 +25,7 @@ jobs:
           node-version: 18
 
       - run: pip install -r src/python-fastui/requirements/all.txt
+      - run: pip install src/python-fastui
 
       - run: npm install
 

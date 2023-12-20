@@ -111,8 +111,6 @@ export const DisplayPrimitive: FC<DisplayPrimitiveProps> = (props) => {
   }
 }
 
-// export type AllDisplay = Display | DisplayArrayProps | DisplayObjectProps | DisplayPrimitiveProps
-
 const DisplayNull: FC = () => {
   return <span className="fu-null">&mdash;</span>
 }
