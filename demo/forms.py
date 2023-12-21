@@ -102,6 +102,7 @@ def form_content(kind: FormKind):
         case _:
             raise ValueError(f'Invalid kind {kind!r}')
 
+
 class LoginForm(BaseModel):
     email: EmailStr = Field(title='Email Address', description="Try 'x@y' to trigger server side validation")
     password: SecretStr
