@@ -3,6 +3,7 @@ import { FC, useContext, useEffect } from 'react'
 import { sleep } from './tools'
 import { ErrorContext } from './hooks/error'
 import { fireLoadEvent } from './events'
+import { ConfigContext } from './hooks/config'
 
 let devConnected = false
 
@@ -20,6 +21,7 @@ export const DevReload: FC<{ enabled?: boolean }> = ({ enabled }) => {
 
 const DevReloadActive = () => {
   const { setError } = useContext(ErrorContext)
+  const { rootUrl } = useContext(ConfigContext)
 
   useEffect(() => {
     let listening = true
@@ -34,21 +36,22 @@ const DevReloadActive = () => {
         if (!listening || failCount >= 5) {
           return count
         }
-        const response = await fetch('/api/__dev__/reload')
+        const response = await fetch(rootUrl + '/__dev__/reload')
         count++
         console.debug(`dev reload connected ${count}...`)
         // if the response is okay, and we previously failed, clear error
         if (response.ok && failCount > 0) {
           setError(null)
+        } else if (response.status === 404) {
+          console.log('dev reload endpoint not found, disabling dev reload')
+          return count
         }
         // await like this means we wait for the entire response to be received
         const text = await response.text()
-        if (response.status === 404) {
-          console.log('dev reload endpoint not found, disabling dev reload')
-          return count
-        } else if (response.ok) {
+        if (response.ok && text.startsWith('fastui-dev-reload')) {
           failCount = 0
-          const value = parseInt(text.replace(/\./g, '')) || 0
+          const valueMatch = text.match(/(\d+)$/)
+          const value = valueMatch ? parseInt(valueMatch[1]!) : 0
           if (value !== lastValue) {
             lastValue = value
             // wait long enough for the server to be back online
@@ -57,6 +60,9 @@ const DevReloadActive = () => {
             fireLoadEvent({ reloadValue: value })
             setError(null)
           }
+        } else if (response.ok) {
+          console.log("dev reload endpoint didn't return magic value, disabling dev reload")
+          return count
         } else {
           failCount++
           await sleep(2000)
@@ -72,6 +78,6 @@ const DevReloadActive = () => {
         devConnected = false
       }
     }
-  }, [setError])
+  }, [setError, rootUrl])
   return <></>
 }
