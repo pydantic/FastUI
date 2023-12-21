@@ -155,6 +155,11 @@ class BigModel(BaseModel):
     )
     size: SizeModel
 
+    position: tuple[
+        Annotated[int, Field(description='X Coordinate')],
+        Annotated[int, Field(description='Y Coordinate')],
+    ]
+
     @field_validator('name')
     def name_validator(cls, v: str | None) -> str:
         if v and v[0].islower():

@@ -199,6 +199,19 @@ def unflatten(form_data: ds.FormData) -> NestedDict:
         else:
             d[last_key] = values
 
+    # this logic takes care of converting `dict[int, str]` to `list[str]`
+    # we recursively process each dict in `result_dict` and convert it to a list if all keys are ints
+    dicts = [result_dict]
+    while dicts:
+        d = dicts.pop()
+        for key, value in d.items():
+            if isinstance(value, dict):
+                if all(isinstance(k, int) for k in value):
+                    # sort key-value pairs based on the keys, then take just the values as a list
+                    d[key] = [v for _, v in sorted(value.items())]
+                else:
+                    dicts.append(value)
+
     return result_dict
 
 

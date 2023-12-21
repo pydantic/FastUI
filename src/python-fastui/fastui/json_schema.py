@@ -203,8 +203,24 @@ def json_schema_array_to_fields(
             if value := schema.get(field_name):
                 items_schema[field_name] = value  # type: ignore
         if field := special_string_field(items_schema, loc_to_name(loc), title, required, True):
-            return [field]
-    raise NotImplementedError('todo')
+            yield field
+            return
+
+    # for fixed length tuples (min_items == max_items), where all items are required,
+    # we "inline" the fields into the list of form fields
+    if (min_items := schema.get('minItems')) and min_items == schema.get('maxItems'):
+        if items := schema.get('prefixItems'):
+            for i, item in enumerate(items):
+                fields = list(json_schema_any_to_fields(item, loc + [i], title, required, defs))
+                if any(not f.required for f in fields):
+                    raise NotImplementedError(
+                        'Tuples with optional fields are not yet supported, '
+                        'see https://github.com/pydantic/FastUI/pull/52'
+                    )
+                yield from fields
+            return
+
+    raise NotImplementedError('Array fields are not fully supported, see https://github.com/pydantic/FastUI/pull/52')
 
 
 def special_string_field(
