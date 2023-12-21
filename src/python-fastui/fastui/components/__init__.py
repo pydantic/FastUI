@@ -64,8 +64,10 @@ __all__ = (
     'FormFieldSelectSearch',
 )
 
-# would be better to use default=... rather than bound, but doesn't work in PyCharm:
-ComponentT = _t.TypeVar('ComponentT', bound='AnyComponent')
+ComponentT = _t.TypeVar('ComponentT')
+# hack to make pydantic recognize `AnyComponent` as the default type for `ComponentT` without needing to use the
+# backport of default `_te.TypeVar`, which doesn't work properly with PyCharm yet:
+ComponentT.__default__ = 'AnyComponent'  # type: ignore
 
 
 class Text(_p.BaseModel, extra='forbid'):

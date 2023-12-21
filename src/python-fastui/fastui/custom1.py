@@ -69,7 +69,7 @@ class FastUI(_p.RootModel):
     The root component of a FastUI application.
     """
 
-    root: _t.List[CustomAnyComponent[None]]
+    root: _t.List[CustomAnyComponent]
 
 
 print(FastUI.model_json_schema())
