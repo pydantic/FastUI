@@ -42,13 +42,13 @@ const DevReloadActive = () => {
         // if the response is okay, and we previously failed, clear error
         if (response.ok && failCount > 0) {
           setError(null)
+        } else if (response.status === 404) {
+          console.log('dev reload endpoint not found, disabling dev reload')
+          return count
         }
         // await like this means we wait for the entire response to be received
         const text = await response.text()
-        if (response.status === 404) {
-          console.log('dev reload endpoint not found, disabling dev reload')
-          return count
-        } else if (response.ok && text.startsWith('fastui-dev-reload')) {
+        if (response.ok && text.startsWith('fastui-dev-reload')) {
           failCount = 0
           const valueMatch = text.match(/(\d+)$/)
           const value = valueMatch ? parseInt(valueMatch[1]!) : 0
