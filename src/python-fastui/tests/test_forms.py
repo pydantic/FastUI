@@ -441,7 +441,7 @@ def test_variable_tuple():
 
 def test_tuple_optional():
     class TupleOptional(BaseModel):
-        foo: Tuple[str, str | None]
+        foo: Tuple[str, Union[str, None]]
 
     m = components.ModelForm(model=TupleOptional, submit_url='/foo/')
     with pytest.raises(NotImplementedError, match='Tuples with optional fields are not yet supported'):
