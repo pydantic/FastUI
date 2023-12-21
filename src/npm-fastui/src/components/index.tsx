@@ -43,6 +43,7 @@ import { IframeComp, IframeProps } from './Iframe'
 import { VideoComp, VideoProps } from './video'
 import { FireEventComp, FireEventProps } from './FireEvent'
 import { CustomComp, CustomProps } from './Custom'
+import { DarkModeComp, DarkModeProps } from './DarkMode'
 
 export type {
   TextProps,
@@ -73,6 +74,7 @@ export type {
   VideoProps,
   FireEventProps,
   CustomProps,
+  DarkModeProps,
 }
 
 // TODO some better way to export components
@@ -106,6 +108,7 @@ export type FastProps =
   | VideoProps
   | FireEventProps
   | CustomProps
+  | DarkModeProps
 
 export type FastClassNameProps = Exclude<FastProps, TextProps | AllDisplayProps | ServerLoadProps | PageTitleProps>
 
@@ -194,6 +197,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <FireEventComp {...props} />
       case 'Custom':
         return <CustomComp {...props} />
+      case 'DarkMode':
+        return <DarkModeComp {...props} />
       default:
         unreachable('Unexpected component type', type, props)
         return <DisplayError title="Invalid Server Response" description={`Unknown component type: "${type}"`} />

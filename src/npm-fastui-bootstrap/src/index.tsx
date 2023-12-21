@@ -5,6 +5,7 @@ import type { ClassNameGenerator, CustomRender, ClassName } from 'fastui'
 import { Modal } from './modal'
 import { Navbar } from './navbar'
 import { Pagination } from './pagination'
+import { DarkMode } from './DarkMode'
 
 export const customRender: CustomRender = (props) => {
   const { type } = props
@@ -15,6 +16,8 @@ export const customRender: CustomRender = (props) => {
       return () => <Modal {...props} />
     case 'Pagination':
       return () => <Pagination {...props} />
+    case 'DarkMode':
+      return () => <DarkMode {...props} />
   }
 }
 

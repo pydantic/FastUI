@@ -151,6 +151,19 @@
       "required": ["data", "subType", "type"],
       "type": "object"
     },
+    "DarkModeProps": {
+      "properties": {
+        "className": {
+          "$ref": "#/definitions/ClassName"
+        },
+        "type": {
+          "const": "DarkMode",
+          "type": "string"
+        }
+      },
+      "required": ["type"],
+      "type": "object"
+    },
     "DetailsProps": {
       "properties": {
         "className": {
@@ -426,6 +439,9 @@
         },
         {
           "$ref": "#/definitions/CustomProps"
+        },
+        {
+          "$ref": "#/definitions/DarkModeProps"
         }
       ]
     },

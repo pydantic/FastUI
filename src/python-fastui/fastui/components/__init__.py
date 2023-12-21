@@ -251,6 +251,11 @@ class Custom(_p.BaseModel, extra='forbid'):
     type: _t.Literal['Custom'] = 'Custom'
 
 
+class DarkMode(_p.BaseModel, extra='forbid'):
+    class_name: _class_name.ClassNameField = None
+    type: _t.Literal['DarkMode'] = 'DarkMode'
+
+
 AnyComponent = _te.Annotated[
     _t.Union[
         Text,
@@ -273,6 +278,7 @@ AnyComponent = _te.Annotated[
         Video,
         FireEvent,
         Custom,
+        DarkMode,
         Table,
         Pagination,
         Display,
