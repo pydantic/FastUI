@@ -43,6 +43,7 @@ class DevReload:
 
     async def ping(self):
         # print('connected', os.getpid())
+        yield b'fastui-dev-reload\n'
         yield b'.'
         while True:
             try:
