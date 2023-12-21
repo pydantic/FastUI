@@ -39,3 +39,9 @@ repos:
         entry: npm run typecheck
         language: system
         pass_filenames: false
+      - id: python-generate-ts
+        name: python-generate-ts
+        types_or: [python]
+        entry: fastui generate fastui:FastUI src/npm-fastui/src/models.d.ts
+        language: system
+        pass_filenames: false

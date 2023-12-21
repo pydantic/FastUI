@@ -1,0 +1,28 @@
+{
+  "name": "@pydantic/fastui-prebuilt",
+  "version": "0.0.13",
+  "description": "Pre-built files for FastUI",
+  "main": "dist/index.html",
+  "type": "module",
+  "author": "Samuel Colvin",
+  "license": "MIT",
+  "homepage": "https://github.com/pydantic/fastui",
+  "private": false,
+  "keywords": [
+    "fastui",
+    "jsx",
+    "typescript",
+    "react",
+    "fastapi"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "prepublishOnly": "rm -rf dist && tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "typewatch": "tsc --noEmit --watch"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react-swc": "^3.3.2",
+    "vite": "^5.0.7"
+  }
+}

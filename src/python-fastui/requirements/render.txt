@@ -1,0 +1,6 @@
+# this is used by render to install dependencies
+-r ./pyproject.txt
+src/python-fastui
+uvicorn[standard]
+httpx
+libsql-client
