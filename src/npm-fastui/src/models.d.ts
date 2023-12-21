@@ -24,7 +24,6 @@ export type AnyComponent =
   | Iframe
   | Video
   | FireEvent
-  | Custom
   | Table
   | Pagination
   | Display
@@ -235,13 +234,6 @@ export interface FireEvent {
   event: AnyEvent
   message?: string
   type: 'FireEvent'
-}
-export interface Custom {
-  data: JsonData
-  subType: string
-  library?: string
-  className?: ClassName
-  type: 'Custom'
 }
 export interface Table {
   data: DataModel[]
