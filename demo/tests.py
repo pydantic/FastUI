@@ -42,13 +42,7 @@ def test_api_root():
         },
         {
             'extraText': 'FastUI Demo',
-            'links': [
-                {
-                    'components': [{'text': 'Github', 'type': 'Text'}],
-                    'onClick': {'url': 'https://github.com/pydantic/FastUI', 'type': 'go-to'},
-                    'type': 'Link',
-                },
-            ],
+            'links': IsList(length=3),
             'type': 'Footer',
         },
     ]

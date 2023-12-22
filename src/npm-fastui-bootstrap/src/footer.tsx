@@ -8,7 +8,7 @@ export const Footer: FC<models.Footer> = (props) => {
   })
   const extraProp = useClassName(props, { el: 'extra' })
   return (
-    <footer className={useClassName(props, { el: 'contents' })}>
+    <footer className={useClassName(props)}>
       <ul className={useClassName(props, { el: 'link-list' })}>
         {links.map((link, i) => (
           <li className="nav-item">

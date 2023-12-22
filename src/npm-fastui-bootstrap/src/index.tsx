@@ -109,16 +109,12 @@ export const classNameGenerator: ClassNameGenerator = ({
       }
     case 'Footer':
       switch (subElement) {
-        case 'contents':
-          return 'border-top pt-1 mt-auto bg-body'
         case 'link-list':
           return 'nav justify-content-center pb-1'
-        case 'extra-separator':
-          return 'border-top'
         case 'extra':
           return 'text-center text-muted pb-3'
         default:
-          return 'container'
+          return 'border-top pt-1 mt-auto bg-body'
       }
     case 'Link':
       return {
