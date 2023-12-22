@@ -42,5 +42,9 @@ testcov: test
 dev:
 	uvicorn demo:app --reload --reload-dir .
 
+.PHONY: sample
+sample:
+	uvicorn sample.main:app --reload --reload-dir .
+
 .PHONY: all
 all: testcov lint
