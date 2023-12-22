@@ -1,18 +1,10 @@
 import { FC } from 'react'
 
-import { ClassName } from '../hooks/className'
+import type { Json } from '../models'
 
 import { CodeComp } from './Code'
 
-export type JsonData = string | number | boolean | null | JsonData[] | { [key: string]: JsonData }
-
-export interface JsonProps {
-  value: JsonData
-  type: 'JSON'
-  className?: ClassName
-}
-
-export const JsonComp: FC<JsonProps> = (props) => {
+export const JsonComp: FC<Json> = (props) => {
   let { value, className } = props
   // if the value is a string, we assume it's already JSON, and parse it
   if (typeof value === 'string') {

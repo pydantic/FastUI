@@ -5,9 +5,11 @@ from abc import ABC
 import annotated_types as _at
 import pydantic
 import typing_extensions as _te
+from pydantic_core import core_schema as _core_schema
 
 from .. import class_name as _class_name
 from .. import events
+from .. import types as _types
 
 __all__ = 'DisplayMode', 'DisplayLookup', 'Display', 'Details'
 
@@ -47,21 +49,18 @@ class Display(DisplayBase, extra='forbid'):
     Description of how to display a value, either in a table or detail view.
     """
 
-    value: _t.Any = pydantic.Field(None, json_schema_extra={'type': 'JSON'})
+    value: _types.JsonData
     type: _t.Literal['Display'] = 'Display'
 
 
-DataModel = _t.TypeVar('DataModel', bound=pydantic.BaseModel)
-
-
-class Details(pydantic.BaseModel, _t.Generic[DataModel], extra='forbid'):
-    data: DataModel
+class Details(pydantic.BaseModel, extra='forbid'):
+    data: pydantic.SerializeAsAny[_types.DataModel]
     fields: _t.Union[_t.List[DisplayLookup], None] = None
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['Details'] = 'Details'
 
     @pydantic.model_validator(mode='after')
-    def fill_fields(self) -> _te.Self:
+    def _fill_fields(self) -> _te.Self:
         if self.fields is None:
             self.fields = [
                 DisplayLookup(field=name, title=field.title) for name, field in self.data.model_fields.items()
@@ -73,3 +72,12 @@ class Details(pydantic.BaseModel, _t.Generic[DataModel], extra='forbid'):
                 if pydantic_field and pydantic_field.title:
                     field.title = pydantic_field.title
         return self
+
+    @classmethod
+    def __get_pydantic_json_schema__(
+        cls, core_schema: _core_schema.CoreSchema, handler: pydantic.GetJsonSchemaHandler
+    ) -> _t.Any:
+        json_schema = handler(core_schema)
+        schema_def = handler.resolve_ref_schema(json_schema)
+        schema_def['required'].append('fields')
+        return json_schema

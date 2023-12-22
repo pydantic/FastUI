@@ -35,7 +35,7 @@ class DevReload:
             yield
 
     async def dev_reload_endpoints(self):
-        return StreamingResponse(self.ping())
+        return StreamingResponse(self.ping(), media_type='text/plain')
 
     def _on_signal(self, *_args: _t.Any):
         # print('setting stop', _args)
@@ -43,6 +43,7 @@ class DevReload:
 
     async def ping(self):
         # print('connected', os.getpid())
+        yield b'fastui-dev-reload\n'
         yield b'.'
         while True:
             try:

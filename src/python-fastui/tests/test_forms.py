@@ -30,7 +30,7 @@ class FakeRequest:
 
 
 def test_simple_form_fields():
-    m = components.ModelForm[SimpleForm](submit_url='/foobar/')
+    m = components.ModelForm(model=SimpleForm, submit_url='/foobar/')
 
     assert m.model_dump(by_alias=True, exclude_none=True) == {
         'submitUrl': '/foobar/',
@@ -59,7 +59,7 @@ def test_simple_form_fields():
 
 
 def test_inline_form_fields():
-    m = components.ModelForm[SimpleForm](submit_url='/foobar/', display_mode='inline')
+    m = components.ModelForm(model=SimpleForm, submit_url='/foobar/', display_mode='inline')
 
     assert m.model_dump(by_alias=True, exclude_none=True) == {
         'submitUrl': '/foobar/',
@@ -123,7 +123,7 @@ class FormWithNested(BaseModel):
 
 
 def test_w_nested_form_fields():
-    m = components.ModelForm[FormWithNested](submit_url='/foobar/')
+    m = components.ModelForm(model=FormWithNested, submit_url='/foobar/')
 
     # insert_assert(m.model_dump(by_alias=True, exclude_none=True))
     assert m.model_dump(by_alias=True, exclude_none=True) == {
@@ -166,7 +166,7 @@ class FormWithFile(BaseModel):
 
 
 def test_file():
-    m = components.ModelForm[FormWithFile](submit_url='/foobar/')
+    m = components.ModelForm(model=FormWithFile, submit_url='/foobar/')
 
     # insert_assert(m.model_dump(by_alias=True, exclude_none=True))
     assert m.model_dump(by_alias=True, exclude_none=True) == {
@@ -213,7 +213,7 @@ class FormWithFileConstraint(BaseModel):
 
 
 def test_file_constrained():
-    m = components.ModelForm[FormWithFileConstraint](submit_url='/foobar/')
+    m = components.ModelForm(model=FormWithFileConstraint, submit_url='/foobar/')
 
     # insert_assert(m.model_dump(by_alias=True, exclude_none=True))
     assert m.model_dump(by_alias=True, exclude_none=True) == {
@@ -299,7 +299,7 @@ class FormMultipleFiles(BaseModel):
 
 
 def test_multiple_files():
-    m = components.ModelForm[FormMultipleFiles](submit_url='/foobar/')
+    m = components.ModelForm(model=FormMultipleFiles, submit_url='/foobar/')
 
     # insert_assert(m.model_dump(by_alias=True, exclude_none=True))
     assert m.model_dump(by_alias=True, exclude_none=True) == {
@@ -334,3 +334,115 @@ async def test_multiple_files_multiple():
 
     m = await fastui_form(FormMultipleFiles).dependency(request)
     assert m.model_dump() == {'files': [file1, file2]}
+
+
+class FixedTuple(BaseModel):
+    foo: Tuple[str, int, int]
+
+
+def test_fixed_tuple():
+    m = components.ModelForm(model=FixedTuple, submit_url='/foo/')
+    # insert_assert(m.model_dump(by_alias=True, exclude_none=True))
+    assert m.model_dump(by_alias=True, exclude_none=True) == {
+        'submitUrl': '/foo/',
+        'method': 'POST',
+        'type': 'ModelForm',
+        'formFields': [
+            {
+                'name': 'foo.0',
+                'title': ['Foo', '0'],
+                'required': True,
+                'locked': False,
+                'htmlType': 'text',
+                'type': 'FormFieldInput',
+            },
+            {
+                'name': 'foo.1',
+                'title': ['Foo', '1'],
+                'required': True,
+                'locked': False,
+                'htmlType': 'number',
+                'type': 'FormFieldInput',
+            },
+            {
+                'name': 'foo.2',
+                'title': ['Foo', '2'],
+                'required': True,
+                'locked': False,
+                'htmlType': 'number',
+                'type': 'FormFieldInput',
+            },
+        ],
+    }
+
+
+async def test_fixed_tuple_submit():
+    request = FakeRequest([('foo.0', 'bar'), ('foo.1', '123'), ('foo.2', '456')])
+
+    m = await fastui_form(FixedTuple).dependency(request)
+    assert m.model_dump() == {'foo': ('bar', 123, 456)}
+
+
+class NestedTuple(BaseModel):
+    bar: FixedTuple
+
+
+def test_fixed_tuple_nested():
+    m = components.ModelForm(model=NestedTuple, submit_url='/foobar/')
+    # insert_assert(m.model_dump(by_alias=True, exclude_none=True))
+    assert m.model_dump(by_alias=True, exclude_none=True) == {
+        'submitUrl': '/foobar/',
+        'method': 'POST',
+        'type': 'ModelForm',
+        'formFields': [
+            {
+                'name': 'bar.foo.0',
+                'title': ['FixedTuple', 'Foo', '0'],
+                'required': True,
+                'locked': False,
+                'htmlType': 'text',
+                'type': 'FormFieldInput',
+            },
+            {
+                'name': 'bar.foo.1',
+                'title': ['FixedTuple', 'Foo', '1'],
+                'required': True,
+                'locked': False,
+                'htmlType': 'number',
+                'type': 'FormFieldInput',
+            },
+            {
+                'name': 'bar.foo.2',
+                'title': ['FixedTuple', 'Foo', '2'],
+                'required': True,
+                'locked': False,
+                'htmlType': 'number',
+                'type': 'FormFieldInput',
+            },
+        ],
+    }
+
+
+async def test_fixed_tuple_nested_submit():
+    request = FakeRequest([('bar.foo.0', 'bar'), ('bar.foo.1', '123'), ('bar.foo.2', '456')])
+
+    m = await fastui_form(NestedTuple).dependency(request)
+    assert m.model_dump() == {'bar': {'foo': ('bar', 123, 456)}}
+
+
+def test_variable_tuple():
+    class VarTuple(BaseModel):
+        foo: Tuple[str, ...]
+
+    m = components.ModelForm(model=VarTuple, submit_url='/foo/')
+    with pytest.raises(NotImplementedError, match='Array fields are not fully supported'):
+        m.model_dump(by_alias=True, exclude_none=True)
+
+
+def test_tuple_optional():
+    class TupleOptional(BaseModel):
+        foo: Tuple[str, Union[str, None]]
+
+    m = components.ModelForm(model=TupleOptional, submit_url='/foo/')
+    with pytest.raises(NotImplementedError, match='Tuples with optional fields are not yet supported'):
+        m.model_dump(by_alias=True, exclude_none=True)

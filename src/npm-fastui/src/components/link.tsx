@@ -1,22 +1,14 @@
 import { FC, MouseEventHandler, ReactNode, useContext } from 'react'
 
-import { ClassName, useClassName } from '../hooks/className'
+import type { Link, AnyEvent } from '../models'
+
+import { useClassName } from '../hooks/className'
 import { LocationContext } from '../hooks/locationContext'
-import { useFireEvent, AnyEvent } from '../events'
+import { useFireEvent } from '../events'
 
-import { FastProps, AnyCompList } from './index'
+import { AnyCompList } from './index'
 
-export interface LinkProps {
-  type: 'Link'
-  components: FastProps[]
-  mode?: 'navbar' | 'footer' | 'tabs' | 'vertical' | 'pagination'
-  active?: boolean | string
-  locked?: boolean
-  onClick?: AnyEvent
-  className?: ClassName
-}
-
-export const LinkComp: FC<LinkProps> = (props) => (
+export const LinkComp: FC<Link> = (props) => (
   <LinkRender className={useClassName(props)} onClick={props.onClick} locked={props.locked}>
     <AnyCompList propsList={props.components} />
   </LinkRender>

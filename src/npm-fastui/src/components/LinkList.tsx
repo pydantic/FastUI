@@ -1,15 +1,10 @@
-import { ClassName, useClassName } from '../hooks/className'
+import type { LinkList } from '../models'
 
-import { LinkProps, LinkComp } from './link'
+import { useClassName } from '../hooks/className'
 
-export interface LinkListProps {
-  type: 'LinkList'
-  links: LinkProps[]
-  mode?: 'tabs' | 'vertical' | 'pagination'
-  className?: ClassName
-}
+import { LinkComp } from './link'
 
-export const LinkListComp = (props: LinkListProps) => {
+export const LinkListComp = (props: LinkList) => {
   const itemClassName = useClassName(props, { el: 'link-list-item' })
   return (
     <div className={useClassName(props)}>

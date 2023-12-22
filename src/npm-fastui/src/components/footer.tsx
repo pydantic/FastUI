@@ -1,15 +1,10 @@
-import { ClassName, useClassName } from '../hooks/className'
+import type { Footer } from '../models'
 
-import { LinkProps, LinkComp } from './link'
+import { useClassName } from '../hooks/className'
 
-export interface FooterProps {
-  type: 'Footer'
-  extraText?: string
-  links: LinkProps[]
-  className?: ClassName
-}
+import { LinkComp } from './link'
 
-export const FooterComp = (props: FooterProps) => {
+export const FooterComp = (props: Footer) => {
   const links = props.links.map((link) => {
     link.mode = link.mode || 'footer'
     return link

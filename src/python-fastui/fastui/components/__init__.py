@@ -9,9 +9,11 @@ import typing as _t
 
 import pydantic as _p
 import typing_extensions as _te
+from pydantic_core import core_schema as _core_schema
 
 from .. import class_name as _class_name
-from .. import events, json_schema
+from .. import events
+from .. import types as _types
 from .display import Details, Display
 from .forms import (
     Form,
@@ -108,6 +110,15 @@ class Heading(_p.BaseModel, extra='forbid'):
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['Heading'] = 'Heading'
 
+    @classmethod
+    def __get_pydantic_json_schema__(
+        cls, core_schema: _core_schema.CoreSchema, handler: _p.GetJsonSchemaHandler
+    ) -> _t.Any:
+        # until https://github.com/pydantic/pydantic/issues/8413 is fixed
+        json_schema = handler(core_schema)
+        json_schema['required'].append('level')
+        return json_schema
+
 
 # see https://github.com/PrismJS/prism-themes
 # and https://cdn.jsdelivr.net/npm/react-syntax-highlighter@15.5.0/dist/esm/styles/prism/index.js
@@ -130,7 +141,7 @@ class Code(_p.BaseModel, extra='forbid'):
 
 
 class Json(_p.BaseModel, extra='forbid'):
-    value: json_schema.JsonData
+    value: _types.JsonData
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['JSON'] = 'JSON'
 
@@ -168,6 +179,15 @@ class Navbar(_p.BaseModel, extra='forbid'):
     links: _t.List[Link] = _p.Field(default=[])
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['Navbar'] = 'Navbar'
+
+    @classmethod
+    def __get_pydantic_json_schema__(
+        cls, core_schema: _core_schema.CoreSchema, handler: _p.GetJsonSchemaHandler
+    ) -> _t.Any:
+        # until https://github.com/pydantic/pydantic/issues/8413 is fixed
+        json_schema = handler(core_schema)
+        json_schema['required'].append('links')
+        return json_schema
 
 
 class Footer(_p.BaseModel, extra='forbid'):
@@ -252,7 +272,7 @@ class FireEvent(_p.BaseModel, extra='forbid'):
 
 
 class Custom(_p.BaseModel, extra='forbid'):
-    data: json_schema.JsonData
+    data: _types.JsonData
     sub_type: str = _p.Field(serialization_alias='subType')
     library: _t.Union[str, None] = None
     class_name: _class_name.ClassNameField = None

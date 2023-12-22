@@ -1,7 +1,7 @@
 import { FC } from 'react'
-import { components, useClassName } from 'fastui'
+import { components, models, useClassName } from 'fastui'
 
-export const Footer: FC<components.FooterProps> = (props) => {
+export const Footer: FC<models.Footer> = (props) => {
   const links = props.links.map((link) => {
     link.mode = link.mode || 'footer'
     return link

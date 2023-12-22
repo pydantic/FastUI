@@ -1,24 +1,18 @@
 import { FC, useCallback, useContext, useEffect, useState } from 'react'
 
+import type { ServerLoad, PageEvent, FastProps } from '../models'
+
 import { ErrorContext } from '../hooks/error'
 import { useRequest, useSSE } from '../tools'
 import { DefaultSpinner, DefaultNotFound, DefaultTransition } from '../Defaults'
 import { ConfigContext } from '../hooks/config'
-import { PageEvent, usePageEventListen } from '../events'
+import { usePageEventListen } from '../events'
 import { EventContextProvider, useEventContext } from '../hooks/eventContext'
 import { LocationContext } from '../hooks/locationContext'
 
-import { AnyCompList, FastProps } from './index'
+import { AnyCompList } from './index'
 
-export interface ServerLoadProps {
-  type: 'ServerLoad'
-  path: string
-  components?: FastProps[]
-  loadTrigger?: PageEvent
-  sse?: boolean
-}
-
-export const ServerLoadComp: FC<ServerLoadProps> = ({ path, components, loadTrigger, sse }) => {
+export const ServerLoadComp: FC<ServerLoad> = ({ path, components, loadTrigger, sse }) => {
   if (components) {
     return <ServerLoadDefer path={path} components={components} loadTrigger={loadTrigger} sse={sse} />
   } else if (sse) {

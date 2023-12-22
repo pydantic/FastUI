@@ -1,17 +1,10 @@
 import { FC, useEffect, useRef } from 'react'
 
-import { AnyEvent, useFireEvent } from '../events'
-import { ClassName } from '../hooks/className'
+import type { FireEvent } from '../models'
 
-export interface FireEventProps {
-  type: 'FireEvent'
-  event: AnyEvent
-  message?: string
-  // className is not used, but it's here to satisfy ClassName hooks type checks
-  className?: ClassName
-}
+import { useFireEvent } from '../events'
 
-export const FireEventComp: FC<FireEventProps> = ({ event, message }) => {
+export const FireEventComp: FC<FireEvent> = ({ event, message }) => {
   const { fireEvent } = useFireEvent()
   const fireEventRef = useRef(fireEvent)
 

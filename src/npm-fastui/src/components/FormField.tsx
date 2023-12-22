@@ -2,35 +2,24 @@ import { FC, useState } from 'react'
 import AsyncSelect from 'react-select/async'
 import Select, { StylesConfig } from 'react-select'
 
-import { ClassName, useClassName } from '../hooks/className'
+import type {
+  FormFieldInput,
+  FormFieldBoolean,
+  FormFieldFile,
+  FormFieldSelect,
+  FormFieldSelectSearch,
+  SelectOption,
+  SelectOptions,
+  SelectGroup,
+} from '../models'
+
+import { useClassName } from '../hooks/className'
 import { debounce, useRequest } from '../tools'
 
 type PrivateOnChange = () => void
 
-interface BaseFormFieldProps {
-  name: string
-  title: string | string[]
-  required: boolean
-  locked: boolean
-  error?: string
-  description?: string
-  displayMode?: 'default' | 'inline'
-  className?: ClassName
+interface FormFieldInputProps extends FormFieldInput {
   onChange?: PrivateOnChange
-}
-
-export type FormFieldProps =
-  | FormFieldInputProps
-  | FormFieldBooleanProps
-  | FormFieldFileProps
-  | FormFieldSelectProps
-  | FormFieldSelectSearchProps
-
-interface FormFieldInputProps extends BaseFormFieldProps {
-  type: 'FormFieldInput'
-  htmlType: 'text' | 'date' | 'datetime-local' | 'time' | 'email' | 'url' | 'number' | 'password' | 'hidden'
-  initial?: string | number
-  placeholder?: string
 }
 
 export const FormFieldInputComp: FC<FormFieldInputProps> = (props) => {
@@ -55,10 +44,8 @@ export const FormFieldInputComp: FC<FormFieldInputProps> = (props) => {
   )
 }
 
-interface FormFieldBooleanProps extends BaseFormFieldProps {
-  type: 'FormFieldBoolean'
-  mode: 'checkbox' | 'switch'
-  initial?: boolean
+interface FormFieldBooleanProps extends FormFieldBoolean {
+  onChange?: PrivateOnChange
 }
 
 export const FormFieldBooleanComp: FC<FormFieldBooleanProps> = (props) => {
@@ -82,10 +69,8 @@ export const FormFieldBooleanComp: FC<FormFieldBooleanProps> = (props) => {
   )
 }
 
-interface FormFieldFileProps extends BaseFormFieldProps {
-  type: 'FormFieldFile'
-  multiple?: boolean
-  accept?: string
+interface FormFieldFileProps extends FormFieldFile {
+  onChange?: PrivateOnChange
 }
 
 export const FormFieldFileComp: FC<FormFieldFileProps> = (props) => {
@@ -109,31 +94,14 @@ export const FormFieldFileComp: FC<FormFieldFileProps> = (props) => {
   )
 }
 
-interface SelectOption {
-  value: string
-  label: string
-}
-
-interface SelectGroup {
-  label: string
-  options: SelectOption[]
-}
-
-type SelectOptions = SelectOption[] | SelectGroup[]
-
 // cheat slightly and match bootstrap 😱
 // TODO make this configurable as an argument to `FastUI`
 const styles: StylesConfig = {
   control: (base) => ({ ...base, borderRadius: '0.375rem', border: '1px solid #dee2e6' }),
 }
 
-interface FormFieldSelectProps extends BaseFormFieldProps {
-  type: 'FormFieldSelect'
-  options: SelectOptions
-  initial?: string
-  multiple?: boolean
-  vanilla?: boolean
-  placeholder?: string
+interface FormFieldSelectProps extends FormFieldSelect {
+  onChange?: PrivateOnChange
 }
 
 export const FormFieldSelectComp: FC<FormFieldSelectProps> = (props) => {
@@ -238,14 +206,8 @@ function findDefault(options: SelectOptions, value?: string): SelectOption | und
   }
 }
 
-interface FormFieldSelectSearchProps extends BaseFormFieldProps {
-  type: 'FormFieldSelectSearch'
-  searchUrl: string
-  /** @TJS-type integer */
-  debounce?: number
-  initial?: SelectOption
-  multiple?: boolean
-  placeholder?: string
+interface FormFieldSelectSearchProps extends FormFieldSelectSearch {
+  onChange?: PrivateOnChange
 }
 
 export const FormFieldSelectSearchComp: FC<FormFieldSelectSearchProps> = (props) => {
@@ -319,6 +281,13 @@ const Label: FC<FormFieldProps> = (props) => {
     </label>
   )
 }
+
+export type FormFieldProps =
+  | FormFieldInputProps
+  | FormFieldBooleanProps
+  | FormFieldFileProps
+  | FormFieldSelectProps
+  | FormFieldSelectSearchProps
 
 const inputId = (props: FormFieldProps) => `form-field-${props.name}`
 const descId = (props: FormFieldProps) => (props.description ? `${inputId(props)}-desc` : undefined)

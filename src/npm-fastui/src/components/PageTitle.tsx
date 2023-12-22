@@ -1,11 +1,8 @@
 import { FC, useEffect } from 'react'
 
-export interface PageTitleProps {
-  type: 'PageTitle'
-  text: string
-}
+import type { PageTitle } from '../models'
 
-export const PageTitleComp: FC<PageTitleProps> = (props) => {
+export const PageTitleComp: FC<PageTitle> = (props) => {
   const { text } = props
 
   useEffect(() => {
