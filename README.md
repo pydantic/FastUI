@@ -70,8 +70,9 @@ def users_table() -> list[AnyComponent]:
         c.Page(  # Page provides a basic container for components
             components=[
                 c.Heading(text='Users', level=2),  # renders `<h2>Users</h2>`
-                c.Table[User](  # c.Table is a generic component parameterized with the model used for rows
+                c.Table(  
                     data=users,
+                    data_model=User,  # data_model defines a model used for rows
                     # define two columns for the table
                     columns=[
                         # the first is the users, name rendered as a link to their profile
@@ -83,7 +84,6 @@ def users_table() -> list[AnyComponent]:
             ]
         ),
     ]
-
 
 @app.get("/api/user/{user_id}/", response_model=FastUI, response_model_exclude_none=True)
 def user_profile(user_id: int) -> list[AnyComponent]:
