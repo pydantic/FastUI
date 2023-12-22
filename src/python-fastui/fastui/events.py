@@ -1,5 +1,6 @@
 from typing import Dict, Literal, Union
 
+import typing_extensions
 from pydantic import BaseModel, Field
 from typing_extensions import Annotated, TypeAliasType
 
@@ -32,4 +33,6 @@ class AuthEvent(BaseModel):
     type: Literal['auth'] = 'auth'
 
 
-AnyEvent = Annotated[Union[PageEvent, GoToEvent, BackEvent, AuthEvent], Field(discriminator='type')]
+AnyEvent = typing_extensions.TypeAliasType(
+    'AnyEvent', Annotated[Union[PageEvent, GoToEvent, BackEvent, AuthEvent], Field(discriminator='type')]
+)

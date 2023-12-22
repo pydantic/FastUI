@@ -4,7 +4,7 @@
  * `fastui generate <python-object> <typescript-output-file>`.
  */
 
-export type FastProps =
+export type AnyComponent =
   | Text
   | Paragraph
   | PageTitle
@@ -24,7 +24,6 @@ export type FastProps =
   | Iframe
   | Video
   | FireEvent
-  | Custom
   | Table
   | Pagination
   | Display
@@ -63,6 +62,7 @@ export type DisplayMode =
   | 'json'
   | 'inline_code'
 export type SelectOptions = SelectOption[] | SelectGroup[]
+export type FastUI = AnyComponent[]
 
 export interface Text {
   text: string
@@ -81,7 +81,7 @@ export interface PageTitle {
   type: 'PageTitle'
 }
 export interface Div {
-  components: FastProps[]
+  components: AnyComponent[]
   className?: ClassName
   type: 'Div'
 }
@@ -89,7 +89,7 @@ export interface Div {
  * Similar to `container` in many UI frameworks, this should be a reasonable root component for most pages.
  */
 export interface Page {
-  components: FastProps[]
+  components: AnyComponent[]
   className?: ClassName
   type: 'Page'
 }
@@ -151,8 +151,8 @@ export interface AuthEvent {
   type: 'auth'
 }
 export interface Link {
-  components: FastProps[]
-  onClick?: PageEvent | GoToEvent | BackEvent | AuthEvent
+  components: AnyComponent[]
+  onClick?: AnyEvent
   mode?: 'navbar' | 'tabs' | 'vertical' | 'pagination'
   active?: string | boolean
   locked?: boolean
@@ -167,15 +167,15 @@ export interface LinkList {
 }
 export interface Navbar {
   title?: string
-  titleEvent?: PageEvent | GoToEvent | BackEvent | AuthEvent
+  titleEvent?: AnyEvent
   links: Link[]
   className?: ClassName
   type: 'Navbar'
 }
 export interface Modal {
   title: string
-  body: FastProps[]
-  footer?: FastProps[]
+  body: AnyComponent[]
+  footer?: AnyComponent[]
   openTrigger?: PageEvent
   openContext?: ContextType
   className?: ClassName
@@ -187,7 +187,7 @@ export interface Modal {
 export interface ServerLoad {
   path: string
   loadTrigger?: PageEvent
-  components?: FastProps[]
+  components?: AnyComponent[]
   sse?: boolean
   type: 'ServerLoad'
 }
@@ -235,13 +235,6 @@ export interface FireEvent {
   message?: string
   type: 'FireEvent'
 }
-export interface Custom {
-  data: JsonData
-  subType: string
-  library?: string
-  className?: ClassName
-  type: 'Custom'
-}
 export interface Table {
   data: DataModel[]
   columns: DisplayLookup[]
@@ -258,7 +251,7 @@ export interface DataModel {
 export interface DisplayLookup {
   mode?: DisplayMode
   title?: string
-  onClick?: PageEvent | GoToEvent | BackEvent | AuthEvent
+  onClick?: AnyEvent
   field: string
   tableWidthPercent?: number
 }
@@ -276,7 +269,7 @@ export interface Pagination {
 export interface Display {
   mode?: DisplayMode
   title?: string
-  onClick?: PageEvent | GoToEvent | BackEvent | AuthEvent
+  onClick?: AnyEvent
   value: JsonData
   type: 'Display'
 }
@@ -295,7 +288,7 @@ export interface Form {
   displayMode?: 'default' | 'inline'
   submitOnChange?: boolean
   submitTrigger?: PageEvent
-  footer?: FastProps[]
+  footer?: AnyComponent[]
   className?: ClassName
   formFields: (FormFieldInput | FormFieldBoolean | FormFieldFile | FormFieldSelect | FormFieldSelectSearch)[]
   type: 'Form'
@@ -389,7 +382,7 @@ export interface ModelForm {
   displayMode?: 'default' | 'inline'
   submitOnChange?: boolean
   submitTrigger?: PageEvent
-  footer?: FastProps[]
+  footer?: AnyComponent[]
   className?: ClassName
   type: 'ModelForm'
   formFields: (FormFieldInput | FormFieldBoolean | FormFieldFile | FormFieldSelect | FormFieldSelectSearch)[]

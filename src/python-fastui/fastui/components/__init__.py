@@ -47,7 +47,6 @@ __all__ = (
     'Image',
     'Iframe',
     'FireEvent',
-    'Custom',
     'Table',
     'Pagination',
     'Display',
@@ -64,6 +63,11 @@ __all__ = (
     'FormFieldSelect',
     'FormFieldSelectSearch',
 )
+
+ComponentT = _t.TypeVar('ComponentT')
+# hack to make pydantic recognize `AnyComponent` as the default type for `ComponentT` without needing to use the
+# backport of default `_te.TypeVar`, which doesn't work properly with PyCharm yet:
+ComponentT.__default__ = 'AnyComponent'  # type: ignore
 
 
 class Text(_p.BaseModel, extra='forbid'):
@@ -86,18 +90,18 @@ class PageTitle(_p.BaseModel, extra='forbid'):
     type: _t.Literal['PageTitle'] = 'PageTitle'
 
 
-class Div(_p.BaseModel, extra='forbid'):
-    components: '_t.List[AnyComponent]'
+class Div(_p.BaseModel, _t.Generic[ComponentT], extra='forbid'):
+    components: '_t.List[ComponentT]'
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['Div'] = 'Div'
 
 
-class Page(_p.BaseModel, extra='forbid'):
+class Page(_p.BaseModel, _t.Generic[ComponentT], extra='forbid'):
     """
     Similar to `container` in many UI frameworks, this should be a reasonable root component for most pages.
     """
 
-    components: '_t.List[AnyComponent]'
+    components: '_t.List[ComponentT]'
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['Page'] = 'Page'
 
@@ -155,8 +159,8 @@ class Button(_p.BaseModel, extra='forbid'):
     type: _t.Literal['Button'] = 'Button'
 
 
-class Link(_p.BaseModel, extra='forbid'):
-    components: '_t.List[AnyComponent]'
+class Link(_p.BaseModel, _t.Generic[ComponentT], extra='forbid'):
+    components: '_t.List[ComponentT]'
     on_click: _t.Union[events.AnyEvent, None] = _p.Field(default=None, serialization_alias='onClick')
     mode: _t.Union[_t.Literal['navbar', 'tabs', 'vertical', 'pagination'], None] = None
     active: _t.Union[str, bool, None] = None
@@ -165,17 +169,17 @@ class Link(_p.BaseModel, extra='forbid'):
     type: _t.Literal['Link'] = 'Link'
 
 
-class LinkList(_p.BaseModel, extra='forbid'):
-    links: _t.List[Link]
+class LinkList(_p.BaseModel, _t.Generic[ComponentT], extra='forbid'):
+    links: _t.List[Link[ComponentT]]
     mode: _t.Union[_t.Literal['tabs', 'vertical', 'pagination'], None] = None
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['LinkList'] = 'LinkList'
 
 
-class Navbar(_p.BaseModel, extra='forbid'):
+class Navbar(_p.BaseModel, _t.Generic[ComponentT], extra='forbid'):
     title: _t.Union[str, None] = None
     title_event: _t.Union[events.AnyEvent, None] = _p.Field(default=None, serialization_alias='titleEvent')
-    links: _t.List[Link] = _p.Field(default=[])
+    links: _t.List[Link[ComponentT]] = _p.Field(default=[])
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['Navbar'] = 'Navbar'
 
@@ -185,28 +189,28 @@ class Navbar(_p.BaseModel, extra='forbid'):
     ) -> _t.Any:
         # until https://github.com/pydantic/pydantic/issues/8413 is fixed
         json_schema = handler(core_schema)
-        json_schema['required'].append('links')
+        json_schema.setdefault('required', []).append('links')
         return json_schema
 
 
-class Modal(_p.BaseModel, extra='forbid'):
+class Modal(_p.BaseModel, _t.Generic[ComponentT], extra='forbid'):
     title: str
-    body: '_t.List[AnyComponent]'
-    footer: '_t.Union[_t.List[AnyComponent], None]' = None
+    body: '_t.List[ComponentT]'
+    footer: '_t.Union[_t.List[ComponentT], None]' = None
     open_trigger: _t.Union[events.PageEvent, None] = _p.Field(default=None, serialization_alias='openTrigger')
     open_context: _t.Union[events.ContextType, None] = _p.Field(default=None, serialization_alias='openContext')
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['Modal'] = 'Modal'
 
 
-class ServerLoad(_p.BaseModel, extra='forbid'):
+class ServerLoad(_p.BaseModel, _t.Generic[ComponentT], extra='forbid'):
     """
     A component that will be replaced by the server with the component returned by the given URL.
     """
 
     path: str
     load_trigger: _t.Union[events.PageEvent, None] = _p.Field(default=None, serialization_alias='loadTrigger')
-    components: '_t.Union[_t.List[AnyComponent], None]' = None
+    components: '_t.Union[_t.List[ComponentT], None]' = None
     sse: _t.Union[bool, None] = None
     type: _t.Literal['ServerLoad'] = 'ServerLoad'
 
@@ -263,43 +267,37 @@ class FireEvent(_p.BaseModel, extra='forbid'):
     type: _t.Literal['FireEvent'] = 'FireEvent'
 
 
-class Custom(_p.BaseModel, extra='forbid'):
-    data: _types.JsonData
-    sub_type: str = _p.Field(serialization_alias='subType')
-    library: _t.Union[str, None] = None
-    class_name: _class_name.ClassNameField = None
-    type: _t.Literal['Custom'] = 'Custom'
-
-
-AnyComponent = _te.Annotated[
-    _t.Union[
-        Text,
-        Paragraph,
-        PageTitle,
-        Div,
-        Page,
-        Heading,
-        Markdown,
-        Code,
-        Json,
-        Button,
-        Link,
-        LinkList,
-        Navbar,
-        Modal,
-        ServerLoad,
-        Image,
-        Iframe,
-        Video,
-        FireEvent,
-        Custom,
-        Table,
-        Pagination,
-        Display,
-        Details,
-        Form,
-        FormField,
-        ModelForm,
+AnyComponent = _te.TypeAliasType(
+    'AnyComponent',
+    _te.Annotated[
+        _t.Union[
+            Text,
+            Paragraph,
+            PageTitle,
+            Div,
+            Page,
+            Heading,
+            Markdown,
+            Code,
+            Json,
+            Button,
+            Link,
+            LinkList,
+            Navbar,
+            Modal,
+            ServerLoad,
+            Image,
+            Iframe,
+            Video,
+            FireEvent,
+            Table,
+            Pagination,
+            Display,
+            Details,
+            Form,
+            FormField,
+            ModelForm,
+        ],
+        _p.Field(discriminator='type'),
     ],
-    _p.Field(discriminator='type'),
-]
+)
