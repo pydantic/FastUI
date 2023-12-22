@@ -29,7 +29,7 @@ export const classNameGenerator: ClassNameGenerator = ({
   const { type } = props
   switch (type) {
     case 'Page':
-      return 'container mt-80'
+      return 'container mt-80 mb-3 page'
     case 'Button':
       return 'btn btn-primary'
     case 'Table':
@@ -110,13 +110,13 @@ export const classNameGenerator: ClassNameGenerator = ({
     case 'Footer':
       switch (subElement) {
         case 'contents':
-          return 'border-top py-3 my-3'
+          return 'border-top pt-1 mt-auto bg-body'
         case 'link-list':
-          return 'nav justify-content-center pb-3'
+          return 'nav justify-content-center pb-1'
         case 'extra-separator':
           return 'border-top'
         case 'extra':
-          return 'text-center text-muted pt-3'
+          return 'text-center text-muted pb-3'
         default:
           return 'container'
       }

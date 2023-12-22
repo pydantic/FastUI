@@ -46,6 +46,8 @@ def demo_page(*components: AnyComponent, title: str | None = None) -> list[AnyCo
                 c.Link(
                     components=[c.Text(text='Github')], on_click=GoToEvent(url='https://github.com/pydantic/FastUI')
                 ),
+                c.Link(components=[c.Text(text='PyPI')], on_click=GoToEvent(url='https://pypi.org/project/fastui/')),
+                c.Link(components=[c.Text(text='NPM')], on_click=GoToEvent(url='https://www.npmjs.com/org/pydantic/')),
             ],
         ),
     ]
