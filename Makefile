@@ -38,6 +38,10 @@ test:
 testcov: test
 	coverage html
 
+.PHONY: typescript-models
+typescript-models:
+	fastui generate fastui:FastUI src/npm-fastui/src/models.d.ts
+
 .PHONY: dev
 dev:
 	uvicorn demo:app --reload --reload-dir .
