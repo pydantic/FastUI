@@ -123,6 +123,7 @@ export interface Button {
   onClick?: AnyEvent
   htmlType?: 'button' | 'reset' | 'submit'
   className?: ClassName
+  mode?: 'primary' | 'secondary' | 'warning'
   type: 'Button'
 }
 export interface PageEvent {
