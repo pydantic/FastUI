@@ -65,6 +65,7 @@ def test_menu_links(url: str):
 
 # TODO tests for forms, including submission
 
+
 def test_doc():
     r = client.get('/docs')
     assert r.status_code == 200, r.text
