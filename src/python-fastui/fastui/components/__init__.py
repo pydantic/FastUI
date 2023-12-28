@@ -186,7 +186,7 @@ class Navbar(_p.BaseModel, extra='forbid'):
     ) -> _t.Any:
         # until https://github.com/pydantic/pydantic/issues/8413 is fixed
         json_schema = handler(core_schema)
-        json_schema['required'].append('links')
+        json_schema.setdefault('required', []).append('links')
         return json_schema
 
 
