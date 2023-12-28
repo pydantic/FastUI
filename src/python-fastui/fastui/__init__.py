@@ -48,6 +48,8 @@ def prebuilt_html(title: str = ''):
     <script type="module" crossorigin src="{_PREBUILT_CDN_URL}/index.js"></script>
     <link rel="stylesheet" crossorigin href="{_PREBUILT_CDN_URL}/index.css">
   </head>
-  <body id="root"></body>
+  <body>
+    <div id="root"></div>
+  </body>
 </html>
 """
