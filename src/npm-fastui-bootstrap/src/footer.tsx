@@ -11,8 +11,8 @@ export const Footer: FC<models.Footer> = (props) => {
     <footer className={useClassName(props)}>
       <ul className={useClassName(props, { el: 'link-list' })}>
         {links.map((link, i) => (
-          <li className="nav-item">
-            <components.LinkComp key={i} {...link} />
+          <li key={i} className="nav-item">
+            <components.LinkComp {...link} />
           </li>
         ))}
       </ul>
