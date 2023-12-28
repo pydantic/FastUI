@@ -74,4 +74,3 @@ def test_doc():
     title = html_content[title_start:title_end]
     assert title == 'FastAPI - Swagger UI'
     assert r.headers.get('content-type') == 'text/html; charset=utf-8'
-
