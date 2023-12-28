@@ -32,9 +32,6 @@ def demo_page(*components: AnyComponent, title: str | None = None) -> list[AnyCo
                     on_click=GoToEvent(url='/forms/login'),
                     active='startswith:/forms',
                 ),
-                c.Link(
-                    components=[c.DarkMode()],
-                ),
             ],
         ),
         c.Page(
