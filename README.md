@@ -72,7 +72,6 @@ def users_table() -> list[AnyComponent]:
                 c.Heading(text='Users', level=2),  # renders `<h2>Users</h2>`
                 c.Table(
                     data=users,
-                    data_model=User,
                     # define two columns for the table
                     columns=[
                         # the first is the users, name rendered as a link to their profile
