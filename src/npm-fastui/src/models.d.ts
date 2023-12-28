@@ -25,6 +25,7 @@ export type FastProps =
   | Video
   | FireEvent
   | Custom
+  | DarkMode
   | Table
   | Pagination
   | Display
@@ -241,6 +242,10 @@ export interface Custom {
   library?: string
   className?: ClassName
   type: 'Custom'
+}
+export interface DarkMode {
+  className?: ClassName
+  type: 'DarkMode'
 }
 export interface Table {
   data: DataModel[]
