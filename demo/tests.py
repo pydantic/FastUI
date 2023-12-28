@@ -69,8 +69,8 @@ def test_doc():
     r = client.get('/docs')
     assert r.status_code == 200, r.text
     html_content = r.text
-    title_start = html_content.find("<title>") + len("<title>")
-    title_end = html_content.find("</title>")
+    title_start = html_content.find('<title>') + len('<title>')
+    title_end = html_content.find('</title>')
     title = html_content[title_start:title_end]
     assert title == 'FastAPI - Swagger UI'
     assert r.headers.get('content-type') == 'text/html; charset=utf-8'
