@@ -40,6 +40,11 @@ def test_api_root():
             ],
             'type': 'Page',
         },
+        {
+            'extraText': 'FastUI Demo',
+            'links': IsList(length=3),
+            'type': 'Footer',
+        },
     ]
 
 

@@ -5,12 +5,15 @@ import type { ClassNameGenerator, CustomRender, models } from 'fastui'
 import { Modal } from './modal'
 import { Navbar } from './navbar'
 import { Pagination } from './pagination'
+import { Footer } from './footer'
 
 export const customRender: CustomRender = (props) => {
   const { type } = props
   switch (type) {
     case 'Navbar':
       return () => <Navbar {...props} />
+    case 'Footer':
+      return () => <Footer {...props} />
     case 'Modal':
       return () => <Modal {...props} />
     case 'Pagination':
@@ -26,7 +29,7 @@ export const classNameGenerator: ClassNameGenerator = ({
   const { type } = props
   switch (type) {
     case 'Page':
-      return 'container mt-80'
+      return 'container mt-80 mb-3 page'
     case 'Button':
       return 'btn btn-primary'
     case 'Table':
@@ -104,10 +107,20 @@ export const classNameGenerator: ClassNameGenerator = ({
         default:
           return 'border-bottom fixed-top bg-body'
       }
+    case 'Footer':
+      switch (subElement) {
+        case 'link-list':
+          return 'nav justify-content-center pb-1'
+        case 'extra':
+          return 'text-center text-muted pb-3'
+        default:
+          return 'border-top pt-1 mt-auto bg-body'
+      }
     case 'Link':
       return {
         active: pathMatch(props.active, fullPath),
-        'nav-link': props.mode === 'navbar' || props.mode === 'tabs',
+        'nav-link': props.mode === 'navbar' || props.mode === 'tabs' || props.mode === 'footer',
+        'text-muted': props.mode === 'footer',
       }
     case 'LinkList':
       if (subElement === 'link-list-item' && props.mode) {

@@ -31,6 +31,7 @@ import { PaginationComp } from './pagination'
 import { DetailsComp } from './details'
 import { DisplayComp } from './display'
 import { JsonComp } from './Json'
+import { FooterComp } from './footer'
 import { ServerLoadComp } from './ServerLoad'
 import { ImageComp } from './image'
 import { IframeComp } from './Iframe'
@@ -63,6 +64,7 @@ export {
   DetailsComp,
   DisplayComp,
   JsonComp,
+  FooterComp,
   ServerLoadComp,
   ImageComp,
   IframeComp,
@@ -116,6 +118,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <LinkListComp {...props} />
       case 'Navbar':
         return <NavbarComp {...props} />
+      case 'Footer':
+        return <FooterComp {...props} />
       case 'Form':
       case 'ModelForm':
         return <FormComp {...props} />
