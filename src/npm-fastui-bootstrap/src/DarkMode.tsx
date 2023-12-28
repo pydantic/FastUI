@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react'
-import { components, useClassName } from 'fastui'
+import { models, useClassName } from 'fastui'
 
-export const DarkMode: FC<components.DarkModeProps> = (props) => {
+export const DarkMode: FC<models.DarkMode> = (props) => {
   const [darkMode, setDarkMode] = useState(() => {
     const localData = localStorage.getItem('fastui-dark-mode')
     return localData ? JSON.parse(localData) : false

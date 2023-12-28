@@ -1,22 +1,10 @@
 import { FC, useEffect } from 'react'
 
-import type { FastProps } from './index'
-import type { ContextType } from '../hooks/eventContext'
+import type { Modal } from '../models'
 
-import { ClassName } from '../hooks/className'
-import { PageEvent, usePageEventListen } from '../events'
+import { usePageEventListen } from '../events'
 
-export interface ModalProps {
-  type: 'Modal'
-  title: string
-  body: FastProps[]
-  footer?: FastProps[]
-  openTrigger?: PageEvent
-  openContext?: ContextType
-  className?: ClassName
-}
-
-export const ModalComp: FC<ModalProps> = (props) => {
+export const ModalComp: FC<Modal> = (props) => {
   const { title, openTrigger, openContext } = props
 
   const { fireId, clear } = usePageEventListen(openTrigger, openContext)

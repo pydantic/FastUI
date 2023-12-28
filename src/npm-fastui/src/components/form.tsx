@@ -1,37 +1,18 @@
 import { FC, FormEvent, useContext, useState, useRef, useCallback, useEffect } from 'react'
 
-import { ClassName, useClassName } from '../hooks/className'
+import type { Form, ModelForm, FastProps } from '../models'
+
+import { useClassName } from '../hooks/className'
 import { useRequest, RequestArgs } from '../tools'
 import { LocationContext } from '../hooks/locationContext'
-import { PageEvent, usePageEventListen } from '../events'
+import { usePageEventListen } from '../events'
 
-import { FastProps, AnyCompList } from './index'
+import { AnyCompList } from './index'
 
 import { ButtonComp } from './button'
 import { FormFieldProps } from './FormField'
 
-interface BaseFormProps {
-  formFields: FormFieldProps[]
-  /** @TJS-type object */
-  initial?: Record<string, any>
-  submitUrl: string
-  footer?: FastProps[]
-  method: 'GET' | 'GOTO' | 'POST'
-  displayMode?: 'default' | 'inline'
-  submitOnChange?: boolean
-  submitTrigger?: PageEvent
-  className?: ClassName
-}
-
-export interface FormProps extends BaseFormProps {
-  type: 'Form'
-}
-
-export interface ModelFormProps extends BaseFormProps {
-  type: 'ModelForm'
-}
-
-export const FormComp: FC<FormProps | ModelFormProps> = (props) => {
+export const FormComp: FC<Form | ModelForm> = (props) => {
   const formRef = useRef<HTMLFormElement>(null)
   const { formFields, initial, submitUrl, method, footer, displayMode, submitOnChange, submitTrigger } = props
 

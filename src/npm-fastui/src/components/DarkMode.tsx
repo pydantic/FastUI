@@ -1,12 +1,7 @@
 import { FC } from 'react'
 
-import { ClassName } from '../hooks/className'
+import { DarkMode } from '../models'
 
-export interface DarkModeProps {
-  type: 'DarkMode'
-  className?: ClassName
-}
-
-export const DarkModeComp: FC<DarkModeProps> = (props: DarkModeProps) => {
+export const DarkModeComp: FC<DarkMode> = (props: DarkMode) => {
   return <>`${props.type} are not implemented by pure FastUI, implement a component for 'DarkModeProps'.`</>
 }

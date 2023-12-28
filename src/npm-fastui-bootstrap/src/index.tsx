@@ -1,6 +1,6 @@
 import { pathMatch } from 'fastui'
 
-import type { ClassNameGenerator, CustomRender, ClassName } from 'fastui'
+import type { ClassNameGenerator, CustomRender, models } from 'fastui'
 
 import { Modal } from './modal'
 import { Navbar } from './navbar'
@@ -21,7 +21,11 @@ export const customRender: CustomRender = (props) => {
   }
 }
 
-export const classNameGenerator: ClassNameGenerator = ({ props, fullPath, subElement }): ClassName => {
+export const classNameGenerator: ClassNameGenerator = ({
+  props,
+  fullPath,
+  subElement,
+}): models.ClassName | undefined => {
   const { type } = props
   switch (type) {
     case 'Page':
@@ -81,7 +85,7 @@ export const classNameGenerator: ClassNameGenerator = ({ props, fullPath, subEle
           if (props.displayMode === 'inline') {
             return 'visually-hidden'
           } else {
-            return { 'form-label': true, 'fw-bold': props.required, 'form-check-label': type === 'FormFieldBoolean' }
+            return { 'form-label': true, 'fw-bold': !!props.required, 'form-check-label': type === 'FormFieldBoolean' }
           }
         case 'error':
           return 'invalid-feedback'

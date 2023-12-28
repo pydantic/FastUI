@@ -1,19 +1,12 @@
 import { FC, useContext } from 'react'
 
-import { ClassName } from '../hooks/className'
+import type { Custom } from '../models'
+
 import { ErrorContext } from '../hooks/error'
 
-import { JsonData, JsonComp } from './Json'
+import { JsonComp } from './Json'
 
-export interface CustomProps {
-  type: 'Custom'
-  data: JsonData
-  subType: string
-  library?: string
-  className?: ClassName
-}
-
-export const CustomComp: FC<CustomProps> = (props) => {
+export const CustomComp: FC<Custom> = (props) => {
   const { data, subType, library } = props
   const { DisplayError } = useContext(ErrorContext)
 

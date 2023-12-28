@@ -1,34 +1,10 @@
 import { useContext, useState, useEffect, useCallback } from 'react'
 
+import type { PageEvent, AnyEvent } from './models'
+
 import { LocationContext } from './hooks/locationContext'
 import { ContextType } from './hooks/eventContext'
 import { AUTH_TOKEN_KEY } from './tools'
-
-export interface PageEvent {
-  type: 'page'
-  name: string
-  pushPath?: string
-  context?: ContextType
-  clear?: boolean
-}
-
-export interface GoToEvent {
-  type: 'go-to'
-  url?: string
-  query?: Record<string, string | number | null>
-}
-
-export interface BackEvent {
-  type: 'back'
-}
-
-export interface AuthEvent {
-  type: 'auth'
-  token: string | false
-  url?: string
-}
-
-export type AnyEvent = PageEvent | GoToEvent | BackEvent | AuthEvent
 
 export interface PageEventDetail {
   clear: boolean

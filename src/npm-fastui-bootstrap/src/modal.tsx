@@ -1,8 +1,8 @@
 import { FC } from 'react'
-import { components, events, renderClassName, EventContextProvider } from 'fastui'
+import { models, components, events, renderClassName, EventContextProvider } from 'fastui'
 import BootstrapModal from 'react-bootstrap/Modal'
 
-export const Modal: FC<components.ModalProps> = (props) => {
+export const Modal: FC<models.Modal> = (props) => {
   const { className, title, body, footer, openTrigger, openContext } = props
 
   const { eventContext, fireId, clear } = events.usePageEventListen(openTrigger, openContext)

@@ -1,17 +1,10 @@
-import { ClassName, useClassName } from '../hooks/className'
-import { AnyEvent } from '../events'
+import type { Navbar } from '../models'
 
-import { LinkProps, LinkComp, LinkRender } from './link'
+import { useClassName } from '../hooks/className'
 
-export interface NavbarProps {
-  type: 'Navbar'
-  title?: string
-  titleEvent?: AnyEvent
-  links: LinkProps[]
-  className?: ClassName
-}
+import { LinkComp, LinkRender } from './link'
 
-export const NavbarComp = (props: NavbarProps) => {
+export const NavbarComp = (props: Navbar) => {
   const links = props.links.map((link) => {
     link.mode = link.mode || 'navbar'
     return link
@@ -28,7 +21,7 @@ export const NavbarComp = (props: NavbarProps) => {
   )
 }
 
-const NavbarTitle = (props: NavbarProps) => {
+const NavbarTitle = (props: Navbar) => {
   const { title, titleEvent } = props
   const className = useClassName(props, { el: 'title' })
   if (title) {
