@@ -4,6 +4,7 @@ module.exports = {
   extends: [
     'standard',
     'eslint:recommended',
+    'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:react-hooks/recommended',
     'prettier',
@@ -15,6 +16,9 @@ module.exports = {
     'react-refresh/only-export-components': 'off', // how much effect does this have?
     '@typescript-eslint/no-explicit-any': 'off',
     'no-use-before-define': 'off',
+    'react/react-in-jsx-scope': 'off',
+    'react/prop-types': 'off',
+    'react/display-name': 'off',
     'import/order': [
       'error',
       {
