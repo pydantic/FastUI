@@ -25,6 +25,7 @@ export type FastProps =
   | Iframe
   | Video
   | FireEvent
+  | Error
   | Custom
   | Table
   | Pagination
@@ -241,6 +242,14 @@ export interface FireEvent {
   event: AnyEvent
   message?: string
   type: 'FireEvent'
+}
+export interface Error {
+  title: string
+  description: string
+  statusCode?: number
+  className?: ClassName
+  type: 'Error'
+  children?: ReactNode
 }
 export interface Custom {
   data: JsonData

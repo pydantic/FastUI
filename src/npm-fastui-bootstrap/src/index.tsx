@@ -137,5 +137,11 @@ export const classNameGenerator: ClassNameGenerator = ({
       }
     case 'Code':
       return 'rounded'
+    case 'Error':
+      if (props.statusCode === 502) {
+        return 'm-3 text-muted'
+      } else {
+        return 'alert alert-danger m-3'
+      }
   }
 }

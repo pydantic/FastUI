@@ -1,6 +1,5 @@
 import { FC, ReactNode } from 'react'
 
-import type { ErrorDisplayType } from './hooks/error'
 import type { FastProps } from './models'
 
 import { LocationProvider } from './hooks/locationContext'
@@ -26,7 +25,6 @@ export interface FastUIProps {
   Spinner?: FC
   NotFound?: FC<{ url: string }>
   Transition?: FC<{ children: ReactNode; transitioning: boolean }>
-  DisplayError?: ErrorDisplayType
   classNameGenerator?: ClassNameGenerator
   customRender?: CustomRender
   // defaults to `process.env.NODE_ENV === 'development'
@@ -34,17 +32,17 @@ export interface FastUIProps {
 }
 
 export function FastUI(props: FastUIProps) {
-  const { classNameGenerator, DisplayError, devMode, ...rest } = props
+  const { classNameGenerator, devMode, ...rest } = props
   return (
-    <ErrorContextProvider DisplayError={DisplayError}>
-      <LocationProvider>
-        <ClassNameContext.Provider value={classNameGenerator ?? null}>
+    <ClassNameContext.Provider value={classNameGenerator ?? null}>
+      <ErrorContextProvider>
+        <LocationProvider>
           <ConfigContext.Provider value={rest}>
             <DevReload enabled={devMode} />
             <FastUIController />
           </ConfigContext.Provider>
-        </ClassNameContext.Provider>
-      </LocationProvider>
-    </ErrorContextProvider>
+        </LocationProvider>
+      </ErrorContextProvider>
+    </ClassNameContext.Provider>
   )
 }
