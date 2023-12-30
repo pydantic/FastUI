@@ -34,6 +34,14 @@ class FormFieldInput(BaseFormField):
     type: _t.Literal['FormFieldInput'] = 'FormFieldInput'
 
 
+class FormFieldTextarea(BaseFormField):
+    rows: _t.Union[int, None] = None
+    cols: _t.Union[int, None] = None
+    initial: _t.Union[str, None] = None
+    placeholder: _t.Union[str, None] = None
+    type: _t.Literal['FormFieldTextarea'] = 'FormFieldTextarea'
+
+
 class FormFieldBoolean(BaseFormField):
     initial: _t.Union[bool, None] = None
     mode: _t.Literal['checkbox', 'switch'] = 'checkbox'
@@ -65,7 +73,9 @@ class FormFieldSelectSearch(BaseFormField):
     type: _t.Literal['FormFieldSelectSearch'] = 'FormFieldSelectSearch'
 
 
-FormField = _t.Union[FormFieldInput, FormFieldBoolean, FormFieldFile, FormFieldSelect, FormFieldSelectSearch]
+FormField = _t.Union[
+    FormFieldInput, FormFieldTextarea, FormFieldBoolean, FormFieldFile, FormFieldSelect, FormFieldSelectSearch
+]
 
 
 class BaseForm(pydantic.BaseModel, ABC, defer_build=True, extra='forbid'):

@@ -9,7 +9,7 @@ from fastapi import APIRouter, Request, UploadFile
 from fastui import AnyComponent, FastUI
 from fastui import components as c
 from fastui.events import GoToEvent, PageEvent
-from fastui.forms import FormFile, SelectSearchResponse, fastui_form
+from fastui.forms import FormFile, SelectSearchResponse, Textarea, fastui_form
 from httpx import AsyncClient
 from pydantic import BaseModel, EmailStr, Field, SecretStr, field_validator
 from pydantic_core import PydanticCustomError
@@ -143,6 +143,7 @@ class BigModel(BaseModel):
     name: str | None = Field(
         None, description='This field is not required, it must start with a capital letter if provided'
     )
+    info: Annotated[str | None, Textarea(rows=5)] = Field(None, description='Optional free text information about you.')
     profile_pic: Annotated[UploadFile, FormFile(accept='image/*', max_size=16_000)] = Field(
         description='Upload a profile picture, must not be more than 16kb'
     )

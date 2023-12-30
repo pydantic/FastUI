@@ -12,6 +12,7 @@ from .components.forms import (
     FormFieldInput,
     FormFieldSelect,
     FormFieldSelectSearch,
+    FormFieldTextarea,
     InputHtmlType,
 )
 
@@ -30,7 +31,7 @@ def model_json_schema_to_fields(model: _t.Type[BaseModel]) -> _t.List[FormField]
 
 
 JsonSchemaInput: _ta.TypeAlias = (
-    'JsonSchemaString | JsonSchemaStringEnum | JsonSchemaFile | JsonSchemaInt | JsonSchemaNumber'
+    'JsonSchemaString | JsonSchemaStringEnum | JsonSchemaFile | JsonSchemaTextarea | JsonSchemaInt | JsonSchemaNumber'
 )
 JsonSchemaField: _ta.TypeAlias = 'JsonSchemaInput | JsonSchemaBool'
 JsonSchemaConcrete: _ta.TypeAlias = 'JsonSchemaField | JsonSchemaArray | JsonSchemaObject'
@@ -67,6 +68,15 @@ class JsonSchemaFile(JsonSchemaBase, total=False):
     type: _ta.Required[_t.Literal['string']]
     format: _ta.Required[_t.Literal['binary']]
     accept: str
+
+
+class JsonSchemaTextarea(JsonSchemaBase, total=False):
+    type: _ta.Required[_t.Literal['string']]
+    format: _ta.Required[_t.Literal['textarea']]
+    rows: int
+    cols: int
+    default: str
+    placeholder: str
 
 
 class JsonSchemaBool(JsonSchemaBase, total=False):
@@ -234,6 +244,17 @@ def special_string_field(
                 required=required,
                 multiple=multiple,
                 accept=schema.get('accept'),
+                description=schema.get('description'),
+            )
+        elif schema.get('format') == 'textarea':
+            return FormFieldTextarea(
+                name=name,
+                title=title,
+                required=required,
+                rows=schema.get('rows'),
+                cols=schema.get('cols'),
+                placeholder=schema.get('placeholder'),
+                initial=schema.get('initial'),
                 description=schema.get('description'),
             )
         elif enum := schema.get('enum'):
