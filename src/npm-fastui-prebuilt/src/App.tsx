@@ -4,16 +4,14 @@ import { FC, ReactNode } from 'react'
 
 export default function App() {
   return (
-    <div className="top-offset">
-      <FastUI
-        rootUrl="/api"
-        classNameGenerator={bootstrap.classNameGenerator}
-        customRender={customRender}
-        NotFound={NotFound}
-        Spinner={Spinner}
-        Transition={Transition}
-      />
-    </div>
+    <FastUI
+      rootUrl="/api"
+      classNameGenerator={bootstrap.classNameGenerator}
+      customRender={customRender}
+      NotFound={NotFound}
+      Spinner={Spinner}
+      Transition={Transition}
+    />
   )
 }
 
@@ -33,10 +31,10 @@ const Spinner = () => (
 )
 
 const Transition: FC<{ children: ReactNode; transitioning: boolean }> = ({ children, transitioning }) => (
-  <div>
+  <>
     <div className={renderClassName({ 'transition-overlay': true, transitioning })} />
     {children}
-  </div>
+  </>
 )
 
 const customRender: CustomRender = (props) => {

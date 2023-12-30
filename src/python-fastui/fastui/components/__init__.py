@@ -55,6 +55,7 @@ __all__ = (
     'Form',
     'FormField',
     'ModelForm',
+    'Footer',
     # then `AnyComponent` itself
     'AnyComponent',
     # then the other form field types which are included in `AnyComponent` via the `FormField` union
@@ -158,7 +159,7 @@ class Button(_p.BaseModel, extra='forbid'):
 class Link(_p.BaseModel, extra='forbid'):
     components: '_t.List[AnyComponent]'
     on_click: _t.Union[events.AnyEvent, None] = _p.Field(default=None, serialization_alias='onClick')
-    mode: _t.Union[_t.Literal['navbar', 'tabs', 'vertical', 'pagination'], None] = None
+    mode: _t.Union[_t.Literal['navbar', 'footer', 'tabs', 'vertical', 'pagination'], None] = None
     active: _t.Union[str, bool, None] = None
     locked: _t.Union[bool, None] = None
     class_name: _class_name.ClassNameField = None
@@ -185,8 +186,15 @@ class Navbar(_p.BaseModel, extra='forbid'):
     ) -> _t.Any:
         # until https://github.com/pydantic/pydantic/issues/8413 is fixed
         json_schema = handler(core_schema)
-        json_schema['required'].append('links')
+        json_schema.setdefault('required', []).append('links')
         return json_schema
+
+
+class Footer(_p.BaseModel, extra='forbid'):
+    links: _t.List[Link]
+    extra_text: _t.Union[str, None] = _p.Field(default=None, serialization_alias='extraText')
+    class_name: _class_name.ClassNameField = None
+    type: _t.Literal['Footer'] = 'Footer'
 
 
 class Modal(_p.BaseModel, extra='forbid'):
@@ -286,6 +294,7 @@ AnyComponent = _te.Annotated[
         Link,
         LinkList,
         Navbar,
+        Footer,
         Modal,
         ServerLoad,
         Image,

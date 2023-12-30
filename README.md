@@ -70,7 +70,7 @@ def users_table() -> list[AnyComponent]:
         c.Page(  # Page provides a basic container for components
             components=[
                 c.Heading(text='Users', level=2),  # renders `<h2>Users</h2>`
-                c.Table[User](  # c.Table is a generic component parameterized with the model used for rows
+                c.Table(
                     data=users,
                     # define two columns for the table
                     columns=[

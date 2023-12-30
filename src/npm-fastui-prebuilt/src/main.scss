@@ -3,6 +3,20 @@ $link-color: #0d6efd; // bootstrap primary
 
 @import 'bootstrap/scss/bootstrap';
 
+html, body, #root {
+  height: 100%;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+}
+
+.page {
+  // margin-top because the top is sticky
+  margin-top: 70px;
+}
+
 :root {
   --bs-font-sans-serif: 'IBM Plex Sans', sans-serif;
   --bs-code-color: rgb(31, 35, 40);
@@ -19,16 +33,8 @@ body {
   backdrop-filter: blur(8px);
 }
 
-.top-offset {
-  margin-top: 70px;
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    scroll-margin-top: 60px;
-  }
+h1, h2, h3, h4, h5, h6 {
+  scroll-margin-top: 60px;
 }
 
 .transition-overlay {

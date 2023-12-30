@@ -18,6 +18,7 @@ export type FastProps =
   | Link
   | LinkList
   | Navbar
+  | Footer
   | Modal
   | ServerLoad
   | Image
@@ -154,7 +155,7 @@ export interface AuthEvent {
 export interface Link {
   components: FastProps[]
   onClick?: PageEvent | GoToEvent | BackEvent | AuthEvent
-  mode?: 'navbar' | 'tabs' | 'vertical' | 'pagination'
+  mode?: 'navbar' | 'footer' | 'tabs' | 'vertical' | 'pagination'
   active?: string | boolean
   locked?: boolean
   className?: ClassName
@@ -172,6 +173,12 @@ export interface Navbar {
   links: Link[]
   className?: ClassName
   type: 'Navbar'
+}
+export interface Footer {
+  links: Link[]
+  extraText?: string
+  className?: ClassName
+  type: 'Footer'
 }
 export interface Modal {
   title: string

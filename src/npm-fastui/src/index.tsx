@@ -36,17 +36,15 @@ export interface FastUIProps {
 export function FastUI(props: FastUIProps) {
   const { classNameGenerator, DisplayError, devMode, ...rest } = props
   return (
-    <div className="fastui">
-      <ErrorContextProvider DisplayError={DisplayError}>
-        <LocationProvider>
-          <ClassNameContext.Provider value={classNameGenerator ?? null}>
-            <ConfigContext.Provider value={rest}>
-              <DevReload enabled={devMode} />
-              <FastUIController />
-            </ConfigContext.Provider>
-          </ClassNameContext.Provider>
-        </LocationProvider>
-      </ErrorContextProvider>
-    </div>
+    <ErrorContextProvider DisplayError={DisplayError}>
+      <LocationProvider>
+        <ClassNameContext.Provider value={classNameGenerator ?? null}>
+          <ConfigContext.Provider value={rest}>
+            <DevReload enabled={devMode} />
+            <FastUIController />
+          </ConfigContext.Provider>
+        </ClassNameContext.Provider>
+      </LocationProvider>
+    </ErrorContextProvider>
   )
 }

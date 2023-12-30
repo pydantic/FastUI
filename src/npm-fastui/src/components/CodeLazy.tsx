@@ -10,12 +10,8 @@ export default function (props: Code) {
   const codeLookup = codeStyle as keyof typeof codeStyles
   const style = (codeStyle && codeStyles[codeLookup]) || codeStyles.coldarkCold
   return (
-    <SyntaxHighlighter
-      className={useClassName(props)}
-      PreTag="div"
-      children={text}
-      language={language}
-      style={style}
-    />
+    <SyntaxHighlighter className={useClassName(props)} PreTag="div" language={language} style={style}>
+      {text}
+    </SyntaxHighlighter>
   )
 }

@@ -28,6 +28,7 @@ The following components are demonstrated:
 * `Link` — example [here](/components#link-list)
 * `LinkList` — example [here](/components#link-list)
 * `Navbar` — see the top of this page
+* `Footer` — see the bottom of this page
 * `Modal` — static example [here](/components#button-and-modal), dynamic content example [here](/components#dynamic-modal)
 * `ServerLoad` — see [dynamic modal example](/components#dynamic-modal) and [SSE example](/components#server-load-sse)
 * `Image` - example [here](/components#image)
