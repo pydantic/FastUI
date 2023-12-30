@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import type { Details } from '../models'
 
-import { asTitle } from '../tools'
+import { asTitle, deepLookup } from '../tools'
 import { useClassName } from '../hooks/className'
 
 import { DisplayComp, DisplayLookupProps, renderEvent } from './display'
@@ -17,7 +17,7 @@ export const DetailsComp: FC<Details> = (props) => (
 
 const FieldDetail: FC<{ props: Details; fieldDisplay: DisplayLookupProps }> = ({ props, fieldDisplay }) => {
   const { field, title, onClick, ...rest } = fieldDisplay
-  const value = props.data[field]
+  const value = deepLookup(props.data, field)
   const renderedOnClick = renderEvent(onClick, props.data)
   return (
     <>
