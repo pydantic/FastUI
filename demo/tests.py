@@ -68,4 +68,17 @@ def test_menu_links(url: str):
     assert isinstance(data, list)
 
 
+def test_forms_validate_correct_select_multiple():
+    r = client.post(
+        'api/forms/select',
+        data={
+            'select_single': 'hammer',
+            'select_multiple': 'hammer',
+            'search_select_single': 'China',
+            'search_select_multiple': 'China',
+        },
+    )
+    assert r.status_code == 200
+
+
 # TODO tests for forms, including submission
