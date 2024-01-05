@@ -85,6 +85,11 @@ export function usePageEventListen(event?: PageEvent, initialContext: ContextTyp
 
   const eventType = event && pageEventType(event)
 
+  const fireClear = () => {
+    setEventContext(null)
+    setFireId(null)
+  }
+
   useEffect(() => {
     if (!eventType) {
       setEventContext(null)
@@ -97,8 +102,7 @@ export function usePageEventListen(event?: PageEvent, initialContext: ContextTyp
       const event = e as CustomEvent<PageEventDetail>
       const { context, clear } = event.detail
       if (clear) {
-        setEventContext(null)
-        setFireId(null)
+        fireClear()
       } else {
         setEventContext(context || {})
         setFireId(`${event.type}:${event.timeStamp}`)
@@ -112,6 +116,6 @@ export function usePageEventListen(event?: PageEvent, initialContext: ContextTyp
   return {
     eventContext,
     fireId,
-    clear: useCallback(() => setEventContext(null), []),
+    clear: useCallback(() => fireClear(), []),
   }
 }
