@@ -182,6 +182,7 @@ def json_schema_field_to_field(
         return FormFieldInput(
             name=name,
             title=title,
+            placeholder=schema.get('placeholder'),
             html_type=input_html_type(schema),
             required=required,
             initial=schema.get('default'),
