@@ -141,7 +141,7 @@ export interface GoToEvent {
   query?: {
     [k: string]: string | number
   }
-  target?: '_self' | '_blank' | '_parent' | '_top'
+  target?: '_blank'
   type: 'go-to'
 }
 export interface BackEvent {

@@ -35,8 +35,6 @@ export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
       }
       case 'go-to':
         if (event.url) {
-          console.log('url: ', event.url)
-          console.log('target: ', event.target)
           if (event.target) {
             window.open(event.url, event.target)
           } else {
