@@ -36,8 +36,7 @@ class FastUIForm(_t.Generic[FormModel]):
 def fastui_form(model: _t.Type[FormModel]) -> fastapi_params.Depends:
     async def run_fastui_form(request: fastapi.Request):
         async with request.form() as form_data:
-            model_data = unflatten(form_data)
-
+            model_data = unflatten(model, form_data)
         try:
             return model.model_validate(model_data)
         except pydantic.ValidationError as e:
@@ -173,7 +172,7 @@ class SelectSearchResponse(pydantic.BaseModel):
 NestedDict: _te.TypeAlias = 'dict[str | int, NestedDict | str | list[str] | ds.UploadFile | list[ds.UploadFile]]'
 
 
-def unflatten(form_data: ds.FormData) -> NestedDict:
+def unflatten(model: _t.Type[FormModel], form_data: ds.FormData) -> NestedDict:
     """
     Unflatten a `FormData` dict into a nested dict.
 
@@ -194,10 +193,10 @@ def unflatten(form_data: ds.FormData) -> NestedDict:
                 d[part] = {}
             d = d[part]
 
-        if len(values) == 1:
-            d[last_key] = values[0]
-        else:
+        if last_key in model.model_fields and not _t.get_origin(model.model_fields[last_key].annotation) is not list:
             d[last_key] = values
+        else:
+            d[last_key] = values[0]
 
     # this logic takes care of converting `dict[int, str]` to `list[str]`
     # we recursively process each dict in `result_dict` and convert it to a list if all keys are ints
