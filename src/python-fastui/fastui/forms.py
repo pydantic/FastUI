@@ -193,7 +193,7 @@ def unflatten(model: _t.Type[FormModel], form_data: ds.FormData) -> NestedDict:
                 d[part] = {}
             d = d[part]
 
-        if last_key in model.model_fields and not _t.get_origin(model.model_fields[last_key].annotation) is not list:
+        if (last_key in model.model_fields and _t.get_origin(model.model_fields[last_key].annotation) is list) or len(values) > 1:
             d[last_key] = values
         else:
             d[last_key] = values[0]
