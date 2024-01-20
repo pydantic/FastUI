@@ -14,6 +14,7 @@ from .components_list import router as components_router
 from .db import create_db
 from .forms import router as forms_router
 from .main import router as main_router
+from .ollama import router as ollama_router
 from .sse import router as sse_router
 from .tables import router as table_router
 
@@ -35,6 +36,7 @@ else:
 
 app.include_router(components_router, prefix='/api/components')
 app.include_router(sse_router, prefix='/api/components')
+app.include_router(ollama_router, prefix='/api/ollama')
 app.include_router(table_router, prefix='/api/table')
 app.include_router(forms_router, prefix='/api/forms')
 app.include_router(auth_router, prefix='/api/auth')

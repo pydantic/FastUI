@@ -1,35 +1,38 @@
+from __future__ import annotations as _annotations
+
 import asyncio
-from itertools import chain
-from typing import AsyncIterable
 
 from fastapi import APIRouter
 from fastui import FastUI
 from fastui import components as c
+from ollama import generate
 from starlette.responses import StreamingResponse
 
 router = APIRouter()
 
 
-async def canned_ai_response_generator() -> AsyncIterable[str]:
-    prompt = '**User:** What is SSE? Please include a javascript code example.\n\n**AI:** '
+async def speak(speaker, content):
+    if speaker:
+        p = await asyncio.create_subprocess_exec(speaker, content)
+        await p.communicate()
+
+
+import asyncio
+
+
+async def ollama_response_generator():
     output = ''
-    msg = ''
-    for time, text in chain([(0.5, prompt)], CANNED_RESPONSE):
-        await asyncio.sleep(time)
-        output += text
+    for part in generate('tinyllama', 'Why is the sky blue?', stream=True):
+        print(part['response'], end='', flush=True)
+        output += part['response']
         m = FastUI(root=[c.Markdown(text=output)])
         msg = f'data: {m.model_dump_json(by_alias=True, exclude_none=True)}\n\n'
         yield msg
 
-    # avoid the browser reconnecting
-    while True:
-        yield msg
-        await asyncio.sleep(10)
-
 
 @router.get('/sse')
 async def sse_ai_response() -> StreamingResponse:
-    return StreamingResponse(canned_ai_response_generator(), media_type='text/event-stream')
+    return StreamingResponse(ollama_response_generator(), media_type='text/event-stream')
 
 
 async def run_openai():
@@ -68,7 +71,6 @@ async def run_openai():
 
 if __name__ == '__main__':
     asyncio.run(run_openai())
-
 
 CANNED_RESPONSE: list[tuple[float, str]] = [
     (0.00000, ''),

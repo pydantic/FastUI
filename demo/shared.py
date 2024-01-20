@@ -13,6 +13,11 @@ def demo_page(*components: AnyComponent, title: str | None = None) -> list[AnyCo
             title_event=GoToEvent(url='/'),
             links=[
                 c.Link(
+                    components=[c.Text(text='Ollama')],
+                    on_click=GoToEvent(url='/ollama'),
+                    active='startswith:/ollama',
+                ),
+                c.Link(
                     components=[c.Text(text='Components')],
                     on_click=GoToEvent(url='/components'),
                     active='startswith:/components',
