@@ -185,6 +185,7 @@ def json_schema_field_to_field(
             initial=schema.get('default'),
             description=schema.get('description'),
             mode=schema.get('mode', 'checkbox'),
+            class_name=schema.get('className'),
         )
     elif field := special_string_field(schema, name, title, required, False):
         return field
@@ -198,6 +199,7 @@ def json_schema_field_to_field(
             autocomplete=schema.get('autocomplete'),
             description=schema.get('description'),
             placeholder=schema.get('placeholder'),
+            class_name=schema.get('className'),
         )
 
 
@@ -247,6 +249,7 @@ def special_string_field(
                 multiple=multiple,
                 accept=schema.get('accept'),
                 description=schema.get('description'),
+                class_name=schema.get('className'),
             )
         elif schema.get('format') == 'textarea':
             return FormFieldTextarea(
@@ -271,6 +274,7 @@ def special_string_field(
                 options=[SelectOption(value=v, label=enum_labels.get(v) or as_title(v)) for v in enum],
                 initial=schema.get('default'),
                 description=schema.get('description'),
+                class_name=schema.get('className'),
                 autocomplete=schema.get('autocomplete'),
             )
         elif search_url := schema.get('search_url'):
@@ -283,6 +287,7 @@ def special_string_field(
                 multiple=multiple,
                 initial=schema.get('initial'),
                 description=schema.get('description'),
+                class_name=schema.get('className'),
             )
 
 
