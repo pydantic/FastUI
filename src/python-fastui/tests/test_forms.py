@@ -6,7 +6,7 @@ import pytest
 from fastapi import HTTPException
 from fastui import components
 from fastui.forms import FormFile, fastui_form
-from pydantic import BaseModel
+from pydantic import Base64Str, BaseModel
 from starlette.datastructures import FormData, Headers, UploadFile
 from typing_extensions import Annotated
 
@@ -14,6 +14,8 @@ from typing_extensions import Annotated
 class SimpleForm(BaseModel):
     name: str
     size: int = 4
+    bytes_: bytes = b'fastui'
+    base64: Base64Str = 'fastui'
 
 
 class FakeRequest:
@@ -54,6 +56,24 @@ def test_simple_form_fields():
                 'htmlType': 'number',
                 'type': 'FormFieldInput',
             },
+            {
+                'name': 'bytes_',
+                'title': ['Bytes '],
+                'initial': 'fastui',
+                'required': False,
+                'locked': False,
+                'htmlType': 'text',
+                'type': 'FormFieldInput',
+            },
+            {
+                'name': 'base64',
+                'title': ['Base64'],
+                'initial': 'fastui',
+                'required': False,
+                'locked': False,
+                'htmlType': 'text',
+                'type': 'FormFieldInput',
+            },
         ],
     }
 
@@ -85,6 +105,24 @@ def test_inline_form_fields():
                 'htmlType': 'number',
                 'type': 'FormFieldInput',
             },
+            {
+                'name': 'bytes_',
+                'title': ['Bytes '],
+                'initial': 'fastui',
+                'required': False,
+                'locked': False,
+                'htmlType': 'text',
+                'type': 'FormFieldInput',
+            },
+            {
+                'name': 'base64',
+                'title': ['Base64'],
+                'initial': 'fastui',
+                'required': False,
+                'locked': False,
+                'htmlType': 'text',
+                'type': 'FormFieldInput',
+            },
         ],
     }
 
@@ -96,7 +134,7 @@ async def test_simple_form_submit():
 
     m = await form_dep.dependency(request)
     assert isinstance(m, SimpleForm)
-    assert m.model_dump() == {'name': 'bar', 'size': 123}
+    assert m.model_dump() == {'name': 'bar', 'size': 123, 'bytes_': b'fastui', 'base64': 'ZmFzdHVp\n'}
 
 
 async def test_simple_form_submit_repeat():

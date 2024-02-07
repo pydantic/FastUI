@@ -130,7 +130,7 @@ class FormFile:
     def __get_pydantic_json_schema__(self, core_schema_: core_schema.CoreSchema, *_args) -> 'json_schema.JsonSchemaAny':
         from . import json_schema
 
-        s = json_schema.JsonSchemaFile(type='string', format='binary')
+        s = json_schema.JsonSchemaFile(type='string', format='data-url')
         if self.accept:
             s['accept'] = self.accept
 
