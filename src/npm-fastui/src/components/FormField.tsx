@@ -4,6 +4,7 @@ import Select, { StylesConfig } from 'react-select'
 
 import type {
   FormFieldInput,
+  FormFieldTextarea,
   FormFieldBoolean,
   FormFieldFile,
   FormFieldSelect,
@@ -33,6 +34,32 @@ export const FormFieldInputComp: FC<FormFieldInputProps> = (props) => {
         className={useClassName(props, { el: 'input' })}
         defaultValue={props.initial}
         id={inputId(props)}
+        name={name}
+        required={required}
+        disabled={locked}
+        placeholder={placeholder}
+        aria-describedby={descId(props)}
+      />
+      <ErrorDescription {...props} />
+    </div>
+  )
+}
+
+interface FormFieldTextareaProps extends FormFieldTextarea {
+  onChange?: PrivateOnChange
+}
+
+export const FormFieldTextareaComp: FC<FormFieldTextareaProps> = (props) => {
+  const { name, placeholder, required, locked, rows, cols } = props
+  return (
+    <div className={useClassName(props)}>
+      <Label {...props} />
+      <textarea
+        className={useClassName(props, { el: 'textarea' })}
+        defaultValue={props.initial}
+        id={inputId(props)}
+        rows={rows}
+        cols={cols}
         name={name}
         required={required}
         disabled={locked}
@@ -284,6 +311,7 @@ const Label: FC<FormFieldProps> = (props) => {
 
 export type FormFieldProps =
   | FormFieldInputProps
+  | FormFieldTextareaProps
   | FormFieldBooleanProps
   | FormFieldFileProps
   | FormFieldSelectProps

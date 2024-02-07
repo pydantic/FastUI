@@ -66,11 +66,13 @@ export const classNameGenerator: ClassNameGenerator = ({
         }
       }
     case 'FormFieldInput':
+    case 'FormFieldTextarea':
     case 'FormFieldBoolean':
     case 'FormFieldSelect':
     case 'FormFieldSelectSearch':
     case 'FormFieldFile':
       switch (subElement) {
+        case 'textarea':
         case 'input':
           return {
             'form-control': type !== 'FormFieldBoolean',

@@ -33,6 +33,7 @@ export type FastProps =
   | Details
   | Form
   | FormFieldInput
+  | FormFieldTextarea
   | FormFieldBoolean
   | FormFieldFile
   | FormFieldSelect
@@ -314,7 +315,14 @@ export interface Form {
   submitTrigger?: PageEvent
   footer?: FastProps[]
   className?: ClassName
-  formFields: (FormFieldInput | FormFieldBoolean | FormFieldFile | FormFieldSelect | FormFieldSelectSearch)[]
+  formFields: (
+    | FormFieldInput
+    | FormFieldTextarea
+    | FormFieldBoolean
+    | FormFieldFile
+    | FormFieldSelect
+    | FormFieldSelectSearch
+  )[]
   type: 'Form'
 }
 export interface FormFieldInput {
@@ -330,6 +338,21 @@ export interface FormFieldInput {
   initial?: string | number
   placeholder?: string
   type: 'FormFieldInput'
+}
+export interface FormFieldTextarea {
+  name: string
+  title: string[] | string
+  required?: boolean
+  error?: string
+  locked?: boolean
+  description?: string
+  displayMode?: 'default' | 'inline'
+  className?: ClassName
+  rows?: number
+  cols?: number
+  initial?: string
+  placeholder?: string
+  type: 'FormFieldTextarea'
 }
 export interface FormFieldBoolean {
   name: string
@@ -409,5 +432,12 @@ export interface ModelForm {
   footer?: FastProps[]
   className?: ClassName
   type: 'ModelForm'
-  formFields: (FormFieldInput | FormFieldBoolean | FormFieldFile | FormFieldSelect | FormFieldSelectSearch)[]
+  formFields: (
+    | FormFieldInput
+    | FormFieldTextarea
+    | FormFieldBoolean
+    | FormFieldFile
+    | FormFieldSelect
+    | FormFieldSelectSearch
+  )[]
 }

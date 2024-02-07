@@ -16,6 +16,7 @@ import { CodeComp } from './Code'
 import { FormComp } from './form'
 import {
   FormFieldInputComp,
+  FormFieldTextareaComp,
   FormFieldBooleanComp,
   FormFieldSelectComp,
   FormFieldSelectSearchComp,
@@ -125,6 +126,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <FormComp {...props} />
       case 'FormFieldInput':
         return <FormFieldInputComp {...props} />
+      case 'FormFieldTextarea':
+        return <FormFieldTextareaComp {...props} />
       case 'FormFieldBoolean':
         return <FormFieldBooleanComp {...props} />
       case 'FormFieldFile':
