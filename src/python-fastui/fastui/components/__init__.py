@@ -47,6 +47,7 @@ __all__ = (
     'Image',
     'Iframe',
     'FireEvent',
+    'Error',
     'Custom',
     'Table',
     'Pagination',
@@ -271,6 +272,23 @@ class FireEvent(_p.BaseModel, extra='forbid'):
     type: _t.Literal['FireEvent'] = 'FireEvent'
 
 
+class Error(_p.BaseModel, extra='forbid'):
+    title: str
+    description: str
+    status_code: _t.Union[int, None] = _p.Field(None, serialization_alias='statusCode')
+    class_name: _class_name.ClassNameField = None
+    type: _t.Literal['Error'] = 'Error'
+
+    @classmethod
+    def __get_pydantic_json_schema__(
+        cls, core_schema: _core_schema.CoreSchema, handler: _p.GetJsonSchemaHandler
+    ) -> _t.Any:
+        # add `children` to the schema so it can be used in the client
+        json_schema = handler(core_schema)
+        json_schema['properties']['children'] = {'tsType': 'ReactNode'}
+        return json_schema
+
+
 class Custom(_p.BaseModel, extra='forbid'):
     data: _types.JsonData
     sub_type: str = _p.Field(serialization_alias='subType')
@@ -301,6 +319,7 @@ AnyComponent = _te.Annotated[
         Iframe,
         Video,
         FireEvent,
+        Error,
         Custom,
         Table,
         Pagination,

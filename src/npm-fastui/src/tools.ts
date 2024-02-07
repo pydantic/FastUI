@@ -12,7 +12,12 @@ export function useRequest(): (args: RequestArgs) => Promise<[number, any]> {
       try {
         return await request(args)
       } catch (e) {
-        setError({ title: 'Request Error', description: (e as any)?.message })
+        const title = 'Request Error'
+        if (e instanceof RequestError) {
+          setError({ title, description: e.message, statusCode: e.status })
+        } else {
+          setError({ title, description: (e as any)?.message })
+        }
         throw e
       }
     },

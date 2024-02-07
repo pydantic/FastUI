@@ -1,14 +1,13 @@
-import { FC, useContext } from 'react'
+import { FC } from 'react'
 
 import type { Custom } from '../models'
 
-import { ErrorContext } from '../hooks/error'
+import { DisplayError } from '../hooks/error'
 
 import { JsonComp } from './Json'
 
 export const CustomComp: FC<Custom> = (props) => {
   const { data, subType, library } = props
-  const { DisplayError } = useContext(ErrorContext)
 
   const description = [`The custom component "${subType}"`]
   if (library) {

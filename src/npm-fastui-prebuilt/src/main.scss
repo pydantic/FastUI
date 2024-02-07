@@ -3,7 +3,9 @@ $link-color: #0d6efd; // bootstrap primary
 
 @import 'bootstrap/scss/bootstrap';
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
 }
 
@@ -33,7 +35,12 @@ body {
   backdrop-filter: blur(8px);
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   scroll-margin-top: 60px;
 }
 

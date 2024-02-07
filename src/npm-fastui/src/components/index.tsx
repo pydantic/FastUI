@@ -1,8 +1,8 @@
-import { useContext, FC } from 'react'
+import { FC } from 'react'
 
 import type { FastProps, Display, Text, ServerLoad, PageTitle, FireEvent } from '../models'
 
-import { ErrorContext } from '../hooks/error'
+import { DisplayError } from '../hooks/error'
 import { useCustomRender } from '../hooks/config'
 import { unreachable } from '../tools'
 
@@ -37,6 +37,7 @@ import { ImageComp } from './image'
 import { IframeComp } from './Iframe'
 import { VideoComp } from './video'
 import { FireEventComp } from './FireEvent'
+import { ErrorComp } from './error'
 import { CustomComp } from './Custom'
 
 // TODO some better way to export components
@@ -70,6 +71,7 @@ export {
   IframeComp,
   VideoComp,
   FireEventComp,
+  ErrorComp,
   CustomComp,
   LinkRender,
 }
@@ -85,8 +87,6 @@ export const AnyCompList: FC<{ propsList: FastProps[] }> = ({ propsList }) => (
 )
 
 export const AnyComp: FC<FastProps> = (props) => {
-  const { DisplayError } = useContext(ErrorContext)
-
   const CustomRenderComp = useCustomRender(props)
   if (CustomRenderComp) {
     return <CustomRenderComp />
@@ -155,6 +155,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <VideoComp {...props} />
       case 'FireEvent':
         return <FireEventComp {...props} />
+      case 'Error':
+        return <ErrorComp {...props} />
       case 'Custom':
         return <CustomComp {...props} />
       default:

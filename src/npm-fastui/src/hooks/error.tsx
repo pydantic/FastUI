@@ -1,40 +1,49 @@
 import { createContext, FC, ReactNode, useCallback, useContext, useState } from 'react'
 
+import type { Error as ErrorProps } from '../models'
+
+import { ErrorComp } from '../components'
+
+import { useCustomRender } from './config'
+
 interface ErrorDetails {
   title: string
   description: string
+  statusCode?: number
 }
 
 interface ErrorDisplayProps extends ErrorDetails {
   children?: ReactNode
 }
 
-export type ErrorDisplayType = FC<ErrorDisplayProps>
-
 interface ErrorContextType {
   error: ErrorDetails | null
   setError: (error: ErrorDetails | null) => void
-  DisplayError: ErrorDisplayType
 }
 
-const DefaultErrorDisplay: ErrorDisplayType = ({ title, description, children }) => (
-  <>
-    <div className="alert alert-danger m-3" role="alert">
-      <h4>{title}</h4>
-      {description}
-    </div>
-    {children}
-  </>
-)
+export const DisplayError: FC<ErrorDisplayProps> = ({ title, description, statusCode, children }) => {
+  const props: ErrorProps = {
+    title,
+    description,
+    statusCode,
+    children,
+    type: 'Error',
+  }
+  const CustomRenderComp = useCustomRender(props)
+  if (CustomRenderComp) {
+    return <CustomRenderComp />
+  } else {
+    return <ErrorComp {...props} />
+  }
+}
 
 export const ErrorContext = createContext<ErrorContextType>({
   error: null,
   setError: () => null,
-  DisplayError: DefaultErrorDisplay,
 })
 
 const MaybeError: FC<{ children: ReactNode }> = ({ children }) => {
-  const { error, DisplayError } = useContext(ErrorContext)
+  const { error } = useContext(ErrorContext)
   if (error) {
     return <DisplayError {...error}>{children}</DisplayError>
   } else {
@@ -43,11 +52,10 @@ const MaybeError: FC<{ children: ReactNode }> = ({ children }) => {
 }
 
 interface Props {
-  DisplayError?: ErrorDisplayType
   children: ReactNode
 }
 
-export const ErrorContextProvider: FC<Props> = ({ DisplayError, children }) => {
+export const ErrorContextProvider: FC<Props> = ({ children }) => {
   const [error, setErrorState] = useState<ErrorDetails | null>(null)
 
   const setError = useCallback(
@@ -59,10 +67,9 @@ export const ErrorContextProvider: FC<Props> = ({ DisplayError, children }) => {
     },
     [setErrorState],
   )
-  const contextValue: ErrorContextType = { error, setError, DisplayError: DisplayError ?? DefaultErrorDisplay }
 
   return (
-    <ErrorContext.Provider value={contextValue}>
+    <ErrorContext.Provider value={{ error, setError }}>
       <MaybeError>{children}</MaybeError>
     </ErrorContext.Provider>
   )
