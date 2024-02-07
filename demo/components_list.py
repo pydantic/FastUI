@@ -78,6 +78,10 @@ print(m.dimensions)
                             components=[c.Text(text='Pydantic (External link)')],
                             on_click=GoToEvent(url='https://pydantic.dev'),
                         ),
+                        c.Link(
+                            components=[c.Text(text='FastUI repo (New tab)')],
+                            on_click=GoToEvent(url='https://github.com/pydantic/FastUI', target='_blank'),
+                        ),
                     ],
                 ),
             ],

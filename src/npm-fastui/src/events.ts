@@ -35,7 +35,11 @@ export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
       }
       case 'go-to':
         if (event.url) {
-          location.goto(event.url)
+          if (event.target) {
+            window.open(event.url, event.target)
+          } else {
+            location.goto(event.url)
+          }
         }
         if (event.query) {
           location.setQuery(event.query)

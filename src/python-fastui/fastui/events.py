@@ -18,6 +18,7 @@ class GoToEvent(BaseModel):
     # can be a path or a full URL
     url: Union[str, None] = None
     query: Union[Dict[str, Union[str, float, None]], None] = None
+    target: Union[Literal['_blank'], None] = None
     type: Literal['go-to'] = 'go-to'
 
 
