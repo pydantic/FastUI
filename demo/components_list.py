@@ -92,6 +92,8 @@ print(m.dimensions)
                 c.Heading(text='Button and Modal', level=2),
                 c.Paragraph(text='The button below will open a modal with static content.'),
                 c.Button(text='Show Static Modal', on_click=PageEvent(name='static-modal')),
+                c.Button(text='Secondary Button', named_style='secondary', class_name='+ ms-2'),
+                c.Button(text='Warning Button', named_style='warning', class_name='+ ms-2'),
                 c.Modal(
                     title='Static Modal',
                     body=[c.Paragraph(text='This is some static content that was set when the modal was defined.')],

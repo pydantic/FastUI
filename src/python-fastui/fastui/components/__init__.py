@@ -153,6 +153,7 @@ class Button(_p.BaseModel, extra='forbid'):
     html_type: _t.Union[_t.Literal['button', 'reset', 'submit'], None] = _p.Field(
         default=None, serialization_alias='htmlType'
     )
+    named_style: _class_name.NamedStyleField = None
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['Button'] = 'Button'
 
