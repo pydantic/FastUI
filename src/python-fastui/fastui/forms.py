@@ -1,5 +1,6 @@
 import json
 import typing as _t
+from contextlib import asynccontextmanager
 from itertools import groupby
 from mimetypes import MimeTypes
 from operator import itemgetter
@@ -34,6 +35,7 @@ class FastUIForm(_t.Generic[FormModel]):
 
 
 def fastui_form(model: _t.Type[FormModel]) -> fastapi_params.Depends:
+    @asynccontextmanager
     async def run_fastui_form(request: fastapi.Request):
         async with request.form() as form_data:
             model_data = unflatten(form_data)
