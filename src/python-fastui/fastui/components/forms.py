@@ -57,7 +57,7 @@ class FormFieldFile(BaseFormField):
 class FormFieldSelect(BaseFormField):
     options: forms.SelectOptions
     multiple: _t.Union[bool, None] = None
-    initial: _t.Union[str, None] = None
+    initial: _t.Union[_t.List[str], str, None] = None
     vanilla: _t.Union[bool, None] = None
     placeholder: _t.Union[str, None] = None
     type: _t.Literal['FormFieldSelect'] = 'FormFieldSelect'

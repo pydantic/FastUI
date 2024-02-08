@@ -174,6 +174,12 @@ export const FormFieldSelectReactComp: FC<FormFieldSelectProps> = (props) => {
 
   const className = useClassName(props)
   const classNameSelectReact = useClassName(props, { el: 'select-react' })
+  let value
+  if (Array.isArray(initial)) {
+    value = findDefaultArray(options, initial)
+  } else {
+    value = findDefault(options, initial)
+  }
 
   const reactSelectOnChanged = () => {
     // TODO this is a hack to wait for the input to be updated, can we do better?
@@ -191,7 +197,7 @@ export const FormFieldSelectReactComp: FC<FormFieldSelectProps> = (props) => {
         className={classNameSelectReact}
         isMulti={multiple ?? false}
         isClearable
-        defaultValue={findDefault(options, initial)}
+        defaultValue={value}
         name={name}
         required={required}
         isDisabled={locked}
@@ -218,6 +224,11 @@ const SelectOptionComp: FC<{ option: SelectOption | SelectGroup }> = ({ option }
   } else {
     return <option value={option.value}>{option.label}</option>
   }
+}
+
+function findDefaultArray(options: SelectOptions, value: string[]): SelectOption[] {
+  const foundValues = value.map((v) => findDefault(options, v))
+  return foundValues.filter((v) => v) as SelectOption[]
 }
 
 function findDefault(options: SelectOptions, value?: string): SelectOption | undefined {

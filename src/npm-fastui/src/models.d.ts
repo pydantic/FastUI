@@ -391,7 +391,7 @@ export interface FormFieldSelect {
   className?: ClassName
   options: SelectOptions
   multiple?: boolean
-  initial?: string
+  initial?: string[] | string
   vanilla?: boolean
   placeholder?: string
   type: 'FormFieldSelect'
