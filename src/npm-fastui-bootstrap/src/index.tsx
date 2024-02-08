@@ -30,9 +30,9 @@ export const classNameGenerator: ClassNameGenerator = ({
     case 'Button':
       return {
         btn: true,
-        'btn-primary': !props.mode || props.mode === 'primary',
-        'btn-secondary': props.mode === 'secondary',
-        'btn-warning': props.mode === 'warning',
+        'btn-primary': !props.namedStyle || props.namedStyle === 'primary',
+        'btn-secondary': props.namedStyle === 'secondary',
+        'btn-warning': props.namedStyle === 'warning',
       }
     case 'Table':
       switch (subElement) {

@@ -52,6 +52,7 @@ export type JsonData =
       [k: string]: JsonData
     }
 export type AnyEvent = PageEvent | GoToEvent | BackEvent | AuthEvent
+export type NamedStyle = 'primary' | 'secondary' | 'warning'
 export type DisplayMode =
   | 'auto'
   | 'plain'
@@ -122,8 +123,8 @@ export interface Button {
   text: string
   onClick?: AnyEvent
   htmlType?: 'button' | 'reset' | 'submit'
+  namedStyle?: NamedStyle
   className?: ClassName
-  mode?: 'primary' | 'secondary' | 'warning'
   type: 'Button'
 }
 export interface PageEvent {
