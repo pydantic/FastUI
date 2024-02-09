@@ -4,3 +4,4 @@ src/python-fastui
 uvicorn[standard]
 httpx
 libsql-client
+pydantic_settings
