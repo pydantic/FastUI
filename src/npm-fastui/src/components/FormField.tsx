@@ -312,7 +312,7 @@ interface FormFieldRadioProps extends FormFieldRadio {
 export const FormFieldRadioComp: FC<FormFieldRadioProps> = (props) => {
   const { name, required, locked, options, initial } = props
   const className = useClassName(props)
-  const inputClassName = useClassName(props, { el: 'input' })
+  const inputClassName = useClassName(props, { el: 'radio-option' })
 
   return (
     <div className={className}>

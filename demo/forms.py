@@ -123,7 +123,7 @@ class ToolEnum(str, enum.Enum):
 
 class SelectForm(BaseModel):
     select_single: ToolEnum = Field(title='Select Single')
-    select_radio: ToolEnum = Field(title='Select Radio', json_schema_extra={'mode': 'radio'}, description='test ')
+    select_radio: ToolEnum = Field(title='Select Radio', json_schema_extra={'mode': 'radio'})
     select_multiple: list[ToolEnum] = Field(title='Select Multiple')
     search_select_single: str = Field(json_schema_extra={'search_url': '/api/forms/search'})
     search_select_multiple: list[str] = Field(json_schema_extra={'search_url': '/api/forms/search'})
