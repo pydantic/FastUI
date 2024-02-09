@@ -87,7 +87,7 @@ async def auth_login_content(
                         'here you can "login" with any email address and password.'
                     )
                 ),
-                c.Paragraph(text='(Passwords are not saved and email address are deleted after around an hour.)'),
+                c.Paragraph(text='(Passwords are not saved and email stored in the browser via a JWT)'),
                 c.ModelForm(model=LoginForm, submit_url='/api/auth/login'),
             ]
         case 'github':
@@ -95,7 +95,7 @@ async def auth_login_content(
             return [
                 c.Heading(text='GitHub Login', level=3),
                 c.Paragraph(text='Demo of GitHub authentication.'),
-                c.Paragraph(text='(Credentials are deleted after around an hour.)'),
+                c.Paragraph(text='(Credentials are stored in the browser via a JWT)'),
                 c.Button(text='Login with GitHub', on_click=GoToEvent(url=auth_url)),
             ]
         case _:
