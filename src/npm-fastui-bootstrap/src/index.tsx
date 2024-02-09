@@ -75,6 +75,7 @@ export const classNameGenerator: ClassNameGenerator = ({
     case 'FormFieldBoolean':
     case 'FormFieldSelect':
     case 'FormFieldSelectSearch':
+    case 'FormFieldRadio':
     case 'FormFieldFile':
       switch (subElement) {
         case 'textarea':
