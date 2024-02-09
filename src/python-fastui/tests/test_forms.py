@@ -511,7 +511,7 @@ def test_form_from_select(multiple: bool):
     if multiple:
 
         class FormSelect(BaseModel):
-            choices: list[Choices]
+            choices: List[Choices]
     else:
 
         class FormSelect(BaseModel):
