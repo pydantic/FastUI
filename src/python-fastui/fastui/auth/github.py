@@ -4,11 +4,10 @@ from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, AsyncIterator, Dict, List, Tuple, Union, cast
 from urllib.parse import urlencode
 
-import httpx
-import jwt
 from pydantic import BaseModel, SecretStr, TypeAdapter, field_validator
 
 if TYPE_CHECKING:
+    import httpx
     from fastapi import Request
     from fastapi.responses import JSONResponse
 
@@ -69,7 +68,7 @@ class GitHubAuthProvider:
 
     def __init__(
         self,
-        httpx_client: httpx.AsyncClient,
+        httpx_client: 'httpx.AsyncClient',
         github_client_id: str,
         github_client_secret: SecretStr,
         *,
@@ -118,6 +117,8 @@ class GitHubAuthProvider:
         """
         Async context manager to create a GitHubAuth instance with a new `httpx.AsyncClient`.
         """
+        import httpx
+
         async with httpx.AsyncClient() as client:
             yield cls(
                 client,
@@ -267,10 +268,14 @@ class StateProvider:
         self._max_age = max_age
 
     async def new_state(self) -> str:
+        import jwt
+
         data = {'created_at': datetime.now().isoformat()}
         return jwt.encode(data, self._secret.get_secret_value(), algorithm='HS256')
 
     async def check_state(self, state: str) -> bool:
+        import jwt
+
         try:
             d = jwt.decode(state, self._secret.get_secret_value(), algorithms=['HS256'])
         except jwt.DecodeError:
