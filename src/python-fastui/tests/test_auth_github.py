@@ -191,3 +191,8 @@ async def test_get_github_user(github_auth_provider: GitHubAuthProvider, github_
     assert user.email == 'test@example.com'
 
     assert github_requests == ['/login/oauth/access_token code=good', '/user']
+
+
+async def test_create():
+    async with GitHubAuthProvider.create('foo', SecretStr('bar')) as provider:
+        assert isinstance(provider._httpx_client, httpx.AsyncClient)
