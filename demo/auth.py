@@ -1,5 +1,6 @@
 from __future__ import annotations as _annotations
 
+import os
 from typing import Annotated, Literal, TypeAlias
 
 from fastapi import APIRouter, Depends, Header, Request
@@ -10,7 +11,6 @@ from fastui.events import AuthEvent, GoToEvent, PageEvent
 from fastui.forms import fastui_form
 from httpx import AsyncClient
 from pydantic import BaseModel, EmailStr, Field, SecretStr
-from pydantic_settings import BaseSettings
 
 from . import db
 from .shared import demo_page
@@ -27,20 +27,16 @@ async def get_user(authorization: Annotated[str, Header()] = '') -> db.User | No
         return await db.get_user(token)
 
 
-class GitHubAuthSettings(BaseSettings):
-    github_client_id: str = '9eddf87b27f71f52194a'
-    github_client_secret: SecretStr
-
-
-github_settings = GitHubAuthSettings()
+# this will give an error when making requests to GitHub, but at least the app will run
+GITHUB_CLIENT_SECRET = SecretStr(os.getenv('GITHUB_CLIENT_SECRET', 'dummy-secret'))
 
 
 async def get_github_auth(request: Request) -> GitHubAuthProvider:
     client: AsyncClient = request.app.state.httpx_client
     return GitHubAuthProvider(
         httpx_client=client,
-        github_client_id=github_settings.github_client_id,
-        github_client_secret=github_settings.github_client_secret,
+        github_client_id='9eddf87b27f71f52194a',
+        github_client_secret=GITHUB_CLIENT_SECRET,
     )
 
 
