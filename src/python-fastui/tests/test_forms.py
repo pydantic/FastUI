@@ -472,15 +472,17 @@ def test_form_textarea_form_fields():
     }
 
 
+class Choices(Enum):
+    foo = 'foo'
+    bar = 'bar'
+    baz = 'baz'
+
+
+class FormRadioSelection(BaseModel):
+    choice: Choices = Field(..., json_schema_extra={'mode': 'radio'})
+
+
 def test_form_radio_form_fields():
-    class RadioChoices(Enum):
-        foo = 'foo'
-        bar = 'bar'
-        baz = 'baz'
-
-    class FormRadioSelection(BaseModel):
-        choice: RadioChoices = Field(..., json_schema_extra={'mode': 'radio'})
-
     m = components.ModelForm(model=FormRadioSelection, submit_url='/foobar/')
 
     assert m.model_dump(by_alias=True, exclude_none=True) == {
@@ -494,6 +496,41 @@ def test_form_radio_form_fields():
                 'required': True,
                 'locked': False,
                 'type': 'FormFieldRadio',
+                'options': [
+                    {'label': 'Foo', 'value': 'foo'},
+                    {'label': 'Bar', 'value': 'bar'},
+                    {'label': 'Baz', 'value': 'baz'},
+                ],
+            }
+        ],
+    }
+
+
+@pytest.mark.parametrize('multiple', [True, False])
+def test_form_from_select(multiple: bool):
+    if multiple:
+
+        class FormSelect(BaseModel):
+            choice: list[Choices]
+    else:
+
+        class FormSelect(BaseModel):
+            choice: Choices
+
+    m = components.ModelForm(model=FormSelect, submit_url='/foobar/')
+
+    assert m.model_dump(by_alias=True, exclude_none=True) == {
+        'submitUrl': '/foobar/',
+        'method': 'POST',
+        'type': 'ModelForm',
+        'formFields': [
+            {
+                'name': 'choice',
+                'multiple': multiple,
+                'title': ['Choice'] if multiple else ['Choices'],
+                'required': True,
+                'locked': False,
+                'type': 'FormFieldSelect',
                 'options': [
                     {'label': 'Foo', 'value': 'foo'},
                     {'label': 'Bar', 'value': 'bar'},
