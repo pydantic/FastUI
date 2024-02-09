@@ -492,7 +492,7 @@ def test_form_radio_form_fields():
         'formFields': [
             {
                 'name': 'choice',
-                'title': ['RadioChoices'],
+                'title': ['Choices'],
                 'required': True,
                 'locked': False,
                 'type': 'FormFieldRadio',
@@ -511,7 +511,7 @@ def test_form_from_select(multiple: bool):
     if multiple:
 
         class FormSelect(BaseModel):
-            choice: list[Choices]
+            choices: list[Choices]
     else:
 
         class FormSelect(BaseModel):
@@ -525,9 +525,9 @@ def test_form_from_select(multiple: bool):
         'type': 'ModelForm',
         'formFields': [
             {
-                'name': 'choice',
+                'name': 'choices' if multiple else 'choice',
                 'multiple': multiple,
-                'title': ['Choice'] if multiple else ['Choices'],
+                'title': ['Choices'],
                 'required': True,
                 'locked': False,
                 'type': 'FormFieldSelect',
