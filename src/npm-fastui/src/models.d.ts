@@ -339,6 +339,7 @@ export interface FormFieldInput {
   htmlType?: 'text' | 'date' | 'datetime-local' | 'time' | 'email' | 'url' | 'number' | 'password' | 'hidden'
   initial?: string | number
   placeholder?: string
+  autocomplete?: string
   type: 'FormFieldInput'
 }
 export interface FormFieldTextarea {

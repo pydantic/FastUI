@@ -52,8 +52,12 @@ export const ServerLoadFetch: FC<{ path: string; devReload?: number }> = ({ path
 
   useEffect(() => {
     setTransitioning(true)
-    const promise = request({ url, expectedStatus: [200, 404] })
-    promise.then(([status, data]) => {
+    let componentUnloaded = false
+    request({ url, expectedStatus: [200, 404] }).then(([status, data]) => {
+      if (componentUnloaded) {
+        setTransitioning(false)
+        return
+      }
       if (status === 200) {
         setComponentProps(data as FastProps[])
         // if there's a fragment, scroll to that ID once the page is loaded
@@ -73,7 +77,7 @@ export const ServerLoadFetch: FC<{ path: string; devReload?: number }> = ({ path
     })
 
     return () => {
-      promise.then(() => null)
+      componentUnloaded = true
     }
   }, [url, path, request, devReload])
 

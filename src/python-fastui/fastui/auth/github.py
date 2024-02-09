@@ -78,6 +78,18 @@ class GitHubAuthProvider:
         state_provider: Union['StateProvider', bool] = True,
         exchange_cache_age: Union[timedelta, None] = timedelta(seconds=30),
     ):
+        """
+        Arguments:
+            httpx_client: An instance of `httpx.AsyncClient` to use for making requests to GitHub.
+            github_client_id: The client ID of the GitHub OAuth app.
+            github_client_secret: The client secret of the GitHub OAuth app.
+            redirect_uri: The URL in your app where users will be sent after authorization, if custom
+            scopes: See https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps#available-scopes
+            state_provider: If `True`, use a `StateProvider` to generate and validate state parameters for the OAuth
+                flow, you can also provide an instance directly.
+            exchange_cache_age: If not `None`,
+                responses from the access token exchange are cached for the given duration.
+        """
         self._httpx_client = httpx_client
         self._github_client_id = github_client_id
         self._github_client_secret = github_client_secret

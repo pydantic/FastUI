@@ -103,7 +103,9 @@ async def auth_login_content(
 
 
 class LoginForm(BaseModel):
-    email: EmailStr = Field(title='Email Address', description='Enter whatever value you like')
+    email: EmailStr = Field(
+        title='Email Address', description='Enter whatever value you like', json_schema_extra={'autocomplete': 'email'}
+    )
     password: SecretStr = Field(
         title='Password',
         description='Enter whatever value you like, password is not checked',
