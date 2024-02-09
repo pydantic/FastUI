@@ -38,6 +38,7 @@ export type FastProps =
   | FormFieldFile
   | FormFieldSelect
   | FormFieldSelectSearch
+  | FormFieldRadio
   | ModelForm
 export type ClassName =
   | string
@@ -324,6 +325,7 @@ export interface Form {
     | FormFieldFile
     | FormFieldSelect
     | FormFieldSelectSearch
+    | FormFieldRadio
   )[]
   type: 'Form'
 }
@@ -422,6 +424,19 @@ export interface FormFieldSelectSearch {
   placeholder?: string
   type: 'FormFieldSelectSearch'
 }
+export interface FormFieldRadio {
+  name: string
+  title: string[] | string
+  required?: boolean
+  error?: string
+  locked?: boolean
+  description?: string
+  displayMode?: 'default' | 'inline'
+  className?: ClassName
+  options: SelectOptions
+  initial?: string
+  type: 'FormFieldRadio'
+}
 export interface ModelForm {
   submitUrl: string
   initial?: {
@@ -441,5 +456,6 @@ export interface ModelForm {
     | FormFieldFile
     | FormFieldSelect
     | FormFieldSelectSearch
+    | FormFieldRadio
   )[]
 }

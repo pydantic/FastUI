@@ -73,8 +73,20 @@ class FormFieldSelectSearch(BaseFormField):
     type: _t.Literal['FormFieldSelectSearch'] = 'FormFieldSelectSearch'
 
 
+class FormFieldRadio(BaseFormField):
+    options: forms.SelectOptions
+    initial: _t.Union[str, None] = None
+    type: _t.Literal['FormFieldRadio'] = 'FormFieldRadio'
+
+
 FormField = _t.Union[
-    FormFieldInput, FormFieldTextarea, FormFieldBoolean, FormFieldFile, FormFieldSelect, FormFieldSelectSearch
+    FormFieldInput,
+    FormFieldTextarea,
+    FormFieldBoolean,
+    FormFieldFile,
+    FormFieldSelect,
+    FormFieldSelectSearch,
+    FormFieldRadio,
 ]
 
 

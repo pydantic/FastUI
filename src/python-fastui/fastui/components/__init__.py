@@ -21,6 +21,7 @@ from .forms import (
     FormFieldBoolean,
     FormFieldFile,
     FormFieldInput,
+    FormFieldRadio,
     FormFieldSelect,
     FormFieldSelectSearch,
     ModelForm,
@@ -65,6 +66,7 @@ __all__ = (
     'FormFieldInput',
     'FormFieldSelect',
     'FormFieldSelectSearch',
+    'FormFieldRadio',
 )
 
 

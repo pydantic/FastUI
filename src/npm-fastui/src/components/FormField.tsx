@@ -12,6 +12,7 @@ import type {
   SelectOption,
   SelectOptions,
   SelectGroup,
+  FormFieldRadio,
 } from '../models'
 
 import { useClassName } from '../hooks/className'
@@ -304,6 +305,62 @@ export const FormFieldSelectSearchComp: FC<FormFieldSelectSearchProps> = (props)
   )
 }
 
+interface FormFieldRadioProps extends FormFieldRadio {
+  onChange?: PrivateOnChange
+}
+
+export const FormFieldRadioComp: FC<FormFieldRadioProps> = (props) => {
+  const { name, required, locked, options, initial } = props
+  const className = useClassName(props)
+  const inputClassName = useClassName(props, { el: 'input' })
+
+  return (
+    <div className={className}>
+      <Label {...props} />
+      {options.map((option, i) => {
+        if ('options' in option) {
+          // option is a SelectGroup
+          return option.options.map((subOption, j) => (
+            <div key={`${i}-${j}`}>
+              <input
+                type="radio"
+                id={`${inputId(props)}-${i}-${j}`}
+                className={inputClassName}
+                name={name}
+                value={subOption.value}
+                defaultChecked={subOption.value === initial}
+                required={required}
+                disabled={locked}
+                aria-describedby={descId(props)}
+              />
+              <label htmlFor={`${inputId(props)}-${i}-${j}`}>{subOption.label}</label>
+            </div>
+          ))
+        } else {
+          // option is a SelectOption
+          return (
+            <div key={i}>
+              <input
+                type="radio"
+                id={`${inputId(props)}-${i}`}
+                className={inputClassName}
+                name={name}
+                value={option.value}
+                defaultChecked={option.value === initial}
+                required={required}
+                disabled={locked}
+                aria-describedby={descId(props)}
+              />
+              <label htmlFor={`${inputId(props)}-${i}`}>{option.label}</label>
+            </div>
+          )
+        }
+      })}
+      <ErrorDescription {...props} />
+    </div>
+  )
+}
+
 const Label: FC<FormFieldProps> = (props) => {
   let { title } = props
   if (!Array.isArray(title)) {
@@ -327,6 +384,7 @@ export type FormFieldProps =
   | FormFieldFileProps
   | FormFieldSelectProps
   | FormFieldSelectSearchProps
+  | FormFieldRadio
 
 const inputId = (props: FormFieldProps) => `form-field-${props.name}`
 const descId = (props: FormFieldProps) => (props.description ? `${inputId(props)}-desc` : undefined)
