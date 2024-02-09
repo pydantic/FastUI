@@ -91,7 +91,7 @@ class GitHubAuthProvider:
             now = datetime.now()
             min_timestamp = now - self._exchange_cache_age
             # remove anything older than the cache age
-            self._exchange_cache = {k: v for k, v in self._exchange_cache.items() if v[0] < min_timestamp}
+            self._exchange_cache = {k: v for k, v in self._exchange_cache.items() if v[0] > min_timestamp}
 
             if cache_value := self._exchange_cache.get(cache_key):
                 return cache_value[1]
@@ -103,8 +103,10 @@ class GitHubAuthProvider:
             return await self._exchange_code(code, state)
 
     async def _exchange_code(self, code: str, state: str | None = None) -> GitHubExchangeOk:
-        if self._state_provider and state is not None:
-            if not await self._state_provider.check_state(state):
+        if self._state_provider:
+            if state is None:
+                raise AuthError('Missing GitHub auth state', code='missing_state')
+            elif not await self._state_provider.check_state(state):
                 raise AuthError('Invalid GitHub auth state', code='invalid_state')
 
         params = {
@@ -225,14 +227,17 @@ class TmpFileStateProvider(AbstractStateProvider):
     This is a simple state provider for the GitHub OAuth flow which uses a file in the system's temporary directory.
     """
 
-    def __init__(self):
-        self._path = Path(tempfile.gettempdir()) / 'fastui_github_auth_states.txt'
+    def __init__(self, path: Path | None = None):
+        self._path = path or Path(tempfile.gettempdir()) / 'fastui_github_auth_states.txt'
 
     async def store_state(self, state: str) -> None:
         with self._path.open('a') as f:
             f.write(f'{state}\n')
 
     async def check_state(self, state: str) -> bool:
+        if not self._path.exists():
+            return False
+
         remaining_lines = []
         found = False
         for line in self._path.read_text().splitlines():
