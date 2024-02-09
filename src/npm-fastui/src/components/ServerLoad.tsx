@@ -123,14 +123,17 @@ const Render: FC<{ propsList: FastProps[] | null; notFoundUrl?: string; transiti
 }
 
 function useServerUrl(path: string): string {
-  const { rootUrl, pathSendMode } = useContext(ConfigContext)
+  const { APIRootUrl, APIPathMode, APIPathStrip } = useContext(ConfigContext)
+  if (APIPathStrip && path.startsWith(APIPathStrip)) {
+    path = path.slice(APIPathStrip.length)
+  }
   const applyContext = useEventContext()
   const requestPath = applyContext(path)
 
-  if (pathSendMode === 'query') {
-    return `${rootUrl}?path=${encodeURIComponent(requestPath)}`
+  if (APIPathMode === 'query') {
+    return `${APIRootUrl}?path=${encodeURIComponent(requestPath)}`
   } else {
-    return rootUrl + requestPath
+    return APIRootUrl + requestPath
   }
 }
 

@@ -5,7 +5,9 @@ import { FC, ReactNode } from 'react'
 export default function App() {
   return (
     <FastUI
-      rootUrl="/api"
+      APIRootUrl={getMetaContent('fastui:APIRootUrl') || '/api'}
+      APIPathMode={getMetaContent('fastui:APIPathMode') as undefined | 'append' | 'query'}
+      APIPathStrip={getMetaContent('fastui:APIPathStrip')}
       classNameGenerator={bootstrap.classNameGenerator}
       customRender={customRender}
       NotFound={NotFound}
@@ -13,6 +15,10 @@ export default function App() {
       Transition={Transition}
     />
   )
+}
+
+function getMetaContent(name: string): string | undefined {
+  return document.querySelector(`meta[name="${name}"]`)?.getAttribute('content') || undefined
 }
 
 const NotFound = ({ url }: { url: string }) => (
