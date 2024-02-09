@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import List, Optional
 
 import httpx
 import pytest
@@ -9,17 +10,20 @@ from pydantic import SecretStr
 
 
 @pytest.fixture
-def github_requests() -> list[str]:
+def github_requests() -> List[str]:
     return []
 
 
 @pytest.fixture
-def fake_github_app(github_requests: list[str]) -> FastAPI:
+def fake_github_app(github_requests: List[str]) -> FastAPI:
     app = FastAPI()
 
     @app.post('/login/oauth/access_token')
-    async def access_token(code: str, client_id: str, client_secret: str):
-        github_requests.append(f'/login/oauth/access_token code={code}')
+    async def access_token(code: str, client_id: str, client_secret: str, redirect_uri: Optional[str] = None):
+        r = f'/login/oauth/access_token code={code}'
+        if redirect_uri:
+            r += f' redirect_uri={redirect_uri}'
+        github_requests.append(r)
         assert client_id == '1234'
         assert client_secret == 'secret'
         if code == 'good_user':
@@ -56,15 +60,20 @@ def fake_github_app(github_requests: list[str]) -> FastAPI:
 
 
 @pytest.fixture
-async def github_auth_provider(fake_github_app: FastAPI):
+async def httpx_client(fake_github_app: FastAPI):
     async with httpx.AsyncClient(app=fake_github_app) as client:
-        yield GitHubAuthProvider(
-            httpx_client=client,
-            github_client_id='1234',
-            github_client_secret=SecretStr('secret'),
-            state_provider=False,
-            exchange_cache_age=None,
-        )
+        yield client
+
+
+@pytest.fixture
+async def github_auth_provider(fake_github_app: FastAPI, httpx_client: httpx.AsyncClient):
+    return GitHubAuthProvider(
+        httpx_client=httpx_client,
+        github_client_id='1234',
+        github_client_secret=SecretStr('secret'),
+        state_provider=False,
+        exchange_cache_age=None,
+    )
 
 
 async def test_get_auth_url(github_auth_provider: GitHubAuthProvider):
@@ -73,7 +82,7 @@ async def test_get_auth_url(github_auth_provider: GitHubAuthProvider):
     assert url == 'https://github.com/login/oauth/authorize?client_id=1234'
 
 
-async def test_exchange_ok(github_auth_provider: GitHubAuthProvider, github_requests: list[str]):
+async def test_exchange_ok(github_auth_provider: GitHubAuthProvider, github_requests: List[str]):
     assert github_requests == []
     exchange = await github_auth_provider.exchange_code('good')
     assert exchange.access_token == 'good_token'
@@ -90,8 +99,12 @@ async def test_exchange_ok_user(github_auth_provider: GitHubAuthProvider):
 
 
 async def test_exchange_bad_expected(github_auth_provider: GitHubAuthProvider):
-    with pytest.raises(AuthError, match='^Invalid GitHub verification code'):
+    with pytest.raises(AuthError, match='^Invalid GitHub verification code') as exc_info:
         await github_auth_provider.exchange_code('bad_expected')
+
+    # request argument is ignored
+    r = AuthError.fastapi_handle(object(), exc_info.value)
+    assert r.status_code == 400
 
 
 async def test_exchange_bad_unexpected(github_auth_provider: GitHubAuthProvider):
@@ -100,14 +113,13 @@ async def test_exchange_bad_unexpected(github_auth_provider: GitHubAuthProvider)
 
 
 @pytest.fixture
-async def github_auth_provider_state(fake_github_app: FastAPI, tmp_path: Path):
-    async with httpx.AsyncClient(app=fake_github_app) as client:
-        yield GitHubAuthProvider(
-            httpx_client=client,
-            github_client_id='1234',
-            github_client_secret=SecretStr('secret'),
-            state_provider=TmpFileStateProvider(tmp_path / 'github_state.txt'),
-        )
+async def github_auth_provider_state(fake_github_app: FastAPI, httpx_client: httpx.AsyncClient, tmp_path: Path):
+    return GitHubAuthProvider(
+        httpx_client=httpx_client,
+        github_client_id='1234',
+        github_client_secret=SecretStr('secret'),
+        state_provider=TmpFileStateProvider(tmp_path / 'github_state.txt'),
+    )
 
 
 async def test_exchange_no_state(github_auth_provider_state: GitHubAuthProvider):
@@ -150,7 +162,7 @@ async def test_exchange_bad_state_file_exists(github_auth_provider_state: GitHub
     assert state_path.read_text() == f'{state}\n'
 
 
-async def test_exchange_ok_repeat(github_auth_provider: GitHubAuthProvider, github_requests: list[str]):
+async def test_exchange_ok_repeat(github_auth_provider: GitHubAuthProvider, github_requests: List[str]):
     assert github_requests == []
     exchange = await github_auth_provider.exchange_code('good')
     assert exchange.access_token == 'good_token'
@@ -164,24 +176,42 @@ async def test_exchange_ok_repeat(github_auth_provider: GitHubAuthProvider, gith
     assert github_requests == ['/login/oauth/access_token code=good', '/login/oauth/access_token code=good']
 
 
-async def test_exchange_ok_repeat_cached(fake_github_app: FastAPI, github_requests: list[str]):
-    async with httpx.AsyncClient(app=fake_github_app) as client:
-        github_auth_provider = GitHubAuthProvider(
-            httpx_client=client,
-            github_client_id='1234',
-            github_client_secret=SecretStr('secret'),
-            state_provider=False,
-        )
-        assert github_requests == []
-        await github_auth_provider.exchange_code('good')
-        assert github_requests == ['/login/oauth/access_token code=good']
-        await github_auth_provider.exchange_code('good')
-        assert github_requests == ['/login/oauth/access_token code=good']  # no repeat request to github
-        await github_auth_provider.exchange_code('good_user')
-        assert github_requests == ['/login/oauth/access_token code=good', '/login/oauth/access_token code=good_user']
+async def test_exchange_ok_repeat_cached(
+    fake_github_app: FastAPI, httpx_client: httpx.AsyncClient, github_requests: List[str]
+):
+    github_auth_provider = GitHubAuthProvider(
+        httpx_client=httpx_client,
+        github_client_id='1234',
+        github_client_secret=SecretStr('secret'),
+        state_provider=False,
+    )
+    assert github_requests == []
+    await github_auth_provider.exchange_code('good')
+    assert github_requests == ['/login/oauth/access_token code=good']
+    await github_auth_provider.exchange_code('good')
+    assert github_requests == ['/login/oauth/access_token code=good']  # no repeat request to github
+    await github_auth_provider.exchange_code('good_user')
+    assert github_requests == ['/login/oauth/access_token code=good', '/login/oauth/access_token code=good_user']
 
 
-async def test_get_github_user(github_auth_provider: GitHubAuthProvider, github_requests: list[str]):
+async def test_exchange_redirect_url(
+    fake_github_app: FastAPI, httpx_client: httpx.AsyncClient, github_requests: List[str]
+):
+    github_auth_provider = GitHubAuthProvider(
+        httpx_client=httpx_client,
+        github_client_id='1234',
+        github_client_secret=SecretStr('secret'),
+        redirect_uri='/callback',
+        state_provider=False,
+    )
+    url = await github_auth_provider.authorization_url()
+    assert url == 'https://github.com/login/oauth/authorize?client_id=1234&redirect_uri=%2Fcallback'
+    exchange = await github_auth_provider.exchange_code('good')
+    assert exchange.access_token == 'good_token'
+    assert github_requests == ['/login/oauth/access_token code=good redirect_uri=/callback']
+
+
+async def test_get_github_user(github_auth_provider: GitHubAuthProvider, github_requests: List[str]):
     assert github_requests == []
     exchange = await github_auth_provider.exchange_code('good')
     assert github_requests == ['/login/oauth/access_token code=good']

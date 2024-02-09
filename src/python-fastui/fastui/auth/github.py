@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import secrets
 import tempfile
 from abc import ABC, abstractmethod
@@ -7,7 +5,7 @@ from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, AsyncIterator, cast
+from typing import TYPE_CHECKING, AsyncIterator, List, Union, cast
 from urllib.parse import urlencode
 
 import httpx
@@ -29,9 +27,9 @@ class GitHubAuthProvider:
         github_client_id: str,
         github_client_secret: SecretStr,
         *,
-        redirect_uri: str | None = None,
-        state_provider: AbstractStateProvider | bool = True,
-        exchange_cache_age: timedelta | None = timedelta(seconds=10),
+        redirect_uri: Union[str, None] = None,
+        state_provider: Union['AbstractStateProvider', bool] = True,
+        exchange_cache_age: Union[timedelta, None] = timedelta(seconds=10),
     ):
         self._httpx_client = httpx_client
         self._github_client_id = github_client_id
@@ -54,10 +52,10 @@ class GitHubAuthProvider:
         client_id: str,
         client_secret: SecretStr,
         *,
-        redirect_uri: str | None = None,
-        state_provider: AbstractStateProvider | bool = True,
-        exchange_cache_age: timedelta | None = timedelta(seconds=10),
-    ) -> AsyncIterator[GitHubAuthProvider]:
+        redirect_uri: Union[str, None] = None,
+        state_provider: Union['AbstractStateProvider', bool] = True,
+        exchange_cache_age: Union[timedelta, None] = timedelta(seconds=10),
+    ) -> AsyncIterator['GitHubAuthProvider']:
         """
         Async context manager to create a GitHubAuth instance with a new `httpx.AsyncClient`.
         """
@@ -79,7 +77,7 @@ class GitHubAuthProvider:
             params['state'] = await self._state_provider.create_store_state()
         return f'https://github.com/login/oauth/authorize?{urlencode(params)}'
 
-    async def exchange_code(self, code: str, state: str | None = None) -> GitHubExchangeOk:
+    async def exchange_code(self, code: str, state: Union[str, None] = None) -> 'GitHubExchangeOk':
         """
         Exchange a code for an access token.
 
@@ -102,7 +100,7 @@ class GitHubAuthProvider:
         else:
             return await self._exchange_code(code, state)
 
-    async def _exchange_code(self, code: str, state: str | None = None) -> GitHubExchangeOk:
+    async def _exchange_code(self, code: str, state: Union[str, None] = None) -> 'GitHubExchangeOk':
         if self._state_provider:
             if state is None:
                 raise AuthError('Missing GitHub auth state', code='missing_state')
@@ -132,7 +130,7 @@ class GitHubAuthProvider:
         else:
             return cast(GitHubExchangeOk, exchange_response)
 
-    async def get_github_user(self, exchange: GitHubExchangeOk) -> GithubUser:
+    async def get_github_user(self, exchange: 'GitHubExchangeOk') -> 'GithubUser':
         """
         See https://docs.github.com/en/rest/users/users?apiVersion=2022-11-28#get-the-authenticated-user
         """
@@ -149,27 +147,27 @@ class GitHubAuthProvider:
 @dataclass
 class GitHubExchangeError:
     error: str
-    error_description: str | None = None
+    error_description: Union[str, None] = None
 
 
 @dataclass
 class GitHubExchangeOk:
     access_token: str
     token_type: str
-    scope: list[str]
+    scope: List[str]
 
     @field_validator('scope', mode='before')
-    def check_scope(cls, v: str) -> list[str]:
+    def check_scope(cls, v: str) -> List[str]:
         return [s for s in v.split(',') if s]
 
 
-github_exchange_type = TypeAdapter(GitHubExchangeOk | GitHubExchangeError)
+github_exchange_type = TypeAdapter(Union[GitHubExchangeOk, GitHubExchangeError])
 
 
 class GithubUser(BaseModel):
     login: str
-    name: str | None
-    email: str | None
+    name: Union[str, None]
+    email: Union[str, None]
     avatar_url: str
     created_at: datetime
     updated_at: datetime
@@ -177,12 +175,12 @@ class GithubUser(BaseModel):
     public_gists: int
     followers: int
     following: int
-    company: str | None
-    blog: str | None
-    location: str | None
-    hireable: bool | None
-    bio: str | None
-    twitter_username: str | None = None
+    company: Union[str, None]
+    blog: Union[str, None]
+    location: Union[str, None]
+    hireable: Union[bool, None]
+    bio: Union[str, None]
+    twitter_username: Union[str, None] = None
 
 
 class AuthError(RuntimeError):
@@ -193,10 +191,10 @@ class AuthError(RuntimeError):
         self.code = code
 
     @staticmethod
-    def fastapi_handle(_request: Request, e: AuthError) -> JSONResponse:
+    def fastapi_handle(_request: 'Request', e: 'AuthError') -> 'JSONResponse':
         from fastapi.responses import JSONResponse
 
-        return JSONResponse({'detail': str(e)}, status_code=401)
+        return JSONResponse({'detail': str(e)}, status_code=400)
 
 
 class AbstractStateProvider(ABC):
@@ -215,11 +213,11 @@ class AbstractStateProvider(ABC):
 
     @abstractmethod
     async def store_state(self, state: str) -> None:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     async def check_state(self, state: str) -> bool:
-        pass
+        raise NotImplementedError
 
 
 class TmpFileStateProvider(AbstractStateProvider):
@@ -227,7 +225,7 @@ class TmpFileStateProvider(AbstractStateProvider):
     This is a simple state provider for the GitHub OAuth flow which uses a file in the system's temporary directory.
     """
 
-    def __init__(self, path: Path | None = None):
+    def __init__(self, path: Union[Path, None] = None):
         self._path = path or Path(tempfile.gettempdir()) / 'fastui_github_auth_states.txt'
 
     async def store_state(self, state: str) -> None:
@@ -252,7 +250,7 @@ class TmpFileStateProvider(AbstractStateProvider):
 
 
 # we have a global so creating new instances of the auth object will reuse the same state provider
-_DEFAULT_STATE_PROVIDER: AbstractStateProvider | None = None
+_DEFAULT_STATE_PROVIDER: Union[AbstractStateProvider, None] = None
 
 
 def _get_default_state_provider() -> AbstractStateProvider:
