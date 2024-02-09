@@ -24,7 +24,7 @@ def demo_page(*components: AnyComponent, title: str | None = None) -> list[AnyCo
                 ),
                 c.Link(
                     components=[c.Text(text='Auth')],
-                    on_click=GoToEvent(url='/auth/login'),
+                    on_click=GoToEvent(url='/auth/login/password'),
                     active='startswith:/auth',
                 ),
                 c.Link(

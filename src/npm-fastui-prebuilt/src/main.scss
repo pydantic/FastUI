@@ -116,3 +116,9 @@ h6 {
     box-shadow: 0 2.5em 0 0;
   }
 }
+
+// make sure alerts aren't hidden behind the navbar
+.error-alert {
+  position: relative;
+  top: 60px;
+}

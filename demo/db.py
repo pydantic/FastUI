@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 import libsql_client
+from libsql_client import LibsqlError
 
 
 @dataclass
@@ -26,7 +27,16 @@ async def create_user(email: str) -> str:
     async with _connect() as conn:
         await _delete_old_users(conn)
         token = secrets.token_hex()
-        await conn.execute('insert into users (token, email) values (?, ?)', (token, email))
+        try:
+            await conn.execute('insert into users (token, email) values (?, ?)', (token, email))
+        except LibsqlError as e:
+            if e.code == 'SQLITE_CONSTRAINT_UNIQUE':
+                # update the last_active time
+                await conn.execute('update users set last_active = current_timestamp where email = ?', (email,))
+                rs = await conn.execute('select token from users where email = ?', (email,))
+                token = rs.rows[0][0]
+            else:
+                raise
         return token
 
 
