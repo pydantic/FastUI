@@ -62,6 +62,8 @@ jobs:
       - run: pip install src/python-fastui
 
       - run: coverage run -m pytest src
+      # display coverage and fail if it's below 80%, which shouldn't happen
+      - run: coverage report --fail-under=80
 
       # test demo on 3.11 and 3.12, these tests are intentionally omitted from coverage
       - if: matrix.python-version == '3.11' || matrix.python-version == '3.12'
