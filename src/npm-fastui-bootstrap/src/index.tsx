@@ -148,7 +148,7 @@ export const classNameGenerator: ClassNameGenerator = ({
       if (props.statusCode === 502) {
         return 'm-3 text-muted'
       } else {
-        return 'alert alert-danger m-3'
+        return 'error-alert alert alert-danger m-3'
       }
   }
 }

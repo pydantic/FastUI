@@ -195,6 +195,7 @@ def json_schema_field_to_field(
             html_type=input_html_type(schema),
             required=required,
             initial=schema.get('default'),
+            autocomplete=schema.get('autocomplete'),
             description=schema.get('description'),
         )
 

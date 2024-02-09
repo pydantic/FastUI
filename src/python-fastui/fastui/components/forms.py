@@ -31,6 +31,7 @@ class FormFieldInput(BaseFormField):
     html_type: InputHtmlType = pydantic.Field(default='text', serialization_alias='htmlType')
     initial: _t.Union[str, float, None] = None
     placeholder: _t.Union[str, None] = None
+    autocomplete: _t.Union[str, None] = None
     type: _t.Literal['FormFieldInput'] = 'FormFieldInput'
 
 

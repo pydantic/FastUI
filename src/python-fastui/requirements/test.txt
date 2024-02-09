@@ -4,16 +4,10 @@
 #
 #    pip-compile --constraint=src/python-fastui/requirements/lint.txt --constraint=src/python-fastui/requirements/pyproject.txt --output-file=src/python-fastui/requirements/test.txt --strip-extras src/python-fastui/requirements/test.in
 #
-aiohttp==3.9.3
-    # via libsql-client
-aiosignal==1.3.1
-    # via aiohttp
 anyio==4.2.0
     # via
     #   -c src/python-fastui/requirements/pyproject.txt
     #   httpx
-attrs==23.2.0
-    # via aiohttp
 certifi==2024.2.2
     # via
     #   httpcore
@@ -22,10 +16,6 @@ coverage==7.4.1
     # via -r src/python-fastui/requirements/test.in
 dirty-equals==0.7.1.post0
     # via -r src/python-fastui/requirements/test.in
-frozenlist==1.4.1
-    # via
-    #   aiohttp
-    #   aiosignal
 h11==0.14.0
     # via httpcore
 httpcore==1.0.2
@@ -37,25 +27,20 @@ idna==3.6
     #   -c src/python-fastui/requirements/pyproject.txt
     #   anyio
     #   httpx
-    #   yarl
 iniconfig==2.0.0
     # via pytest
-libsql-client==0.3.0
-    # via -r src/python-fastui/requirements/test.in
 markdown-it-py==3.0.0
     # via rich
 mdurl==0.1.2
     # via markdown-it-py
-multidict==6.0.5
-    # via
-    #   aiohttp
-    #   yarl
 packaging==23.2
     # via pytest
 pluggy==1.4.0
     # via pytest
 pygments==2.17.2
     # via rich
+pyjwt==2.8.0
+    # via -r src/python-fastui/requirements/test.in
 pytest==7.4.4
     # via
     #   -r src/python-fastui/requirements/test.in
@@ -74,9 +59,3 @@ sniffio==1.3.0
     #   -c src/python-fastui/requirements/pyproject.txt
     #   anyio
     #   httpx
-typing-extensions==4.9.0
-    # via
-    #   -c src/python-fastui/requirements/pyproject.txt
-    #   libsql-client
-yarl==1.9.4
-    # via aiohttp
