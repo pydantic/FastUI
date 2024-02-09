@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from enum import Enum
 from io import BytesIO
 from typing import List, Tuple, Union
 
@@ -6,7 +7,7 @@ import pytest
 from fastapi import HTTPException
 from fastui import components
 from fastui.forms import FormFile, Textarea, fastui_form
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from starlette.datastructures import FormData, Headers, UploadFile
 from typing_extensions import Annotated
 
@@ -466,6 +467,38 @@ def test_form_textarea_form_fields():
                 'required': True,
                 'locked': False,
                 'type': 'FormFieldTextarea',
+            }
+        ],
+    }
+
+
+def test_form_radio_form_fields():
+    class RadioChoices(Enum):
+        foo = 'foo'
+        bar = 'bar'
+        baz = 'baz'
+
+    class FormRadioSelection(BaseModel):
+        choice: RadioChoices = Field(..., json_schema_extra={'mode': 'radio'})
+
+    m = components.ModelForm(model=FormRadioSelection, submit_url='/foobar/')
+
+    assert m.model_dump(by_alias=True, exclude_none=True) == {
+        'submitUrl': '/foobar/',
+        'method': 'POST',
+        'type': 'ModelForm',
+        'formFields': [
+            {
+                'name': 'choice',
+                'title': ['RadioChoices'],
+                'required': True,
+                'locked': False,
+                'type': 'FormFieldRadio',
+                'options': [
+                    {'label': 'Foo', 'value': 'foo'},
+                    {'label': 'Bar', 'value': 'bar'},
+                    {'label': 'Baz', 'value': 'baz'},
+                ],
             }
         ],
     }
