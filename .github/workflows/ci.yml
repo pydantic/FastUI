@@ -61,7 +61,7 @@ jobs:
       - run: pip install -r src/python-fastui/requirements/pyproject.txt
       - run: pip install -e src/python-fastui
 
-      - run: coverage run --debug=trace -m pytest src
+      - run: coverage run -m pytest src
       # display coverage and fail if it's below 80%, which shouldn't happen
       - run: coverage report --fail-under=80
 
