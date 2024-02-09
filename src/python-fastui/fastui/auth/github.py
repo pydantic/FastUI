@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, AsyncIterator, List, Union, cast
+from typing import TYPE_CHECKING, AsyncIterator, Dict, List, Union, cast
 from urllib.parse import urlencode
 
 import httpx
@@ -14,6 +14,55 @@ from pydantic import BaseModel, SecretStr, TypeAdapter, field_validator
 if TYPE_CHECKING:
     from fastapi import Request
     from fastapi.responses import JSONResponse
+
+
+@dataclass
+class GitHubExchangeError:
+    error: str
+    error_description: Union[str, None] = None
+
+
+@dataclass
+class GitHubExchange:
+    access_token: str
+    token_type: str
+    scope: List[str]
+
+    @field_validator('scope', mode='before')
+    def check_scope(cls, v: str) -> List[str]:
+        return [s for s in v.split(',') if s]
+
+
+github_exchange_type = TypeAdapter(Union[GitHubExchange, GitHubExchangeError])
+
+
+class GithubUser(BaseModel):
+    login: str
+    name: Union[str, None]
+    email: Union[str, None]
+    avatar_url: str
+    created_at: datetime
+    updated_at: datetime
+    public_repos: int
+    public_gists: int
+    followers: int
+    following: int
+    company: Union[str, None]
+    blog: Union[str, None]
+    location: Union[str, None]
+    hireable: Union[bool, None]
+    bio: Union[str, None]
+    twitter_username: Union[str, None] = None
+
+
+class GitHubEmail(BaseModel):
+    email: str
+    primary: bool
+    verified: bool
+    visibility: Union[str, None]
+
+
+github_emails_ta = TypeAdapter(List[GitHubEmail])
 
 
 class GitHubAuthProvider:
@@ -43,7 +92,7 @@ class GitHubAuthProvider:
             self._state_provider = state_provider
         # cache exchange responses, see `exchange_code` for details
         self._exchange_cache_age = exchange_cache_age
-        self._exchange_cache: dict[str, tuple[datetime, GitHubExchangeOk]] = {}
+        self._exchange_cache: dict[str, tuple[datetime, GitHubExchange]] = {}
 
     @classmethod
     @asynccontextmanager
@@ -77,7 +126,7 @@ class GitHubAuthProvider:
             params['state'] = await self._state_provider.create_store_state()
         return f'https://github.com/login/oauth/authorize?{urlencode(params)}'
 
-    async def exchange_code(self, code: str, state: Union[str, None] = None) -> 'GitHubExchangeOk':
+    async def exchange_code(self, code: str, state: Union[str, None] = None) -> GitHubExchange:
         """
         Exchange a code for an access token.
 
@@ -100,7 +149,7 @@ class GitHubAuthProvider:
         else:
             return await self._exchange_code(code, state)
 
-    async def _exchange_code(self, code: str, state: Union[str, None] = None) -> 'GitHubExchangeOk':
+    async def _exchange_code(self, code: str, state: Union[str, None] = None) -> GitHubExchange:
         if self._state_provider:
             if state is None:
                 raise AuthError('Missing GitHub auth state', code='missing_state')
@@ -128,59 +177,32 @@ class GitHubAuthProvider:
             else:
                 raise RuntimeError(f'Unexpected response from GitHub access token exchange: {r.text}')
         else:
-            return cast(GitHubExchangeOk, exchange_response)
+            return cast(GitHubExchange, exchange_response)
 
-    async def get_github_user(self, exchange: 'GitHubExchangeOk') -> 'GithubUser':
+    async def get_github_user(self, exchange: GitHubExchange) -> GithubUser:
         """
-        See https://docs.github.com/en/rest/users/users?apiVersion=2022-11-28#get-the-authenticated-user
+        See https://docs.github.com/en/rest/users/users#get-the-authenticated-user
         """
-        headers = {
-            'Authorization': f'Bearer {exchange.access_token}',
-            'Accept': 'application/vnd.github+json',
-        }
-
+        headers = self._auth_headers(exchange)
         user_response = await self._httpx_client.get('https://api.github.com/user', headers=headers)
         user_response.raise_for_status()
         return GithubUser.model_validate_json(user_response.content)
 
+    async def get_github_user_emails(self, exchange: GitHubExchange) -> List[GitHubEmail]:
+        """
+        See https://docs.github.com/en/rest/users/emails
+        """
+        headers = self._auth_headers(exchange)
+        emails_response = await self._httpx_client.get('https://api.github.com/user/emails', headers=headers)
+        emails_response.raise_for_status()
+        return github_emails_ta.validate_json(emails_response.content)
 
-@dataclass
-class GitHubExchangeError:
-    error: str
-    error_description: Union[str, None] = None
-
-
-@dataclass
-class GitHubExchangeOk:
-    access_token: str
-    token_type: str
-    scope: List[str]
-
-    @field_validator('scope', mode='before')
-    def check_scope(cls, v: str) -> List[str]:
-        return [s for s in v.split(',') if s]
-
-
-github_exchange_type = TypeAdapter(Union[GitHubExchangeOk, GitHubExchangeError])
-
-
-class GithubUser(BaseModel):
-    login: str
-    name: Union[str, None]
-    email: Union[str, None]
-    avatar_url: str
-    created_at: datetime
-    updated_at: datetime
-    public_repos: int
-    public_gists: int
-    followers: int
-    following: int
-    company: Union[str, None]
-    blog: Union[str, None]
-    location: Union[str, None]
-    hireable: Union[bool, None]
-    bio: Union[str, None]
-    twitter_username: Union[str, None] = None
+    @staticmethod
+    def _auth_headers(exchange: GitHubExchange) -> Dict[str, str]:
+        return {
+            'Authorization': f'Bearer {exchange.access_token}',
+            'Accept': 'application/vnd.github+json',
+        }
 
 
 class AuthError(RuntimeError):

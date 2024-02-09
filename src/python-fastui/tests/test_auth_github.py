@@ -5,7 +5,7 @@ import httpx
 import pytest
 from fastapi import FastAPI
 from fastui.auth import AuthError, GitHubAuthProvider
-from fastui.auth.github import TmpFileStateProvider
+from fastui.auth.github import GitHubEmail, TmpFileStateProvider
 from pydantic import SecretStr
 
 
@@ -55,6 +55,14 @@ def fake_github_app(github_requests: List[str]) -> FastAPI:
             'hireable': None,
             'bio': None,
         }
+
+    @app.get('/user/emails')
+    async def user_emails():
+        github_requests.append('/user/emails')
+        return [
+            {'email': 'foo@example.com', 'primary': False, 'verified': True, 'visibility': None},
+            {'email': 'bar@example.com', 'primary': True, 'verified': True, 'visibility': 'public'},
+        ]
 
     return app
 
@@ -221,6 +229,18 @@ async def test_get_github_user(github_auth_provider: GitHubAuthProvider, github_
     assert user.email == 'test@example.com'
 
     assert github_requests == ['/login/oauth/access_token code=good', '/user']
+
+
+async def test_get_github_user_emails(github_auth_provider: GitHubAuthProvider, github_requests: List[str]):
+    assert github_requests == []
+    exchange = await github_auth_provider.exchange_code('good')
+    assert github_requests == ['/login/oauth/access_token code=good']
+    emails = await github_auth_provider.get_github_user_emails(exchange)
+    assert emails == [
+        GitHubEmail(email='foo@example.com', primary=False, verified=True, visibility=None),
+        GitHubEmail(email='bar@example.com', primary=True, verified=True, visibility='public'),
+    ]
+    assert github_requests == ['/login/oauth/access_token code=good', '/user/emails']
 
 
 async def test_create():
