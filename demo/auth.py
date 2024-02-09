@@ -1,30 +1,24 @@
 from __future__ import annotations as _annotations
 
+import asyncio
+import json
 import os
+from dataclasses import asdict
 from typing import Annotated, Literal, TypeAlias
 
-from fastapi import APIRouter, Depends, Header, Request
+from fastapi import APIRouter, Depends, Request
 from fastui import AnyComponent, FastUI
 from fastui import components as c
-from fastui.auth import AuthError, GitHubAuthProvider
+from fastui.auth import GitHubAuthProvider
 from fastui.events import AuthEvent, GoToEvent, PageEvent
 from fastui.forms import fastui_form
 from httpx import AsyncClient
 from pydantic import BaseModel, EmailStr, Field, SecretStr
 
-from . import db
+from .auth_user import User
 from .shared import demo_page
 
 router = APIRouter()
-
-
-async def get_user(authorization: Annotated[str, Header()] = '') -> db.User | None:
-    try:
-        token = authorization.split(' ', 1)[1]
-    except IndexError:
-        return None
-    else:
-        return await db.get_user(token)
 
 
 # this will give an error when making requests to GitHub, but at least the app will run
@@ -37,6 +31,7 @@ async def get_github_auth(request: Request) -> GitHubAuthProvider:
         httpx_client=client,
         github_client_id='9eddf87b27f71f52194a',
         github_client_secret=GITHUB_CLIENT_SECRET,
+        scopes=['user:email'],
     )
 
 
@@ -46,7 +41,7 @@ LoginKind: TypeAlias = Literal['password', 'github']
 @router.get('/login/{kind}', response_model=FastUI, response_model_exclude_none=True)
 async def auth_login(
     kind: LoginKind,
-    user: Annotated[str | None, Depends(get_user)],
+    user: Annotated[User | None, Depends(User.from_request)],
     github_auth: Annotated[GitHubAuthProvider, Depends(get_github_auth)],
 ) -> list[AnyComponent]:
     if user is None:
@@ -118,19 +113,21 @@ class LoginForm(BaseModel):
 
 @router.post('/login', response_model=FastUI, response_model_exclude_none=True)
 async def login_form_post(form: Annotated[LoginForm, fastui_form(LoginForm)]) -> list[AnyComponent]:
-    token = await db.create_user(form.email)
+    user = User(email=form.email, extra={})
+    token = user.encode_token()
     return [c.FireEvent(event=AuthEvent(token=token, url='/auth/profile'))]
 
 
 @router.get('/profile', response_model=FastUI, response_model_exclude_none=True)
-async def profile(user: Annotated[db.User | None, Depends(get_user)]) -> list[AnyComponent]:
+async def profile(user: Annotated[User | None, Depends(User.from_request)]) -> list[AnyComponent]:
     if user is None:
         return [c.FireEvent(event=GoToEvent(url='/auth/login'))]
     else:
-        active_count = await db.count_users()
         return demo_page(
-            c.Paragraph(text=f'You are logged in as "{user.email}", {active_count} active users right now.'),
+            c.Paragraph(text=f'You are logged in as "{user.email}".'),
             c.Button(text='Logout', on_click=PageEvent(name='submit-form')),
+            c.Heading(text='User Data:', level=3),
+            c.Code(language='json', text=json.dumps(asdict(user), indent=2)),
             c.Form(
                 submit_url='/api/auth/logout',
                 form_fields=[c.FormFieldInput(name='test', title='', initial='data', html_type='hidden')],
@@ -142,9 +139,7 @@ async def profile(user: Annotated[db.User | None, Depends(get_user)]) -> list[An
 
 
 @router.post('/logout', response_model=FastUI, response_model_exclude_none=True)
-async def logout_form_post(user: Annotated[db.User | None, Depends(get_user)]) -> list[AnyComponent]:
-    if user is not None:
-        await db.delete_user(user)
+async def logout_form_post() -> list[AnyComponent]:
     return [c.FireEvent(event=AuthEvent(token=False, url='/auth/login/password'))]
 
 
@@ -154,10 +149,16 @@ async def github_redirect(
     state: str | None,
     github_auth: Annotated[GitHubAuthProvider, Depends(get_github_auth)],
 ) -> list[AnyComponent]:
-    try:
-        exchange = await github_auth.exchange_code(code, state)
-    except AuthError as e:
-        return [c.Text(text=f'Error: {e}')]
-    user_info = await github_auth.get_github_user(exchange)
-    token = await db.create_user(user_info.email or user_info.username)
+    exchange = await github_auth.exchange_code(code, state)
+    user_info, emails = await asyncio.gather(
+        github_auth.get_github_user(exchange), github_auth.get_github_user_emails(exchange)
+    )
+    user = User(
+        email=next((e.email for e in emails if e.primary and e.verified), None),
+        extra={
+            'github_user_info': user_info.model_dump(),
+            'github_emails': [e.model_dump() for e in emails],
+        },
+    )
+    token = user.encode_token()
     return [c.FireEvent(event=AuthEvent(token=token, url='/auth/profile'))]

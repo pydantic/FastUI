@@ -1,11 +1,10 @@
-from pathlib import Path
 from typing import List, Optional
 
 import httpx
 import pytest
 from fastapi import FastAPI
 from fastui.auth import AuthError, GitHubAuthProvider
-from fastui.auth.github import GitHubEmail, TmpFileStateProvider
+from fastui.auth.github import GitHubEmail
 from pydantic import SecretStr
 
 
@@ -121,12 +120,12 @@ async def test_exchange_bad_unexpected(github_auth_provider: GitHubAuthProvider)
 
 
 @pytest.fixture
-async def github_auth_provider_state(fake_github_app: FastAPI, httpx_client: httpx.AsyncClient, tmp_path: Path):
+async def github_auth_provider_state(fake_github_app: FastAPI, httpx_client: httpx.AsyncClient):
     return GitHubAuthProvider(
         httpx_client=httpx_client,
         github_client_id='1234',
         github_client_secret=SecretStr('secret'),
-        state_provider=TmpFileStateProvider(tmp_path / 'github_state.txt'),
+        state_provider=True,
     )
 
 
@@ -140,34 +139,21 @@ async def test_exchange_bad_state(github_auth_provider_state: GitHubAuthProvider
         await github_auth_provider_state.exchange_code('good', 'bad_state')
 
 
-async def test_exchange_good_state(github_auth_provider_state: GitHubAuthProvider, tmp_path: Path):
+async def test_exchange_good_state(github_auth_provider_state: GitHubAuthProvider):
     url = await github_auth_provider_state.authorization_url()
     assert url.startswith('https://github.com/login/oauth/authorize?client_id=1234&state=')
     state = url.rsplit('=', 1)[-1]
-
-    state_path = tmp_path / 'github_state.txt'
-    assert state_path.read_text() == f'{state}\n'
 
     exchange = await github_auth_provider_state.exchange_code('good', state)
     assert exchange.access_token == 'good_token'
 
-    # state should be cleared
-    assert state_path.read_text() == '\n'
 
-
-async def test_exchange_bad_state_file_exists(github_auth_provider_state: GitHubAuthProvider, tmp_path: Path):
+async def test_exchange_bad_state_file_exists(github_auth_provider_state: GitHubAuthProvider):
     url = await github_auth_provider_state.authorization_url()
     assert url.startswith('https://github.com/login/oauth/authorize?client_id=1234&state=')
-    state = url.rsplit('=', 1)[-1]
-
-    state_path = tmp_path / 'github_state.txt'
-    assert state_path.read_text() == f'{state}\n'
 
     with pytest.raises(AuthError, match='^Invalid GitHub auth state'):
         await github_auth_provider_state.exchange_code('good', 'bad_state')
-
-    # state still there
-    assert state_path.read_text() == f'{state}\n'
 
 
 async def test_exchange_ok_repeat(github_auth_provider: GitHubAuthProvider, github_requests: List[str]):
@@ -211,6 +197,7 @@ async def test_exchange_redirect_url(
         github_client_secret=SecretStr('secret'),
         redirect_uri='/callback',
         state_provider=False,
+        exchange_cache_age=None,
     )
     url = await github_auth_provider.authorization_url()
     assert url == 'https://github.com/login/oauth/authorize?client_id=1234&redirect_uri=%2Fcallback'

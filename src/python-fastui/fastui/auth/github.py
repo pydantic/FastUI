@@ -1,14 +1,11 @@
-import secrets
-import tempfile
-from abc import ABC, abstractmethod
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from pathlib import Path
-from typing import TYPE_CHECKING, AsyncIterator, Dict, List, Union, cast
+from typing import TYPE_CHECKING, AsyncIterator, Dict, List, Tuple, Union, cast
 from urllib.parse import urlencode
 
 import httpx
+import jwt
 from pydantic import BaseModel, SecretStr, TypeAdapter, field_validator
 
 if TYPE_CHECKING:
@@ -77,22 +74,23 @@ class GitHubAuthProvider:
         github_client_secret: SecretStr,
         *,
         redirect_uri: Union[str, None] = None,
-        state_provider: Union['AbstractStateProvider', bool] = True,
-        exchange_cache_age: Union[timedelta, None] = timedelta(seconds=10),
+        scopes: Union[List[str], None] = None,
+        state_provider: Union['StateProvider', bool] = True,
+        exchange_cache_age: Union[timedelta, None] = timedelta(seconds=30),
     ):
         self._httpx_client = httpx_client
         self._github_client_id = github_client_id
         self._github_client_secret = github_client_secret
         self._redirect_uri = redirect_uri
+        self._scopes = scopes
         if state_provider is True:
-            self._state_provider = _get_default_state_provider()
+            self._state_provider = StateProvider(github_client_secret)
         elif state_provider is False:
             self._state_provider = None
         else:
             self._state_provider = state_provider
         # cache exchange responses, see `exchange_code` for details
         self._exchange_cache_age = exchange_cache_age
-        self._exchange_cache: dict[str, tuple[datetime, GitHubExchange]] = {}
 
     @classmethod
     @asynccontextmanager
@@ -102,7 +100,7 @@ class GitHubAuthProvider:
         client_secret: SecretStr,
         *,
         redirect_uri: Union[str, None] = None,
-        state_provider: Union['AbstractStateProvider', bool] = True,
+        state_provider: Union['StateProvider', bool] = True,
         exchange_cache_age: Union[timedelta, None] = timedelta(seconds=10),
     ) -> AsyncIterator['GitHubAuthProvider']:
         """
@@ -119,32 +117,32 @@ class GitHubAuthProvider:
             )
 
     async def authorization_url(self) -> str:
+        """
+        See https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps#1-request-a-users-github-identity
+        """
         params = {'client_id': self._github_client_id}
         if self._redirect_uri:
             params['redirect_uri'] = self._redirect_uri
+        if self._scopes:
+            params['scope'] = ' '.join(self._scopes)
         if self._state_provider:
-            params['state'] = await self._state_provider.create_store_state()
+            params['state'] = await self._state_provider.new_state()
         return f'https://github.com/login/oauth/authorize?{urlencode(params)}'
 
     async def exchange_code(self, code: str, state: Union[str, None] = None) -> GitHubExchange:
         """
         Exchange a code for an access token.
 
-        If `self._exchange_cache_age` is not `None` (the default), responses are cached for the given duration, to
+        If `self._exchange_cache_age` is not `None` (the default), responses are cached for the given duration to
         work around issues with React often sending the same request multiple times in development mode.
         """
         if self._exchange_cache_age:
             cache_key = f'{code}:{state}'
-            now = datetime.now()
-            min_timestamp = now - self._exchange_cache_age
-            # remove anything older than the cache age
-            self._exchange_cache = {k: v for k, v in self._exchange_cache.items() if v[0] > min_timestamp}
-
-            if cache_value := self._exchange_cache.get(cache_key):
-                return cache_value[1]
+            if exchange := EXCHANGE_CACHE.get(cache_key, self._exchange_cache_age):
+                return exchange
             else:
                 exchange = await self._exchange_code(code, state)
-                self._exchange_cache[cache_key] = (now, exchange)
+                EXCHANGE_CACHE.set(cache_key, exchange)
                 return exchange
         else:
             return await self._exchange_code(code, state)
@@ -205,8 +203,34 @@ class GitHubAuthProvider:
         }
 
 
+class ExchangeCache:
+    def __init__(self):
+        self._cache: Dict[str, Tuple[datetime, GitHubExchange]] = {}
+
+    def get(self, key: str, max_age: timedelta) -> Union[GitHubExchange, None]:
+        self._purge(max_age)
+        if v := self._cache.get(key):
+            return v[1]
+
+    def set(self, key: str, value: GitHubExchange) -> None:
+        self._cache[key] = (datetime.now(), value)
+
+    def _purge(self, max_age: timedelta) -> None:
+        """
+        Remove old items from the exchange cache
+        """
+        min_timestamp = datetime.now() - max_age
+        to_remove = [k for k, (ts, _) in self._cache.items() if ts < min_timestamp]
+        for k in to_remove:
+            del self._cache[k]
+
+
+# exchange cache is a singleton so instantiating a new GitHubAuthProvider reuse the same cache
+EXCHANGE_CACHE = ExchangeCache()
+
+
 class AuthError(RuntimeError):
-    # TODO if we add other providers, this should become shared
+    # TODO if we add other providers, this should be shared
 
     def __init__(self, message: str, *, code: str):
         super().__init__(message)
@@ -219,64 +243,25 @@ class AuthError(RuntimeError):
         return JSONResponse({'detail': str(e)}, status_code=400)
 
 
-class AbstractStateProvider(ABC):
+class StateProvider:
     """
-    This class is used to store and validate the state parameter used in the GitHub OAuth flow.
-
-    You can override this class to implement a persistent state provider.
+    This is a simple state provider for the GitHub OAuth flow which uses a JWT to create an unguessable state.
     """
 
-    # TODO if we add other providers, this might become shared?
+    # TODO if we add other providers, this could be shared
 
-    async def create_store_state(self) -> str:
-        state = secrets.token_urlsafe()
-        await self.store_state(state)
-        return state
+    def __init__(self, secret: SecretStr, max_age: timedelta = timedelta(minutes=5)):
+        self._secret = secret
+        self._max_age = max_age
 
-    @abstractmethod
-    async def store_state(self, state: str) -> None:
-        raise NotImplementedError
-
-    @abstractmethod
-    async def check_state(self, state: str) -> bool:
-        raise NotImplementedError
-
-
-class TmpFileStateProvider(AbstractStateProvider):
-    """
-    This is a simple state provider for the GitHub OAuth flow which uses a file in the system's temporary directory.
-    """
-
-    def __init__(self, path: Union[Path, None] = None):
-        self._path = path or Path(tempfile.gettempdir()) / 'fastui_github_auth_states.txt'
-
-    async def store_state(self, state: str) -> None:
-        with self._path.open('a') as f:
-            f.write(f'{state}\n')
+    async def new_state(self) -> str:
+        data = {'created_at': datetime.now().isoformat()}
+        return jwt.encode(data, self._secret.get_secret_value(), algorithm='HS256')
 
     async def check_state(self, state: str) -> bool:
-        if not self._path.exists():
+        try:
+            d = jwt.decode(state, self._secret.get_secret_value(), algorithms=['HS256'])
+        except jwt.DecodeError:
             return False
-
-        remaining_lines = []
-        found = False
-        for line in self._path.read_text().splitlines():
-            if line == state:
-                found = True
-            else:
-                remaining_lines.append(line)
-
-        if found:
-            self._path.write_text('\n'.join(remaining_lines) + '\n')
-        return found
-
-
-# we have a global so creating new instances of the auth object will reuse the same state provider
-_DEFAULT_STATE_PROVIDER: Union[AbstractStateProvider, None] = None
-
-
-def _get_default_state_provider() -> AbstractStateProvider:
-    global _DEFAULT_STATE_PROVIDER
-    if _DEFAULT_STATE_PROVIDER is None:
-        _DEFAULT_STATE_PROVIDER = TmpFileStateProvider()
-    return _DEFAULT_STATE_PROVIDER
+        else:
+            return datetime.fromisoformat(d['created_at']) > datetime.now() - self._max_age
