@@ -19,9 +19,11 @@ export { EventContextProvider } from './hooks/eventContext'
 export type CustomRender = (props: FastProps) => FC | void
 
 export interface FastUIProps {
-  rootUrl: string
+  APIRootUrl: string
   // defaults to 'append'
-  pathSendMode?: 'append' | 'query'
+  APIPathMode?: 'append' | 'query'
+  // start of the path to remove from the URL before making a request to the API
+  APIPathStrip?: string
   Spinner?: FC
   NotFound?: FC<{ url: string }>
   Transition?: FC<{ children: ReactNode; transitioning: boolean }>
