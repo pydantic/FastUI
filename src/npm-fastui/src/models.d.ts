@@ -174,7 +174,8 @@ export interface LinkList {
 export interface Navbar {
   title?: string
   titleEvent?: PageEvent | GoToEvent | BackEvent | AuthEvent
-  links: Link[]
+  startLinks: Link[]
+  endLinks: Link[]
   className?: ClassName
   type: 'Navbar'
 }
