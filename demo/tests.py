@@ -61,7 +61,6 @@ def get_menu_links():
         r = client.get('/api/')
         assert r.status_code == 200
         data = r.json()
-        debug(data[1])
         for link in data[1]['startLinks']:
             url = link['onClick']['url']
             yield pytest.param(f'/api{url}', id=url)
