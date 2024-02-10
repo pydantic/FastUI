@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, PlainTextResponse
 from fastui import prebuilt_html
-from fastui.auth import AuthError
+from fastui.auth import fastapi_auth_exception_handling
 from fastui.dev import dev_fastapi_app
 from httpx import AsyncClient
 
@@ -32,7 +32,7 @@ if frontend_reload:
 else:
     app = FastAPI(lifespan=lifespan)
 
-app.exception_handler(AuthError)(AuthError.fastapi_handle)
+fastapi_auth_exception_handling(app)
 app.include_router(components_router, prefix='/api/components')
 app.include_router(sse_router, prefix='/api/components')
 app.include_router(table_router, prefix='/api/table')

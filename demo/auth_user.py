@@ -1,10 +1,11 @@
 import json
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Annotated, Any, Self
 
 import jwt
 from fastapi import Header, HTTPException
+from fastui.auth import AuthRedirect
 
 JWT_SECRET = 'secret'
 
@@ -15,19 +16,35 @@ class User:
     extra: dict[str, Any]
 
     def encode_token(self) -> str:
-        return jwt.encode(asdict(self), JWT_SECRET, algorithm='HS256', json_encoder=CustomJsonEncoder)
+        payload = asdict(self)
+        payload['exp'] = datetime.now() + timedelta(hours=1)
+        return jwt.encode(payload, JWT_SECRET, algorithm='HS256', json_encoder=CustomJsonEncoder)
 
     @classmethod
-    async def from_request(cls, authorization: Annotated[str, Header()] = '') -> Self | None:
+    def from_request(cls, authorization: Annotated[str, Header()] = '') -> Self:
+        user = cls.from_request_opt(authorization)
+        if user is None:
+            raise AuthRedirect('/auth/login/password')
+        else:
+            return user
+
+    @classmethod
+    def from_request_opt(cls, authorization: Annotated[str, Header()] = '') -> Self | None:
         try:
             token = authorization.split(' ', 1)[1]
         except IndexError:
             return None
 
         try:
-            return cls(**jwt.decode(token, JWT_SECRET, algorithms=['HS256']))
+            payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            return None
         except jwt.DecodeError:
             raise HTTPException(status_code=401, detail='Invalid token')
+        else:
+            # existing token might not have 'exp' field
+            payload.pop('exp', None)
+            return cls(**payload)
 
 
 class CustomJsonEncoder(json.JSONEncoder):
