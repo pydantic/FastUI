@@ -47,9 +47,9 @@ export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
         break
       case 'auth':
         if (event.token) {
-          sessionStorage.setItem(AUTH_TOKEN_KEY, event.token)
+          localStorage.setItem(AUTH_TOKEN_KEY, event.token)
         } else {
-          sessionStorage.removeItem(AUTH_TOKEN_KEY)
+          localStorage.removeItem(AUTH_TOKEN_KEY)
         }
         if (event.url) {
           location.goto(event.url)

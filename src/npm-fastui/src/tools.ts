@@ -101,7 +101,7 @@ async function request({
     init.headers.set('Content-Type', contentType)
   }
 
-  const authToken = sessionStorage.getItem(AUTH_TOKEN_KEY)
+  const authToken = localStorage.getItem(AUTH_TOKEN_KEY)
   if (authToken) {
     // we use a custom auth-schema as well-known values like `Basic` and `Bearer` are not correct here
     init.headers.set('Authorization', `Token ${authToken}`)

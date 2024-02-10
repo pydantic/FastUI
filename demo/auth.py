@@ -42,10 +42,9 @@ LoginKind: TypeAlias = Literal['password', 'github']
 
 
 @router.get('/login/{kind}', response_model=FastUI, response_model_exclude_none=True)
-async def auth_login(
+def auth_login(
     kind: LoginKind,
     user: Annotated[User | None, Depends(User.from_request_opt)],
-    github_auth: Annotated[GitHubAuthProvider, Depends(get_github_auth)],
 ) -> list[AnyComponent]:
     if user is not None:
         # already logged in
@@ -71,16 +70,14 @@ async def auth_login(
         c.ServerLoad(
             path='/auth/login/content/{kind}',
             load_trigger=PageEvent(name='tab'),
-            components=await auth_login_content(kind, github_auth),
+            components=auth_login_content(kind),
         ),
         title='Authentication',
     )
 
 
 @router.get('/login/content/{kind}', response_model=FastUI, response_model_exclude_none=True)
-async def auth_login_content(
-    kind: LoginKind, github_auth: Annotated[GitHubAuthProvider, Depends(get_github_auth)]
-) -> list[AnyComponent]:
+def auth_login_content(kind: LoginKind) -> list[AnyComponent]:
     match kind:
         case 'password':
             return [
@@ -95,12 +92,11 @@ async def auth_login_content(
                 c.ModelForm(model=LoginForm, submit_url='/api/auth/login'),
             ]
         case 'github':
-            auth_url = await github_auth.authorization_url()
             return [
                 c.Heading(text='GitHub Login', level=3),
                 c.Paragraph(text='Demo of GitHub authentication.'),
                 c.Paragraph(text='(Credentials are stored in the browser via a JWT only)'),
-                c.Button(text='Login with GitHub', on_click=GoToEvent(url=auth_url)),
+                c.Button(text='Login with GitHub', on_click=GoToEvent(url='/auth/login/github/gen')),
             ]
         case _:
             raise ValueError(f'Invalid kind {kind!r}')
@@ -144,6 +140,12 @@ async def profile(user: Annotated[User, Depends(User.from_request)]) -> list[Any
 @router.post('/logout', response_model=FastUI, response_model_exclude_none=True)
 async def logout_form_post() -> list[AnyComponent]:
     return [c.FireEvent(event=AuthEvent(token=False, url='/auth/login/password'))]
+
+
+@router.get('/login/github/gen', response_model=FastUI, response_model_exclude_none=True)
+async def auth_github_gen(github_auth: Annotated[GitHubAuthProvider, Depends(get_github_auth)]) -> list[AnyComponent]:
+    auth_url = await github_auth.authorization_url()
+    return [c.FireEvent(event=GoToEvent(url=auth_url))]
 
 
 @router.get('/login/github/redirect', response_model=FastUI, response_model_exclude_none=True)
