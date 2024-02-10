@@ -1,12 +1,12 @@
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, AsyncIterator, Dict, List, Tuple, Union, cast
 from urllib.parse import urlencode
 
 from pydantic import BaseModel, SecretStr, TypeAdapter, field_validator
 
-from .shared import AuthError, StateProvider
+from .shared import AuthError
 
 if TYPE_CHECKING:
     import httpx
@@ -221,25 +221,59 @@ class GitHubAuthProvider:
 
 class ExchangeCache:
     def __init__(self):
-        self._cache: Dict[str, Tuple[datetime, GitHubExchange]] = {}
+        self._data: Dict[str, Tuple[datetime, GitHubExchange]] = {}
 
     def get(self, key: str, max_age: timedelta) -> Union[GitHubExchange, None]:
         self._purge(max_age)
-        if v := self._cache.get(key):
+        if v := self._data.get(key):
             return v[1]
 
     def set(self, key: str, value: GitHubExchange) -> None:
-        self._cache[key] = (datetime.now(), value)
+        self._data[key] = (datetime.now(), value)
 
     def _purge(self, max_age: timedelta) -> None:
         """
         Remove old items from the exchange cache
         """
         min_timestamp = datetime.now() - max_age
-        to_remove = [k for k, (ts, _) in self._cache.items() if ts < min_timestamp]
+        to_remove = [k for k, (ts, _) in self._data.items() if ts < min_timestamp]
         for k in to_remove:
-            del self._cache[k]
+            del self._data[k]
+
+    def __len__(self) -> int:
+        return len(self._data)
+
+    def clear(self) -> None:
+        self._data.clear()
 
 
 # exchange cache is a singleton so instantiating a new GitHubAuthProvider reuse the same cache
 EXCHANGE_CACHE = ExchangeCache()
+
+
+class StateProvider:
+    """
+    This is a simple state provider for the GitHub OAuth flow which uses a JWT to create an unguessable "state" string.
+
+    Requires `PyJWT` to be installed.
+    """
+
+    def __init__(self, secret: SecretStr, max_age: timedelta = timedelta(minutes=5)):
+        self._secret = secret
+        self._max_age = max_age
+
+    async def new_state(self) -> str:
+        import jwt
+
+        data = {'exp': datetime.now(tz=timezone.utc) + self._max_age}
+        return jwt.encode(data, self._secret.get_secret_value(), algorithm='HS256')
+
+    async def check_state(self, state: str) -> bool:
+        import jwt
+
+        try:
+            jwt.decode(state, self._secret.get_secret_value(), algorithms=['HS256'])
+        except (jwt.DecodeError, jwt.ExpiredSignatureError):
+            return False
+        else:
+            return True

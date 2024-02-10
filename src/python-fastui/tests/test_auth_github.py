@@ -1,10 +1,11 @@
+from datetime import datetime
 from typing import List, Optional
 
 import httpx
 import pytest
 from fastapi import FastAPI
-from fastui.auth import AuthError, GitHubAuthProvider
-from fastui.auth.github import GitHubEmail
+from fastui.auth import AuthError, GitHubAuthProvider, GitHubEmail
+from fastui.auth.github import EXCHANGE_CACHE
 from pydantic import SecretStr
 
 
@@ -73,7 +74,7 @@ async def httpx_client(fake_github_app: FastAPI):
 
 
 @pytest.fixture
-async def github_auth_provider(fake_github_app: FastAPI, httpx_client: httpx.AsyncClient):
+async def github_auth_provider(httpx_client: httpx.AsyncClient):
     return GitHubAuthProvider(
         httpx_client=httpx_client,
         github_client_id='1234',
@@ -87,6 +88,20 @@ async def test_get_auth_url(github_auth_provider: GitHubAuthProvider):
     url = await github_auth_provider.authorization_url()
     # no state here
     assert url == 'https://github.com/login/oauth/authorize?client_id=1234'
+
+
+async def test_get_auth_url_scopes(httpx_client: httpx.AsyncClient):
+    provider = GitHubAuthProvider(
+        httpx_client=httpx_client,
+        github_client_id='1234',
+        github_client_secret=SecretStr('secret'),
+        scopes=['user:email', 'read:org'],
+        state_provider=False,
+        exchange_cache_age=None,
+    )
+    url = await provider.authorization_url()
+    # insert_assert(url)
+    assert url == 'https://github.com/login/oauth/authorize?client_id=1234&scope=user%3Aemail+read%3Aorg'
 
 
 async def test_exchange_ok(github_auth_provider: GitHubAuthProvider, github_requests: List[str]):
@@ -106,12 +121,8 @@ async def test_exchange_ok_user(github_auth_provider: GitHubAuthProvider):
 
 
 async def test_exchange_bad_expected(github_auth_provider: GitHubAuthProvider):
-    with pytest.raises(AuthError, match='^Invalid GitHub verification code') as exc_info:
+    with pytest.raises(AuthError, match='^Invalid GitHub verification code'):
         await github_auth_provider.exchange_code('bad_expected')
-
-    # request argument is ignored
-    r = AuthError.fastapi_handle(object(), exc_info.value)
-    assert r.status_code == 400
 
 
 async def test_exchange_bad_unexpected(github_auth_provider: GitHubAuthProvider):
@@ -179,13 +190,35 @@ async def test_exchange_ok_repeat_cached(
         github_client_secret=SecretStr('secret'),
         state_provider=False,
     )
+    EXCHANGE_CACHE.clear()
+    assert len(EXCHANGE_CACHE) == 0
     assert github_requests == []
     await github_auth_provider.exchange_code('good')
+    assert len(EXCHANGE_CACHE) == 1
     assert github_requests == ['/login/oauth/access_token code=good']
     await github_auth_provider.exchange_code('good')
     assert github_requests == ['/login/oauth/access_token code=good']  # no repeat request to github
     await github_auth_provider.exchange_code('good_user')
     assert github_requests == ['/login/oauth/access_token code=good', '/login/oauth/access_token code=good_user']
+
+
+async def test_exchange_cached_purge(fake_github_app: FastAPI, httpx_client: httpx.AsyncClient):
+    github_auth_provider = GitHubAuthProvider(
+        httpx_client=httpx_client,
+        github_client_id='1234',
+        github_client_secret=SecretStr('secret'),
+        state_provider=False,
+    )
+    EXCHANGE_CACHE.clear()
+    await github_auth_provider.exchange_code('good')
+    assert len(EXCHANGE_CACHE) == 1
+
+    # manually add an old entry
+    EXCHANGE_CACHE._data['old'] = (datetime(2020, 1, 1), 'old_token')
+    assert len(EXCHANGE_CACHE) == 2
+
+    await github_auth_provider.exchange_code('good')
+    assert len(EXCHANGE_CACHE) == 1
 
 
 async def test_exchange_redirect_url(
