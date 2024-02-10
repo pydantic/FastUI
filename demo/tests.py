@@ -32,7 +32,8 @@ def test_api_root(client: TestClient):
         {
             'title': 'FastUI Demo',
             'titleEvent': {'url': '/', 'type': 'go-to'},
-            'links': IsList(length=4),
+            'startLinks': IsList(length=4),
+            'endLinks': [],
             'type': 'Navbar',
         },
         {
@@ -60,7 +61,8 @@ def get_menu_links():
         r = client.get('/api/')
         assert r.status_code == 200
         data = r.json()
-        for link in data[1]['links']:
+        debug(data[1])
+        for link in data[1]['startLinks']:
             url = link['onClick']['url']
             yield pytest.param(f'/api{url}', id=url)
 
