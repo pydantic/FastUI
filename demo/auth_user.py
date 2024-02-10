@@ -17,7 +17,7 @@ class User:
 
     def encode_token(self) -> str:
         payload = asdict(self)
-        payload['exp'] = datetime.now() + timedelta(minutes=1)
+        payload['exp'] = datetime.now() + timedelta(hours=1)
         return jwt.encode(payload, JWT_SECRET, algorithm='HS256', json_encoder=CustomJsonEncoder)
 
     @classmethod
@@ -37,8 +37,8 @@ class User:
 
         try:
             payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
-        except jwt.ExpiredSignatureError as e:
-            raise AuthRedirect('/auth/login/password', 'Token expired') from e
+        except jwt.ExpiredSignatureError:
+            return None
         except jwt.DecodeError:
             raise HTTPException(status_code=401, detail='Invalid token')
         else:
