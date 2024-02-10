@@ -23,6 +23,8 @@ router = APIRouter()
 GITHUB_CLIENT_ID = os.getenv('GITHUB_CLIENT_ID', '0d0315f9c2e055d032e2')
 # this will give an error when making requests to GitHub, but at least the app will run
 GITHUB_CLIENT_SECRET = SecretStr(os.getenv('GITHUB_CLIENT_SECRET', 'dummy-secret'))
+# use 'http://localhost:3000/auth/login/github/redirect' in development
+GITHUB_REDIRECT = os.getenv('GITHUB_REDIRECT')
 
 
 async def get_github_auth(request: Request) -> GitHubAuthProvider:
@@ -31,6 +33,7 @@ async def get_github_auth(request: Request) -> GitHubAuthProvider:
         httpx_client=client,
         github_client_id=GITHUB_CLIENT_ID,
         github_client_secret=GITHUB_CLIENT_SECRET,
+        redirect_uri=GITHUB_REDIRECT,
         scopes=['user:email'],
     )
 

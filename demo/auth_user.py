@@ -17,7 +17,7 @@ class User:
 
     def encode_token(self) -> str:
         payload = asdict(self)
-        payload['exp'] = datetime.now() + timedelta(hours=1)
+        payload['exp'] = datetime.now() + timedelta(minutes=1)
         return jwt.encode(payload, JWT_SECRET, algorithm='HS256', json_encoder=CustomJsonEncoder)
 
     @classmethod
