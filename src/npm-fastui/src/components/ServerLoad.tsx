@@ -52,32 +52,31 @@ export const ServerLoadFetch: FC<{ path: string; devReload?: number }> = ({ path
 
   useEffect(() => {
     setTransitioning(true)
-    let componentUnloaded = false
-    request({ url, expectedStatus: [200, 404] }).then(([status, data]) => {
-      if (componentUnloaded) {
-        setTransitioning(false)
-        return
-      }
-      if (status === 200) {
-        setComponentProps(data as FastProps[])
-        // if there's a fragment, scroll to that ID once the page is loaded
-        const fragment = getFragment(path)
-        if (fragment) {
-          setTimeout(() => {
-            const element = document.getElementById(fragment)
-            if (element) {
-              element.scrollIntoView()
-            }
-          }, 50)
+    let componentLoaded = true
+    request({ url, expectedStatus: [200, 345, 404] }).then(([status, data]) => {
+      if (componentLoaded) {
+        // 345 is treat the same as 200 - the server is expected to return valid FastUI components
+        if (status === 200 || status === 345) {
+          setComponentProps(data as FastProps[])
+          // if there's a fragment, scroll to that ID once the page is loaded
+          const fragment = getFragment(path)
+          if (fragment) {
+            setTimeout(() => {
+              const element = document.getElementById(fragment)
+              if (element) {
+                element.scrollIntoView()
+              }
+            }, 50)
+          }
+        } else {
+          setNotFoundUrl(url)
         }
-      } else {
-        setNotFoundUrl(url)
       }
       setTransitioning(false)
     })
 
     return () => {
-      componentUnloaded = true
+      componentLoaded = false
     }
   }, [url, path, request, devReload])
 

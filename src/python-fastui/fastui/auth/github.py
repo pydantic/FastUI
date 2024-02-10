@@ -6,10 +6,13 @@ from urllib.parse import urlencode
 
 from pydantic import BaseModel, SecretStr, TypeAdapter, field_validator
 
+from .shared import AuthError, StateProvider
+
 if TYPE_CHECKING:
     import httpx
-    from fastapi import Request
-    from fastapi.responses import JSONResponse
+
+
+__all__ = 'GitHubAuthProvider', 'GitHubExchange', 'GithubUser', 'GitHubEmail'
 
 
 @dataclass
@@ -240,45 +243,3 @@ class ExchangeCache:
 
 # exchange cache is a singleton so instantiating a new GitHubAuthProvider reuse the same cache
 EXCHANGE_CACHE = ExchangeCache()
-
-
-class AuthError(RuntimeError):
-    # TODO if we add other providers, this should be shared
-
-    def __init__(self, message: str, *, code: str):
-        super().__init__(message)
-        self.code = code
-
-    @staticmethod
-    def fastapi_handle(_request: 'Request', e: 'AuthError') -> 'JSONResponse':
-        from fastapi.responses import JSONResponse
-
-        return JSONResponse({'detail': str(e)}, status_code=400)
-
-
-class StateProvider:
-    """
-    This is a simple state provider for the GitHub OAuth flow which uses a JWT to create an unguessable state.
-    """
-
-    # TODO if we add other providers, this could be shared
-
-    def __init__(self, secret: SecretStr, max_age: timedelta = timedelta(minutes=5)):
-        self._secret = secret
-        self._max_age = max_age
-
-    async def new_state(self) -> str:
-        import jwt
-
-        data = {'created_at': datetime.now().isoformat()}
-        return jwt.encode(data, self._secret.get_secret_value(), algorithm='HS256')
-
-    async def check_state(self, state: str) -> bool:
-        import jwt
-
-        try:
-            d = jwt.decode(state, self._secret.get_secret_value(), algorithms=['HS256'])
-        except jwt.DecodeError:
-            return False
-        else:
-            return datetime.fromisoformat(d['created_at']) > datetime.now() - self._max_age
