@@ -178,7 +178,8 @@ class LinkList(_p.BaseModel, extra='forbid'):
 class Navbar(_p.BaseModel, extra='forbid'):
     title: _t.Union[str, None] = None
     title_event: _t.Union[events.AnyEvent, None] = _p.Field(default=None, serialization_alias='titleEvent')
-    links: _t.List[Link] = _p.Field(default=[])
+    start_links: _t.List[Link] = _p.Field(default=[], serialization_alias='startLinks')
+    end_links: _t.List[Link] = _p.Field(default=[], serialization_alias='endLinks')
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['Navbar'] = 'Navbar'
 
@@ -188,7 +189,7 @@ class Navbar(_p.BaseModel, extra='forbid'):
     ) -> _t.Any:
         # until https://github.com/pydantic/pydantic/issues/8413 is fixed
         json_schema = handler(core_schema)
-        json_schema.setdefault('required', []).append('links')
+        json_schema.setdefault('required', []).extend(['startLinks', 'endLinks'])
         return json_schema
 
 
