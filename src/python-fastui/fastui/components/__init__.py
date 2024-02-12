@@ -28,7 +28,7 @@ from .forms import (
 from .tables import Pagination, Table
 
 __all__ = (
-    # first we include everything from `AnyComponent`
+    # first we include all components from this file
     'Text',
     'Paragraph',
     'PageTitle',
@@ -48,7 +48,9 @@ __all__ = (
     'Iframe',
     'FireEvent',
     'Error',
+    'Spinner',
     'Custom',
+    # then we include components from other files
     'Table',
     'Pagination',
     'Display',
@@ -291,6 +293,12 @@ class Error(_p.BaseModel, extra='forbid'):
         return json_schema
 
 
+class Spinner(_p.BaseModel, extra='forbid'):
+    text: _t.Union[str, None] = None
+    class_name: _class_name.ClassNameField = None
+    type: _t.Literal['Spinner'] = 'Spinner'
+
+
 class Custom(_p.BaseModel, extra='forbid'):
     data: _types.JsonData
     sub_type: str = _p.Field(serialization_alias='subType')
@@ -322,6 +330,7 @@ AnyComponent = _te.Annotated[
         Video,
         FireEvent,
         Error,
+        Spinner,
         Custom,
         Table,
         Pagination,

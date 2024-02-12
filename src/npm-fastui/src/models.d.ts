@@ -26,6 +26,7 @@ export type FastProps =
   | Video
   | FireEvent
   | Error
+  | Spinner
   | Custom
   | Table
   | Pagination
@@ -255,6 +256,11 @@ export interface Error {
   className?: ClassName
   type: 'Error'
   children?: ReactNode
+}
+export interface Spinner {
+  text?: string
+  className?: ClassName
+  type: 'Spinner'
 }
 export interface Custom {
   data: JsonData

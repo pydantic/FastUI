@@ -150,5 +150,13 @@ export const classNameGenerator: ClassNameGenerator = ({
       } else {
         return 'error-alert alert alert-danger m-3'
       }
+    case 'Spinner':
+      if (subElement === 'text') {
+        return 'text-center mb-2'
+      } else if (subElement === 'animation') {
+        return 'container d-flex justify-content-center'
+      } else {
+        return 'my-4'
+      }
   }
 }

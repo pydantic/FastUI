@@ -194,6 +194,19 @@ print(m.dimensions)
         ),
         c.Div(
             components=[
+                c.Heading(text='Spinner', level=2),
+                c.Paragraph(
+                    text=(
+                        'A component displayed while waiting for content to load, '
+                        'this is also used automatically while loading server content.'
+                    )
+                ),
+                c.Spinner(text='Content incoming...'),
+            ],
+            class_name='border-top mt-3 pt-1',
+        ),
+        c.Div(
+            components=[
                 c.Heading(text='Video', level=2),
                 c.Paragraph(text='A video component.'),
                 c.Video(
