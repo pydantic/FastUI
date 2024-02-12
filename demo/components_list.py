@@ -159,8 +159,8 @@ print(m.dimensions)
                         c.Paragraph(text='Are you sure you want to do whatever?'),
                         c.Form(
                             form_fields=[],
-                            show_submit_spinner=True,
                             submit_url='/api/components/modal-prompt',
+                            loading=[c.Spinner(text='Okay, good luck...')],
                             footer=[],
                             submit_trigger=PageEvent(name='modal-form-submit'),
                         ),

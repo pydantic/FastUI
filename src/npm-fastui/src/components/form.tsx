@@ -7,7 +7,7 @@ import { useRequest, RequestArgs } from '../tools'
 import { LocationContext } from '../hooks/locationContext'
 import { usePageEventListen } from '../events'
 
-import { AnyCompList, SpinnerComp } from './index'
+import { AnyCompList } from './index'
 
 import { ButtonComp } from './button'
 import { FormFieldProps } from './FormField'
@@ -23,7 +23,7 @@ export const FormComp: FC<Form | ModelForm> = (props) => {
     displayMode,
     submitOnChange,
     submitTrigger,
-    showSubmitSpinner,
+    loading: loadingComponents,
   } = props
 
   // mostly equivalent to `<input disabled`
@@ -131,7 +131,7 @@ export const FormComp: FC<Form | ModelForm> = (props) => {
     return (
       <div className={containerClassName}>
         <form ref={formRef} className={formClassName} onSubmit={onSubmit}>
-          {locked && showSubmitSpinner && <SpinnerComp type="Spinner" />}
+          {locked && loadingComponents && <AnyCompList propsList={loadingComponents} />}
           <AnyCompList propsList={fieldProps} />
           {error ? <div>Error: {error}</div> : null}
           <Footer footer={footer} />

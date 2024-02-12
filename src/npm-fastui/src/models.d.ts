@@ -323,6 +323,7 @@ export interface Form {
   showSubmitSpinner?: boolean
   submitOnChange?: boolean
   submitTrigger?: PageEvent
+  loading?: FastProps[]
   footer?: FastProps[]
   className?: ClassName
   formFields: (
@@ -441,6 +442,7 @@ export interface ModelForm {
   showSubmitSpinner?: boolean
   submitOnChange?: boolean
   submitTrigger?: PageEvent
+  loading?: FastProps[]
   footer?: FastProps[]
   className?: ClassName
   type: 'ModelForm'
