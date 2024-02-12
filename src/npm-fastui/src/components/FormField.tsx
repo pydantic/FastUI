@@ -310,13 +310,13 @@ interface FormFieldRadioProps extends FormFieldRadio {
 }
 
 export const FormFieldRadioComp: FC<FormFieldRadioProps> = (props) => {
-  const { name, required, locked, options, initial } = props;
-  const className = useClassName(props);
-  const inputClassName = useClassName(props, { el: 'radio-input' });
-  const labelClassName = useClassName(props, { el: 'radio-label' });
+  const { name, required, locked, options, initial } = props
+  const className = useClassName(props)
+  const inputClassName = useClassName(props, { el: 'radio-input' })
+  const labelClassName = useClassName(props, { el: 'radio-label' })
 
   const renderRadioInput = (option: SelectOption, i: number, j: number | null = null) => {
-    const index = j !== null ? `${i}-${j}` : `${i}`;
+    const index = j !== null ? `${i}-${j}` : `${i}`
     return (
       <div key={index}>
         <input
@@ -330,29 +330,28 @@ export const FormFieldRadioComp: FC<FormFieldRadioProps> = (props) => {
           disabled={locked}
           aria-describedby={descId(props)}
         />
-        <label htmlFor={`${inputId(props)}-${index}`} className={labelClassName}>{option.label}</label>
+        <label htmlFor={`${inputId(props)}-${index}`} className={labelClassName}>
+          {option.label}
+        </label>
       </div>
-    );
-  };
-
+    )
+  }
 
   return (
     <div className={className}>
-      < Label {...props}/>
+      <Label {...props} />
       {options.map((option, i) => {
         if ('options' in option && option.options) {
-          return option.options.map((subOption, j) =>
-            renderRadioInput(subOption, i, j)
-          );
+          return option.options.map((subOption, j) => renderRadioInput(subOption, i, j))
         } else {
-          option = option as SelectOption;
-          return renderRadioInput(option, i, null);
+          option = option as SelectOption
+          return renderRadioInput(option, i, null)
         }
       })}
       <ErrorDescription {...props} />
     </div>
-  );
-};
+  )
+}
 const Label: FC<FormFieldProps> = (props) => {
   let { title } = props
   if (!Array.isArray(title)) {
