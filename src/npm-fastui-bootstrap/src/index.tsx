@@ -99,6 +99,10 @@ export const classNameGenerator: ClassNameGenerator = ({
           return 'invalid-feedback'
         case 'description':
           return 'form-text'
+        case 'radio-input':
+          return 'form-check-input'
+        case 'radio-label':
+          return 'form-check-label'
         default:
           return {
             'mb-3': true,
