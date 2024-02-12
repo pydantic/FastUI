@@ -320,7 +320,6 @@ export interface Form {
   }
   method?: 'POST' | 'GOTO' | 'GET'
   displayMode?: 'default' | 'page' | 'inline'
-  showSubmitSpinner?: boolean
   submitOnChange?: boolean
   submitTrigger?: PageEvent
   loading?: FastProps[]
@@ -439,7 +438,6 @@ export interface ModelForm {
   }
   method?: 'POST' | 'GOTO' | 'GET'
   displayMode?: 'default' | 'page' | 'inline'
-  showSubmitSpinner?: boolean
   submitOnChange?: boolean
   submitTrigger?: PageEvent
   loading?: FastProps[]

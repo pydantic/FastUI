@@ -86,7 +86,6 @@ class BaseForm(pydantic.BaseModel, ABC, defer_build=True, extra='forbid'):
     display_mode: _t.Union[_t.Literal['default', 'page', 'inline'], None] = pydantic.Field(
         default=None, serialization_alias='displayMode'
     )
-    show_submit_spinner: bool = pydantic.Field(default=False, serialization_alias='showSubmitSpinner')
     submit_on_change: _t.Union[bool, None] = pydantic.Field(default=None, serialization_alias='submitOnChange')
     submit_trigger: _t.Union[events.PageEvent, None] = pydantic.Field(default=None, serialization_alias='submitTrigger')
     loading: '_t.Union[_t.List[AnyComponent], None]' = None
