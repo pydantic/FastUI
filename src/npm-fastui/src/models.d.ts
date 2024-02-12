@@ -319,9 +319,10 @@ export interface Form {
     [k: string]: JsonData
   }
   method?: 'POST' | 'GOTO' | 'GET'
-  displayMode?: 'default' | 'inline'
+  displayMode?: 'default' | 'page' | 'inline'
   submitOnChange?: boolean
   submitTrigger?: PageEvent
+  loading?: FastProps[]
   footer?: FastProps[]
   className?: ClassName
   formFields: (
@@ -436,9 +437,10 @@ export interface ModelForm {
     [k: string]: JsonData
   }
   method?: 'POST' | 'GOTO' | 'GET'
-  displayMode?: 'default' | 'inline'
+  displayMode?: 'default' | 'page' | 'inline'
   submitOnChange?: boolean
   submitTrigger?: PageEvent
+  loading?: FastProps[]
   footer?: FastProps[]
   className?: ClassName
   type: 'ModelForm'

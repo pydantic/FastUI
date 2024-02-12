@@ -14,7 +14,17 @@ import { FormFieldProps } from './FormField'
 
 export const FormComp: FC<Form | ModelForm> = (props) => {
   const formRef = useRef<HTMLFormElement>(null)
-  const { formFields, initial, submitUrl, method, footer, displayMode, submitOnChange, submitTrigger } = props
+  const {
+    formFields,
+    initial,
+    submitUrl,
+    method,
+    footer,
+    displayMode,
+    submitOnChange,
+    submitTrigger,
+    loading: loadingComponents,
+  } = props
 
   // mostly equivalent to `<input disabled`
   const [locked, setLocked] = useState(false)
@@ -84,20 +94,14 @@ export const FormComp: FC<Form | ModelForm> = (props) => {
   }
 
   const onChange = useCallback(() => {
-    if (submitOnChange && formRef.current) {
-      const formData = new FormData(formRef.current)
-      submit(formData)
-    }
-  }, [submitOnChange, submit])
+    submitOnChange && formRef.current && formRef.current.requestSubmit()
+  }, [submitOnChange])
 
   const { fireId } = usePageEventListen(submitTrigger)
 
   useEffect(() => {
-    if (fireId && formRef.current) {
-      const formData = new FormData(formRef.current)
-      submit(formData)
-    }
-  }, [fireId, submit])
+    fireId && formRef.current && formRef.current.requestSubmit()
+  }, [fireId])
 
   const fieldProps: FormFieldProps[] = formFields.map((formField) => {
     const f = {
@@ -127,6 +131,7 @@ export const FormComp: FC<Form | ModelForm> = (props) => {
     return (
       <div className={containerClassName}>
         <form ref={formRef} className={formClassName} onSubmit={onSubmit}>
+          {locked && loadingComponents && <AnyCompList propsList={loadingComponents} />}
           <AnyCompList propsList={fieldProps} />
           {error ? <div>Error: {error}</div> : null}
           <Footer footer={footer} />

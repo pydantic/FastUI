@@ -62,13 +62,15 @@ export const classNameGenerator: ClassNameGenerator = ({
           default:
             return 'row row-cols-lg-4 align-items-center justify-content-end'
         }
-      } else {
+      } else if (props.displayMode === 'page') {
         switch (subElement) {
           case 'form-container':
             return 'row justify-content-center'
           default:
             return 'col-md-4'
         }
+      } else {
+        break
       }
     case 'FormFieldInput':
     case 'FormFieldTextarea':
