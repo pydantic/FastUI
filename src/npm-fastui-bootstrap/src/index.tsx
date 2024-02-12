@@ -152,9 +152,9 @@ export const classNameGenerator: ClassNameGenerator = ({
       }
     case 'Spinner':
       if (subElement === 'text') {
-        return 'text-center mb-2'
+        return 'd-flex justify-content-center mb-2'
       } else if (subElement === 'animation') {
-        return 'container d-flex justify-content-center'
+        return 'd-flex justify-content-center'
       } else {
         return 'my-4'
       }

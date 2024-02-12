@@ -8,7 +8,7 @@ export const SpinnerComp: FC<Spinner> = (props) => {
   const { text } = props
 
   return (
-    <div className={useClassName(props, { dft: 'fastui-spinner' })}>
+    <div className={useClassName(props)}>
       <div className={useClassName(props, { el: 'text' })}>{text}</div>
       <div className={useClassName(props, { el: 'animation' })}>
         <div className="fastui-spinner-animation">loading...</div>
