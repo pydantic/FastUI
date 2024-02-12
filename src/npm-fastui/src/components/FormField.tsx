@@ -310,57 +310,49 @@ interface FormFieldRadioProps extends FormFieldRadio {
 }
 
 export const FormFieldRadioComp: FC<FormFieldRadioProps> = (props) => {
-  const { name, required, locked, options, initial } = props
-  const className = useClassName(props)
-  const inputClassName = useClassName(props, { el: 'radio-option' })
+  const { name, required, locked, options, initial } = props;
+  const className = useClassName(props);
+  const inputClassName = useClassName(props, { el: 'radio-input' });
+  const labelClassName = useClassName(props, { el: 'radio-label' });
+
+  const renderRadioInput = (option: SelectOption, i: number, j: number | null = null) => {
+    const index = j !== null ? `${i}-${j}` : `${i}`;
+    return (
+      <div key={index}>
+        <input
+          type="radio"
+          id={`${inputId(props)}-${index}`}
+          className={inputClassName}
+          name={name}
+          value={option.value}
+          defaultChecked={option.value === initial}
+          required={required}
+          disabled={locked}
+          aria-describedby={descId(props)}
+        />
+        <label htmlFor={`${inputId(props)}-${index}`} className={labelClassName}>{option.label}</label>
+      </div>
+    );
+  };
+
 
   return (
     <div className={className}>
-      <Label {...props} />
+      < Label {...props}/>
       {options.map((option, i) => {
-        if ('options' in option) {
-          // option is a SelectGroup
-          return option.options.map((subOption, j) => (
-            <div key={`${i}-${j}`}>
-              <input
-                type="radio"
-                id={`${inputId(props)}-${i}-${j}`}
-                className={inputClassName}
-                name={name}
-                value={subOption.value}
-                defaultChecked={subOption.value === initial}
-                required={required}
-                disabled={locked}
-                aria-describedby={descId(props)}
-              />
-              <label htmlFor={`${inputId(props)}-${i}-${j}`}>{subOption.label}</label>
-            </div>
-          ))
+        if ('options' in option && option.options) {
+          return option.options.map((subOption, j) =>
+            renderRadioInput(subOption, i, j)
+          );
         } else {
-          // option is a SelectOption
-          return (
-            <div key={i}>
-              <input
-                type="radio"
-                id={`${inputId(props)}-${i}`}
-                className={inputClassName}
-                name={name}
-                value={option.value}
-                defaultChecked={option.value === initial}
-                required={required}
-                disabled={locked}
-                aria-describedby={descId(props)}
-              />
-              <label htmlFor={`${inputId(props)}-${i}`}>{option.label}</label>
-            </div>
-          )
+          option = option as SelectOption;
+          return renderRadioInput(option, i, null);
         }
       })}
       <ErrorDescription {...props} />
     </div>
-  )
-}
-
+  );
+};
 const Label: FC<FormFieldProps> = (props) => {
   let { title } = props
   if (!Array.isArray(title)) {
