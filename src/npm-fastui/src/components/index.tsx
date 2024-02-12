@@ -39,6 +39,7 @@ import { IframeComp } from './Iframe'
 import { VideoComp } from './video'
 import { FireEventComp } from './FireEvent'
 import { ErrorComp } from './error'
+import { SpinnerComp } from './spinner'
 import { CustomComp } from './Custom'
 
 // TODO some better way to export components
@@ -73,6 +74,7 @@ export {
   VideoComp,
   FireEventComp,
   ErrorComp,
+  SpinnerComp,
   CustomComp,
   LinkRender,
 }
@@ -160,6 +162,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <FireEventComp {...props} />
       case 'Error':
         return <ErrorComp {...props} />
+      case 'Spinner':
+        return <SpinnerComp {...props} />
       case 'Custom':
         return <CustomComp {...props} />
       default:

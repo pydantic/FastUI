@@ -11,7 +11,6 @@ export default function App() {
       classNameGenerator={bootstrap.classNameGenerator}
       customRender={customRender}
       NotFound={NotFound}
-      Spinner={Spinner}
       Transition={Transition}
     />
   )
@@ -27,12 +26,6 @@ const NotFound = ({ url }: { url: string }) => (
     <p>
       No page found at <code>{url}</code>.
     </p>
-  </div>
-)
-
-const Spinner = () => (
-  <div className="container d-flex justify-content-center my-3" role="status">
-    <div className="spinner" />
   </div>
 )
 

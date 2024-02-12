@@ -4,13 +4,15 @@ import type { ServerLoad, PageEvent, FastProps } from '../models'
 
 import { ErrorContext } from '../hooks/error'
 import { useRequest, useSSE } from '../tools'
-import { DefaultSpinner, DefaultNotFound, DefaultTransition } from '../Defaults'
+import { DefaultNotFound, DefaultTransition } from '../Defaults'
 import { ConfigContext } from '../hooks/config'
 import { usePageEventListen } from '../events'
 import { EventContextProvider, useEventContext } from '../hooks/eventContext'
 import { LocationContext } from '../hooks/locationContext'
 
 import { AnyCompList } from './index'
+
+import { SpinnerComp } from './spinner'
 
 export const ServerLoadComp: FC<ServerLoad> = ({ path, components, loadTrigger, sse }) => {
   if (components) {
@@ -103,8 +105,7 @@ const Render: FC<{ propsList: FastProps[] | null; notFoundUrl?: string; transiti
   transitioning,
 }) => {
   const { error } = useContext(ErrorContext)
-  const { Spinner, NotFound, Transition } = useContext(ConfigContext)
-  const SpinnerComp = Spinner ?? DefaultSpinner
+  const { NotFound, Transition } = useContext(ConfigContext)
   const NotFoundComp = NotFound ?? DefaultNotFound
   const TransitionComp = Transition ?? DefaultTransition
 
@@ -114,7 +115,7 @@ const Render: FC<{ propsList: FastProps[] | null; notFoundUrl?: string; transiti
     if (error) {
       return <></>
     } else {
-      return <SpinnerComp />
+      return <SpinnerComp type="Spinner" />
     }
   } else {
     return (

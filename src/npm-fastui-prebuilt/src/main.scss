@@ -74,17 +74,17 @@ h6 {
 }
 
 // custom spinner from https://cssloaders.github.io/
-
-.spinner,
-.spinner:before,
-.spinner:after {
+.fastui-spinner-animation,
+.fastui-spinner-animation:before,
+.fastui-spinner-animation:after {
   border-radius: 50%;
   width: 2.5em;
   height: 2.5em;
   animation-fill-mode: both;
-  animation: dots 1.8s infinite ease-in-out;
+  animation: spinner-dots 1.8s infinite ease-in-out;
 }
-.spinner {
+.fastui-spinner-animation {
+  top: -2.5em;
   color: var(--bs-dark);
   font-size: 7px;
   position: relative;
@@ -105,8 +105,7 @@ h6 {
     left: 3.5em;
   }
 }
-
-@keyframes dots {
+@keyframes spinner-dots {
   0%,
   80%,
   100% {

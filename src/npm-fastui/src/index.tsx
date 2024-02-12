@@ -24,7 +24,6 @@ export interface FastUIProps {
   APIPathMode?: 'append' | 'query'
   // start of the path to remove from the URL before making a request to the API
   APIPathStrip?: string
-  Spinner?: FC
   NotFound?: FC<{ url: string }>
   Transition?: FC<{ children: ReactNode; transitioning: boolean }>
   classNameGenerator?: ClassNameGenerator
