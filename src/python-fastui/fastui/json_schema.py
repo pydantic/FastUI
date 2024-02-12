@@ -261,11 +261,12 @@ def special_string_field(
         elif enum := schema.get('enum'):
             enum_labels = schema.get('enum_labels', {})
             if schema.get('mode') == 'radio' and not multiple:
+            options = [SelectOption(value=v, label=enum_labels.get(v) or as_title(v)) for v in enum]
                 return FormFieldRadio(
                     name=name,
                     title=title,
                     required=required,
-                    options=[SelectOption(value=v, label=enum_labels.get(v) or as_title(v)) for v in enum],
+                    options=options,
                     initial=schema.get('default'),
                     description=schema.get('description'),
                 )
@@ -276,7 +277,7 @@ def special_string_field(
                     placeholder=schema.get('placeholder'),
                     required=required,
                     multiple=multiple,
-                    options=[SelectOption(value=v, label=enum_labels.get(v) or as_title(v)) for v in enum],
+                    options=options,
                     initial=schema.get('default'),
                     description=schema.get('description'),
                 )
