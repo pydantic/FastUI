@@ -210,7 +210,7 @@ def json_schema_array_to_fields(
     items_schema = schema.get('items')
     if items_schema:
         items_schema, required = deference_json_schema(items_schema, defs, required)
-        for field_name in 'search_url', 'placeholder':
+        for field_name in 'search_url', 'placeholder', 'description':
             if value := schema.get(field_name):
                 items_schema[field_name] = value  # type: ignore
         if field := special_string_field(items_schema, loc_to_name(loc), title, required, True):
