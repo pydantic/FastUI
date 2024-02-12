@@ -1,12 +1,12 @@
 from contextlib import asynccontextmanager
 from io import BytesIO
-from typing import List, Tuple, Union
+from typing import List, Literal, Tuple, Union
 
 import pytest
 from fastapi import HTTPException
 from fastui import components
 from fastui.forms import FormFile, Textarea, fastui_form
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from starlette.datastructures import FormData, Headers, UploadFile
 from typing_extensions import Annotated
 
@@ -468,4 +468,30 @@ def test_form_textarea_form_fields():
                 'type': 'FormFieldTextarea',
             }
         ],
+    }
+
+
+class FormSelectMultiple(BaseModel):
+    values: List[Literal['foo', 'bar']] = Field(title='Select Multiple', description='First Selector')
+
+
+def test_form_select_multiple():
+    m = components.ModelForm(model=FormSelectMultiple, submit_url='/foobar/')
+
+    assert m.model_dump(by_alias=True, exclude_none=True) == {
+        'formFields': [
+            {
+                'description': 'First Selector',
+                'locked': False,
+                'multiple': True,
+                'name': 'values',
+                'options': [{'label': 'Foo', 'value': 'foo'}, {'label': 'Bar', 'value': 'bar'}],
+                'required': True,
+                'title': ['Select Multiple'],
+                'type': 'FormFieldSelect',
+            }
+        ],
+        'method': 'POST',
+        'submitUrl': '/foobar/',
+        'type': 'ModelForm',
     }
