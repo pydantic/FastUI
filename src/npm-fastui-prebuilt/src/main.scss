@@ -1,5 +1,5 @@
 $primary: black;
-$secondary: #666;
+$secondary: white;
 $link-color: #0d6efd; // bootstrap primary
 
 @import 'bootstrap/scss/bootstrap';
@@ -120,4 +120,8 @@ h6 {
 .error-alert {
   position: relative;
   top: 60px;
+}
+
+.btn-secondary {
+  --bs-btn-border-color: #dee2e6;
 }

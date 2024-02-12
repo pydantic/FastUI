@@ -319,7 +319,8 @@ export interface Form {
     [k: string]: JsonData
   }
   method?: 'POST' | 'GOTO' | 'GET'
-  displayMode?: 'default' | 'inline'
+  displayMode?: 'default' | 'page' | 'inline'
+  showSubmitSpinner?: boolean
   submitOnChange?: boolean
   submitTrigger?: PageEvent
   footer?: FastProps[]
@@ -436,7 +437,8 @@ export interface ModelForm {
     [k: string]: JsonData
   }
   method?: 'POST' | 'GOTO' | 'GET'
-  displayMode?: 'default' | 'inline'
+  displayMode?: 'default' | 'page' | 'inline'
+  showSubmitSpinner?: boolean
   submitOnChange?: boolean
   submitTrigger?: PageEvent
   footer?: FastProps[]

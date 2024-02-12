@@ -128,6 +128,56 @@ print(m.dimensions)
         ),
         c.Div(
             components=[
+                c.Heading(text='Modal Form / Confirm prompt', level=2),
+                c.Markdown(text='The button below will open a modal with a form.'),
+                c.Button(text='Show Modal Form', on_click=PageEvent(name='modal-form')),
+                c.Modal(
+                    title='Modal Form',
+                    body=[
+                        c.Paragraph(text='Form inside a modal!'),
+                        c.Form(
+                            form_fields=[
+                                c.FormFieldInput(name='foobar', title='Foobar', required=True),
+                            ],
+                            submit_url='/api/components/modal-form',
+                            footer=[],
+                            submit_trigger=PageEvent(name='modal-form-submit'),
+                        ),
+                    ],
+                    footer=[
+                        c.Button(
+                            text='Cancel', named_style='secondary', on_click=PageEvent(name='modal-form', clear=True)
+                        ),
+                        c.Button(text='Submit', on_click=PageEvent(name='modal-form-submit')),
+                    ],
+                    open_trigger=PageEvent(name='modal-form'),
+                ),
+                c.Button(text='Show Modal Prompt', on_click=PageEvent(name='modal-prompt'), class_name='+ ms-2'),
+                c.Modal(
+                    title='Form Prompt',
+                    body=[
+                        c.Paragraph(text='Are you sure you want to do whatever?'),
+                        c.Form(
+                            form_fields=[],
+                            show_submit_spinner=True,
+                            submit_url='/api/components/modal-prompt',
+                            footer=[],
+                            submit_trigger=PageEvent(name='modal-form-submit'),
+                        ),
+                    ],
+                    footer=[
+                        c.Button(
+                            text='Cancel', named_style='secondary', on_click=PageEvent(name='modal-prompt', clear=True)
+                        ),
+                        c.Button(text='Submit', on_click=PageEvent(name='modal-form-submit')),
+                    ],
+                    open_trigger=PageEvent(name='modal-prompt'),
+                ),
+            ],
+            class_name='border-top mt-3 pt-1',
+        ),
+        c.Div(
+            components=[
                 c.Heading(text='Server Load', level=2),
                 c.Paragraph(text='Even simpler example of server load, replacing existing content.'),
                 c.Button(text='Load Content from Server', on_click=PageEvent(name='server-load')),
@@ -240,3 +290,15 @@ The statement spoken by the famous cow is provided by the backend."""
 async def modal_view() -> list[AnyComponent]:
     await asyncio.sleep(0.5)
     return [c.Paragraph(text='This is some dynamic content. Open devtools to see me being fetched from the server.')]
+
+
+@router.post('/modal-form', response_model=FastUI, response_model_exclude_none=True)
+async def modal_form_submit() -> list[AnyComponent]:
+    await asyncio.sleep(0.5)
+    return [c.FireEvent(event=PageEvent(name='modal-form', clear=True))]
+
+
+@router.post('/modal-prompt', response_model=FastUI, response_model_exclude_none=True)
+async def modal_prompt_submit() -> list[AnyComponent]:
+    await asyncio.sleep(0.5)
+    return [c.FireEvent(event=PageEvent(name='modal-prompt', clear=True))]

@@ -116,6 +116,9 @@ export function usePageEventListen(event?: PageEvent, initialContext: ContextTyp
   return {
     eventContext,
     fireId,
-    clear: useCallback(() => setEventContext(null), []),
+    clear: useCallback(() => {
+      setEventContext(null)
+      setFireId(null)
+    }, []),
   }
 }
