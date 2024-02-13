@@ -230,6 +230,8 @@ export interface Iframe {
   width?: string | number
   height?: string | number
   className?: ClassName
+  srcdoc?: string
+  sandbox?: string
   type: 'Iframe'
 }
 export interface Video {
