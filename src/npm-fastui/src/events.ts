@@ -31,6 +31,9 @@ export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
         }
         const detail: PageEventDetail = { clear: event.clear || false, context: event.context }
         document.dispatchEvent(new CustomEvent(pageEventType(event), { detail }))
+        if (event.nextEvent) {
+          fireEventImpl(event.nextEvent)
+        }
         break
       }
       case 'go-to':
@@ -61,6 +64,8 @@ export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
     }
   }
 
+  // fireEventImpl is recursive, but it doens't make sense for fireEvent to have fireEventImpl as a dep
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fireEvent = useCallback(fireEventImpl, [location])
 
   return { fireEvent }
@@ -97,7 +102,6 @@ export function usePageEventListen(event?: PageEvent, initialContext: ContextTyp
     }
 
     const onEvent = (e: Event) => {
-      console.log('event:', e)
       const event = e as CustomEvent<PageEventDetail>
       const { context, clear } = event.detail
       if (clear) {

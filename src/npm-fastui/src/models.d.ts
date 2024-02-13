@@ -136,6 +136,7 @@ export interface PageEvent {
   pushPath?: string
   context?: ContextType
   clear?: boolean
+  nextEvent?: PageEvent | GoToEvent | BackEvent | AuthEvent
   type: 'page'
 }
 export interface ContextType {
