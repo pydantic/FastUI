@@ -102,7 +102,6 @@ export function usePageEventListen(event?: PageEvent, initialContext: ContextTyp
     }
 
     const onEvent = (e: Event) => {
-      console.log('event:', e)
       const event = e as CustomEvent<PageEventDetail>
       const { context, clear } = event.detail
       if (clear) {
