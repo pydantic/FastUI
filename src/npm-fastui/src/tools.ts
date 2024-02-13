@@ -1,4 +1,5 @@
 import { useCallback, useContext, useEffect } from 'react'
+import { fetchEventSource } from '@microsoft/fetch-event-source'
 
 import { ErrorContext } from './hooks/error'
 
@@ -25,32 +26,58 @@ export function useRequest(): (args: RequestArgs) => Promise<[number, any]> {
   )
 }
 
-export function useSSE(url: string, onMessage: (data: any) => void): void {
+export type Method = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE'
+
+class SSERetryError extends Error {}
+class SSEStopError extends Error {}
+
+export function useSSE(url: string, onMessage: (data: any) => void, method?: Method, retry?: number): void {
   useEffect(() => {
-    const source = new EventSource(url)
-    source.onmessage = (e) => {
-      const data = JSON.parse(e.data)
-      onMessage(data)
+    let stop = false
+    const headers: Record<string, string> = {}
+    const authHeader = getAuthHeader()
+    if (authHeader) {
+      headers[authHeader.key] = authHeader.value
     }
-    source.onerror = (e) => {
-      // we don't raise an error her as this can happen when the server is restarted
-      console.debug('SSE error', e)
-    }
-    const cleanup = () => {
-      source.onerror = null
-      source.close()
-    }
-    window.addEventListener('beforeunload', cleanup)
+    fetchEventSource(url, {
+      method,
+      headers,
+      onmessage(e) {
+        if (stop) {
+          throw new SSEStopError()
+        }
+        const data = JSON.parse(e.data)
+        onMessage(data)
+      },
+      onclose() {
+        if (typeof retry === 'number') {
+          throw new SSERetryError()
+        } else {
+          throw new SSEStopError()
+        }
+      },
+      onerror(e) {
+        if (e instanceof SSERetryError) {
+          console.debug('SSE retrying')
+          return retry
+        } else {
+          throw e
+        }
+      },
+    }).catch((e) => {
+      if (!(e instanceof SSEStopError)) {
+        throw e
+      }
+    })
     return () => {
-      window.removeEventListener('beforeunload', cleanup)
-      cleanup()
+      stop = true
     }
-  }, [url, onMessage])
+  }, [url, onMessage, method, retry])
 }
 
 export interface RequestArgs {
   url: string
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
+  method?: Method
   // defaults to 200
   expectedStatus?: number[]
   query?: Record<string, string> | URLSearchParams
@@ -101,10 +128,9 @@ async function request({
     init.headers.set('Content-Type', contentType)
   }
 
-  const authToken = localStorage.getItem(AUTH_TOKEN_KEY)
-  if (authToken) {
-    // we use a custom auth-schema as well-known values like `Basic` and `Bearer` are not correct here
-    init.headers.set('Authorization', `Token ${authToken}`)
+  const authHeader = getAuthHeader()
+  if (authHeader) {
+    init.headers.set(authHeader.key, authHeader.value)
   }
 
   if (method) {
@@ -186,3 +212,11 @@ export const slugify = (s: string): string =>
     .replace(/--+/g, '-') // Replace multiple - with single -
     .replace(/^-+/, '') // Trim - from start of text
     .replace(/-+$/, '') // Trim - from end of text
+
+function getAuthHeader(): { key: string; value: string } | undefined {
+  const authToken = localStorage.getItem(AUTH_TOKEN_KEY)
+  if (authToken) {
+    // we use a custom auth-schema as well-known values like `Basic` and `Bearer` are not correct here
+    return { key: 'Authorization', value: `Token ${authToken}` }
+  }
+}

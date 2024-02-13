@@ -3,7 +3,7 @@ import { FC, useCallback, useContext, useEffect, useState } from 'react'
 import type { ServerLoad, PageEvent, FastProps } from '../models'
 
 import { ErrorContext } from '../hooks/error'
-import { useRequest, useSSE } from '../tools'
+import { useRequest, useSSE, Method } from '../tools'
 import { DefaultNotFound, DefaultTransition } from '../Defaults'
 import { ConfigContext } from '../hooks/config'
 import { usePageEventListen } from '../events'
@@ -14,28 +14,42 @@ import { AnyCompList } from './index'
 
 import { SpinnerComp } from './spinner'
 
-export const ServerLoadComp: FC<ServerLoad> = ({ path, components, loadTrigger, sse }) => {
+export const ServerLoadComp: FC<ServerLoad> = (props) => {
+  const { path, components, loadTrigger, sse, method, sseRetry } = props
   if (components) {
-    return <ServerLoadDefer path={path} components={components} loadTrigger={loadTrigger} sse={sse} />
+    return (
+      <ServerLoadDefer
+        path={path}
+        components={components}
+        loadTrigger={loadTrigger}
+        sse={sse}
+        method={method}
+        sseRetry={sseRetry}
+      />
+    )
   } else if (sse) {
-    return <ServerLoadSSE path={path} />
+    return <ServerLoadSSE path={path} method={method} sseRetry={sseRetry} />
   } else {
     return <ServerLoadFetch path={path} />
   }
 }
 
-const ServerLoadDefer: FC<{ path: string; components: FastProps[]; loadTrigger?: PageEvent; sse?: boolean }> = ({
-  components,
-  path,
-  loadTrigger,
-  sse,
-}) => {
+interface DeferProps {
+  path: string
+  components: FastProps[]
+  loadTrigger?: PageEvent
+  sse?: boolean
+  method?: Method
+  sseRetry?: number
+}
+
+const ServerLoadDefer: FC<DeferProps> = ({ components, path, loadTrigger, sse, method, sseRetry }) => {
   const { eventContext } = usePageEventListen(loadTrigger)
 
   if (eventContext) {
     return (
       <EventContextProvider context={eventContext}>
-        {sse ? <ServerLoadSSE path={path} /> : <ServerLoadFetch path={path} />}
+        {sse ? <ServerLoadSSE path={path} method={method} sseRetry={sseRetry} /> : <ServerLoadFetch path={path} />}
       </EventContextProvider>
     )
   } else {
@@ -89,12 +103,16 @@ export const ServerLoadFetch: FC<{ path: string; devReload?: number }> = ({ path
   return <Render propsList={componentProps} notFoundUrl={notFoundUrl} transitioning={transitioning} />
 }
 
-export const ServerLoadSSE: FC<{ path: string }> = ({ path }) => {
+export const ServerLoadSSE: FC<{ path: string; method?: Method; sseRetry?: number }> = ({
+  path,
+  method,
+  sseRetry,
+}) => {
   const [componentProps, setComponentProps] = useState<FastProps[] | null>(null)
 
   const url = useServerUrl(path)
   const onMessage = useCallback((data: any) => setComponentProps(data as FastProps[]), [])
-  useSSE(url, onMessage)
+  useSSE(url, onMessage, method, sseRetry)
 
   return <Render propsList={componentProps} transitioning={false} />
 }

@@ -203,6 +203,8 @@ export interface ServerLoad {
   loadTrigger?: PageEvent
   components?: FastProps[]
   sse?: boolean
+  sseRetry?: number
+  method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE'
   type: 'ServerLoad'
 }
 export interface Image {

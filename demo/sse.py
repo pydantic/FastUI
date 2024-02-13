@@ -13,18 +13,11 @@ router = APIRouter()
 async def canned_ai_response_generator() -> AsyncIterable[str]:
     prompt = '**User:** What is SSE? Please include a javascript code example.\n\n**AI:** '
     output = ''
-    msg = ''
     for time, text in chain([(0.5, prompt)], CANNED_RESPONSE):
         await asyncio.sleep(time)
         output += text
         m = FastUI(root=[c.Markdown(text=output)])
-        msg = f'data: {m.model_dump_json(by_alias=True, exclude_none=True)}\n\n'
-        yield msg
-
-    # avoid the browser reconnecting
-    while True:
-        yield msg
-        await asyncio.sleep(10)
+        yield f'data: {m.model_dump_json(by_alias=True, exclude_none=True)}\n\n'
 
 
 @router.get('/sse')
