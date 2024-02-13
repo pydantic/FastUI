@@ -7,6 +7,7 @@ that's just testing pydantic!
 from fastui import FastUI, components
 from pydantic_core import Url
 
+
 def test_div_text():
     div = components.Div(components=[components.Text(text='hello world')])
 
