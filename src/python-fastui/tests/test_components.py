@@ -5,7 +5,7 @@ NOTE: we do NOT want to exhaustively construct every component just for the same
 that's just testing pydantic!
 """
 from fastui import FastUI, components
-
+from pydantic_core import Url
 
 def test_div_text():
     div = components.Div(components=[components.Text(text='hello world')])
@@ -50,3 +50,13 @@ def test_root_model_single():
             'type': 'Text',
         }
     ]
+
+
+def test_iframe():
+    iframe = components.Iframe(src='https://www.example.com', srcdoc='<p>hello world</p>', sandbox='allow-scripts')
+    assert iframe.model_dump(by_alias=True, exclude_none=True) == {
+        'src': Url('https://www.example.com'),
+        'type': 'Iframe',
+        'srcdoc': '<p>hello world</p>',
+        'sandbox': 'allow-scripts',
+    }
