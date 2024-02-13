@@ -254,6 +254,8 @@ class Iframe(_p.BaseModel, extra='forbid'):
     width: _t.Union[str, int, None] = None
     height: _t.Union[str, int, None] = None
     class_name: _class_name.ClassNameField = None
+    srcdoc: _t.Union[str, None] = None
+    sandbox: _t.Union[str, None] = None
     type: _t.Literal['Iframe'] = 'Iframe'
 
 
