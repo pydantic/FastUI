@@ -257,6 +257,7 @@ def special_string_field(
                 placeholder=schema.get('placeholder'),
                 initial=schema.get('initial'),
                 description=schema.get('description'),
+                autocomplete=schema.get('autocomplete'),
             )
         elif enum := schema.get('enum'):
             enum_labels = schema.get('enum_labels', {})
@@ -269,6 +270,7 @@ def special_string_field(
                 options=[SelectOption(value=v, label=enum_labels.get(v) or as_title(v)) for v in enum],
                 initial=schema.get('default'),
                 description=schema.get('description'),
+                autocomplete=schema.get('autocomplete'),
             )
         elif search_url := schema.get('search_url'):
             return FormFieldSelectSearch(
@@ -280,6 +282,7 @@ def special_string_field(
                 multiple=multiple,
                 initial=schema.get('initial'),
                 description=schema.get('description'),
+                autocomplete=schema.get('autocomplete'),
             )
 
 

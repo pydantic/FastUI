@@ -363,6 +363,7 @@ export interface FormFieldTextarea {
   cols?: number
   initial?: string
   placeholder?: string
+  autocomplete?: string
   type: 'FormFieldTextarea'
 }
 export interface FormFieldBoolean {
@@ -405,6 +406,7 @@ export interface FormFieldSelect {
   initial?: string[] | string
   vanilla?: boolean
   placeholder?: string
+  autocomplete?: string
   type: 'FormFieldSelect'
 }
 export interface SelectOption {
@@ -429,6 +431,7 @@ export interface FormFieldSelectSearch {
   initial?: SelectOption
   debounce?: number
   placeholder?: string
+  autocomplete?: string
   type: 'FormFieldSelectSearch'
 }
 export interface ModelForm {
