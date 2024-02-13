@@ -51,7 +51,7 @@ interface FormFieldTextareaProps extends FormFieldTextarea {
 }
 
 export const FormFieldTextareaComp: FC<FormFieldTextareaProps> = (props) => {
-  const { name, placeholder, required, locked, rows, cols , autocomplete} = props
+  const { name, placeholder, required, locked, rows, cols, autocomplete } = props
   return (
     <div className={useClassName(props)}>
       <Label {...props} />
