@@ -89,7 +89,7 @@ def auth_login_content(kind: LoginKind) -> list[AnyComponent]:
                     )
                 ),
                 c.Paragraph(text='(Passwords are not saved and is email stored in the browser via a JWT only)'),
-                c.ModelForm(model=LoginForm, submit_url='/api/auth/login'),
+                c.ModelForm(model=LoginForm, submit_url='/api/auth/login', display_mode='page'),
             ]
         case 'github':
             return [

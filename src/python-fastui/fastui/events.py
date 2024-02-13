@@ -11,6 +11,7 @@ class PageEvent(BaseModel):
     push_path: Union[str, None] = Field(default=None, serialization_alias='pushPath')
     context: Union[ContextType, None] = None
     clear: Union[bool, None] = None
+    next_event: 'Union[AnyEvent, None]' = Field(default=None, serialization_alias='nextEvent')
     type: Literal['page'] = 'page'
 
 
