@@ -221,7 +221,7 @@ class ServerLoad(_p.BaseModel, extra='forbid'):
     load_trigger: _t.Union[events.PageEvent, None] = _p.Field(default=None, serialization_alias='loadTrigger')
     components: '_t.Union[_t.List[AnyComponent], None]' = None
     sse: _t.Union[bool, None] = None
-    sse_retry: _t.Union[int, None] = _p.Field(None, serialization_alias='sseRetry')
+    sse_retry: _t.Union[int, None] = _p.Field(default=None, serialization_alias='sseRetry')
     method: _t.Union[_t.Literal['GET', 'POST', 'PATCH', 'PUT', 'DELETE'], None] = None
     type: _t.Literal['ServerLoad'] = 'ServerLoad'
 
