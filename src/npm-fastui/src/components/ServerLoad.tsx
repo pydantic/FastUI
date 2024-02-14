@@ -49,7 +49,11 @@ const ServerLoadDefer: FC<DeferProps> = ({ components, path, loadTrigger, sse, m
   if (eventContext) {
     return (
       <EventContextProvider context={eventContext}>
-        {sse ? <ServerLoadSSE path={path} method={method} sseRetry={sseRetry} /> : <ServerLoadFetch path={path} />}
+        {sse ? (
+          <ServerLoadSSE path={path} method={method} sseRetry={sseRetry} />
+        ) : (
+          <ServerLoadFetch path={path} method={method} />
+        )}
       </EventContextProvider>
     )
   } else {
@@ -57,7 +61,13 @@ const ServerLoadDefer: FC<DeferProps> = ({ components, path, loadTrigger, sse, m
   }
 }
 
-export const ServerLoadFetch: FC<{ path: string; devReload?: number }> = ({ path, devReload }) => {
+interface FetchProps {
+  path: string
+  devReload?: number
+  method?: Method
+}
+
+export const ServerLoadFetch: FC<FetchProps> = ({ path, devReload, method }) => {
   const [transitioning, setTransitioning] = useState<boolean>(false)
   const [componentProps, setComponentProps] = useState<FastProps[] | null>(null)
   const [notFoundUrl, setNotFoundUrl] = useState<string | undefined>(undefined)
@@ -69,7 +79,7 @@ export const ServerLoadFetch: FC<{ path: string; devReload?: number }> = ({ path
   useEffect(() => {
     setTransitioning(true)
     let componentLoaded = true
-    request({ url, expectedStatus: [200, 345, 404] }).then(([status, data]) => {
+    request({ url, method, expectedStatus: [200, 345, 404] }).then(([status, data]) => {
       if (componentLoaded) {
         // 345 is treat the same as 200 - the server is expected to return valid FastUI components
         if (status === 200 || status === 345) {
@@ -94,7 +104,7 @@ export const ServerLoadFetch: FC<{ path: string; devReload?: number }> = ({ path
     return () => {
       componentLoaded = false
     }
-  }, [url, path, request, devReload])
+  }, [url, path, request, devReload, method])
 
   useEffect(() => {
     setNotFoundUrl(undefined)
@@ -103,11 +113,13 @@ export const ServerLoadFetch: FC<{ path: string; devReload?: number }> = ({ path
   return <Render propsList={componentProps} notFoundUrl={notFoundUrl} transitioning={transitioning} />
 }
 
-export const ServerLoadSSE: FC<{ path: string; method?: Method; sseRetry?: number }> = ({
-  path,
-  method,
-  sseRetry,
-}) => {
+interface SSEProps {
+  path: string
+  method?: Method
+  sseRetry?: number
+}
+
+export const ServerLoadSSE: FC<SSEProps> = ({ path, method, sseRetry }) => {
   const [componentProps, setComponentProps] = useState<FastProps[] | null>(null)
 
   const url = useServerUrl(path)
