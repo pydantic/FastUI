@@ -40,6 +40,7 @@ class FormFieldTextarea(BaseFormField):
     cols: _t.Union[int, None] = None
     initial: _t.Union[str, None] = None
     placeholder: _t.Union[str, None] = None
+    autocomplete: _t.Union[str, None] = None
     type: _t.Literal['FormFieldTextarea'] = 'FormFieldTextarea'
 
 
@@ -61,6 +62,7 @@ class FormFieldSelect(BaseFormField):
     initial: _t.Union[_t.List[str], str, None] = None
     vanilla: _t.Union[bool, None] = None
     placeholder: _t.Union[str, None] = None
+    autocomplete: _t.Union[str, None] = None
     type: _t.Literal['FormFieldSelect'] = 'FormFieldSelect'
 
 

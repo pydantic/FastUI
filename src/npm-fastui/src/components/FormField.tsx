@@ -51,7 +51,7 @@ interface FormFieldTextareaProps extends FormFieldTextarea {
 }
 
 export const FormFieldTextareaComp: FC<FormFieldTextareaProps> = (props) => {
-  const { name, placeholder, required, locked, rows, cols } = props
+  const { name, placeholder, required, locked, rows, cols, autocomplete } = props
   return (
     <div className={useClassName(props)}>
       <Label {...props} />
@@ -66,6 +66,7 @@ export const FormFieldTextareaComp: FC<FormFieldTextareaProps> = (props) => {
         disabled={locked}
         placeholder={placeholder}
         aria-describedby={descId(props)}
+        autoComplete={autocomplete}
       />
       <ErrorDescription {...props} />
     </div>
@@ -141,7 +142,7 @@ export const FormFieldSelectComp: FC<FormFieldSelectProps> = (props) => {
 }
 
 export const FormFieldSelectVanillaComp: FC<FormFieldSelectProps> = (props) => {
-  const { name, required, locked, options, multiple, initial, placeholder, onChange } = props
+  const { name, required, locked, options, multiple, initial, placeholder, onChange, autocomplete } = props
 
   const className = useClassName(props)
   const classNameSelect = useClassName(props, { el: 'select' })
@@ -159,6 +160,7 @@ export const FormFieldSelectVanillaComp: FC<FormFieldSelectProps> = (props) => {
         aria-describedby={descId(props)}
         placeholder={placeholder}
         onChange={() => onChange && onChange()}
+        autoComplete={autocomplete}
       >
         {multiple ? null : <option></option>}
         {options.map((option, i) => (
