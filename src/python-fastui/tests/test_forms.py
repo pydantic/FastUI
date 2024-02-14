@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from enum import Enum
 from io import BytesIO
 from typing import List, Tuple, Union
 
@@ -6,7 +7,7 @@ import pytest
 from fastapi import HTTPException
 from fastui import components
 from fastui.forms import FormFile, Textarea, fastui_form
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from starlette.datastructures import FormData, Headers, UploadFile
 from typing_extensions import Annotated
 
@@ -466,6 +467,75 @@ def test_form_textarea_form_fields():
                 'required': True,
                 'locked': False,
                 'type': 'FormFieldTextarea',
+            }
+        ],
+    }
+
+
+class Choices(Enum):
+    foo = 'foo'
+    bar = 'bar'
+    baz = 'baz'
+
+
+class FormRadioSelection(BaseModel):
+    choice: Choices = Field(..., json_schema_extra={'mode': 'radio'})
+
+
+def test_form_radio_form_fields():
+    m = components.ModelForm(model=FormRadioSelection, submit_url='/foobar/')
+
+    assert m.model_dump(by_alias=True, exclude_none=True) == {
+        'submitUrl': '/foobar/',
+        'method': 'POST',
+        'type': 'ModelForm',
+        'formFields': [
+            {
+                'name': 'choice',
+                'title': ['Choices'],
+                'required': True,
+                'locked': False,
+                'type': 'FormFieldRadio',
+                'options': [
+                    {'label': 'Foo', 'value': 'foo'},
+                    {'label': 'Bar', 'value': 'bar'},
+                    {'label': 'Baz', 'value': 'baz'},
+                ],
+            }
+        ],
+    }
+
+
+@pytest.mark.parametrize('multiple', [True, False])
+def test_form_from_select(multiple: bool):
+    if multiple:
+
+        class FormSelect(BaseModel):
+            choices: List[Choices]
+    else:
+
+        class FormSelect(BaseModel):
+            choice: Choices
+
+    m = components.ModelForm(model=FormSelect, submit_url='/foobar/')
+
+    assert m.model_dump(by_alias=True, exclude_none=True) == {
+        'submitUrl': '/foobar/',
+        'method': 'POST',
+        'type': 'ModelForm',
+        'formFields': [
+            {
+                'name': 'choices' if multiple else 'choice',
+                'multiple': multiple,
+                'title': ['Choices'],
+                'required': True,
+                'locked': False,
+                'type': 'FormFieldSelect',
+                'options': [
+                    {'label': 'Foo', 'value': 'foo'},
+                    {'label': 'Bar', 'value': 'bar'},
+                    {'label': 'Baz', 'value': 'baz'},
+                ],
             }
         ],
     }

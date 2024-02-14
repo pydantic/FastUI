@@ -10,6 +10,7 @@ from .components.forms import (
     FormFieldBoolean,
     FormFieldFile,
     FormFieldInput,
+    FormFieldRadio,
     FormFieldSelect,
     FormFieldSelectSearch,
     FormFieldTextarea,
@@ -260,16 +261,29 @@ def special_string_field(
             )
         elif enum := schema.get('enum'):
             enum_labels = schema.get('enum_labels', {})
-            return FormFieldSelect(
-                name=name,
-                title=title,
-                placeholder=schema.get('placeholder'),
-                required=required,
-                multiple=multiple,
-                options=[SelectOption(value=v, label=enum_labels.get(v) or as_title(v)) for v in enum],
-                initial=schema.get('default'),
-                description=schema.get('description'),
-            )
+            options = [SelectOption(value=v, label=enum_labels.get(v) or as_title(v)) for v in enum]
+            if schema.get('mode') == 'radio' and multiple:
+                raise ValueError('Radio buttons are not supported for multiple choice fields')
+            elif schema.get('mode') == 'radio' and not multiple:
+                return FormFieldRadio(
+                    name=name,
+                    title=title,
+                    required=required,
+                    options=options,
+                    initial=schema.get('default'),
+                    description=schema.get('description'),
+                )
+            else:
+                return FormFieldSelect(
+                    name=name,
+                    title=title,
+                    placeholder=schema.get('placeholder'),
+                    required=required,
+                    multiple=multiple,
+                    options=options,
+                    initial=schema.get('default'),
+                    description=schema.get('description'),
+                )
         elif search_url := schema.get('search_url'):
             return FormFieldSelectSearch(
                 search_url=search_url,

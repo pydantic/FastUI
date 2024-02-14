@@ -21,6 +21,7 @@ import {
   FormFieldSelectComp,
   FormFieldSelectSearchComp,
   FormFieldFileComp,
+  FormFieldRadioComp,
 } from './FormField'
 import { ButtonComp } from './button'
 import { LinkComp, LinkRender } from './link'
@@ -138,6 +139,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <FormFieldSelectComp {...props} />
       case 'FormFieldSelectSearch':
         return <FormFieldSelectSearchComp {...props} />
+      case 'FormFieldRadio':
+        return <FormFieldRadioComp {...props} />
       case 'Modal':
         return <ModalComp {...props} />
       case 'Table':

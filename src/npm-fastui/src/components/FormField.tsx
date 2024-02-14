@@ -12,6 +12,7 @@ import type {
   SelectOption,
   SelectOptions,
   SelectGroup,
+  FormFieldRadio,
 } from '../models'
 
 import { useClassName } from '../hooks/className'
@@ -305,6 +306,53 @@ export const FormFieldSelectSearchComp: FC<FormFieldSelectSearchProps> = (props)
   )
 }
 
+interface FormFieldRadioProps extends FormFieldRadio {
+  onChange?: PrivateOnChange
+}
+
+export const FormFieldRadioComp: FC<FormFieldRadioProps> = (props) => {
+  const { name, required, locked, options, initial } = props
+  const className = useClassName(props)
+  const inputClassName = useClassName(props, { el: 'radio-input' })
+  const labelClassName = useClassName(props, { el: 'radio-label' })
+
+  const renderRadioInput = (option: SelectOption, i: number, j: number | null = null) => {
+    const index = j !== null ? `${i}-${j}` : `${i}`
+    return (
+      <div key={index}>
+        <input
+          type="radio"
+          id={`${inputId(props)}-${index}`}
+          className={inputClassName}
+          name={name}
+          value={option.value}
+          defaultChecked={option.value === initial}
+          required={required}
+          disabled={locked}
+          aria-describedby={descId(props)}
+        />
+        <label htmlFor={`${inputId(props)}-${index}`} className={labelClassName}>
+          {option.label}
+        </label>
+      </div>
+    )
+  }
+
+  return (
+    <div className={className}>
+      <Label {...props} />
+      {options.map((option, i) => {
+        if ('options' in option && option.options) {
+          return option.options.map((subOption, j) => renderRadioInput(subOption, i, j))
+        } else {
+          option = option as SelectOption
+          return renderRadioInput(option, i, null)
+        }
+      })}
+      <ErrorDescription {...props} />
+    </div>
+  )
+}
 const Label: FC<FormFieldProps> = (props) => {
   let { title } = props
   if (!Array.isArray(title)) {
@@ -328,6 +376,7 @@ export type FormFieldProps =
   | FormFieldFileProps
   | FormFieldSelectProps
   | FormFieldSelectSearchProps
+  | FormFieldRadio
 
 const inputId = (props: FormFieldProps) => `form-field-${props.name}`
 const descId = (props: FormFieldProps) => (props.description ? `${inputId(props)}-desc` : undefined)
