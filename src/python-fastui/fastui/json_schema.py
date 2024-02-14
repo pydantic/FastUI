@@ -282,7 +282,6 @@ def special_string_field(
                 multiple=multiple,
                 initial=schema.get('initial'),
                 description=schema.get('description'),
-                autocomplete=schema.get('autocomplete'),
             )
 
 

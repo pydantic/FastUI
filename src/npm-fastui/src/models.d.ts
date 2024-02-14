@@ -431,7 +431,6 @@ export interface FormFieldSelectSearch {
   initial?: SelectOption
   debounce?: number
   placeholder?: string
-  autocomplete?: string
   type: 'FormFieldSelectSearch'
 }
 export interface ModelForm {
