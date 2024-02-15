@@ -82,12 +82,7 @@ const PaginationLink: FC<Link> = ({ Display, ariaLabel, locked, active, page }) 
     )
   }
   const className = renderClassName({ 'page-link': true, disabled: locked && !active, active } as models.ClassName)
-  let onClick: models.GoToEvent
-  if (page === 1) {
-    onClick = { type: 'go-to', query: {} }
-  } else {
-    onClick = { type: 'go-to', query: { page } }
-  }
+  const onClick: models.GoToEvent = { type: 'go-to', query: { page } }
   return (
     <li className="page-item">
       <components.LinkRender onClick={onClick} className={className} locked={locked || active} ariaLabel={ariaLabel}>
