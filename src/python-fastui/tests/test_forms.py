@@ -1,6 +1,7 @@
+import enum
 from contextlib import asynccontextmanager
 from io import BytesIO
-from typing import List, Literal, Tuple, Union
+from typing import List, Tuple, Union
 
 import pytest
 from fastapi import HTTPException
@@ -471,8 +472,15 @@ def test_form_textarea_form_fields():
     }
 
 
+class SelectEnum(str, enum.Enum):
+    one = 'one'
+    two = 'two'
+
+
 class FormSelectMultiple(BaseModel):
-    values: List[Literal['foo', 'bar']] = Field(title='Select Multiple', description='First Selector')
+    select_single: SelectEnum = Field(title='Select Single', description='first field')
+    select_single_2: SelectEnum = Field(title='Select Single')  # unset description
+    select_multiple: List[SelectEnum] = Field(title='Select Multiple', description='third field')
 
 
 def test_form_select_multiple():
@@ -481,15 +489,34 @@ def test_form_select_multiple():
     assert m.model_dump(by_alias=True, exclude_none=True) == {
         'formFields': [
             {
-                'description': 'First Selector',
+                'description': 'first field',
+                'locked': False,
+                'multiple': False,
+                'name': 'select_single',
+                'options': [{'label': 'One', 'value': 'one'}, {'label': 'Two', 'value': 'two'}],
+                'required': True,
+                'title': ['Select Single'],
+                'type': 'FormFieldSelect',
+            },
+            {
+                'locked': False,
+                'multiple': False,
+                'name': 'select_single_2',
+                'options': [{'label': 'One', 'value': 'one'}, {'label': 'Two', 'value': 'two'}],
+                'required': True,
+                'title': ['Select Single'],
+                'type': 'FormFieldSelect',
+            },
+            {
+                'description': 'third field',
                 'locked': False,
                 'multiple': True,
-                'name': 'values',
-                'options': [{'label': 'Foo', 'value': 'foo'}, {'label': 'Bar', 'value': 'bar'}],
+                'name': 'select_multiple',
+                'options': [{'label': 'One', 'value': 'one'}, {'label': 'Two', 'value': 'two'}],
                 'required': True,
                 'title': ['Select Multiple'],
                 'type': 'FormFieldSelect',
-            }
+            },
         ],
         'method': 'POST',
         'submitUrl': '/foobar/',
