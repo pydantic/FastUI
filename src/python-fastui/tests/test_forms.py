@@ -479,11 +479,11 @@ class SelectEnum(str, enum.Enum):
 
 class FormSelectMultiple(BaseModel):
     select_single: SelectEnum = Field(title='Select Single', description='first field')
-    select_single_2: SelectEnum = Field(title='Select Single')  # unset description
+    select_single_2: SelectEnum = Field(title='Select Single')  # unset description to test leakage from prev. field
     select_multiple: List[SelectEnum] = Field(title='Select Multiple', description='third field')
 
 
-def test_form_select_multiple():
+def test_form_description_leakage():
     m = components.ModelForm(model=FormSelectMultiple, submit_url='/foobar/')
 
     assert m.model_dump(by_alias=True, exclude_none=True) == {
