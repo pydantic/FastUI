@@ -464,7 +464,7 @@ export interface ModelForm {
 export interface RechartsLineChart {
   title: string
   width?: number | string
-  height: number
+  height: number | string
   data: BaseModel[]
   className?: ClassName
   type: 'RechartsLineChart'
@@ -474,3 +474,4 @@ export interface RechartsLineChart {
   colors: string[]
   tooltip?: boolean
 }
+export interface BaseModel {}
