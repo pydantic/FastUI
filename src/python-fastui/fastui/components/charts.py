@@ -16,7 +16,7 @@ class BaseChart(pydantic.BaseModel, ABC, defer_build=True):
     title: str
     width: _t.Union[int, str] = '100%'
     height: _t.Union[int, str]
-    data: _t.List[DataPoint]
+    data: _t.List[DataPoint]  # type: ignore
     class_name: _class_name.ClassNameField = None
 
 
