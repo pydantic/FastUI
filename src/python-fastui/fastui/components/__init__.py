@@ -311,6 +311,8 @@ class Custom(_p.BaseModel, extra='forbid'):
     type: _t.Literal['Custom'] = 'Custom'
 
 
+from .charts import RechartsLineChart
+
 AnyComponent = _te.Annotated[
     _t.Union[
         Text,
@@ -343,6 +345,7 @@ AnyComponent = _te.Annotated[
         Form,
         FormField,
         ModelForm,
+        RechartsLineChart,
     ],
     _p.Field(discriminator='type'),
 ]
