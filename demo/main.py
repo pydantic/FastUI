@@ -37,6 +37,7 @@ The following components are demonstrated:
 * `Table` — See [cities table](/table/cities) and [users table](/table/users)
 * `Pagination` — See the bottom of the [cities table](/table/cities)
 * `ModelForm` — See [forms](/forms/login)
+* `Charts` — See [charts](/charts/recharts-line-chart)
 
 Authentication is supported via:
 * token based authentication — see [here](/auth/login/password) for an example of password authentication
