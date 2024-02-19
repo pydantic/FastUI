@@ -69,9 +69,9 @@ def charts_content_view(kind: str) -> list[AnyComponent]:
                     width='100%',
                     height=300,
                     data=data_list,
-                    xKey='name',
-                    yKeys=['pv', 'uv', 'amt'],
-                    yKeysNames=['Page Views', 'Unique Views', 'Amount'],
+                    x_key='name',
+                    y_keys=['pv', 'uv', 'amt'],
+                    y_keys_names=['Page Views', 'Unique Views', 'Amount'],
                     colors=['#8884d8', '#82ca9d', '#ffc658'],
                 ),
             ]
