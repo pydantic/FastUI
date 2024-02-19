@@ -3,8 +3,8 @@ import { FC, useCallback, useContext, useEffect, useState } from 'react'
 import type { ServerLoad, PageEvent, FastProps } from '../models'
 
 import { ErrorContext } from '../hooks/error'
-import { useRequest, useSSE } from '../tools'
-import { DefaultSpinner, DefaultNotFound, DefaultTransition } from '../Defaults'
+import { useRequest, useSSE, Method } from '../tools'
+import { DefaultNotFound, DefaultTransition } from '../Defaults'
 import { ConfigContext } from '../hooks/config'
 import { usePageEventListen } from '../events'
 import { EventContextProvider, useEventContext } from '../hooks/eventContext'
@@ -12,28 +12,48 @@ import { LocationContext } from '../hooks/locationContext'
 
 import { AnyCompList } from './index'
 
-export const ServerLoadComp: FC<ServerLoad> = ({ path, components, loadTrigger, sse }) => {
+import { SpinnerComp } from './spinner'
+
+export const ServerLoadComp: FC<ServerLoad> = (props) => {
+  const { path, components, loadTrigger, sse, method, sseRetry } = props
   if (components) {
-    return <ServerLoadDefer path={path} components={components} loadTrigger={loadTrigger} sse={sse} />
+    return (
+      <ServerLoadDefer
+        path={path}
+        components={components}
+        loadTrigger={loadTrigger}
+        sse={sse}
+        method={method}
+        sseRetry={sseRetry}
+      />
+    )
   } else if (sse) {
-    return <ServerLoadSSE path={path} />
+    return <ServerLoadSSE path={path} method={method} sseRetry={sseRetry} />
   } else {
     return <ServerLoadFetch path={path} />
   }
 }
 
-const ServerLoadDefer: FC<{ path: string; components: FastProps[]; loadTrigger?: PageEvent; sse?: boolean }> = ({
-  components,
-  path,
-  loadTrigger,
-  sse,
-}) => {
+interface DeferProps {
+  path: string
+  components: FastProps[]
+  loadTrigger?: PageEvent
+  sse?: boolean
+  method?: Method
+  sseRetry?: number
+}
+
+const ServerLoadDefer: FC<DeferProps> = ({ components, path, loadTrigger, sse, method, sseRetry }) => {
   const { eventContext } = usePageEventListen(loadTrigger)
 
   if (eventContext) {
     return (
       <EventContextProvider context={eventContext}>
-        {sse ? <ServerLoadSSE path={path} /> : <ServerLoadFetch path={path} />}
+        {sse ? (
+          <ServerLoadSSE path={path} method={method} sseRetry={sseRetry} />
+        ) : (
+          <ServerLoadFetch path={path} method={method} />
+        )}
       </EventContextProvider>
     )
   } else {
@@ -41,7 +61,13 @@ const ServerLoadDefer: FC<{ path: string; components: FastProps[]; loadTrigger?:
   }
 }
 
-export const ServerLoadFetch: FC<{ path: string; devReload?: number }> = ({ path, devReload }) => {
+interface FetchProps {
+  path: string
+  devReload?: number
+  method?: Method
+}
+
+export const ServerLoadFetch: FC<FetchProps> = ({ path, devReload, method }) => {
   const [transitioning, setTransitioning] = useState<boolean>(false)
   const [componentProps, setComponentProps] = useState<FastProps[] | null>(null)
   const [notFoundUrl, setNotFoundUrl] = useState<string | undefined>(undefined)
@@ -52,30 +78,33 @@ export const ServerLoadFetch: FC<{ path: string; devReload?: number }> = ({ path
 
   useEffect(() => {
     setTransitioning(true)
-    const promise = request({ url, expectedStatus: [200, 404] })
-    promise.then(([status, data]) => {
-      if (status === 200) {
-        setComponentProps(data as FastProps[])
-        // if there's a fragment, scroll to that ID once the page is loaded
-        const fragment = getFragment(path)
-        if (fragment) {
-          setTimeout(() => {
-            const element = document.getElementById(fragment)
-            if (element) {
-              element.scrollIntoView()
-            }
-          }, 50)
+    let componentLoaded = true
+    request({ url, method, expectedStatus: [200, 345, 404] }).then(([status, data]) => {
+      if (componentLoaded) {
+        // 345 is treat the same as 200 - the server is expected to return valid FastUI components
+        if (status === 200 || status === 345) {
+          setComponentProps(data as FastProps[])
+          // if there's a fragment, scroll to that ID once the page is loaded
+          const fragment = getFragment(path)
+          if (fragment) {
+            setTimeout(() => {
+              const element = document.getElementById(fragment)
+              if (element) {
+                element.scrollIntoView()
+              }
+            }, 50)
+          }
+        } else {
+          setNotFoundUrl(url)
         }
-      } else {
-        setNotFoundUrl(url)
       }
       setTransitioning(false)
     })
 
     return () => {
-      promise.then(() => null)
+      componentLoaded = false
     }
-  }, [url, path, request, devReload])
+  }, [url, path, request, devReload, method])
 
   useEffect(() => {
     setNotFoundUrl(undefined)
@@ -84,12 +113,18 @@ export const ServerLoadFetch: FC<{ path: string; devReload?: number }> = ({ path
   return <Render propsList={componentProps} notFoundUrl={notFoundUrl} transitioning={transitioning} />
 }
 
-export const ServerLoadSSE: FC<{ path: string }> = ({ path }) => {
+interface SSEProps {
+  path: string
+  method?: Method
+  sseRetry?: number
+}
+
+export const ServerLoadSSE: FC<SSEProps> = ({ path, method, sseRetry }) => {
   const [componentProps, setComponentProps] = useState<FastProps[] | null>(null)
 
   const url = useServerUrl(path)
   const onMessage = useCallback((data: any) => setComponentProps(data as FastProps[]), [])
-  useSSE(url, onMessage)
+  useSSE(url, onMessage, method, sseRetry)
 
   return <Render propsList={componentProps} transitioning={false} />
 }
@@ -100,8 +135,7 @@ const Render: FC<{ propsList: FastProps[] | null; notFoundUrl?: string; transiti
   transitioning,
 }) => {
   const { error } = useContext(ErrorContext)
-  const { Spinner, NotFound, Transition } = useContext(ConfigContext)
-  const SpinnerComp = Spinner ?? DefaultSpinner
+  const { NotFound, Transition } = useContext(ConfigContext)
   const NotFoundComp = NotFound ?? DefaultNotFound
   const TransitionComp = Transition ?? DefaultTransition
 
@@ -111,7 +145,7 @@ const Render: FC<{ propsList: FastProps[] | null; notFoundUrl?: string; transiti
     if (error) {
       return <></>
     } else {
-      return <SpinnerComp />
+      return <SpinnerComp type="Spinner" />
     }
   } else {
     return (
@@ -123,14 +157,17 @@ const Render: FC<{ propsList: FastProps[] | null; notFoundUrl?: string; transiti
 }
 
 function useServerUrl(path: string): string {
-  const { rootUrl, pathSendMode } = useContext(ConfigContext)
+  const { APIRootUrl, APIPathMode, APIPathStrip } = useContext(ConfigContext)
+  if (APIPathStrip && path.startsWith(APIPathStrip)) {
+    path = path.slice(APIPathStrip.length)
+  }
   const applyContext = useEventContext()
   const requestPath = applyContext(path)
 
-  if (pathSendMode === 'query') {
-    return `${rootUrl}?path=${encodeURIComponent(requestPath)}`
+  if (APIPathMode === 'query') {
+    return `${APIRootUrl}?path=${encodeURIComponent(requestPath)}`
   } else {
-    return rootUrl + requestPath
+    return APIRootUrl + requestPath
   }
 }
 

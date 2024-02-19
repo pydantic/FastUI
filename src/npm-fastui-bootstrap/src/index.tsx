@@ -31,7 +31,12 @@ export const classNameGenerator: ClassNameGenerator = ({
     case 'Page':
       return 'container mt-80 mb-3 page'
     case 'Button':
-      return 'btn btn-primary'
+      return {
+        btn: true,
+        'btn-primary': !props.namedStyle || props.namedStyle === 'primary',
+        'btn-secondary': props.namedStyle === 'secondary',
+        'btn-warning': props.namedStyle === 'warning',
+      }
     case 'Table':
       switch (subElement) {
         case 'no-data-message':
@@ -57,20 +62,24 @@ export const classNameGenerator: ClassNameGenerator = ({
           default:
             return 'row row-cols-lg-4 align-items-center justify-content-end'
         }
-      } else {
+      } else if (props.displayMode === 'page') {
         switch (subElement) {
           case 'form-container':
             return 'row justify-content-center'
           default:
             return 'col-md-4'
         }
+      } else {
+        break
       }
     case 'FormFieldInput':
+    case 'FormFieldTextarea':
     case 'FormFieldBoolean':
     case 'FormFieldSelect':
     case 'FormFieldSelectSearch':
     case 'FormFieldFile':
       switch (subElement) {
+        case 'textarea':
         case 'input':
           return {
             'form-control': type !== 'FormFieldBoolean',
@@ -137,5 +146,19 @@ export const classNameGenerator: ClassNameGenerator = ({
       }
     case 'Code':
       return 'rounded'
+    case 'Error':
+      if (props.statusCode === 502) {
+        return 'm-3 text-muted'
+      } else {
+        return 'error-alert alert alert-danger m-3'
+      }
+    case 'Spinner':
+      if (subElement === 'text') {
+        return 'd-flex justify-content-center mb-2'
+      } else if (subElement === 'animation') {
+        return 'd-flex justify-content-center'
+      } else {
+        return 'my-4'
+      }
   }
 }

@@ -3,4 +3,4 @@
 src/python-fastui
 uvicorn[standard]
 httpx
-libsql-client
+PyJWT

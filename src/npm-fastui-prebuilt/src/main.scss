@@ -1,9 +1,12 @@
 $primary: black;
+$secondary: white;
 $link-color: #0d6efd; // bootstrap primary
 
 @import 'bootstrap/scss/bootstrap';
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
 }
 
@@ -33,7 +36,12 @@ body {
   backdrop-filter: blur(8px);
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   scroll-margin-top: 60px;
 }
 
@@ -66,17 +74,17 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 // custom spinner from https://cssloaders.github.io/
-
-.spinner,
-.spinner:before,
-.spinner:after {
+.fastui-spinner-animation,
+.fastui-spinner-animation:before,
+.fastui-spinner-animation:after {
   border-radius: 50%;
   width: 2.5em;
   height: 2.5em;
   animation-fill-mode: both;
-  animation: dots 1.8s infinite ease-in-out;
+  animation: spinner-dots 1.8s infinite ease-in-out;
 }
-.spinner {
+.fastui-spinner-animation {
+  top: -2.5em;
   color: var(--bs-dark);
   font-size: 7px;
   position: relative;
@@ -97,8 +105,7 @@ h1, h2, h3, h4, h5, h6 {
     left: 3.5em;
   }
 }
-
-@keyframes dots {
+@keyframes spinner-dots {
   0%,
   80%,
   100% {
@@ -107,4 +114,14 @@ h1, h2, h3, h4, h5, h6 {
   40% {
     box-shadow: 0 2.5em 0 0;
   }
+}
+
+// make sure alerts aren't hidden behind the navbar
+.error-alert {
+  position: relative;
+  top: 60px;
+}
+
+.btn-secondary {
+  --bs-btn-border-color: #dee2e6;
 }

@@ -28,7 +28,7 @@ from .forms import (
 from .tables import Pagination, Table
 
 __all__ = (
-    # first we include everything from `AnyComponent`
+    # first we include all components from this file
     'Text',
     'Paragraph',
     'PageTitle',
@@ -47,7 +47,10 @@ __all__ = (
     'Image',
     'Iframe',
     'FireEvent',
+    'Error',
+    'Spinner',
     'Custom',
+    # then we include components from other files
     'Table',
     'Pagination',
     'Display',
@@ -152,6 +155,7 @@ class Button(_p.BaseModel, extra='forbid'):
     html_type: _t.Union[_t.Literal['button', 'reset', 'submit'], None] = _p.Field(
         default=None, serialization_alias='htmlType'
     )
+    named_style: _class_name.NamedStyleField = None
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['Button'] = 'Button'
 
@@ -176,7 +180,8 @@ class LinkList(_p.BaseModel, extra='forbid'):
 class Navbar(_p.BaseModel, extra='forbid'):
     title: _t.Union[str, None] = None
     title_event: _t.Union[events.AnyEvent, None] = _p.Field(default=None, serialization_alias='titleEvent')
-    links: _t.List[Link] = _p.Field(default=[])
+    start_links: _t.List[Link] = _p.Field(default=[], serialization_alias='startLinks')
+    end_links: _t.List[Link] = _p.Field(default=[], serialization_alias='endLinks')
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['Navbar'] = 'Navbar'
 
@@ -186,7 +191,7 @@ class Navbar(_p.BaseModel, extra='forbid'):
     ) -> _t.Any:
         # until https://github.com/pydantic/pydantic/issues/8413 is fixed
         json_schema = handler(core_schema)
-        json_schema.setdefault('required', []).append('links')
+        json_schema.setdefault('required', []).extend(['startLinks', 'endLinks'])
         return json_schema
 
 
@@ -216,6 +221,8 @@ class ServerLoad(_p.BaseModel, extra='forbid'):
     load_trigger: _t.Union[events.PageEvent, None] = _p.Field(default=None, serialization_alias='loadTrigger')
     components: '_t.Union[_t.List[AnyComponent], None]' = None
     sse: _t.Union[bool, None] = None
+    sse_retry: _t.Union[int, None] = _p.Field(default=None, serialization_alias='sseRetry')
+    method: _t.Union[_t.Literal['GET', 'POST', 'PATCH', 'PUT', 'DELETE'], None] = None
     type: _t.Literal['ServerLoad'] = 'ServerLoad'
 
 
@@ -249,6 +256,8 @@ class Iframe(_p.BaseModel, extra='forbid'):
     width: _t.Union[str, int, None] = None
     height: _t.Union[str, int, None] = None
     class_name: _class_name.ClassNameField = None
+    srcdoc: _t.Union[str, None] = None
+    sandbox: _t.Union[str, None] = None
     type: _t.Literal['Iframe'] = 'Iframe'
 
 
@@ -269,6 +278,29 @@ class FireEvent(_p.BaseModel, extra='forbid'):
     event: events.AnyEvent
     message: _t.Union[str, None] = None  # defaults to blank
     type: _t.Literal['FireEvent'] = 'FireEvent'
+
+
+class Error(_p.BaseModel, extra='forbid'):
+    title: str
+    description: str
+    status_code: _t.Union[int, None] = _p.Field(None, serialization_alias='statusCode')
+    class_name: _class_name.ClassNameField = None
+    type: _t.Literal['Error'] = 'Error'
+
+    @classmethod
+    def __get_pydantic_json_schema__(
+        cls, core_schema: _core_schema.CoreSchema, handler: _p.GetJsonSchemaHandler
+    ) -> _t.Any:
+        # add `children` to the schema so it can be used in the client
+        json_schema = handler(core_schema)
+        json_schema['properties']['children'] = {'tsType': 'ReactNode'}
+        return json_schema
+
+
+class Spinner(_p.BaseModel, extra='forbid'):
+    text: _t.Union[str, None] = None
+    class_name: _class_name.ClassNameField = None
+    type: _t.Literal['Spinner'] = 'Spinner'
 
 
 class Custom(_p.BaseModel, extra='forbid'):
@@ -301,6 +333,8 @@ AnyComponent = _te.Annotated[
         Iframe,
         Video,
         FireEvent,
+        Error,
+        Spinner,
         Custom,
         Table,
         Pagination,
