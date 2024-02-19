@@ -14,6 +14,7 @@ from pydantic_core import core_schema as _core_schema
 from .. import class_name as _class_name
 from .. import events
 from .. import types as _types
+from .charts import RechartsLineChart
 from .display import Details, Display
 from .forms import (
     Form,
@@ -67,6 +68,8 @@ __all__ = (
     'FormFieldInput',
     'FormFieldSelect',
     'FormFieldSelectSearch',
+    # then charts
+    'RechartsLineChart',
 )
 
 
@@ -310,8 +313,6 @@ class Custom(_p.BaseModel, extra='forbid'):
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['Custom'] = 'Custom'
 
-
-from .charts import RechartsLineChart
 
 AnyComponent = _te.Annotated[
     _t.Union[
