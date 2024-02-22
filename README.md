@@ -7,6 +7,8 @@
 
 **Please note:** FastUI is still an active work in progress, do not expect it to be complete.
 
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/O2XqhT?referralCode=c-aq4K)
+
 ## The Principle (short version)
 
 You can see a simple demo of an application built with FastUI [here](https://fastui-demo.onrender.com).
