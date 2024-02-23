@@ -64,7 +64,7 @@ export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
     }
   }
 
-  // fireEventImpl is recursive, but it doens't make sense for fireEvent to have fireEventImpl as a dep
+  // fireEventImpl is recursive, but it doesn't make sense for fireEvent to have fireEventImpl as a dep
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fireEvent = useCallback(fireEventImpl, [location])
 
