@@ -47,6 +47,8 @@ class JsonSchemaString(JsonSchemaBase):
     type: _ta.Required[_t.Literal['string']]
     default: str
     format: _t.Literal['date', 'date-time', 'time', 'email', 'uri', 'uuid', 'password']
+    maxLength: int
+    minLength: int
 
 
 class JsonSchemaStringEnum(JsonSchemaBase, total=False):
@@ -197,6 +199,13 @@ def json_schema_field_to_field(
             initial=schema.get('default'),
             autocomplete=schema.get('autocomplete'),
             description=schema.get('description'),
+            max_length=schema.get('maxLength'),
+            min_length=schema.get('minLength'),
+            ge=schema.get('minimum'),
+            le=schema.get('maximum'),
+            gt=schema.get('exclusiveMinimum'),
+            lt=schema.get('exclusiveMaximum'),
+            multiple_of=schema.get('multipleOf'),
         )
 
 

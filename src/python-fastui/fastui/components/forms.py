@@ -32,6 +32,13 @@ class FormFieldInput(BaseFormField):
     initial: _t.Union[str, float, None] = None
     placeholder: _t.Union[str, None] = None
     autocomplete: _t.Union[str, None] = None
+    max_length: _t.Union[int, None] = pydantic.Field(default=None, serialization_alias='maxLength')
+    min_length: _t.Union[int, None] = pydantic.Field(default=None, serialization_alias='minLength')
+    ge: _t.Union[int, float, None] = None
+    le: _t.Union[int, float, None] = None
+    gt: _t.Union[int, float, None] = None
+    lt: _t.Union[int, float, None] = None
+    multiple_of: _t.Union[int, float, None] = pydantic.Field(default=None, serialization_alias='multipleOf')
     type: _t.Literal['FormFieldInput'] = 'FormFieldInput'
 
 
