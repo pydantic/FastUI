@@ -4,5 +4,4 @@ pytest-pretty
 dirty-equals
 pytest-asyncio
 httpx
-# libsql-client is used by demo
-libsql-client
+PyJWT

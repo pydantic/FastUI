@@ -5,7 +5,11 @@ import { useClassName } from '../hooks/className'
 import { LinkComp, LinkRender } from './link'
 
 export const NavbarComp = (props: Navbar) => {
-  const links = props.links.map((link) => {
+  const startLinks = props.startLinks.map((link) => {
+    link.mode = link.mode || 'navbar'
+    return link
+  })
+  const endLinks = props.endLinks.map((link) => {
     link.mode = link.mode || 'navbar'
     return link
   })
@@ -13,7 +17,10 @@ export const NavbarComp = (props: Navbar) => {
     <nav className={useClassName(props)}>
       <div className={useClassName(props, { el: 'contents' })}>
         <NavbarTitle {...props} />
-        {links.map((link, i) => (
+        {startLinks.map((link, i) => (
+          <LinkComp key={i} {...link} />
+        ))}
+        {endLinks.map((link, i) => (
           <LinkComp key={i} {...link} />
         ))}
       </div>

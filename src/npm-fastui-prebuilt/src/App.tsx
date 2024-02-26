@@ -5,14 +5,19 @@ import { FC, ReactNode } from 'react'
 export default function App() {
   return (
     <FastUI
-      rootUrl="/api"
+      APIRootUrl={getMetaContent('fastui:APIRootUrl') || '/api'}
+      APIPathMode={getMetaContent('fastui:APIPathMode') as undefined | 'append' | 'query'}
+      APIPathStrip={getMetaContent('fastui:APIPathStrip')}
       classNameGenerator={bootstrap.classNameGenerator}
       customRender={customRender}
       NotFound={NotFound}
-      Spinner={Spinner}
       Transition={Transition}
     />
   )
+}
+
+function getMetaContent(name: string): string | undefined {
+  return document.querySelector(`meta[name="${name}"]`)?.getAttribute('content') || undefined
 }
 
 const NotFound = ({ url }: { url: string }) => (
@@ -21,12 +26,6 @@ const NotFound = ({ url }: { url: string }) => (
     <p>
       No page found at <code>{url}</code>.
     </p>
-  </div>
-)
-
-const Spinner = () => (
-  <div className="container d-flex justify-content-center my-3" role="status">
-    <div className="spinner" />
   </div>
 )
 
