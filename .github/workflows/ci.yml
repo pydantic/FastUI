@@ -14,13 +14,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
 
@@ -29,7 +29,7 @@ jobs:
 
       - run: npm install
 
-      - uses: pre-commit/action@v3.0.0
+      - uses: pre-commit/action@v3.0.1
         with:
           extra_args: --all-files
         env:
@@ -50,10 +50,10 @@ jobs:
       OS: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: set up python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -71,7 +71,7 @@ jobs:
 
       - run: coverage xml
 
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
         with:
           file: ./coverage.xml
           env_vars: PYTHON,OS
@@ -80,9 +80,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
 
@@ -112,9 +112,9 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
