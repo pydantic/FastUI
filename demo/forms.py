@@ -127,6 +127,14 @@ class SelectForm(BaseModel):
     search_select_single: str = Field(json_schema_extra={'search_url': '/api/forms/search'})
     search_select_multiple: list[str] = Field(json_schema_extra={'search_url': '/api/forms/search'})
 
+    @field_validator('select_multiple', 'search_select_multiple', mode='before')
+    @classmethod
+    def correct_select_multiple(cls, v: list[str]) -> list[str]:
+        if isinstance(v, list):
+            return v
+        else:
+            return [v]
+
 
 @router.post('/select', response_model=FastUI, response_model_exclude_none=True)
 async def select_form_post(form: Annotated[SelectForm, fastui_form(SelectForm)]):
