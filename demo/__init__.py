@@ -11,6 +11,7 @@ from fastui.dev import dev_fastapi_app
 from httpx import AsyncClient
 
 from .auth import router as auth_router
+from .charts import router as charts_router
 from .components_list import router as components_router
 from .forms import router as forms_router
 from .main import router as main_router
@@ -38,6 +39,7 @@ app.include_router(sse_router, prefix='/api/components')
 app.include_router(table_router, prefix='/api/table')
 app.include_router(forms_router, prefix='/api/forms')
 app.include_router(auth_router, prefix='/api/auth')
+app.include_router(charts_router, prefix='/api/charts')
 app.include_router(main_router, prefix='/api')
 
 

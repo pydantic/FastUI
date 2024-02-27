@@ -40,6 +40,7 @@ export type FastProps =
   | FormFieldSelect
   | FormFieldSelectSearch
   | ModelForm
+  | RechartsLineChart
 export type ClassName =
   | string
   | ClassName[]
@@ -460,3 +461,17 @@ export interface ModelForm {
     | FormFieldSelectSearch
   )[]
 }
+export interface RechartsLineChart {
+  title: string
+  width?: number | string
+  height: number | string
+  data: BaseModel[]
+  className?: ClassName
+  type: 'RechartsLineChart'
+  xKey: string
+  yKeys: string[]
+  yKeysNames?: string[]
+  colors: string[]
+  tooltip?: boolean
+}
+export interface BaseModel {}

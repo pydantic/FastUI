@@ -32,7 +32,7 @@ def test_api_root(client: TestClient):
         {
             'title': 'FastUI Demo',
             'titleEvent': {'url': '/', 'type': 'go-to'},
-            'startLinks': IsList(length=4),
+            'startLinks': IsList(length=5),
             'endLinks': [],
             'type': 'Navbar',
         },

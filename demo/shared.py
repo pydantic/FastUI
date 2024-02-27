@@ -32,6 +32,11 @@ def demo_page(*components: AnyComponent, title: str | None = None) -> list[AnyCo
                     on_click=GoToEvent(url='/forms/login'),
                     active='startswith:/forms',
                 ),
+                c.Link(
+                    components=[c.Text(text='Charts')],
+                    on_click=GoToEvent(url='/charts/recharts-line-chart'),
+                    active='startswith:/charts',
+                ),
             ],
         ),
         c.Page(

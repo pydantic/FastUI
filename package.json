@@ -39,5 +39,8 @@
     "json-schema-to-typescript": "^13.1.1",
     "prettier": "^3.0.3",
     "typescript": "^5.0.2"
+  },
+  "dependencies": {
+    "recharts": "^2.12.0"
   }
 }
