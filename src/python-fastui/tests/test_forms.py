@@ -6,7 +6,7 @@ import pytest
 from fastapi import HTTPException
 from fastui import components
 from fastui.forms import FormFile, Textarea, fastui_form
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from starlette.datastructures import FormData, Headers, UploadFile
 from typing_extensions import Annotated
 
@@ -467,5 +467,101 @@ def test_form_textarea_form_fields():
                 'locked': False,
                 'type': 'FormFieldTextarea',
             }
+        ],
+    }
+
+
+class FormWithCustomClassNameField(BaseModel):
+    name: str
+    size: int = 4
+    internal_id: int = Field(
+        title='Internal id',
+        json_schema_extra={
+            'className': 'visually-hidden',
+        },
+    )
+
+
+def test_fields_with_custom_class_name():
+    m = components.ModelForm(model=FormWithCustomClassNameField, submit_url='/foobar/')
+
+    assert m.model_dump(by_alias=True, exclude_none=True) == {
+        'submitUrl': '/foobar/',
+        'method': 'POST',
+        'type': 'ModelForm',
+        'formFields': [
+            {
+                'name': 'name',
+                'title': ['Name'],
+                'required': True,
+                'locked': False,
+                'htmlType': 'text',
+                'type': 'FormFieldInput',
+            },
+            {
+                'name': 'size',
+                'title': ['Size'],
+                'initial': 4,
+                'required': False,
+                'locked': False,
+                'htmlType': 'number',
+                'type': 'FormFieldInput',
+            },
+            {
+                'className': 'visually-hidden',
+                'htmlType': 'number',
+                'locked': False,
+                'name': 'internal_id',
+                'required': True,
+                'title': ['Internal id'],
+                'type': 'FormFieldInput',
+            },
+        ],
+    }
+
+
+class FormWithPlaceholderField(BaseModel):
+    name: str
+    size: int = 4
+    internal_id: int = Field(
+        title='Internal id',
+        json_schema_extra={'placeholder': '1234'},
+    )
+
+
+def test_fields_with_placeholder_values():
+    m = components.ModelForm(model=FormWithPlaceholderField, submit_url='/foobar/')
+
+    assert m.model_dump(by_alias=True, exclude_none=True) == {
+        'submitUrl': '/foobar/',
+        'method': 'POST',
+        'type': 'ModelForm',
+        'formFields': [
+            {
+                'name': 'name',
+                'title': ['Name'],
+                'required': True,
+                'locked': False,
+                'htmlType': 'text',
+                'type': 'FormFieldInput',
+            },
+            {
+                'name': 'size',
+                'title': ['Size'],
+                'initial': 4,
+                'required': False,
+                'locked': False,
+                'htmlType': 'number',
+                'type': 'FormFieldInput',
+            },
+            {
+                'htmlType': 'number',
+                'locked': False,
+                'name': 'internal_id',
+                'placeholder': '1234',
+                'required': True,
+                'title': ['Internal id'],
+                'type': 'FormFieldInput',
+            },
         ],
     }
