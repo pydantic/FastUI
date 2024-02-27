@@ -1,11 +1,12 @@
 import json
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
-from typing import Annotated, Any, Self
+from typing import Annotated, Any
 
 import jwt
 from fastapi import Header, HTTPException
 from fastui.auth import AuthRedirect
+from typing_extensions import Self
 
 JWT_SECRET = 'secret'
 
