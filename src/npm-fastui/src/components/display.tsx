@@ -218,9 +218,7 @@ const subKeys = (template: string, row: DataModel): string | null => {
   let returnNull = false
   const r = template.replace(/{(.+?)}/g, (_, key: string): string => {
     const v: JsonData | undefined = row[key]
-    if (v === undefined) {
-      throw new Error(`field "${key}" not found in ${JSON.stringify(row)}`)
-    } else if (v === null) {
+    if (v === null || v === undefined) {
       returnNull = true
       return 'null'
     } else {
