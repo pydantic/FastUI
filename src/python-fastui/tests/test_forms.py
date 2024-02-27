@@ -6,7 +6,7 @@ import pytest
 from fastapi import HTTPException
 from fastui import components
 from fastui.forms import FormFile, Textarea, fastui_form
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from starlette.datastructures import FormData, Headers, UploadFile
 from typing_extensions import Annotated
 
@@ -14,6 +14,11 @@ from typing_extensions import Annotated
 class SimpleForm(BaseModel):
     name: str
     size: int = 4
+
+
+class FormWithConstraints(BaseModel):
+    name: str = Field(..., max_length=10, min_length=2, description='This field is required, it must have length 2-10')
+    size: int = Field(4, ge=0, le=10, multiple_of=2, description='size with range 0-10 and step with 2')
 
 
 class FakeRequest:
@@ -84,6 +89,42 @@ def test_inline_form_fields():
                 'locked': False,
                 'htmlType': 'number',
                 'type': 'FormFieldInput',
+            },
+        ],
+    }
+
+
+def test_form_with_constraints_fields():
+    m = components.ModelForm(model=FormWithConstraints, submit_url='/foobar/')
+
+    assert m.model_dump(by_alias=True, exclude_none=True) == {
+        'submitUrl': '/foobar/',
+        'method': 'POST',
+        'type': 'ModelForm',
+        'formFields': [
+            {
+                'name': 'name',
+                'title': ['Name'],
+                'required': True,
+                'locked': False,
+                'htmlType': 'text',
+                'type': 'FormFieldInput',
+                'description': 'This field is required, it must have length 2-10',
+                'maxLength': 10,
+                'minLength': 2,
+            },
+            {
+                'name': 'size',
+                'title': ['Size'],
+                'initial': 4,
+                'required': False,
+                'locked': False,
+                'htmlType': 'number',
+                'type': 'FormFieldInput',
+                'description': 'size with range 0-10 and step with 2',
+                'le': 10,
+                'ge': 0,
+                'multipleOf': 2,
             },
         ],
     }

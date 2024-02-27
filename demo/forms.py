@@ -141,7 +141,10 @@ class SizeModel(BaseModel):
 
 class BigModel(BaseModel):
     name: str | None = Field(
-        None, description='This field is not required, it must start with a capital letter if provided'
+        None,
+        max_length=10,
+        min_length=2,
+        description='This field is not required, it must start with a capital letter if provided, and have length 2-10',
     )
     info: Annotated[str | None, Textarea(rows=5)] = Field(None, description='Optional free text information about you.')
     profile_pic: Annotated[UploadFile, FormFile(accept='image/*', max_size=16_000)] = Field(
@@ -153,6 +156,9 @@ class BigModel(BaseModel):
     dob: date = Field(title='Date of Birth', description='Your date of birth, this is required hence bold')
     human: bool | None = Field(
         None, title='Is human', description='Are you human?', json_schema_extra={'mode': 'switch'}
+    )
+    number: int | None = Field(
+        None, title='Number', ge=0, le=10, multiple_of=2, description='This is a number should be 0-10 and step with 2'
     )
     size: SizeModel
 

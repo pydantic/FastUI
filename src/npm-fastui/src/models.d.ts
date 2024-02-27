@@ -353,6 +353,13 @@ export interface FormFieldInput {
   initial?: string | number
   placeholder?: string
   autocomplete?: string
+  maxLength?: number
+  minLength?: number
+  ge?: number | number
+  le?: number | number
+  gt?: number | number
+  lt?: number | number
+  multipleOf?: number | number
   type: 'FormFieldInput'
 }
 export interface FormFieldTextarea {
