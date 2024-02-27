@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { models, components, events, renderClassName, EventContextProvider } from 'fastui'
 import BootstrapModal from 'react-bootstrap/Modal'
 
@@ -7,9 +7,24 @@ export const Modal: FC<models.Modal> = (props) => {
 
   const { eventContext, fireId, clear } = events.usePageEventListen(openTrigger, openContext)
 
+  const [show, setShow] = useState(false)
+
+  const handleClose = () => {
+    setShow(false)
+    clear()
+  }
+
+  useEffect(() => {
+    if (fireId) {
+      setShow(true)
+    } else {
+      setShow(false)
+    }
+  }, [fireId])
+
   return (
     <EventContextProvider context={eventContext}>
-      <BootstrapModal className={renderClassName(className)} show={!!fireId} onHide={clear}>
+      <BootstrapModal className={renderClassName(className)} show={show} onHide={handleClose}>
         <BootstrapModal.Header closeButton>
           <BootstrapModal.Title>{title}</BootstrapModal.Title>
         </BootstrapModal.Header>
