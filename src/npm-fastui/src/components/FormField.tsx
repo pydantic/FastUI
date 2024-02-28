@@ -24,7 +24,7 @@ interface FormFieldInputProps extends FormFieldInput {
 }
 
 export const FormFieldInputComp: FC<FormFieldInputProps> = (props) => {
-  const { name, placeholder, required, htmlType, locked, autocomplete } = props
+  const { name, placeholder, required, htmlType, locked, autocomplete, step } = props
 
   return (
     <div className={useClassName(props)}>
@@ -39,6 +39,7 @@ export const FormFieldInputComp: FC<FormFieldInputProps> = (props) => {
         disabled={locked}
         placeholder={placeholder}
         autoComplete={autocomplete}
+        step={step}
         aria-describedby={descId(props)}
       />
       <ErrorDescription {...props} />
