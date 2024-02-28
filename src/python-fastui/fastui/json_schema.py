@@ -373,7 +373,7 @@ def input_html_type(schema: JsonSchemaField) -> InputHtmlType:
         raise ValueError(f'Unknown schema: {schema}') from e
 
 
-def get_default_step(schema: JsonSchemaField) -> _t.Literal['any'] | None:
+def get_default_step(schema: JsonSchemaField) -> _t.Union[_t.Literal['any'], None]:
     key = schema['type']
     if key == 'integer':
         return None
