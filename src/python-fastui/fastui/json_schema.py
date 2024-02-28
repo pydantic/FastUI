@@ -198,6 +198,7 @@ def json_schema_field_to_field(
             initial=schema.get('default'),
             autocomplete=schema.get('autocomplete'),
             description=schema.get('description'),
+            step=schema.get('step', get_default_step(schema)),
             placeholder=schema.get('placeholder'),
             class_name=schema.get('className'),
         )
@@ -262,6 +263,7 @@ def special_string_field(
                 initial=schema.get('initial'),
                 description=schema.get('description'),
                 autocomplete=schema.get('autocomplete'),
+                class_name=schema.get('className'),
             )
         elif enum := schema.get('enum'):
             enum_labels = schema.get('enum_labels', {})
@@ -274,8 +276,8 @@ def special_string_field(
                 options=[SelectOption(value=v, label=enum_labels.get(v) or as_title(v)) for v in enum],
                 initial=schema.get('default'),
                 description=schema.get('description'),
-                class_name=schema.get('className'),
                 autocomplete=schema.get('autocomplete'),
+                class_name=schema.get('className'),
             )
         elif search_url := schema.get('search_url'):
             return FormFieldSelectSearch(
@@ -318,6 +320,7 @@ def deference_json_schema(
         if def_schema is None:
             raise ValueError(f'Invalid $ref "{ref}", not found in {defs}')
         else:
+            return def_schema, required
             return def_schema.copy(), required  # clone dict to avoid attribute leakage via shared schema.
     elif any_of := schema.get('anyOf'):
         if len(any_of) == 2 and sum(s.get('type') == 'null' for s in any_of) == 1:
@@ -376,6 +379,14 @@ def input_html_type(schema: JsonSchemaField) -> InputHtmlType:
         return type_lookup[key]
     except KeyError as e:
         raise ValueError(f'Unknown schema: {schema}') from e
+
+
+def get_default_step(schema: JsonSchemaField) -> _t.Literal['any'] | None:
+    key = schema['type']
+    if key == 'integer':
+        return None
+    if key == 'number':
+        return 'any'
 
 
 def schema_is_field(schema: JsonSchemaConcrete) -> _ta.TypeGuard[JsonSchemaField]:
