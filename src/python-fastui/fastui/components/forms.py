@@ -32,6 +32,7 @@ class FormFieldInput(BaseFormField):
     initial: _t.Union[str, float, None] = None
     placeholder: _t.Union[str, None] = None
     autocomplete: _t.Union[str, None] = None
+    step: _t.Union[float, _t.Literal['any'], None] = None
     type: _t.Literal['FormFieldInput'] = 'FormFieldInput'
 
 

@@ -469,3 +469,37 @@ def test_form_textarea_form_fields():
             }
         ],
     }
+
+
+class FormNumbersDefaultStep(BaseModel):
+    size: int
+    cost: float
+
+
+def test_form_numbers_default_step():
+    m = components.ModelForm(model=FormNumbersDefaultStep, submit_url='/foobar')
+
+    assert m.model_dump(by_alias=True, exclude_none=True) == {
+        'submitUrl': '/foobar',
+        'method': 'POST',
+        'type': 'ModelForm',
+        'formFields': [
+            {
+                'name': 'size',
+                'title': ['Size'],
+                'required': True,
+                'locked': False,
+                'htmlType': 'number',
+                'type': 'FormFieldInput',
+            },
+            {
+                'name': 'cost',
+                'title': ['Cost'],
+                'required': True,
+                'locked': False,
+                'htmlType': 'number',
+                'step': 'any',
+                'type': 'FormFieldInput',
+            },
+        ],
+    }
