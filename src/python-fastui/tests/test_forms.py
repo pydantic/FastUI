@@ -595,7 +595,7 @@ class ToolEnum(str, Enum):
 
 class FormEnumWithOptionalEnum(BaseModel):
     job_name: str
-    tool_required: ToolEnum | None = Field(
+    tool_required: Union[ToolEnum, None] = Field(
         json_schema_extra={
             # Override certain schema fields.
             'placeholder': 'tool',
