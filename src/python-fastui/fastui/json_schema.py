@@ -320,6 +320,7 @@ def deference_json_schema(
         if def_schema is None:
             raise ValueError(f'Invalid $ref "{ref}", not found in {defs}')
         else:
+            def_schema.update({k: v for k, v in schema.items() if k != '$ref'})  # type: ignore
             return def_schema, required
             return def_schema.copy(), required  # clone dict to avoid attribute leakage via shared schema.
     elif any_of := schema.get('anyOf'):

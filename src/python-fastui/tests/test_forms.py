@@ -1,5 +1,6 @@
 import enum
 from contextlib import asynccontextmanager
+from enum import Enum
 from io import BytesIO
 from typing import List, Tuple, Union
 
@@ -578,6 +579,62 @@ def test_form_numbers_default_step():
                 'htmlType': 'number',
                 'step': 'any',
                 'type': 'FormFieldInput',
+            },
+        ],
+    }
+
+
+class ToolEnum(str, Enum):
+    """Tools that can be leveraged to complete a job."""
+
+    hammer = 'hammer'
+    screwdriver = 'screwdriver'
+    saw = 'saw'
+    claw_hammer = 'claw_hammer'
+
+
+class FormEnumWithOptionalEnum(BaseModel):
+    job_name: str
+    tool_required: ToolEnum | None = Field(
+        json_schema_extra={
+            # Override certain schema fields.
+            'placeholder': 'tool',
+            'description': '',
+        }
+    )
+
+
+def test_form_with_enum():
+    m = components.ModelForm(model=FormEnumWithOptionalEnum, submit_url='/foobar')
+
+    assert m.model_dump(by_alias=True, exclude_none=True) == {
+        'submitUrl': '/foobar',
+        'method': 'POST',
+        'type': 'ModelForm',
+        'formFields': [
+            {
+                'name': 'job_name',
+                'title': ['Job Name'],
+                'required': True,
+                'locked': False,
+                'htmlType': 'text',
+                'type': 'FormFieldInput',
+            },
+            {
+                'name': 'tool_required',
+                'title': ['ToolEnum'],
+                'required': False,
+                'locked': False,
+                'description': '',
+                'options': [
+                    {'value': 'hammer', 'label': 'Hammer'},
+                    {'value': 'screwdriver', 'label': 'Screwdriver'},
+                    {'value': 'saw', 'label': 'Saw'},
+                    {'value': 'claw_hammer', 'label': 'Claw Hammer'},
+                ],
+                'multiple': False,
+                'placeholder': 'tool',
+                'type': 'FormFieldSelect',
             },
         ],
     }
