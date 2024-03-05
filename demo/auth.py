@@ -27,9 +27,7 @@ GITHUB_CLIENT_SECRET = SecretStr(os.getenv('GITHUB_CLIENT_SECRET', 'dummy-secret
 GITHUB_REDIRECT = os.getenv('GITHUB_REDIRECT')
 
 
-GOOGLE_CLIENT_ID = os.getenv(
-    'GOOGLE_CLIENT_ID', 'yourkey.apps.googleusercontent.com'
-)
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', 'yourkey.apps.googleusercontent.com')
 GOOGLE_CLIENT_SECRET = SecretStr(os.getenv('GOOGLE_CLIENT_SECRET', 'yoursecret'))
 GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI', 'http://localhost:8000/auth/login/google/redirect')
 
@@ -187,6 +185,7 @@ async def github_redirect(
     token = user.encode_token()
     return [c.FireEvent(event=AuthEvent(token=token, url='/auth/profile'))]
 
+
 async def get_google_auth(request: Request) -> GoogleAuthProvider:
     client: AsyncClient = request.app.state.httpx_client
     return GoogleAuthProvider(
@@ -203,7 +202,7 @@ async def auth_google_gen(request: Request) -> list[AnyComponent]:
     google_auth = await get_google_auth(request)
     try:
         # here we should use the refresh token to get a new access token but for the demo we don't store it
-        refresh_token = "fake_refresh_token"
+        refresh_token = 'fake_refresh_token'
         exchange = await google_auth.refresh_access_token(refresh_token)
         google_user = await google_auth.get_google_user(exchange)
         user = User(
@@ -212,7 +211,7 @@ async def auth_google_gen(request: Request) -> list[AnyComponent]:
         )
         token = user.encode_token()
         return [c.FireEvent(event=AuthEvent(token=token, url='/auth/profile'))]
-    except Exception as e:
+    except Exception:
         auth_url = await google_auth.authorization_url()
         return [c.FireEvent(event=GoToEvent(url=auth_url))]
 
