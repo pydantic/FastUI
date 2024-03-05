@@ -104,7 +104,6 @@ class GoogleAuthProvider:
             if exchange := EXCHANGE_CACHE.get(cache_key, self._exchange_cache_age):
                 return exchange
             else:
-                print('getting exchange code from google and setting cache')
                 exchange = await self._exchange_code(code)
                 EXCHANGE_CACHE.set(cache_key, exchange, self._exchange_cache_age)
                 return exchange
@@ -171,9 +170,7 @@ class ExchangeCache:
             return value[1]
 
     def set(self, key: str, value: GoogleExchange, max_age: timedelta) -> None:
-        print('setting cache')
         self._cache[key] = (datetime.now(), value)
-        print('cache', self._cache)
 
     def _purge(self, max_age: timedelta) -> None:
         now = datetime.now()
