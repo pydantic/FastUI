@@ -1,15 +1,13 @@
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
-from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, AsyncIterator, Dict, List, Optional, Tuple, Union, cast
+from datetime import timedelta
+from typing import AsyncIterator, List, Optional, Union, cast
 from urllib.parse import urlencode
 
 import httpx
 from pydantic import BaseModel, SecretStr, TypeAdapter
 
-if TYPE_CHECKING:
-    from fastapi import Request
-    from fastapi.responses import JSONResponse
+from .shared import AuthError, ExchangeCache, ExchangeData
 
 
 @dataclass
@@ -19,7 +17,7 @@ class GoogleExchangeError:
 
 
 @dataclass
-class GoogleExchange:
+class GoogleExchange(ExchangeData):
     access_token: str
     token_type: str
     scope: str
@@ -97,7 +95,7 @@ class GoogleAuthProvider:
                 return exchange
             else:
                 exchange = await self._exchange_code(code)
-                EXCHANGE_CACHE.set(cache_key, exchange, self._exchange_cache_age)
+                EXCHANGE_CACHE.set(key=cache_key, value=exchange)
                 return exchange
         else:
             return await self._exchange_code(code)
@@ -152,31 +150,4 @@ class GoogleAuthProvider:
         return GoogleUser.model_validate_json(user_response.content)
 
 
-class ExchangeCache:
-    def __init__(self):
-        self._cache: Dict[str, Tuple[datetime, GoogleExchange]] = {}
-
-    def get(self, key: str, max_age: timedelta) -> Union[GoogleExchange, None]:
-        now = datetime.now()
-        if (value := self._cache.get(key)) and now - value[0] <= max_age:
-            return value[1]
-
-    def set(self, key: str, value: GoogleExchange, max_age: timedelta) -> None:
-        self._cache[key] = (datetime.now(), value)
-
-    def _purge(self, max_age: timedelta) -> None:
-        now = datetime.now()
-        self._cache = {key: value for key, value in self._cache.items() if now - value[0] <= max_age}
-
-
 EXCHANGE_CACHE = ExchangeCache()
-
-
-class AuthError(RuntimeError):
-    def __init__(self, message: str, code: str):
-        super().__init__(message)
-        self.code = code
-
-    @staticmethod
-    def fastapi_handle(_request: 'Request', e: 'AuthError') -> 'JSONResponse':
-        return JSONResponse({'detail': str(e)}, status_code=400)

@@ -109,7 +109,7 @@ async def test_get_google_user(google_auth_provider: GoogleAuthProvider):
 async def test_exchange_cache(
     google_auth_provider: GoogleAuthProvider,
 ):
-    EXCHANGE_CACHE._cache.clear()
-    assert len(EXCHANGE_CACHE._cache) == 0
+    EXCHANGE_CACHE.clear()
+    assert len(EXCHANGE_CACHE) == 0
     await google_auth_provider.exchange_code('good_code')
-    assert len(EXCHANGE_CACHE._cache) == 1
+    assert len(EXCHANGE_CACHE) == 1
