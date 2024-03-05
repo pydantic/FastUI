@@ -67,6 +67,11 @@ async def google_auth_provider(mock_httpx_client: httpx.AsyncClient):
     )
 
 
+async def test_create():
+    async with GoogleAuthProvider.create('foo', SecretStr('bar')) as provider:
+        assert isinstance(provider._httpx_client, httpx.AsyncClient)
+
+
 async def test_authorization_url(google_auth_provider: GoogleAuthProvider):
     url = await google_auth_provider.authorization_url()
     assert url.startswith('https://accounts.google.com/o/oauth2/v2/auth?')
@@ -113,3 +118,21 @@ async def test_exchange_cache(
     assert len(EXCHANGE_CACHE) == 0
     await google_auth_provider.exchange_code('good_code')
     assert len(EXCHANGE_CACHE) == 1
+    await google_auth_provider.exchange_code('good_code')
+    assert len(EXCHANGE_CACHE) == 1
+
+
+async def test_exchange_no_cache(mock_httpx_client):
+    EXCHANGE_CACHE.clear()
+    provider = GoogleAuthProvider(
+        httpx_client=mock_httpx_client,
+        google_client_id='google_client_id',
+        google_client_secret=SecretStr('google_client_secret'),
+        redirect_uri='https://example.com/callback',
+        scopes=['email', 'profile'],
+        exchange_cache_age=None,
+    )
+    await provider.exchange_code('good_code')
+    assert len(EXCHANGE_CACHE) == 0
+    await provider.exchange_code('good_code')
+    assert len(EXCHANGE_CACHE) == 0
