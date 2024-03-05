@@ -9,7 +9,7 @@ from typing import Annotated, Literal, TypeAlias
 from fastapi import APIRouter, Depends, Request
 from fastui import AnyComponent, FastUI
 from fastui import components as c
-from fastui.auth import AuthRedirect, GitHubAuthProvider
+from fastui.auth import AuthRedirect, GitHubAuthProvider, GoogleAuthProvider
 from fastui.events import AuthEvent, GoToEvent, PageEvent
 from fastui.forms import fastui_form
 from httpx import AsyncClient
@@ -27,6 +27,11 @@ GITHUB_CLIENT_SECRET = SecretStr(os.getenv('GITHUB_CLIENT_SECRET', 'dummy-secret
 GITHUB_REDIRECT = os.getenv('GITHUB_REDIRECT')
 
 
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', 'yourkey.apps.googleusercontent.com')
+GOOGLE_CLIENT_SECRET = SecretStr(os.getenv('GOOGLE_CLIENT_SECRET', 'yoursecret'))
+GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI', 'http://localhost:8000/auth/login/google/redirect')
+
+
 async def get_github_auth(request: Request) -> GitHubAuthProvider:
     client: AsyncClient = request.app.state.httpx_client
     return GitHubAuthProvider(
@@ -38,7 +43,7 @@ async def get_github_auth(request: Request) -> GitHubAuthProvider:
     )
 
 
-LoginKind: TypeAlias = Literal['password', 'github']
+LoginKind: TypeAlias = Literal['password', 'github', 'google']
 
 
 @router.get('/login/{kind}', response_model=FastUI, response_model_exclude_none=True)
@@ -62,6 +67,11 @@ def auth_login(
                     components=[c.Text(text='GitHub Login')],
                     on_click=PageEvent(name='tab', push_path='/auth/login/github', context={'kind': 'github'}),
                     active='/auth/login/github',
+                ),
+                c.Link(
+                    components=[c.Text(text='Google Login')],
+                    on_click=PageEvent(name='tab', push_path='/auth/login/google', context={'kind': 'google'}),
+                    active='/auth/login/google',
                 ),
             ],
             mode='tabs',
@@ -97,6 +107,13 @@ def auth_login_content(kind: LoginKind) -> list[AnyComponent]:
                 c.Paragraph(text='Demo of GitHub authentication.'),
                 c.Paragraph(text='(Credentials are stored in the browser via a JWT only)'),
                 c.Button(text='Login with GitHub', on_click=GoToEvent(url='/auth/login/github/gen')),
+            ]
+        case 'google':
+            return [
+                c.Heading(text='Google Login', level=3),
+                c.Paragraph(text='Demo of Google authentication.'),
+                c.Paragraph(text='(Credentials are stored in the browser via a JWT only)'),
+                c.Button(text='Login with Google', on_click=GoToEvent(url='/auth/login/google/gen')),
             ]
         case _:
             raise ValueError(f'Invalid kind {kind!r}')
@@ -165,5 +182,52 @@ async def github_redirect(
             'github_emails': [e.model_dump() for e in emails],
         },
     )
+    token = user.encode_token()
+    return [c.FireEvent(event=AuthEvent(token=token, url='/auth/profile'))]
+
+
+async def get_google_auth(request: Request) -> GoogleAuthProvider:
+    client: AsyncClient = request.app.state.httpx_client
+    return GoogleAuthProvider(
+        httpx_client=client,
+        google_client_id=GOOGLE_CLIENT_ID,
+        google_client_secret=GOOGLE_CLIENT_SECRET,
+        redirect_uri=GOOGLE_REDIRECT_URI,
+        scopes=['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'],
+    )
+
+
+@router.get('/login/google/gen', response_model=FastUI, response_model_exclude_none=True)
+async def auth_google_gen(request: Request) -> list[AnyComponent]:
+    google_auth = await get_google_auth(request)
+    try:
+        # here we should use the refresh token to get a new access token but for the demo we don't store it
+        refresh_token = 'fake_refresh_token'
+        exchange = await google_auth.refresh_access_token(refresh_token)
+        google_user = await google_auth.get_google_user(exchange)
+        user = User(
+            email=google_user.email,
+            extra={'google_user_info': google_user.dict()},
+        )
+        token = user.encode_token()
+        return [c.FireEvent(event=AuthEvent(token=token, url='/auth/profile'))]
+    except Exception:
+        auth_url = await google_auth.authorization_url()
+        return [c.FireEvent(event=GoToEvent(url=auth_url))]
+
+
+@router.get('/login/google/redirect', response_model=FastUI, response_model_exclude_none=True)
+async def google_redirect(
+    request: Request,
+    code: str,
+) -> list[AnyComponent]:
+    google_auth = await get_google_auth(request)
+    exchange = await google_auth.exchange_code(code)
+    google_user = await google_auth.get_google_user(exchange)
+    user = User(
+        email=google_user.email,
+        extra={'google_user_info': google_user.dict()},
+    )
+    # here should store the refresh token somewhere but for the demo we don't store it
     token = user.encode_token()
     return [c.FireEvent(event=AuthEvent(token=token, url='/auth/profile'))]
