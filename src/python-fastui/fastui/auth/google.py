@@ -49,7 +49,6 @@ class GoogleAuthProvider:
         google_client_secret: SecretStr,
         redirect_uri: Union[str, None] = None,
         scopes: Union[List[str], None] = None,
-        state_provider: Union['StateProvider', bool] = True,
         exchange_cache_age: Union[timedelta, None] = timedelta(seconds=30),
     ):
         self._httpx_client = httpx_client
@@ -60,9 +59,6 @@ class GoogleAuthProvider:
             'https://www.googleapis.com/auth/userinfo.email',
             'https://www.googleapis.com/auth/userinfo.profile',
         ]
-        self._state_provider = (
-            state_provider if isinstance(state_provider, StateProvider) else StateProvider(google_client_secret)
-        )
         self._exchange_cache_age = exchange_cache_age
 
     @classmethod
@@ -72,7 +68,6 @@ class GoogleAuthProvider:
         client_id: str,
         client_secret: SecretStr,
         redirect_uri: Union[str, None] = None,
-        state_provider: Union['StateProvider', bool] = True,
         exchange_cache_age: Union[timedelta, None] = timedelta(seconds=10),
     ) -> AsyncIterator['GoogleAuthProvider']:
         async with httpx.AsyncClient() as client:
@@ -81,7 +76,6 @@ class GoogleAuthProvider:
                 client_id,
                 client_secret,
                 redirect_uri=redirect_uri,
-                state_provider=state_provider,
                 exchange_cache_age=exchange_cache_age,
             )
 
@@ -94,8 +88,6 @@ class GoogleAuthProvider:
             'access_type': 'offline',
             'prompt': 'consent',
         }
-        if self._state_provider:
-            params['state'] = await self._state_provider.new_state()
         return f'https://accounts.google.com/o/oauth2/v2/auth?{urlencode(params)}'
 
     async def exchange_code(self, code: str) -> GoogleExchange:
@@ -188,25 +180,3 @@ class AuthError(RuntimeError):
     @staticmethod
     def fastapi_handle(_request: 'Request', e: 'AuthError') -> 'JSONResponse':
         return JSONResponse({'detail': str(e)}, status_code=400)
-
-
-class StateProvider:
-    def __init__(self, secret: SecretStr, max_age: timedelta = timedelta(minutes=5)):
-        self._secret = secret
-        self._max_age = max_age
-
-    async def new_state(self) -> str:
-        import jwt
-
-        data = {'created_at': datetime.now().isoformat()}
-        return jwt.encode(data, self._secret.get_secret_value(), algorithm='HS256')
-
-    async def check_state(self, state: str) -> bool:
-        import jwt
-
-        try:
-            d = jwt.decode(state, self._secret.get_secret_value(), algorithms=['HS256'])
-            created_at = datetime.fromisoformat(d['created_at'])
-            return datetime.now() - created_at <= self._max_age
-        except jwt.DecodeError:
-            return False

@@ -63,7 +63,6 @@ async def google_auth_provider(mock_httpx_client: httpx.AsyncClient):
         google_client_secret=SecretStr('google_client_secret'),
         redirect_uri='https://example.com/callback',
         scopes=['email', 'profile'],
-        state_provider=False,
         exchange_cache_age=timedelta(minutes=5),
     )
 
