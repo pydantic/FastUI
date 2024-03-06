@@ -282,6 +282,20 @@ The statement spoken by the famous cow is provided by the backend."""
             ],
             class_name='border-top mt-3 pt-1',
         ),
+        c.Div(
+            components=[
+                c.Heading(text='Button and Toast', level=2),
+                c.Paragraph(text='The button below will open a toast.'),
+                c.Button(text='Show Toast', on_click=PageEvent(name='show-toast')),
+                c.Toast(
+                    title='Toast',
+                    body=[c.Paragraph(text='This is a toast.')],
+                    open_trigger=PageEvent(name='show-toast'),
+                    position='bottom-end',
+                ),
+            ],
+            class_name='border-top mt-3 pt-1',
+        ),
         title='Components',
     )
 
