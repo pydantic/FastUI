@@ -303,6 +303,29 @@ class Spinner(_p.BaseModel, extra='forbid'):
     type: _t.Literal['Spinner'] = 'Spinner'
 
 
+class Toast(_p.BaseModel, extra='forbid'):
+    title: str
+    body: '_t.List[AnyComponent]'
+    position: _t.Union[
+        _t.Literal[
+            'top-start',
+            'top-center',
+            'top-end',
+            'middle-start',
+            'middle-center',
+            'middle-end',
+            'bottom-start',
+            'bottom-center',
+            'bottom-end',
+        ],
+        None,
+    ] = None
+    open_trigger: _t.Union[events.PageEvent, None] = _p.Field(default=None, serialization_alias='openTrigger')
+    open_context: _t.Union[events.ContextType, None] = _p.Field(default=None, serialization_alias='openContext')
+    class_name: _class_name.ClassNameField = None
+    type: _t.Literal['Toast'] = 'Toast'
+
+
 class Custom(_p.BaseModel, extra='forbid'):
     data: _types.JsonData
     sub_type: str = _p.Field(serialization_alias='subType')
@@ -343,6 +366,7 @@ AnyComponent = _te.Annotated[
         Form,
         FormField,
         ModelForm,
+        Toast,
     ],
     _p.Field(discriminator='type'),
 ]

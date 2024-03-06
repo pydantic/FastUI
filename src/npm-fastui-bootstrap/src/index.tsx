@@ -6,6 +6,7 @@ import { Modal } from './modal'
 import { Navbar } from './navbar'
 import { Pagination } from './pagination'
 import { Footer } from './footer'
+import { Toast } from './toast'
 
 export const customRender: CustomRender = (props) => {
   const { type } = props
@@ -18,6 +19,8 @@ export const customRender: CustomRender = (props) => {
       return () => <Modal {...props} />
     case 'Pagination':
       return () => <Pagination {...props} />
+    case 'Toast':
+      return () => <Toast {...props} />
   }
 }
 
