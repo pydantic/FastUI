@@ -60,7 +60,7 @@ export const FormComp: FC<Form | ModelForm> = (props) => {
         return
       }
 
-      const requestArgs: RequestArgs = { url: submitUrl, expectedStatus: [200, 422] }
+      const requestArgs: RequestArgs = { url: submitUrl, expectedStatus: [200, 201, 422] }
       if (method === 'GET') {
         // as above with URLSearchParams
         requestArgs.query = new URLSearchParams(formData as any)
@@ -69,7 +69,7 @@ export const FormComp: FC<Form | ModelForm> = (props) => {
       }
 
       const [status, data] = await request(requestArgs)
-      if (status === 200) {
+      if (status === 200 || status === 201) {
         setResponseComponentProps(data as FastProps[])
       } else {
         console.assert(status === 422)
