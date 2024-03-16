@@ -37,6 +37,24 @@ export const classNameGenerator: ClassNameGenerator = ({
         'btn-secondary': props.namedStyle === 'secondary',
         'btn-warning': props.namedStyle === 'warning',
       }
+    case 'Recorder':
+      switch (subElement) {
+        case 'left-image':
+          return { 'me-1': !props.hideText, 'ms-0': true, 'align-middle': true }
+        case 'right-image':
+          return { 'ms-1': !props.hideText, 'me-0': true, 'align-middle': true }
+        case 'container':
+          return { 'd-flex': true, 'gap-1': props.displayStyle !== 'toggle' }
+      }
+      return {
+        btn: true,
+        'btn-primary': !props.namedStyle || props.namedStyle === 'primary',
+        'btn-secondary': props.namedStyle === 'secondary',
+        'btn-warning': props.namedStyle === 'warning',
+        'd-flex': true,
+        'flex-row': props.imagePosition === 'left' && props.displayStyle !== 'toggle',
+        'flex-row-reverse': props.imagePosition === 'right' && props.displayStyle !== 'toggle',
+      }
     case 'Table':
       switch (subElement) {
         case 'no-data-message':
