@@ -1,141 +1,211 @@
-import { useEffect, useState, type FC } from 'react';
+import { useEffect, useState, useMemo, type FC, type MouseEventHandler, useRef } from 'react'
 
-export interface MediaRecorderCompProps {
-  audioConstraints?: MediaStreamConstraints['audio'];
-  videoConstraints?: MediaStreamConstraints['video'];
-  peerIdentity?: string;
-  preferCurrentTab?: boolean;
-  options?: MediaRecorderOptions;
-  onRecordingStart?: () => void;
-  onRecordingComplete: (blob: Blob) => void;
-  hideText?: boolean;
-  startText?: string;
-  stopText?: string;
-  hideImage?: boolean;
-  startImageUrl?: string;
-  stopImageUrl?: string;
-  imagePosition?: 'left' | 'right';
-  displayStyle?: 'standard' | 'toggle';
-}
+import type { Recorder } from '../models'
 
+import { useClassName } from '../hooks/className'
 
-export const MediaRecorderComp: FC<MediaRecorderCompProps> = ({
-  audioConstraints = true,
-  videoConstraints = false,
-  peerIdentity,
-  preferCurrentTab,
-  options,
-  onRecordingStart,
-  onRecordingComplete,
-  hideText = false,
-  startText = 'Start Recording',
-  stopText = 'Stop Recording',
-  hideImage = false,
-  startImageUrl,
-  stopImageUrl,
-  imagePosition = 'left',
-  displayStyle = 'standard',
-}) => {
-  const [buttonStartText, setButtonStartText] = useState(startText);
-  const [buttonStopText, setButtonStopText] = useState(stopText);
-  const [buttonTextVisible, setButtonTextVisible] = useState(!hideText);
-  const [buttonStartImageUrl, setButtonStartImageUrl] = useState(startImageUrl);
-  const [buttonStopImageUrl, setButtonStopImageUrl] = useState(stopImageUrl);
-  const [buttonImageVisible, setButtonImageVisible] = useState(!hideImage);
-  const [buttonDisplayStyle, setButtonDisplayStyle] = useState(displayStyle);
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-  const [isRecording, setIsRecording] = useState(false);
+export const RecorderComp: FC<Recorder> = (props) => {
+  const {
+    audioConstraints = true,
+    videoConstraints = false,
+    peerIdentity,
+    preferCurrentTab,
+    options,
+    submitUrl,
+    saveRecording,
+    hideText = false,
+    text = 'Start Recording',
+    stopText = 'Stop Recording',
+    hideImage = false,
+    imageUrl,
+    stopImageUrl,
+    imagePosition = 'left',
+    imageWidth = '24px',
+    imageHeight = '24px',
+    displayStyle = 'standard',
+    overrideFieldName = 'recording',
+  } = props
+  const [recordingSubmitUrl, setRecordingSubmitUrl] = useState(submitUrl)
+  const [saveRecordings, setSaveRecordings] = useState(saveRecording)
+  const [buttonStartText, setButtonStartText] = useState(text)
+  const [buttonStopText, setButtonStopText] = useState(stopText)
+  const [buttonTextVisible, setButtonTextVisible] = useState(!hideText)
+  const [buttonStartImageUrl, setButtonStartImageUrl] = useState(imageUrl)
+  const [buttonStopImageUrl, setButtonStopImageUrl] = useState(stopImageUrl ?? imageUrl)
+  const [buttonImageVisible, setButtonImageVisible] = useState(!hideImage)
+  const [buttonImageWidth, setButtonImageWidth] = useState(imageWidth)
+  const [buttonImageHeight, setButtonImageHeight] = useState(imageHeight)
+  const [buttonDisplayStyle, setButtonDisplayStyle] = useState(displayStyle)
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null)
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const [isRecording, setIsRecording] = useState(false)
+  const [recordingFieldName, setRecordingFieldName] = useState(overrideFieldName)
 
   useEffect(() => {
-    setButtonTextVisible(!hideText);
-    setButtonStartText(hideText ? '' : startText);
-    setButtonStopText(hideText ? '' : stopText);
-    setButtonStartImageUrl(hideImage ? '' : startImageUrl);
-    setButtonStopImageUrl(hideImage ? '' : stopImageUrl);
-    setButtonImageVisible(!hideImage);
-    setButtonDisplayStyle(displayStyle);
-  }, [startText, stopText, hideText, startImageUrl, stopImageUrl, hideImage, displayStyle]);
+    setRecordingSubmitUrl(submitUrl)
+    setSaveRecordings(saveRecording)
+    setButtonTextVisible(!hideText)
+    setButtonStartText(hideText ? '' : text)
+    setButtonStopText(hideText ? '' : stopText)
+    setButtonImageVisible(!hideImage)
+    setButtonStartImageUrl(hideImage ? '' : imageUrl)
+    setButtonStopImageUrl(hideImage ? '' : stopImageUrl ?? imageUrl)
+    setButtonImageWidth(imageWidth)
+    setButtonImageHeight(imageHeight)
+    setButtonDisplayStyle(displayStyle)
+    setRecordingFieldName(overrideFieldName)
+  }, [
+    submitUrl,
+    saveRecording,
+    hideText,
+    text,
+    stopText,
+    hideImage,
+    imageUrl,
+    stopImageUrl,
+    imageWidth,
+    imageHeight,
+    displayStyle,
+    overrideFieldName,
+  ])
+
+  const handleDownloadRecording = (blob: Blob): void => {
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.style.display = 'none'
+    a.href = url
+    a.download = 'recording.webm'
+    document.body.appendChild(a)
+    a.click()
+    window.URL.revokeObjectURL(url)
+  }
+
+  const mediaStreamConstraints: MediaStreamConstraints = useMemo(
+    () => ({
+      audio: audioConstraints ?? true,
+      video: videoConstraints ?? false,
+      peerIdentity,
+      preferCurrentTab,
+    }),
+    [audioConstraints, videoConstraints, peerIdentity, preferCurrentTab],
+  )
+
+  useEffect(() => {
+    mediaRecorderRef.current = mediaRecorder
+  }, [mediaRecorder])
 
   useEffect(() => {
     // initialize media recording
-    const initMediaRecorder = async () => {
+    const initMediaRecorder = async (): Promise<void> => {
       try {
-        const constraints: MediaStreamConstraints = {
-          audio: audioConstraints ?? true,
-          video: videoConstraints ?? false,
-          peerIdentity,
-          preferCurrentTab,
+        const stream = await navigator.mediaDevices.getUserMedia(mediaStreamConstraints)
+        const recorder = new MediaRecorder(stream, options)
+
+        // get recorded data
+        recorder.ondataavailable = async (event) => {
+          if (event.data.size > 0) {
+            const blobRecording = new Blob([event.data], { type: event.data.type })
+
+            if (saveRecordings) {
+              console.log('Saving recording')
+              handleDownloadRecording(blobRecording)
+            }
+            if (recordingSubmitUrl) {
+              const formData = new FormData()
+              formData.append(recordingFieldName, blobRecording)
+              const response = await fetch(recordingSubmitUrl, {
+                method: 'POST',
+                body: formData,
+              })
+              return response
+            }
+          }
         }
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        const recorder = new MediaRecorder(stream, options);
-        setMediaRecorder(recorder);
+        setMediaRecorder(recorder)
       } catch (error) {
-        console.error('Error initializing media recorder', error);
+        console.error('Error initializing media recorder', error)
       }
-    };
-
-    initMediaRecorder();
-
-    return () => mediaRecorder?.stream?.getTracks?.()?.forEach(track => track.stop());
-  }, [audioConstraints, videoConstraints, peerIdentity, preferCurrentTab, options]);
-
-  const handleStartRecording = () => {
-    if (!mediaRecorder) {
-      console.error('Media recorder not initialized');
-      return;
     }
-    onRecordingStart?.();
-    mediaRecorder.start();
-    setIsRecording(true);
-    console.log('Recording started');
+
+    initMediaRecorder()
+
+    return () => mediaRecorderRef.current?.stream?.getTracks?.()?.forEach((track) => track.stop())
+  }, [options, saveRecordings, recordingFieldName, recordingSubmitUrl, mediaStreamConstraints])
+
+  const handleStartRecording = (): void => {
+    if (!mediaRecorder) {
+      console.error('Media recorder not initialized')
+      return
+    }
+    setIsRecording(true)
+    mediaRecorder.start()
+    console.log('Recording started')
   }
 
-  const handleStopRecording = () => {
+  const handleStopRecording = (): void => {
     if (!mediaRecorder) {
-      console.error('Media recorder not initialized');
-      return;
+      console.error('Media recorder not initialized')
+      return
     }
-    mediaRecorder.stop();
-    setIsRecording(false);
-    console.log('Recording stopped');
+    mediaRecorder.stop()
+    setIsRecording(false)
+    console.log('Recording stopped')
+  }
 
-    // get recorded data
-    mediaRecorder.ondataavailable = (event) => {
-      if (event.data.size > 0) {
-        onRecordingComplete(event.data);
-      }
-    }
-  };
+  const handleOnClick: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault()
+    isRecording ? handleStopRecording() : handleStartRecording()
+  }
 
-  const handleOnClick = () => isRecording ? handleStopRecording() : handleStartRecording();
-  const displayText = () => isRecording ? buttonStopText : buttonStartText;
-  const displayImageUrl = () => isRecording ? buttonStopImageUrl : buttonStartImageUrl;
+  const ImageButton: FC<{
+    text?: string
+    imageUrl?: string
+    disabled?: boolean
+  }> = ({ text, imageUrl, disabled = false }) => {
+    const leftImgClassName = useClassName(props, { el: 'left-image' })
+    const rightImgClassName = useClassName(props, { el: 'right-image' })
+    const imgClassName = imagePosition === 'left' ? leftImgClassName : rightImgClassName
 
-  const renderButton = (text?: string, imageUrl?: string, disabled = false) => (
-    <button onClick={handleOnClick} disabled={disabled}>
-      {buttonImageVisible && imageUrl && (
-        <img src={imageUrl} alt="" style={{
-          marginRight: imagePosition === 'right' ? '0.5rem' : '0',
-          marginLeft: imagePosition === 'left' ? '0.5rem' : '0',
-          verticalAlign: 'middle',
-        }} />
-      )}
-      {buttonTextVisible && text}
-    </button>
-  );
+    return (
+      <button
+        className={useClassName(props)}
+        onClick={handleOnClick}
+        disabled={disabled}
+        aria-label={text}
+        aria-disabled={disabled}
+      >
+        {buttonImageVisible && imageUrl && (
+          <img
+            className={imgClassName}
+            src={imageUrl}
+            alt={`${text}${disabled ? ' disabled' : ''} button image`}
+            style={{
+              width: buttonImageWidth,
+              height: buttonImageHeight,
+            }}
+          />
+        )}
+        {buttonTextVisible && text}
+      </button>
+    )
+  }
 
-  const renderStandardButtons = () => (
+  const StandardButtons: FC = (): JSX.Element => (
     <>
-      {renderButton(buttonStartText, buttonStartImageUrl, isRecording)}
-      {renderButton(buttonStopText, buttonStopImageUrl, !isRecording)}
+      <ImageButton text={buttonStartText} imageUrl={buttonStartImageUrl} disabled={isRecording} />
+      <ImageButton text={buttonStopText} imageUrl={buttonStopImageUrl} disabled={!isRecording} />
     </>
-  );
+  )
+
+  const ToggleButton: FC = (): JSX.Element => {
+    const displayText = () => (isRecording ? buttonStopText : buttonStartText)
+    const displayImageUrl = () => (isRecording ? buttonStopImageUrl : buttonStartImageUrl)
+    return <ImageButton text={displayText()} imageUrl={displayImageUrl()} />
+  }
 
   return (
-    <>
-      {buttonDisplayStyle === 'standard' && renderStandardButtons()}
-      {buttonDisplayStyle === 'toggle' && renderButton(displayText(), displayImageUrl())}
-    </>
-  );
+    <div className={useClassName(props, { el: 'container' })}>
+      {buttonDisplayStyle === 'toggle' ? <ToggleButton /> : <StandardButtons />}
+    </div>
+  )
 }
-
