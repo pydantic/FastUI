@@ -300,6 +300,7 @@ export interface Pagination {
   total: number
   className?: ClassName
   type: 'Pagination'
+  pageQueryParam?: string
   pageCount: number
 }
 /**
