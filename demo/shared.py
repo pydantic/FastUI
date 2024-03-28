@@ -11,7 +11,7 @@ def demo_page(*components: AnyComponent, title: str | None = None) -> list[AnyCo
         c.Navbar(
             title='FastUI Demo',
             title_event=GoToEvent(url='/'),
-            links=[
+            start_links=[
                 c.Link(
                     components=[c.Text(text='Components')],
                     on_click=GoToEvent(url='/components'),
@@ -24,7 +24,7 @@ def demo_page(*components: AnyComponent, title: str | None = None) -> list[AnyCo
                 ),
                 c.Link(
                     components=[c.Text(text='Auth')],
-                    on_click=GoToEvent(url='/auth/login'),
+                    on_click=GoToEvent(url='/auth/login/password'),
                     active='startswith:/auth',
                 ),
                 c.Link(

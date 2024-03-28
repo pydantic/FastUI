@@ -19,7 +19,7 @@ except ImportError as _e:
 if _t.TYPE_CHECKING:
     from . import json_schema
 
-__all__ = 'FastUIForm', 'fastui_form', 'FormFile', 'SelectSearchResponse', 'SelectOption'
+__all__ = 'FastUIForm', 'fastui_form', 'FormFile', 'Textarea', 'SelectSearchResponse', 'SelectOption'
 
 FormModel = _t.TypeVar('FormModel', bound=pydantic.BaseModel)
 
@@ -226,3 +226,8 @@ def name_to_loc(name: str) -> 'json_schema.SchemeLocation':
             else:
                 loc.append(part)
         return loc
+
+
+# Use uppercase for consistency with pydantic.Field, which is also a function
+def Textarea(rows: _t.Union[int, None] = None, cols: _t.Union[int, None] = None) -> _t.Any:  # N802
+    return pydantic.Field(json_schema_extra={'format': 'textarea', 'rows': rows, 'cols': cols})

@@ -3,7 +3,11 @@ import { components, useClassName, models } from 'fastui'
 import BootstrapNavbar from 'react-bootstrap/Navbar'
 
 export const Navbar: FC<models.Navbar> = (props) => {
-  const links = props.links.map((link) => {
+  const startLinks = props.startLinks.map((link) => {
+    link.mode = link.mode || 'navbar'
+    return link
+  })
+  const endLinks = props.endLinks.map((link) => {
     link.mode = link.mode || 'navbar'
     return link
   })
@@ -14,7 +18,14 @@ export const Navbar: FC<models.Navbar> = (props) => {
         <BootstrapNavbar.Toggle aria-controls="navbar-collapse" />
         <BootstrapNavbar.Collapse id="navbar-collapse">
           <ul className="navbar-nav me-auto">
-            {links.map((link, i) => (
+            {startLinks.map((link, i) => (
+              <li key={i} className="nav-item">
+                <components.LinkComp {...link} />
+              </li>
+            ))}
+          </ul>
+          <ul className="navbar-nav ms-auto">
+            {endLinks.map((link, i) => (
               <li key={i} className="nav-item">
                 <components.LinkComp {...link} />
               </li>

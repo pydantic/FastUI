@@ -12,6 +12,7 @@ from .components.forms import (
     FormFieldInput,
     FormFieldSelect,
     FormFieldSelectSearch,
+    FormFieldTextarea,
     InputHtmlType,
 )
 
@@ -30,7 +31,7 @@ def model_json_schema_to_fields(model: _t.Type[BaseModel]) -> _t.List[FormField]
 
 
 JsonSchemaInput: _ta.TypeAlias = (
-    'JsonSchemaString | JsonSchemaStringEnum | JsonSchemaFile | JsonSchemaInt | JsonSchemaNumber'
+    'JsonSchemaString | JsonSchemaStringEnum | JsonSchemaFile | JsonSchemaTextarea | JsonSchemaInt | JsonSchemaNumber'
 )
 JsonSchemaField: _ta.TypeAlias = 'JsonSchemaInput | JsonSchemaBool'
 JsonSchemaConcrete: _ta.TypeAlias = 'JsonSchemaField | JsonSchemaArray | JsonSchemaObject'
@@ -67,6 +68,15 @@ class JsonSchemaFile(JsonSchemaBase, total=False):
     type: _ta.Required[_t.Literal['string']]
     format: _ta.Required[_t.Literal['binary']]
     accept: str
+
+
+class JsonSchemaTextarea(JsonSchemaBase, total=False):
+    type: _ta.Required[_t.Literal['string']]
+    format: _ta.Required[_t.Literal['textarea']]
+    rows: int
+    cols: int
+    default: str
+    placeholder: str
 
 
 class JsonSchemaBool(JsonSchemaBase, total=False):
@@ -185,6 +195,7 @@ def json_schema_field_to_field(
             html_type=input_html_type(schema),
             required=required,
             initial=schema.get('default'),
+            autocomplete=schema.get('autocomplete'),
             description=schema.get('description'),
         )
 
@@ -236,6 +247,18 @@ def special_string_field(
                 accept=schema.get('accept'),
                 description=schema.get('description'),
             )
+        elif schema.get('format') == 'textarea':
+            return FormFieldTextarea(
+                name=name,
+                title=title,
+                required=required,
+                rows=schema.get('rows'),
+                cols=schema.get('cols'),
+                placeholder=schema.get('placeholder'),
+                initial=schema.get('initial'),
+                description=schema.get('description'),
+                autocomplete=schema.get('autocomplete'),
+            )
         elif enum := schema.get('enum'):
             enum_labels = schema.get('enum_labels', {})
             return FormFieldSelect(
@@ -247,6 +270,7 @@ def special_string_field(
                 options=[SelectOption(value=v, label=enum_labels.get(v) or as_title(v)) for v in enum],
                 initial=schema.get('default'),
                 description=schema.get('description'),
+                autocomplete=schema.get('autocomplete'),
             )
         elif search_url := schema.get('search_url'):
             return FormFieldSelectSearch(

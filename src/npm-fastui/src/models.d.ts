@@ -25,6 +25,8 @@ export type FastProps =
   | Iframe
   | Video
   | FireEvent
+  | Error
+  | Spinner
   | Custom
   | Table
   | Pagination
@@ -32,6 +34,7 @@ export type FastProps =
   | Details
   | Form
   | FormFieldInput
+  | FormFieldTextarea
   | FormFieldBoolean
   | FormFieldFile
   | FormFieldSelect
@@ -53,6 +56,7 @@ export type JsonData =
       [k: string]: JsonData
     }
 export type AnyEvent = PageEvent | GoToEvent | BackEvent | AuthEvent
+export type NamedStyle = 'primary' | 'secondary' | 'warning'
 export type DisplayMode =
   | 'auto'
   | 'plain'
@@ -123,6 +127,7 @@ export interface Button {
   text: string
   onClick?: AnyEvent
   htmlType?: 'button' | 'reset' | 'submit'
+  namedStyle?: NamedStyle
   className?: ClassName
   type: 'Button'
 }
@@ -131,6 +136,7 @@ export interface PageEvent {
   pushPath?: string
   context?: ContextType
   clear?: boolean
+  nextEvent?: PageEvent | GoToEvent | BackEvent | AuthEvent
   type: 'page'
 }
 export interface ContextType {
@@ -141,6 +147,7 @@ export interface GoToEvent {
   query?: {
     [k: string]: string | number
   }
+  target?: '_blank'
   type: 'go-to'
 }
 export interface BackEvent {
@@ -169,7 +176,8 @@ export interface LinkList {
 export interface Navbar {
   title?: string
   titleEvent?: PageEvent | GoToEvent | BackEvent | AuthEvent
-  links: Link[]
+  startLinks: Link[]
+  endLinks: Link[]
   className?: ClassName
   type: 'Navbar'
 }
@@ -196,6 +204,8 @@ export interface ServerLoad {
   loadTrigger?: PageEvent
   components?: FastProps[]
   sse?: boolean
+  sseRetry?: number
+  method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE'
   type: 'ServerLoad'
 }
 export interface Image {
@@ -223,6 +233,8 @@ export interface Iframe {
   width?: string | number
   height?: string | number
   className?: ClassName
+  srcdoc?: string
+  sandbox?: string
   type: 'Iframe'
 }
 export interface Video {
@@ -241,6 +253,19 @@ export interface FireEvent {
   event: AnyEvent
   message?: string
   type: 'FireEvent'
+}
+export interface Error {
+  title: string
+  description: string
+  statusCode?: number
+  className?: ClassName
+  type: 'Error'
+  children?: ReactNode
+}
+export interface Spinner {
+  text?: string
+  className?: ClassName
+  type: 'Spinner'
 }
 export interface Custom {
   data: JsonData
@@ -299,12 +324,20 @@ export interface Form {
     [k: string]: JsonData
   }
   method?: 'POST' | 'GOTO' | 'GET'
-  displayMode?: 'default' | 'inline'
+  displayMode?: 'default' | 'page' | 'inline'
   submitOnChange?: boolean
   submitTrigger?: PageEvent
+  loading?: FastProps[]
   footer?: FastProps[]
   className?: ClassName
-  formFields: (FormFieldInput | FormFieldBoolean | FormFieldFile | FormFieldSelect | FormFieldSelectSearch)[]
+  formFields: (
+    | FormFieldInput
+    | FormFieldTextarea
+    | FormFieldBoolean
+    | FormFieldFile
+    | FormFieldSelect
+    | FormFieldSelectSearch
+  )[]
   type: 'Form'
 }
 export interface FormFieldInput {
@@ -319,7 +352,24 @@ export interface FormFieldInput {
   htmlType?: 'text' | 'date' | 'datetime-local' | 'time' | 'email' | 'url' | 'number' | 'password' | 'hidden'
   initial?: string | number
   placeholder?: string
+  autocomplete?: string
   type: 'FormFieldInput'
+}
+export interface FormFieldTextarea {
+  name: string
+  title: string[] | string
+  required?: boolean
+  error?: string
+  locked?: boolean
+  description?: string
+  displayMode?: 'default' | 'inline'
+  className?: ClassName
+  rows?: number
+  cols?: number
+  initial?: string
+  placeholder?: string
+  autocomplete?: string
+  type: 'FormFieldTextarea'
 }
 export interface FormFieldBoolean {
   name: string
@@ -358,9 +408,10 @@ export interface FormFieldSelect {
   className?: ClassName
   options: SelectOptions
   multiple?: boolean
-  initial?: string
+  initial?: string[] | string
   vanilla?: boolean
   placeholder?: string
+  autocomplete?: string
   type: 'FormFieldSelect'
 }
 export interface SelectOption {
@@ -393,11 +444,19 @@ export interface ModelForm {
     [k: string]: JsonData
   }
   method?: 'POST' | 'GOTO' | 'GET'
-  displayMode?: 'default' | 'inline'
+  displayMode?: 'default' | 'page' | 'inline'
   submitOnChange?: boolean
   submitTrigger?: PageEvent
+  loading?: FastProps[]
   footer?: FastProps[]
   className?: ClassName
   type: 'ModelForm'
-  formFields: (FormFieldInput | FormFieldBoolean | FormFieldFile | FormFieldSelect | FormFieldSelectSearch)[]
+  formFields: (
+    | FormFieldInput
+    | FormFieldTextarea
+    | FormFieldBoolean
+    | FormFieldFile
+    | FormFieldSelect
+    | FormFieldSelectSearch
+  )[]
 }
