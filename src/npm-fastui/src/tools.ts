@@ -216,6 +216,9 @@ export const slugify = (s: string): string =>
     .replace(/^-+/, '') // Trim - from start of text
     .replace(/-+$/, '') // Trim - from end of text
 
+export const deepLookup = (obj: object, path: string): any =>
+  path.split('.').reduce((o: any, p) => (o && o[p] !== undefined ? o[p] : undefined), obj)
+
 function getAuthHeader(): { key: string; value: string } | undefined {
   const authToken = localStorage.getItem(AUTH_TOKEN_KEY)
   if (authToken) {

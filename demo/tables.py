@@ -1,6 +1,7 @@
 from datetime import date
 from functools import cache
 from pathlib import Path
+from typing import List
 
 import pydantic
 from fastapi import APIRouter
@@ -91,16 +92,35 @@ def city_view(city_id: int) -> list[AnyComponent]:
     )
 
 
+class Address(BaseModel):
+    street: str
+    postal_code: str
+    country: str
+
+
 class User(BaseModel):
     id: int = Field(title='ID')
     name: str = Field(title='Name')
     dob: date = Field(title='Date of Birth')
     enabled: bool | None = None
+    addresses: List[Address] | None = Field(None, title='Addresses')
 
 
 users: list[User] = [
-    User(id=1, name='John', dob=date(1990, 1, 1), enabled=True),
-    User(id=2, name='Jane', dob=date(1991, 1, 1), enabled=False),
+    User(
+        id=1,
+        name='John',
+        dob=date(1990, 1, 1),
+        enabled=True,
+        addresses=[Address(street='2 William Street', postal_code='NY 10004', country='USA')],
+    ),
+    User(
+        id=2,
+        name='Jane',
+        dob=date(1991, 1, 1),
+        enabled=False,
+        addresses=[Address(street='1600 Pennsylvania Avenue NW', postal_code='DC 20500', country='USA')],
+    ),
     User(id=3, name='Jack', dob=date(1992, 1, 1)),
 ]
 
@@ -115,6 +135,7 @@ def users_view() -> list[AnyComponent]:
                 DisplayLookup(field='name', on_click=GoToEvent(url='/table/users/{id}/')),
                 DisplayLookup(field='dob', mode=DisplayMode.date),
                 DisplayLookup(field='enabled'),
+                DisplayLookup(field='addresses.0.country', title='Country'),
             ],
         ),
         title='Users',
@@ -154,6 +175,9 @@ def user_profile(id: int) -> list[AnyComponent]:
                 DisplayLookup(field='name'),
                 DisplayLookup(field='dob', mode=DisplayMode.date),
                 DisplayLookup(field='enabled'),
+                DisplayLookup(field='addresses.0.street', title='1. Address - Street'),
+                DisplayLookup(field='addresses.0.postal_code', title='1. Address - Postal Code'),
+                DisplayLookup(field='addresses.0.country', title='1. Address - Country'),
             ],
         ),
         title=user.name,
