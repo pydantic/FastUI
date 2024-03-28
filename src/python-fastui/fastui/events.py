@@ -11,6 +11,7 @@ class PageEvent(BaseModel):
     push_path: Union[str, None] = Field(default=None, serialization_alias='pushPath')
     context: Union[ContextType, None] = None
     clear: Union[bool, None] = None
+    next_event: 'Union[AnyEvent, None]' = Field(default=None, serialization_alias='nextEvent')
     type: Literal['page'] = 'page'
 
 
@@ -18,6 +19,7 @@ class GoToEvent(BaseModel):
     # can be a path or a full URL
     url: Union[str, None] = None
     query: Union[Dict[str, Union[str, float, None]], None] = None
+    target: Union[Literal['_blank'], None] = None
     type: Literal['go-to'] = 'go-to'
 
 

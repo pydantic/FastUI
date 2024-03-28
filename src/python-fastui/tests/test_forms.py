@@ -5,7 +5,7 @@ from typing import List, Tuple, Union
 import pytest
 from fastapi import HTTPException
 from fastui import components
-from fastui.forms import FormFile, fastui_form
+from fastui.forms import FormFile, Textarea, fastui_form
 from pydantic import BaseModel
 from starlette.datastructures import FormData, Headers, UploadFile
 from typing_extensions import Annotated
@@ -446,3 +446,26 @@ def test_tuple_optional():
     m = components.ModelForm(model=TupleOptional, submit_url='/foo/')
     with pytest.raises(NotImplementedError, match='Tuples with optional fields are not yet supported'):
         m.model_dump(by_alias=True, exclude_none=True)
+
+
+class FormTextarea(BaseModel):
+    text: Annotated[str, Textarea()]
+
+
+def test_form_textarea_form_fields():
+    m = components.ModelForm(model=FormTextarea, submit_url='/foobar/')
+
+    assert m.model_dump(by_alias=True, exclude_none=True) == {
+        'submitUrl': '/foobar/',
+        'method': 'POST',
+        'type': 'ModelForm',
+        'formFields': [
+            {
+                'name': 'text',
+                'title': ['Text'],
+                'required': True,
+                'locked': False,
+                'type': 'FormFieldTextarea',
+            }
+        ],
+    }

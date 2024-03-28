@@ -1,14 +1,25 @@
 import path from 'path'
 
 import react from '@vitejs/plugin-react-swc'
-import { defineConfig } from 'vite'
+import { defineConfig, HttpProxy } from 'vite'
 
 export default () => {
   const serverConfig = {
     host: true,
     port: 3000,
     proxy: {
-      '/api': 'http://localhost:8000',
+      '/api': {
+        target: 'http://localhost:8000',
+        configure: (proxy: HttpProxy.Server) => {
+          proxy.on('error', (err, _, res) => {
+            const { code } = err as any
+            if (code === 'ECONNREFUSED') {
+              res.writeHead(502, { 'content-type': 'text/plain' })
+              res.end('vite-proxy: Proxy connection refused')
+            }
+          })
+        },
+      },
     },
   }
 

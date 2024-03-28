@@ -21,7 +21,7 @@ export const DevReload: FC<{ enabled?: boolean }> = ({ enabled }) => {
 
 const DevReloadActive = () => {
   const { setError } = useContext(ErrorContext)
-  const { rootUrl } = useContext(ConfigContext)
+  const { APIRootUrl } = useContext(ConfigContext)
 
   useEffect(() => {
     let listening = true
@@ -36,7 +36,7 @@ const DevReloadActive = () => {
         if (!listening || failCount >= 5) {
           return count
         }
-        const response = await fetch(rootUrl + '/__dev__/reload')
+        const response = await fetch(APIRootUrl + '/__dev__/reload')
         count++
         console.debug(`dev reload connected ${count}...`)
         // if the response is okay, and we previously failed, clear error
@@ -78,6 +78,6 @@ const DevReloadActive = () => {
         devConnected = false
       }
     }
-  }, [setError, rootUrl])
+  }, [setError, APIRootUrl])
   return <></>
 }

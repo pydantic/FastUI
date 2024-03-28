@@ -31,7 +31,17 @@ class FormFieldInput(BaseFormField):
     html_type: InputHtmlType = pydantic.Field(default='text', serialization_alias='htmlType')
     initial: _t.Union[str, float, None] = None
     placeholder: _t.Union[str, None] = None
+    autocomplete: _t.Union[str, None] = None
     type: _t.Literal['FormFieldInput'] = 'FormFieldInput'
+
+
+class FormFieldTextarea(BaseFormField):
+    rows: _t.Union[int, None] = None
+    cols: _t.Union[int, None] = None
+    initial: _t.Union[str, None] = None
+    placeholder: _t.Union[str, None] = None
+    autocomplete: _t.Union[str, None] = None
+    type: _t.Literal['FormFieldTextarea'] = 'FormFieldTextarea'
 
 
 class FormFieldBoolean(BaseFormField):
@@ -49,9 +59,10 @@ class FormFieldFile(BaseFormField):
 class FormFieldSelect(BaseFormField):
     options: forms.SelectOptions
     multiple: _t.Union[bool, None] = None
-    initial: _t.Union[str, None] = None
+    initial: _t.Union[_t.List[str], str, None] = None
     vanilla: _t.Union[bool, None] = None
     placeholder: _t.Union[str, None] = None
+    autocomplete: _t.Union[str, None] = None
     type: _t.Literal['FormFieldSelect'] = 'FormFieldSelect'
 
 
@@ -65,18 +76,21 @@ class FormFieldSelectSearch(BaseFormField):
     type: _t.Literal['FormFieldSelectSearch'] = 'FormFieldSelectSearch'
 
 
-FormField = _t.Union[FormFieldInput, FormFieldBoolean, FormFieldFile, FormFieldSelect, FormFieldSelectSearch]
+FormField = _t.Union[
+    FormFieldInput, FormFieldTextarea, FormFieldBoolean, FormFieldFile, FormFieldSelect, FormFieldSelectSearch
+]
 
 
 class BaseForm(pydantic.BaseModel, ABC, defer_build=True, extra='forbid'):
     submit_url: str = pydantic.Field(serialization_alias='submitUrl')
     initial: _t.Union[_t.Dict[str, _types.JsonData], None] = None
     method: _t.Literal['POST', 'GOTO', 'GET'] = 'POST'
-    display_mode: _t.Union[_t.Literal['default', 'inline'], None] = pydantic.Field(
+    display_mode: _t.Union[_t.Literal['default', 'page', 'inline'], None] = pydantic.Field(
         default=None, serialization_alias='displayMode'
     )
     submit_on_change: _t.Union[bool, None] = pydantic.Field(default=None, serialization_alias='submitOnChange')
     submit_trigger: _t.Union[events.PageEvent, None] = pydantic.Field(default=None, serialization_alias='submitTrigger')
+    loading: '_t.Union[_t.List[AnyComponent], None]' = None
     footer: '_t.Union[_t.List[AnyComponent], None]' = None
     class_name: _class_name.ClassNameField = None
 

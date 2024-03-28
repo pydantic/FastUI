@@ -26,3 +26,15 @@ omit = [
     "src/python-fastui/fastui/__main__.py",
     "src/python-fastui/fastui/generate_typescript.py",
 ]
+
+[tool.coverage.report]
+precision = 2
+exclude_lines = [
+    'pragma: no cover',
+    'raise NotImplementedError',
+    'if TYPE_CHECKING:',
+    'if typing.TYPE_CHECKING:',
+    '@overload',
+    '@typing.overload',
+    '\(Protocol\):$',
+]
