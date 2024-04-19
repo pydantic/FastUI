@@ -24,7 +24,7 @@ interface FormFieldInputProps extends FormFieldInput {
 }
 
 export const FormFieldInputComp: FC<FormFieldInputProps> = (props) => {
-  const { name, placeholder, required, htmlType, locked, autocomplete } = props
+  const { name, placeholder, required, htmlType, locked, autocomplete, onChange } = props
 
   return (
     <div className={useClassName(props)}>
@@ -40,6 +40,7 @@ export const FormFieldInputComp: FC<FormFieldInputProps> = (props) => {
         placeholder={placeholder}
         autoComplete={autocomplete}
         aria-describedby={descId(props)}
+        onChange={onChange}
       />
       <ErrorDescription {...props} />
     </div>
@@ -78,7 +79,7 @@ interface FormFieldBooleanProps extends FormFieldBoolean {
 }
 
 export const FormFieldBooleanComp: FC<FormFieldBooleanProps> = (props) => {
-  const { name, required, locked } = props
+  const { name, required, locked, onChange } = props
 
   return (
     <div className={useClassName(props)}>
@@ -92,6 +93,7 @@ export const FormFieldBooleanComp: FC<FormFieldBooleanProps> = (props) => {
         required={required}
         disabled={locked}
         aria-describedby={descId(props)}
+        onChange={onChange}
       />
       <ErrorDescription {...props} />
     </div>
