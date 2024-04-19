@@ -40,6 +40,7 @@ export type FastProps =
   | FormFieldSelect
   | FormFieldSelectSearch
   | ModelForm
+  | Toast
 export type ClassName =
   | string
   | ClassName[]
@@ -459,4 +460,22 @@ export interface ModelForm {
     | FormFieldSelect
     | FormFieldSelectSearch
   )[]
+}
+export interface Toast {
+  title: string
+  body: FastProps[]
+  position?:
+    | 'top-start'
+    | 'top-center'
+    | 'top-end'
+    | 'middle-start'
+    | 'middle-center'
+    | 'middle-end'
+    | 'bottom-start'
+    | 'bottom-center'
+    | 'bottom-end'
+  openTrigger?: PageEvent
+  openContext?: ContextType
+  className?: ClassName
+  type: 'Toast'
 }

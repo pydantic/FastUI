@@ -34,6 +34,7 @@ The following components are demonstrated:
 * `Image` - example [here](/components#image)
 * `Iframe` - example [here](/components#iframe)
 * `Video` - example [here](/components#video)
+* `Toast` - example [here](/components#toast)
 * `Table` — See [cities table](/table/cities) and [users table](/table/users)
 * `Pagination` — See the bottom of the [cities table](/table/cities)
 * `ModelForm` — See [forms](/forms/login)
