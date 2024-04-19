@@ -59,6 +59,7 @@ class Pagination(pydantic.BaseModel):
     total: int
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['Pagination'] = 'Pagination'
+    page_query_param: str = pydantic.Field('page', serialization_alias='pageQueryParam')
 
     @pydantic.computed_field(alias='pageCount')
     def page_count(self) -> int:

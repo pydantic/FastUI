@@ -7,11 +7,11 @@ interface Link {
   locked?: boolean
   active?: boolean
   page?: number
+  pageQueryParam?: string
 }
 
 export const Pagination: FC<models.Pagination> = (props) => {
-  const { page, pageCount } = props
-
+  const { page, pageCount, pageQueryParam } = props
   if (pageCount === 1) return null
 
   const links: Link[] = [
@@ -20,17 +20,19 @@ export const Pagination: FC<models.Pagination> = (props) => {
       ariaLabel: 'Previous',
       locked: page === 1,
       page: page - 1,
+      pageQueryParam,
     },
     {
       Display: () => <>1</>,
       locked: page === 1,
       active: page === 1,
       page: 1,
+      pageQueryParam,
     },
   ]
 
   if (page > 4) {
-    links.push({ Display: () => <>...</> })
+    links.push({ Display: () => <>...</>, pageQueryParam })
   }
 
   for (let p = page - 2; p <= page + 2; p++) {
@@ -40,17 +42,19 @@ export const Pagination: FC<models.Pagination> = (props) => {
       locked: page === p,
       active: page === p,
       page: p,
+      pageQueryParam,
     })
   }
 
   if (page < pageCount - 3) {
-    links.push({ Display: () => <>...</> })
+    links.push({ Display: () => <>...</>, pageQueryParam })
   }
 
   links.push({
     Display: () => <>{pageCount}</>,
     locked: page === pageCount,
     page: pageCount,
+    pageQueryParam,
   })
 
   links.push({
@@ -58,6 +62,7 @@ export const Pagination: FC<models.Pagination> = (props) => {
     ariaLabel: 'Next',
     locked: page === pageCount,
     page: page + 1,
+    pageQueryParam,
   })
 
   return (
@@ -71,7 +76,7 @@ export const Pagination: FC<models.Pagination> = (props) => {
   )
 }
 
-const PaginationLink: FC<Link> = ({ Display, ariaLabel, locked, active, page }) => {
+const PaginationLink: FC<Link> = ({ Display, ariaLabel, locked, active, page, pageQueryParam }) => {
   if (!page) {
     return (
       <li className="page-item">
@@ -82,7 +87,10 @@ const PaginationLink: FC<Link> = ({ Display, ariaLabel, locked, active, page }) 
     )
   }
   const className = renderClassName({ 'page-link': true, disabled: locked && !active, active } as models.ClassName)
-  const onClick: models.GoToEvent = { type: 'go-to', query: { page } }
+  const onClick: models.GoToEvent = {
+    type: 'go-to',
+    query: { [pageQueryParam !== undefined ? pageQueryParam : 'page']: page },
+  }
   return (
     <li className="page-item">
       <components.LinkRender onClick={onClick} className={className} locked={locked || active} ariaLabel={ariaLabel}>
