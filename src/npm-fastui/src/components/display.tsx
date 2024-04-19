@@ -203,7 +203,12 @@ export function renderEvent(event: AnyEvent | undefined, data: DataModel): AnyEv
   if (newEvent) {
     if (newEvent.type === 'go-to' && newEvent.url) {
       // for go-to events with a URL, substitute the row values into the url
-      const url = subKeys(newEvent.url, data)
+      let url: string | null = null
+      try {
+        url = subKeys(newEvent.url, data)
+      } catch (e) {
+        url = null
+      }
       if (url === null) {
         newEvent = undefined
       } else {
@@ -218,7 +223,9 @@ const subKeys = (template: string, row: DataModel): string | null => {
   let returnNull = false
   const r = template.replace(/{(.+?)}/g, (_, key: string): string => {
     const v: JsonData | undefined = row[key]
-    if (v === null || v === undefined) {
+    if (v === undefined) {
+      throw new Error(`field "${key}" not found in ${JSON.stringify(row)}`)
+    } else if (v === null) {
       returnNull = true
       return 'null'
     } else {
