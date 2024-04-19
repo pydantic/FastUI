@@ -23,7 +23,7 @@ const FieldDetail: FC<{ props: Details; fieldDisplay: DisplayLookupProps }> = ({
     <>
       <dt className={useClassName(props, { el: 'dt' })}>{title ?? asTitle(field)}</dt>
       <dd className={useClassName(props, { el: 'dd' })}>
-        <DisplayComp type="Display" onClick={renderedOnClick} value={value || null} {...rest} />
+        <DisplayComp type="Display" onClick={renderedOnClick} value={value !== undefined ? value : null} {...rest} />
       </dd>
     </>
   )
