@@ -96,11 +96,12 @@ class User(BaseModel):
     name: str = Field(title='Name')
     dob: date = Field(title='Date of Birth')
     enabled: bool | None = None
+    status_markdown: str | None = Field(default=None, title='Status')
 
 
 users: list[User] = [
-    User(id=1, name='John', dob=date(1990, 1, 1), enabled=True),
-    User(id=2, name='Jane', dob=date(1991, 1, 1), enabled=False),
+    User(id=1, name='John', dob=date(1990, 1, 1), enabled=True, status_markdown='**Active**'),
+    User(id=2, name='Jane', dob=date(1991, 1, 1), enabled=False, status_markdown='*Inactive*'),
     User(id=3, name='Jack', dob=date(1992, 1, 1)),
 ]
 
@@ -115,6 +116,7 @@ def users_view() -> list[AnyComponent]:
                 DisplayLookup(field='name', on_click=GoToEvent(url='/table/users/{id}/')),
                 DisplayLookup(field='dob', mode=DisplayMode.date),
                 DisplayLookup(field='enabled'),
+                DisplayLookup(field='status_markdown', mode=DisplayMode.markdown),
             ],
         ),
         title='Users',
