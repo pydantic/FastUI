@@ -86,7 +86,6 @@ plugins:
             merge_init_into_class: true
             show_signature_annotations: true
             signature_crossrefs: true
-  - external-markdown
   - mkdocs-simple-hooks:
       hooks:
         on_pre_build: 'docs.plugins:on_pre_build'
