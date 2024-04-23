@@ -46,6 +46,7 @@ jobs:
           python-version: '3.8'
 
       - name: install
+        run: pip install --upgrade pip
         run: pip install -r requirements/docs.txt
       
       - name: build site
