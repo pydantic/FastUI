@@ -1,15 +1,6 @@
 # FastUI
 
-[![CI](https://github.com/pydantic/FastUI/actions/workflows/ci.yml/badge.svg)](https://github.com/pydantic/FastUI/actions?query=event%3Apush+branch%3Amain+workflow%3ACI)
-[![pypi](https://img.shields.io/pypi/v/fastui.svg)](https://pypi.python.org/pypi/fastui)
-[![versions](https://img.shields.io/pypi/pyversions/fastui.svg)](https://github.com/pydantic/FastUI)
-[![license](https://img.shields.io/github/license/pydantic/FastUI.svg)](https://github.com/pydantic/FastUI/blob/main/LICENSE)
-
-**Please note:** FastUI is still an active work in progress, do not expect it to be complete.
-
-## The Principle (short version)
-
-You can see a simple demo of an application built with FastUI [here](https://fastui-demo.onrender.com).
+## The Principle
 
 FastUI is a new way to build web application user interfaces defined by declarative Python code.
 
@@ -21,7 +12,9 @@ This means:
 
 At its heart, FastUI is a set of matching [Pydantic](https://docs.pydantic.dev) models and TypeScript interfaces that allow you to define a user interface. This interface is validated at build time by TypeScript and pyright/mypy and at runtime by Pydantic.
 
-## The Practice — Usage
+You can see a simple demo of an application built with FastUI [here](https://fastui-demo.onrender.com).
+
+## The Practice - Installation
 
 FastUI is made up of 4 things:
 
@@ -29,6 +22,8 @@ FastUI is made up of 4 things:
 - [`@pydantic/fastui` npm package](https://www.npmjs.com/package/@pydantic/fastui) — a React TypeScript package that lets you reuse the machinery and types of FastUI while implementing your own components
 - [`@pydantic/fastui-bootstrap` npm package](https://www.npmjs.com/package/@pydantic/fastui-bootstrap) — implementation/customisation of all FastUI components using [Bootstrap](https://getbootstrap.com)
 - [`@pydantic/fastui-prebuilt` npm package](https://www.jsdelivr.com/package/npm/@pydantic/fastui-prebuilt) (available on [jsdelivr.com CDN](https://www.jsdelivr.com/package/npm/@pydantic/fastui-prebuilt)) providing a pre-built version of the FastUI React app so you can use it without installing any npm packages or building anything yourself. The Python package provides a simple HTML page to serve this app.
+
+## Usage
 
 Here's a simple but complete FastAPI application that uses FastUI to show some user profiles:
 
@@ -117,13 +112,7 @@ Which renders like this:
 
 Of course, that's a very simple application, the [full demo](https://fastui-demo.onrender.com) is more complete.
 
-### Components
-
-FastUI already defines a rich set of components.
-
-All components are listed in the [demo app](https://fastui-demo.onrender.com).
-
-## The Principle (long version)
+### The Principle (long version)
 
 FastUI is an implementation of the RESTful principle; but not as it's usually understood, instead I mean the principle defined in the original [PhD dissertation](https://ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) by Roy Fielding, and excellently summarised in [this essay on htmx.org](https://htmx.org/essays/how-did-rest-come-to-mean-the-opposite-of-rest/) (HTMX people, I'm sorry to use your article to promote React which I know you despise 🙏).
 
@@ -140,13 +129,13 @@ Building an application this way has a number of significant advantages:
 
 In the abstract, FastUI is like the opposite of GraphQL but with the same goal — GraphQL lets frontend developers extend an application without any new backend development; FastUI lets backend developers extend an application without any new frontend development.
 
-### Beyond Python and React
+#### Beyond Python and React
 
 Of course, this principle shouldn't be limited to Python and React applications — provided we use the same set of agreed schemas and encoding to communicate, we should be able to use any frontend and backend that implements the schema. Interchangeably.
 
 This could mean:
 
-- Implementing a web frontend using another JS framework like Vue — lots of work, limited value IMHO
+- Implementing a web frontend using another JS framework like Vue — lots of work, limited value
 - Implementing a web frontend using an edge server, so the browser just sees HTML — lots of work but very valuable
 - Implementing frontends for other platforms like mobile or IOT — lots of work, no idea if it's actually a good idea?
 - Implementing the component models in another language like Rust or Go — since there's actually not that much code in the backend, so this would be a relatively small and mechanical task
