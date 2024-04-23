@@ -37,7 +37,9 @@
     "eslint-plugin-react-refresh": "^0.4.4",
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "json-schema-to-typescript": "^13.1.1",
-    "prettier": "^3.0.3",
     "typescript": "^5.0.2"
+  },
+  "dependencies": {
+    "prettier": "^3.2.5"
   }
 }
