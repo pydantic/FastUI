@@ -2,6 +2,8 @@ import logging
 import os
 import re
 
+from typing import Match
+
 from mkdocs.config import Config
 from mkdocs.structure.files import Files
 from mkdocs.structure.pages import Page
@@ -67,7 +69,7 @@ def remove_code_fence_attributes(markdown: str) -> str:
     https://youtrack.jetbrains.com/issue/IDEA-297873 & https://python-markdown.github.io/extensions/fenced_code_blocks/
     """
 
-    def remove_attrs(match: re.Match[str]) -> str:
+    def remove_attrs(match: Match[str]) -> str:
         suffix = re.sub(
             r' (?:test|lint|upgrade|group|requires|output|rewrite_assert)=".+?"', '', match.group(2), flags=re.M
         )
