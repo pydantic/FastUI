@@ -1,5 +1,5 @@
-site_name: dirty-equals
-site_description: Doing dirty (but extremely useful) things with equals.
+site_name: FastUI
+site_description: Build web application user interfaces defined by declarative Python code.
 site_url: https://docs.pydantic.dev/fastui/
 
 theme:
