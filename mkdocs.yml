@@ -1,0 +1,98 @@
+site_name: dirty-equals
+site_description: Doing dirty (but extremely useful) things with equals.
+site_url: https://docs.pydantic.dev/fastui/
+
+theme:
+  name: 'material'
+  palette:
+  - media: "(prefers-color-scheme: light)"
+    scheme: default
+    primary: pink
+    accent: pink
+    toggle:
+      icon: material/lightbulb-outline
+      name: "Switch to dark mode"
+  - media: "(prefers-color-scheme: dark)"
+    scheme: slate
+    primary: pink
+    accent: pink
+    toggle:
+      icon: material/lightbulb
+      name: "Switch to light mode"
+  features:
+    - content.code.annotate
+    - content.tabs.link
+    - content.code.copy
+    - announce.dismiss
+    - navigation.tabs
+    - search.suggest
+    - search.highlight
+  logo: assets/logo-white.svg
+  favicon: assets/favicon.png
+
+repo_name: pydantic/FastUI
+repo_url: https://github.com/pydantic/FastUI
+edit_uri: ''
+
+# https://www.mkdocs.org/user-guide/configuration/#validation
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+
+extra_css:
+  - 'extra/tweaks.css'
+
+# TODO: add flarelytics support
+# extra_javascript:
+#   - '/flarelytics/client.js'
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.extra
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - attr_list
+  - md_in_html
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+extra:
+  version:
+    provider: mike
+watch:
+  - src
+plugins:
+  - mike:
+      alias_type: symlink
+      canonical_version: latest
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths:
+            - src/python-fastui
+          options:
+            members_order: source
+            separate_signature: true
+            docstring_options:
+              ignore_init_summary: true
+            merge_init_into_class: true
+            show_signature_annotations: true
+            signature_crossrefs: true
+  - external-markdown
+  - mkdocs-simple-hooks:
+      hooks:
+        on_pre_build: 'docs.plugins:on_pre_build'
+        on_files: 'docs.plugins:on_files'
+        on_page_markdown: 'docs.plugins:on_page_markdown'
+nav:
+  - Introduction: index.md
+  - Guide: guide.md
+  - Components: components.md

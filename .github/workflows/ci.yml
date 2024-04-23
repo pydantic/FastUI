@@ -35,6 +35,19 @@ jobs:
         env:
           SKIP: no-commit-to-branch
 
+  docs-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - run: ./build.sh
+      - run: tree site
+
   test:
     name: test ${{ matrix.python-version }} on ${{ matrix.os }}
     strategy:
