@@ -45,8 +45,8 @@ jobs:
         with:
           python-version: '3.8'
 
+      - run: chmod +x ./build-docs.sh
       - run: ./build-docs.sh
-      - run: tree site
 
   test:
     name: test ${{ matrix.python-version }} on ${{ matrix.os }}
