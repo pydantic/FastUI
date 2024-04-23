@@ -45,7 +45,7 @@ jobs:
         with:
           python-version: '3.8'
 
-      - run: ./build.sh
+      - run: ./build-docs.sh
       - run: tree site
 
   test:
