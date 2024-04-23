@@ -45,8 +45,11 @@ jobs:
         with:
           python-version: '3.8'
 
-      - run: chmod +x ./build-docs.sh
-      - run: ./build-docs.sh
+      - name: install
+        run: pip install -r requirements/docs.txt
+      
+      - name: build site
+        run: mkdocs build --strict
 
   test:
     name: test ${{ matrix.python-version }} on ${{ matrix.os }}
