@@ -203,7 +203,12 @@ export function renderEvent(event: AnyEvent | undefined, data: DataModel): AnyEv
   if (newEvent) {
     if (newEvent.type === 'go-to' && newEvent.url) {
       // for go-to events with a URL, substitute the row values into the url
-      const url = subKeys(newEvent.url, data)
+      let url: string | null = null
+      try {
+        url = subKeys(newEvent.url, data)
+      } catch (e) {
+        url = null
+      }
       if (url === null) {
         newEvent = undefined
       } else {
