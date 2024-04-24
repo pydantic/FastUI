@@ -23,6 +23,9 @@ export type FastProps =
   | ServerLoad
   | Image
   | Iframe
+  | MediaTrackSettings
+  | RecorderOptions
+  | Recorder
   | Video
   | FireEvent
   | Error
@@ -237,6 +240,61 @@ export interface Iframe {
   srcdoc?: string
   sandbox?: string
   type: 'Iframe'
+}
+export interface MediaTrackSettings {
+  aspectRatio?: number
+  autoGainControl?: boolean
+  channelCount?: number
+  deviceId?: string
+  displaySurface?: string
+  echoCancellation?: boolean
+  facingMode?: string | ('user' | 'environment')
+  frameRate?: number
+  groupId?: string
+  height?: number
+  noiseSuppression?: boolean
+  sampleRate?: number
+  sampleSize?: number
+  width?: number
+  type: 'MediaTrackSettings'
+  className?: ClassName
+}
+export interface RecorderOptions {
+  audioBitsPerSecond?: number
+  bitsPerSecond?: number
+  mimeType?: string
+  videoBitsPerSecond?: number
+  type: 'RecorderOptions'
+  className?: ClassName
+}
+export interface Recorder {
+  audioConstraints?: MediaTrackSettings | boolean
+  videoConstraints?: MediaTrackSettings | boolean
+  peerIdentity?: string
+  preferCurrentTab?: boolean
+  options?: RecorderOptions
+  submitUrl?: string
+  /**
+   * Prompt client to save recording.
+   */
+  saveRecording?: boolean
+  hideText?: boolean
+  text?: string
+  stopText?: string
+  hideImage?: boolean
+  imageUrl?: string
+  stopImageUrl?: string
+  imagePosition?: 'left' | 'right'
+  imageWidth?: string | number
+  imageHeight?: string | number
+  displayStyle?: 'standard' | 'toggle'
+  /**
+   * Override the field name used to store the recording Blob data when the form is submitted to the `submit_url` endpoint.
+   */
+  overrideFieldName?: string
+  type: 'Recorder'
+  namedStyle?: NamedStyle
+  className?: ClassName
 }
 export interface Video {
   sources: string[]

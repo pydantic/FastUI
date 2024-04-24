@@ -36,6 +36,7 @@ import { FooterComp } from './footer'
 import { ServerLoadComp } from './ServerLoad'
 import { ImageComp } from './image'
 import { IframeComp } from './Iframe'
+import { RecorderComp } from './MediaRecorder'
 import { VideoComp } from './video'
 import { FireEventComp } from './FireEvent'
 import { ErrorComp } from './error'
@@ -72,6 +73,7 @@ export {
   ServerLoadComp,
   ImageComp,
   IframeComp,
+  RecorderComp,
   VideoComp,
   FireEventComp,
   ErrorComp,
@@ -158,6 +160,11 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <ImageComp {...props} />
       case 'Iframe':
         return <IframeComp {...props} />
+      case 'MediaTrackSettings':
+      case 'RecorderOptions':
+        return <></>
+      case 'Recorder':
+        return <RecorderComp {...props} />
       case 'Video':
         return <VideoComp {...props} />
       case 'FireEvent':

@@ -46,6 +46,10 @@ __all__ = (
     'ServerLoad',
     'Image',
     'Iframe',
+    'MediaTrackSettings',
+    'RecorderOptions',
+    'Recorder',
+    'Video',
     'FireEvent',
     'Error',
     'Spinner',
@@ -261,6 +265,74 @@ class Iframe(_p.BaseModel, extra='forbid'):
     type: _t.Literal['Iframe'] = 'Iframe'
 
 
+class MediaTrackSettings(_p.BaseModel, extra='forbid'):
+    aspect_ratio: _t.Union[float, None] = _p.Field(default=None, serialization_alias='aspectRatio')
+    auto_gain_control: _t.Union[bool, None] = _p.Field(default=None, serialization_alias='autoGainControl')
+    channel_count: _t.Union[int, None] = _p.Field(default=None, serialization_alias='channelCount')
+    device_id: _t.Union[str, None] = _p.Field(default=None, serialization_alias='deviceId')
+    display_surface: _t.Union[str, None] = _p.Field(default=None, serialization_alias='displaySurface')
+    echo_cancellation: _t.Union[bool, None] = _p.Field(default=None, serialization_alias='echoCancellation')
+    facing_mode: _t.Union[str, _t.Literal['user', 'environment'], None] = _p.Field(
+        default=None, serialization_alias='facingMode'
+    )
+    frame_rate: _t.Union[float, None] = _p.Field(default=None, serialization_alias='frameRate')
+    group_id: _t.Union[str, None] = _p.Field(default=None, serialization_alias='groupId')
+    height: _t.Union[int, None] = None
+    noise_suppression: _t.Union[bool, None] = _p.Field(default=None, serialization_alias='noiseSuppression')
+    sample_rate: _t.Union[int, None] = _p.Field(default=None, serialization_alias='sampleRate')
+    sample_size: _t.Union[int, None] = _p.Field(default=None, serialization_alias='sampleSize')
+    width: _t.Union[int, None] = None
+    type: _t.Literal['MediaTrackSettings'] = 'MediaTrackSettings'
+    class_name: _class_name.ClassNameField = None
+
+
+class RecorderOptions(_p.BaseModel, extra='forbid'):
+    audio_bits_per_second: _t.Union[int, None] = _p.Field(default=None, serialization_alias='audioBitsPerSecond')
+    bits_per_second: _t.Union[int, None] = _p.Field(default=None, serialization_alias='bitsPerSecond')
+    mime_type: _t.Union[str, None] = _p.Field(default=None, serialization_alias='mimeType')
+    video_bits_per_second: _t.Union[int, None] = _p.Field(default=None, serialization_alias='videoBitsPerSecond')
+    type: _t.Literal['RecorderOptions'] = 'RecorderOptions'
+    class_name: _class_name.ClassNameField = None
+
+
+class Recorder(_p.BaseModel, extra='forbid'):
+    audio_constraints: _t.Union[MediaTrackSettings, bool, None] = _p.Field(
+        default=True, serialization_alias='audioConstraints'
+    )
+    video_constraints: _t.Union[MediaTrackSettings, bool, None] = _p.Field(
+        default=False, serialization_alias='videoConstraints'
+    )
+    peer_identity: _t.Union[str, None] = _p.Field(default=None, serialization_alias='peerIdentity')
+    prefer_current_tab: _t.Union[bool, None] = _p.Field(default=None, serialization_alias='preferCurrentTab')
+    options: _t.Union[RecorderOptions, None] = None
+    submit_url: _t.Union[str, None] = _p.Field(default=None, serialization_alias='submitUrl')
+    save_recording: _t.Union[bool, None] = _p.Field(
+        default=False, serialization_alias='saveRecording', description='Prompt client to save recording.'
+    )
+    hide_text: _t.Union[bool, None] = _p.Field(default=False, serialization_alias='hideText')
+    text: _t.Union[str, None] = _p.Field(default='Start Recording', serialization_alias='text')
+    stop_text: _t.Union[str, None] = _p.Field(default='Stop Recording', serialization_alias='stopText')
+    hide_image: _t.Union[bool, None] = _p.Field(default=False, serialization_alias='hideImage')
+    image_url: _t.Union[_p.AnyUrl, None] = _p.Field(default=None, serialization_alias='imageUrl')
+    stop_image_url: _t.Union[_p.AnyUrl, None] = _p.Field(default=None, serialization_alias='stopImageUrl')
+    image_position: _t.Union[_t.Literal['left', 'right'], None] = _p.Field(
+        default='left', serialization_alias='imagePosition'
+    )
+    image_width: _t.Union[str, int, None] = _p.Field(default=None, serialization_alias='imageWidth')
+    image_height: _t.Union[str, int, None] = _p.Field(default=None, serialization_alias='imageHeight')
+    display_style: _t.Union[_t.Literal['standard', 'toggle'], None] = _p.Field(
+        default='standard', serialization_alias='displayStyle'
+    )
+    override_field_name: _t.Union[str, None] = _p.Field(
+        default='recording',
+        serialization_alias='overrideFieldName',
+        description='Override the field name used to store the recording Blob data when the form is submitted to the `submit_url` endpoint.',
+    )
+    type: _t.Literal['Recorder'] = 'Recorder'
+    named_style: _class_name.NamedStyleField = None
+    class_name: _class_name.ClassNameField = None
+
+
 class Video(_p.BaseModel, extra='forbid'):
     sources: _t.List[_p.AnyUrl]
     autoplay: _t.Union[bool, None] = None
@@ -354,6 +426,9 @@ AnyComponent = _te.Annotated[
         ServerLoad,
         Image,
         Iframe,
+        MediaTrackSettings,
+        RecorderOptions,
+        Recorder,
         Video,
         FireEvent,
         Error,
