@@ -28,6 +28,7 @@ repos:
         types_or: [javascript, jsx, ts, tsx, css, json, markdown]
         entry: npm run prettier
         language: system
+        exclude: '^docs/.*'
       - id: js-lint
         name: js-lint
         types_or: [ts, tsx]

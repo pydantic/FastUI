@@ -5,6 +5,7 @@ import typing_extensions as _te
 from pydantic_core import core_schema
 
 
+# TODO: replace with https://docs.pydantic.dev/dev/api/types/#pydantic.types.JsonValue, maybe?
 class JsonDataSchema:
     @staticmethod
     def __get_pydantic_json_schema__(

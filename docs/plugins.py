@@ -1,4 +1,3 @@
-import logging
 import os
 import re
 
@@ -12,8 +11,6 @@ try:
     import pytest
 except ImportError:
     pytest = None
-
-logger = logging.getLogger('mkdocs.test_examples')
 
 
 def on_pre_build(config: Config):
@@ -32,7 +29,6 @@ def remove_files(files: Files) -> Files:
         elif file.src_path.startswith('__pycache__/'):
             to_remove.append(file)
 
-    logger.debug('removing files: %s', [f.src_path for f in to_remove])
     for f in to_remove:
         files.remove(f)
 
@@ -49,11 +45,11 @@ def add_version(markdown: str, page: Page) -> str:
         version_ref = os.getenv('GITHUB_REF')
         if version_ref and version_ref.startswith('refs/tags/'):
             version = re.sub('^refs/tags/', '', version_ref.lower())
-            url = f'https://github.com/samuelcolvin/dirty-equals/releases/tag/{version}'
+            url = f'https://github.com/pydantic/FastUI/releases/tag/{version}'
             version_str = f'Documentation for version: [{version}]({url})'
         elif sha := os.getenv('GITHUB_SHA'):
             sha = sha[:7]
-            url = f'https://github.com/samuelcolvin/dirty-equals/commit/{sha}'
+            url = f'https://github.com/pydantic/FastUI/commit/{sha}'
             version_str = f'Documentation for development version: [{sha}]({url})'
         else:
             version_str = 'Documentation for development version'

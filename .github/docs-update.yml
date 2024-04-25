@@ -1,13 +1,16 @@
-name: CI
+name: Publish Documentation
 
 on:
   push:
     branches:
       - main
+      - docs-update
     tags:
       - '**'
-  pull_request:
-    types: [opened, synchronize]
+
+env:
+  COLUMNS: 150
+  PDM_DEPS: 'urllib3<2'
 
 jobs:
   lint:
@@ -34,25 +37,6 @@ jobs:
           extra_args: --all-files
         env:
           SKIP: no-commit-to-branch
-
-  docs-build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v4
-        with:
-          # cloudflare build containers use 3.8, hence using it here
-          python-version: '3.8'
-
-      - name: install
-        run: |
-          pip install --upgrade pip
-          pip install -r requirements/docs.txt
-
-      - name: build site
-        run: mkdocs build --strict
 
   test:
     name: test ${{ matrix.python-version }} on ${{ matrix.os }}
@@ -107,57 +91,53 @@ jobs:
           file: ./coverage.xml
           env_vars: PYTHON,OS
 
-  npm-build:
+  publish:
+    # Compare with the docs-build job in .github/workflows/ci.yml
+    needs: [lint, test]
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      - name: checkout docs-site
+        uses: actions/checkout@v4
         with:
-          node-version: 18
+          ref: docs-site
 
-      - run: npm install
-      - run: npm run build
-      - run: tree src
+      - name: checkout current branch
+        uses: actions/checkout@v4
 
-  check: # This job does nothing and is only used for the branch protection
-    if: always()
-    needs: [lint, test, npm-build]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Decide whether the needed jobs succeeded or failed
-        uses: re-actors/alls-green@release/v1
-        id: all-green
+      - uses: actions/setup-python@v4
         with:
-          jobs: ${{ toJSON(needs) }}
+          # cloudflare build containers use 3.8, hence using it here
+          python-version: '3.8'
 
-  release:
-    needs: [check]
-    if: "success() && startsWith(github.ref, 'refs/tags/')"
-    runs-on: ubuntu-latest
-    environment: release
+      - name: install
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements/docs.txt
+          pip install --extra-index-url https://pydantic:${MKDOCS_TOKEN}@pppr.pydantic.dev/simple/ mkdocs-material mkdocstrings-python mkdocstrings-typescript
 
-    permissions:
-      id-token: write
+        env:
+          MKDOCS_TOKEN: ${{ secrets.MKDOCS_TOKEN }}
 
-    steps:
-      - uses: actions/checkout@v4
+      - run: python -c 'import docs.plugins.main'
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+      - name: Set git credentials
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
-      - run: pip install -U build
+      - run: mike deploy -b docs-site dev --push
+        if: "github.ref == 'refs/heads/main'"
 
-      - id: check-version
+      - if: "github.ref == 'refs/heads/docs-update' || startsWith(github.ref, 'refs/tags/')"
+        id: check-version
         uses: samuelcolvin/check-python-version@v4.1
         with:
-          version_file_path: 'src/python-fastui/fastui/__init__.py'
+          version_file_path: 'pydantic/version.py'
+          skip_env_check: true
 
-      - run: python -m build --outdir dist src/python-fastui
-
-      - run: ls -lh dist
-
-      - uses: pypa/gh-action-pypi-publish@release/v1
+      - run: mike deploy -b docs-site ${{ steps.check-version.outputs.VERSION_MAJOR_MINOR }} latest --update-aliases --push
+        if: "(github.ref == 'refs/heads/docs-update' || startsWith(github.ref, 'refs/tags/')) && !fromJSON(steps.check-version.outputs.IS_PRERELEASE)"
+        env:
+          PYDANTIC_VERSION: v${{ steps.check-version.outputs.VERSION }}

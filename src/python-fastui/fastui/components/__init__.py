@@ -156,8 +156,6 @@ class Heading(_p.BaseModel, extra='forbid'):
         return json_schema
 
 
-# see https://github.com/PrismJS/prism-themes
-# and https://cdn.jsdelivr.net/npm/react-syntax-highlighter@15.5.0/dist/esm/styles/prism/index.js
 CodeStyle = _te.Annotated[_t.Union[str, None], _p.Field(serialization_alias='codeStyle')]
 """
 Code style to apply to a `Code` component.
@@ -166,8 +164,8 @@ Attributes:
     codeStyle: The code style to apply. If None, no style is applied.
 
 See Also:
-    - https://github.com/PrismJS/prism-themes
-    - https://cdn.jsdelivr.net/npm/react-syntax-highlighter@15.5.0/dist/esm/styles/prism/index.js
+    - [PrismJS Themes](https://github.com/PrismJS/prism-themes)
+    - [PrismJS Theme Index](https://cdn.jsdelivr.net/npm/react-syntax-highlighter@15.5.0/dist/esm/styles/prism/index.js)
 """
 
 

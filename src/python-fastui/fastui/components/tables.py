@@ -12,12 +12,25 @@ from . import display
 
 
 class Table(pydantic.BaseModel, extra='forbid'):
+    """Table component."""
+
     data: _t.Sequence[pydantic.SerializeAsAny[_types.DataModel]]
+    """Sequence of data models to display in the table."""
+
     columns: _t.Union[_t.List[display.DisplayLookup], None] = None
+    """List of columns to display in the table. If not provided, columns will be inferred from the data model."""
+
     data_model: _t.Union[_t.Type[pydantic.BaseModel], None] = pydantic.Field(default=None, exclude=True)
+    """Data model to use for the table. If not provided, the model will be inferred from the first data item."""
+
     no_data_message: _t.Union[str, None] = pydantic.Field(default=None, serialization_alias='noDataMessage')
+    """Message to display when there is no data."""
+
     class_name: _class_name.ClassNameField = None
+    """Optional class name to apply to the paragraph's HTML component."""
+
     type: _t.Literal['Table'] = 'Table'
+    """The type of the component. Always 'Table'."""
 
     @pydantic.model_validator(mode='after')
     def _fill_columns(self) -> _te.Self:
@@ -54,12 +67,25 @@ class Table(pydantic.BaseModel, extra='forbid'):
 
 
 class Pagination(pydantic.BaseModel):
+    """Pagination component to use with tables."""
+
     page: int
+    """The current page number."""
+
     page_size: int = pydantic.Field(serialization_alias='pageSize')
+    """The number of items per page."""
+
     total: int
-    class_name: _class_name.ClassNameField = None
-    type: _t.Literal['Pagination'] = 'Pagination'
+    """The total number of items."""
+
     page_query_param: str = pydantic.Field('page', serialization_alias='pageQueryParam')
+    """The query parameter to use for the page number."""
+
+    class_name: _class_name.ClassNameField = None
+    """Optional class name to apply to the pagination's HTML component."""
+
+    type: _t.Literal['Pagination'] = 'Pagination'
+    """The type of the component. Always 'Pagination'."""
 
     @pydantic.computed_field(alias='pageCount')
     def page_count(self) -> int:

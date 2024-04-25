@@ -58,6 +58,9 @@ export type JsonData =
     }
 export type AnyEvent = PageEvent | GoToEvent | BackEvent | AuthEvent
 export type NamedStyle = 'primary' | 'secondary' | 'warning'
+/**
+ * Display mode for a value.
+ */
 export type DisplayMode =
   | 'auto'
   | 'plain'
@@ -335,6 +338,9 @@ export interface Custom {
   className?: ClassName
   type: 'Custom'
 }
+/**
+ * Table component.
+ */
 export interface Table {
   data: DataModel[]
   columns: DisplayLookup[]
@@ -355,13 +361,16 @@ export interface DisplayLookup {
   field: string
   tableWidthPercent?: number
 }
+/**
+ * Pagination component to use with tables.
+ */
 export interface Pagination {
   page: number
   pageSize: number
   total: number
+  pageQueryParam?: string
   className?: ClassName
   type: 'Pagination'
-  pageQueryParam?: string
   pageCount: number
 }
 /**
@@ -374,12 +383,18 @@ export interface Display {
   value: JsonData
   type: 'Display'
 }
+/**
+ * Details associated with displaying a data model.
+ */
 export interface Details {
   data: DataModel
   fields: DisplayLookup[]
   className?: ClassName
   type: 'Details'
 }
+/**
+ * Form component.
+ */
 export interface Form {
   submitUrl: string
   initial?: {
@@ -402,6 +417,9 @@ export interface Form {
   )[]
   type: 'Form'
 }
+/**
+ * Form field for basic input.
+ */
 export interface FormFieldInput {
   name: string
   title: string[] | string
@@ -417,6 +435,9 @@ export interface FormFieldInput {
   autocomplete?: string
   type: 'FormFieldInput'
 }
+/**
+ * Form field for text area input.
+ */
 export interface FormFieldTextarea {
   name: string
   title: string[] | string
@@ -433,6 +454,9 @@ export interface FormFieldTextarea {
   autocomplete?: string
   type: 'FormFieldTextarea'
 }
+/**
+ * Form field for boolean input.
+ */
 export interface FormFieldBoolean {
   name: string
   title: string[] | string
@@ -446,6 +470,9 @@ export interface FormFieldBoolean {
   mode?: 'checkbox' | 'switch'
   type: 'FormFieldBoolean'
 }
+/**
+ * Form field for file input.
+ */
 export interface FormFieldFile {
   name: string
   title: string[] | string
@@ -459,6 +486,9 @@ export interface FormFieldFile {
   accept?: string
   type: 'FormFieldFile'
 }
+/**
+ * Form field for select input.
+ */
 export interface FormFieldSelect {
   name: string
   title: string[] | string
@@ -484,6 +514,9 @@ export interface SelectGroup {
   label: string
   options: SelectOption[]
 }
+/**
+ * Form field for searchable select input.
+ */
 export interface FormFieldSelectSearch {
   name: string
   title: string[] | string
@@ -500,6 +533,9 @@ export interface FormFieldSelectSearch {
   placeholder?: string
   type: 'FormFieldSelectSearch'
 }
+/**
+ * Form component generated from a Pydantic model.
+ */
 export interface ModelForm {
   submitUrl: string
   initial?: {
