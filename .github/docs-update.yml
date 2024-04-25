@@ -108,17 +108,17 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          # cloudflare build containers use 3.8, hence using it here
-          python-version: '3.8'
+          python-version: '3.11'
 
       - name: install
         run: |
           pip install --upgrade pip
           pip install -r requirements/docs.txt
-          pip install --extra-index-url https://pydantic:${MKDOCS_TOKEN}@pppr.pydantic.dev/simple/ mkdocs-material mkdocstrings-python mkdocstrings-typescript
-
+          pip install --extra-index-url https://pydantic:${PPPR_TOKEN}@pppr.pydantic.dev/simple/ mkdocs-material mkdocstrings-python griffe-typedoc mkdocstrings-typescript
+          npm install
+          npm install -g typedoc
         env:
-          MKDOCS_TOKEN: ${{ secrets.MKDOCS_TOKEN }}
+          PPPR_TOKEN: ${{ secrets.PPPR_TOKEN }}
 
       - run: python -c 'import docs.plugins.main'
 

@@ -94,4 +94,6 @@ plugins:
 nav:
   - Introduction: index.md
   - Guide: guide.md
-  - Components: components.md
+  - API Documentation:
+    - Python Components: api/python_components.md
+    - TypeScript Components: api/typescript_components.md

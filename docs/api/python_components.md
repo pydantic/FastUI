@@ -1,4 +1,7 @@
+# Python Components
+
 ::: fastui.components
+    handler: python
     options:
         inherited_members: true
         docstring_options:

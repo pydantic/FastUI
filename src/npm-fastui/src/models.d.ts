@@ -164,7 +164,7 @@ export interface PageEvent {
   pushPath?: string
   context?: ContextType
   clear?: boolean
-  nextEvent?: PageEvent | GoToEvent | BackEvent | AuthEvent
+  nextEvent?: AnyEvent
   type: 'page'
 }
 export interface ContextType {
@@ -191,7 +191,7 @@ export interface AuthEvent {
  */
 export interface Link {
   components: FastProps[]
-  onClick?: PageEvent | GoToEvent | BackEvent | AuthEvent
+  onClick?: AnyEvent
   mode?: 'navbar' | 'footer' | 'tabs' | 'vertical' | 'pagination'
   active?: string | boolean
   locked?: boolean
@@ -212,7 +212,7 @@ export interface LinkList {
  */
 export interface Navbar {
   title?: string
-  titleEvent?: PageEvent | GoToEvent | BackEvent | AuthEvent
+  titleEvent?: AnyEvent
   startLinks: Link[]
   endLinks: Link[]
   className?: ClassName
@@ -357,7 +357,7 @@ export interface DataModel {
 export interface DisplayLookup {
   mode?: DisplayMode
   title?: string
-  onClick?: PageEvent | GoToEvent | BackEvent | AuthEvent
+  onClick?: AnyEvent
   field: string
   tableWidthPercent?: number
 }
@@ -379,7 +379,7 @@ export interface Pagination {
 export interface Display {
   mode?: DisplayMode
   title?: string
-  onClick?: PageEvent | GoToEvent | BackEvent | AuthEvent
+  onClick?: AnyEvent
   value: JsonData
   type: 'Display'
 }
