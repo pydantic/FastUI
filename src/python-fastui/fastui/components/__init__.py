@@ -1,13 +1,13 @@
-"""
-Component definitions.
+"""Component definitions.
 
 All CamelCase names in the namespace should be components.
 """
 import typing as _t
 
-import pydantic as _p
 import typing_extensions as _te
 from pydantic_core import core_schema as _core_schema
+
+import pydantic as _p
 
 from .. import class_name as _class_name
 from .. import events

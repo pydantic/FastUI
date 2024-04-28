@@ -24,8 +24,11 @@ jobs:
         with:
           node-version: 18
 
-      - run: pip install -r src/python-fastui/requirements/all.txt
-      - run: pip install src/python-fastui
+      - run: pip install pdm==2.12.4
+
+      - run: make install
+
+      - run: make lint
 
       - run: npm install
 
@@ -96,23 +99,31 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - run: pip install -r src/python-fastui/requirements/test.txt
-      - run: pip install -r src/python-fastui/requirements/pyproject.txt
-      - run: pip install -e src/python-fastui
+      - run: pip install pdm==2.12.4
 
-      - run: coverage run -m pytest src
-      # display coverage and fail if it's below 80%, which shouldn't happen
-      - run: coverage report --fail-under=80
+      - run: make install
 
-      # test demo on 3.11 and 3.12, these tests are intentionally omitted from coverage
+      - run: make testcov
+
+      - run: make testcov-report
+
+      - run: make typecheck
+
+      # ci on demo for 3.11 and 3.12, these ops are intentionally omitted, reason is that it's using 3.11 and 3.12 syntax
       - if: matrix.python-version == '3.11' || matrix.python-version == '3.12'
-        run: pytest demo/tests.py
+        run: make lint-demo
 
-      - run: coverage xml
+      - if: matrix.python-version == '3.11' || matrix.python-version == '3.12'
+        run: make typecheck-demo
+
+      - if: matrix.python-version == '3.11' || matrix.python-version == '3.12'
+        run: make test-demo
+
+      - run: make testcov-xml
 
       - uses: codecov/codecov-action@v4
         with:
-          file: ./coverage.xml
+          file: ./src/python-fastui/coverage.xml
           env_vars: PYTHON,OS
 
   npm-build:

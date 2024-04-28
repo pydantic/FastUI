@@ -36,9 +36,9 @@ async def run_openai():
     ]
     chunks = await AsyncOpenAI().chat.completions.create(
         model='gpt-4',
-        messages=messages,
+        messages=messages,  # type: ignore
         stream=True,
-    )
+    )  # type: ignore
 
     last = None
     result_chunks = []
@@ -48,7 +48,7 @@ async def run_openai():
             t = now - last
         else:
             t = 0
-        text = chunk.choices[0].delta.content
+        text: str = chunk.choices[0].delta.content
         print(repr(text), t)
         if text is not None:
             result_chunks.append((t, text))

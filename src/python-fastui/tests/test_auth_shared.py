@@ -1,7 +1,8 @@
 import pytest
 from fastapi import FastAPI
-from fastui.auth import AuthError, AuthRedirect, fastapi_auth_exception_handling
 from starlette.testclient import TestClient
+
+from fastui.auth import AuthError, AuthRedirect, fastapi_auth_exception_handling
 
 
 @pytest.fixture(name='app')

@@ -3,9 +3,10 @@ import typing as _t
 from abc import ABC
 
 import annotated_types as _at
-import pydantic
 import typing_extensions as _te
 from pydantic_core import core_schema as _core_schema
+
+import pydantic
 
 from .. import class_name as _class_name
 from .. import events

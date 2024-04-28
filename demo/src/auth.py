@@ -13,6 +13,7 @@ from fastui.auth import AuthRedirect, GitHubAuthProvider
 from fastui.events import AuthEvent, GoToEvent, PageEvent
 from fastui.forms import fastui_form
 from httpx import AsyncClient
+
 from pydantic import BaseModel, EmailStr, Field, SecretStr
 
 from .auth_user import User

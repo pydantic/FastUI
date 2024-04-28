@@ -2,12 +2,13 @@ from datetime import date
 from functools import cache
 from pathlib import Path
 
-import pydantic
 from fastapi import APIRouter
 from fastui import AnyComponent, FastUI
 from fastui import components as c
 from fastui.components.display import DisplayLookup, DisplayMode
 from fastui.events import BackEvent, GoToEvent
+
+import pydantic
 from pydantic import BaseModel, Field, TypeAdapter
 
 from .shared import demo_page
@@ -39,7 +40,7 @@ def cities_list() -> list[City]:
 
 
 @cache
-def cities_lookup() -> dict[id, City]:
+def cities_lookup() -> dict[int, City]:
     return {city.id: city for city in cities_list()}
 
 
@@ -75,7 +76,7 @@ def cities_view(page: int = 1, country: str | None = None) -> list[AnyComponent]
                 DisplayLookup(field='population', table_width_percent=33),
             ],
         ),
-        c.Pagination(page=page, page_size=page_size, total=len(cities)),
+        c.Pagination(page=page, page_size=page_size, total=len(cities)),  # type: ignore
         title='Cities',
     )
 
@@ -151,12 +152,12 @@ def user_profile(id: int) -> list[AnyComponent]:
         *tabs(),
         c.Link(components=[c.Text(text='Back')], on_click=BackEvent()),
         c.Details(
-            data=user,
+            data=user,  # type: ignore
             fields=[
                 DisplayLookup(field='name'),
                 DisplayLookup(field='dob', mode=DisplayMode.date),
                 DisplayLookup(field='enabled'),
             ],
         ),
-        title=user.name,
+        title=user.name,  # type: ignore
     )

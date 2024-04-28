@@ -4,7 +4,7 @@ import pytest
 from dirty_equals import IsList, IsStr
 from fastapi.testclient import TestClient
 
-from . import app
+from src import app
 
 
 @pytest.fixture
@@ -54,9 +54,7 @@ def test_api_root(client: TestClient):
 
 
 def get_menu_links():
-    """
-    This is pretty cursory, we just go through the menu and load each page.
-    """
+    """This is pretty cursory, we just go through the menu and load each page."""
     with TestClient(app) as client:
         r = client.get('/api/')
         assert r.status_code == 200

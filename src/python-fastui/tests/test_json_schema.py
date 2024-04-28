@@ -1,8 +1,9 @@
 from dirty_equals import IsPartialDict
 from fastapi import FastAPI
+from httpx import AsyncClient
+
 from fastui import FastUI, components
 from fastui.generate_typescript import generate_json_schema
-from httpx import AsyncClient
 
 
 async def test_json_schema():

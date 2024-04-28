@@ -1,8 +1,9 @@
 import typing as _t
 
-import pydantic
 import typing_extensions as _te
 from pydantic_core import core_schema
+
+import pydantic
 
 
 # TODO: replace with https://docs.pydantic.dev/dev/api/types/#pydantic.types.JsonValue, maybe?

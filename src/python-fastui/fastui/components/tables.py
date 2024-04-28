@@ -1,8 +1,9 @@
 import typing as _t
 
-import pydantic
 import typing_extensions as _te
 from pydantic_core import core_schema as _core_schema
+
+import pydantic
 
 from .. import class_name as _class_name
 from .. import types as _types

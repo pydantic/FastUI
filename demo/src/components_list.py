@@ -222,7 +222,7 @@ print(m.dimensions)
             components=[
                 c.Heading(text='Iframe', level=2),
                 c.Markdown(text='`Iframe` can be used to embed external content.'),
-                c.Iframe(src='https://pydantic.dev', width='100%', height=400),
+                c.Iframe(src='https://pydantic.dev', width='100%', height=400),  # type: ignore
             ],
             class_name='border-top mt-3 pt-1',
         ),
@@ -260,7 +260,7 @@ print(m.dimensions)
                 c.Heading(text='Video', level=2),
                 c.Paragraph(text='A video component.'),
                 c.Video(
-                    sources=['https://www.w3schools.com/html/mov_bbb.mp4'],
+                    sources=['https://www.w3schools.com/html/mov_bbb.mp4'],  # type: ignore
                     autoplay=False,
                     controls=True,
                     loop=False,

@@ -32,5 +32,11 @@ __pycache__/
 /frontend-dist/
 /scratch/
 /packages-dist/
-/.coverage
+.coverage
 /users.db
+
+# pdm
+.pdm.toml
+.pdm-python
+.pdm-build/
+__pypackages__/

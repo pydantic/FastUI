@@ -5,9 +5,10 @@ import subprocess
 from pathlib import Path
 from typing import Any, cast
 
+from pydantic_core import core_schema, to_json
+
 from pydantic import ImportString, TypeAdapter
 from pydantic.json_schema import GenerateJsonSchema, JsonSchemaValue
-from pydantic_core import core_schema, to_json
 
 
 def main(python_object_str: str, typescript_output_file: Path):  # pragma: no cover

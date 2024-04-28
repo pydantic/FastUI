@@ -3,6 +3,7 @@ import re
 import typing as _t
 
 import typing_extensions as _ta
+
 from pydantic import BaseModel
 
 from .components.forms import (
@@ -287,8 +288,7 @@ def special_string_field(
 
 
 def loc_to_name(loc: SchemeLocation) -> str:
-    """
-    Convert a loc to a string if any item contains a '.' or the first item starts with '[' then encode with JSON,
+    """Convert a loc to a string if any item contains a '.' or the first item starts with '[' then encode with JSON,
     otherwise join with '.'.
 
     The sister method `name_to_loc` is in `form_extra.py`.
@@ -304,9 +304,7 @@ def loc_to_name(loc: SchemeLocation) -> str:
 def deference_json_schema(
     schema: JsonSchemaAny, defs: JsonSchemaDefs, required: bool
 ) -> _t.Tuple[JsonSchemaConcrete, bool]:
-    """
-    Convert a schema which might be a reference or union to a concrete schema.
-    """
+    """Convert a schema which might be a reference or union to a concrete schema."""
     if ref := schema.get('$ref'):
         defs = defs or {}
         def_schema = defs[ref.rsplit('/')[-1]]
@@ -359,9 +357,7 @@ type_lookup: _t.Dict[str, InputHtmlType] = {
 
 
 def input_html_type(schema: JsonSchemaField) -> InputHtmlType:
-    """
-    Convert a schema into an HTML type
-    """
+    """Convert a schema into an HTML type"""
     key = schema['type']
     if key == 'string':
         if string_format := schema.get('format'):
@@ -374,21 +370,15 @@ def input_html_type(schema: JsonSchemaField) -> InputHtmlType:
 
 
 def schema_is_field(schema: JsonSchemaConcrete) -> _ta.TypeGuard[JsonSchemaField]:
-    """
-    Determine if a schema is a field `JsonSchemaField`
-    """
+    """Determine if a schema is a field `JsonSchemaField`"""
     return schema['type'] in {'string', 'number', 'integer', 'boolean'}
 
 
 def schema_is_array(schema: JsonSchemaConcrete) -> _ta.TypeGuard[JsonSchemaArray]:
-    """
-    Determine if a schema is an array `JsonSchemaArray`
-    """
+    """Determine if a schema is an array `JsonSchemaArray`"""
     return schema['type'] == 'array'
 
 
 def schema_is_object(schema: JsonSchemaConcrete) -> _ta.TypeGuard[JsonSchemaObject]:
-    """
-    Determine if a schema is an object `JsonSchemaObject`
-    """
+    """Determine if a schema is an object `JsonSchemaObject`"""
     return schema['type'] == 'object'

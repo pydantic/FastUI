@@ -4,8 +4,9 @@ Simple tests of component creation.
 NOTE: we do NOT want to exhaustively construct every component just for the same of it -
 that's just testing pydantic!
 """
-from fastui import FastUI, components
 from pydantic_core import Url
+
+from fastui import FastUI, components
 
 
 def test_div_text():
@@ -44,7 +45,7 @@ def test_root_model():
 
 def test_root_model_single():
     # fixed by validator
-    m = FastUI(root=components.Text(text='hello world'))
+    m = FastUI(root=components.Text(text='hello world'))  # type: ignore
     assert m.model_dump(by_alias=True, exclude_none=True) == [
         {
             'text': 'hello world',
@@ -54,7 +55,7 @@ def test_root_model_single():
 
 
 def test_iframe():
-    iframe = components.Iframe(src='https://www.example.com', srcdoc='<p>hello world</p>', sandbox='allow-scripts')
+    iframe = components.Iframe(src='https://www.example.com', srcdoc='<p>hello world</p>', sandbox='allow-scripts')  # type: ignore
     assert iframe.model_dump(by_alias=True, exclude_none=True) == {
         'src': Url('https://www.example.com'),
         'type': 'Iframe',

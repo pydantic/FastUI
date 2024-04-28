@@ -65,9 +65,7 @@ github_emails_ta = TypeAdapter(List[GitHubEmail])
 
 
 class GitHubAuthProvider:
-    """
-    For details see https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps.
-    """
+    """For details see https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps."""
 
     def __init__(
         self,
@@ -80,17 +78,16 @@ class GitHubAuthProvider:
         state_provider: Union['StateProvider', bool] = True,
         exchange_cache_age: Union[timedelta, None] = timedelta(seconds=30),
     ):
-        """
-        Arguments:
-            httpx_client: An instance of `httpx.AsyncClient` to use for making requests to GitHub.
-            github_client_id: The client ID of the GitHub OAuth app.
-            github_client_secret: The client secret of the GitHub OAuth app.
-            redirect_uri: The URL in your app where users will be sent after authorization, if custom
-            scopes: See https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps#available-scopes
-            state_provider: If `True`, use a `StateProvider` to generate and validate state parameters for the OAuth
-                flow, you can also provide an instance directly.
-            exchange_cache_age: If not `None`,
-                responses from the access token exchange are cached for the given duration.
+        """Arguments:
+        httpx_client: An instance of `httpx.AsyncClient` to use for making requests to GitHub.
+        github_client_id: The client ID of the GitHub OAuth app.
+        github_client_secret: The client secret of the GitHub OAuth app.
+        redirect_uri: The URL in your app where users will be sent after authorization, if custom
+        scopes: See https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps#available-scopes
+        state_provider: If `True`, use a `StateProvider` to generate and validate state parameters for the OAuth
+            flow, you can also provide an instance directly.
+        exchange_cache_age: If not `None`,
+            responses from the access token exchange are cached for the given duration.
         """
         self._httpx_client = httpx_client
         self._github_client_id = github_client_id
@@ -117,9 +114,7 @@ class GitHubAuthProvider:
         state_provider: Union['StateProvider', bool] = True,
         exchange_cache_age: Union[timedelta, None] = timedelta(seconds=10),
     ) -> AsyncIterator['GitHubAuthProvider']:
-        """
-        Async context manager to create a GitHubAuth instance with a new `httpx.AsyncClient`.
-        """
+        """Async context manager to create a GitHubAuth instance with a new `httpx.AsyncClient`."""
         import httpx
 
         async with httpx.AsyncClient() as client:
@@ -133,9 +128,7 @@ class GitHubAuthProvider:
             )
 
     async def authorization_url(self) -> str:
-        """
-        See https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps#1-request-a-users-github-identity
-        """
+        """See https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps#1-request-a-users-github-identity"""
         params = {'client_id': self._github_client_id}
         if self._redirect_uri:
             params['redirect_uri'] = self._redirect_uri
@@ -146,8 +139,7 @@ class GitHubAuthProvider:
         return f'https://github.com/login/oauth/authorize?{urlencode(params)}'
 
     async def exchange_code(self, code: str, state: Union[str, None] = None) -> GitHubExchange:
-        """
-        Exchange a code for an access token.
+        """Exchange a code for an access token.
 
         If `self._exchange_cache_age` is not `None` (the default), responses are cached for the given duration to
         work around issues with React often sending the same request multiple times in development mode.
@@ -194,18 +186,14 @@ class GitHubAuthProvider:
             return cast(GitHubExchange, exchange_response)
 
     async def get_github_user(self, exchange: GitHubExchange) -> GithubUser:
-        """
-        See https://docs.github.com/en/rest/users/users#get-the-authenticated-user
-        """
+        """See https://docs.github.com/en/rest/users/users#get-the-authenticated-user"""
         headers = self._auth_headers(exchange)
         user_response = await self._httpx_client.get('https://api.github.com/user', headers=headers)
         user_response.raise_for_status()
         return GithubUser.model_validate_json(user_response.content)
 
     async def get_github_user_emails(self, exchange: GitHubExchange) -> List[GitHubEmail]:
-        """
-        See https://docs.github.com/en/rest/users/emails
-        """
+        """See https://docs.github.com/en/rest/users/emails"""
         headers = self._auth_headers(exchange)
         emails_response = await self._httpx_client.get('https://api.github.com/user/emails', headers=headers)
         emails_response.raise_for_status()
@@ -232,9 +220,7 @@ class ExchangeCache:
         self._data[key] = (datetime.now(), value)
 
     def _purge(self, max_age: timedelta) -> None:
-        """
-        Remove old items from the exchange cache
-        """
+        """Remove old items from the exchange cache"""
         min_timestamp = datetime.now() - max_age
         to_remove = [k for k, (ts, _) in self._data.items() if ts < min_timestamp]
         for k in to_remove:
@@ -252,8 +238,7 @@ EXCHANGE_CACHE = ExchangeCache()
 
 
 class StateProvider:
-    """
-    This is a simple state provider for the GitHub OAuth flow which uses a JWT to create an unguessable "state" string.
+    """This is a simple state provider for the GitHub OAuth flow which uses a JWT to create an unguessable "state" string.
 
     Requires `PyJWT` to be installed.
     """
