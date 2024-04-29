@@ -35,7 +35,6 @@ Homepage = "https://github.com/pydantic/FastUI"
 [project.optional-dependencies]
 fastapi = ["fastapi>=0.104", "python-multipart>=0.0.6"]
 
-
 [tool.hatch.version]
 path = "fastui/__init__.py"
 
@@ -46,24 +45,6 @@ fastui = "fastui.__main__:cli"
 [tool.pdm]
 distribution = false
 
-[tool.pdm.dev-dependencies]
-dev = [
-    "playwright>=1.43.0",
-    "rich==13.7.0",
-    "pytest-pretty==1.2.0",
-    "pytest-asyncio==0.23.4",
-    "anyio==4.2.0",
-    "coverage==7.4.1",
-    "dirty-equals==0.7.1.post0",
-    "markdown-it-py==3.0.0",
-    "pytest==7.4.4",
-    "pyright==1.1.335",
-    "httpx==0.26.0",
-    "fastapi>=0.110.2",
-    "pyjwt>=2.8.0",
-    "ruff==0.2.1",
-    "mypy~=1.1.1",
-]
 
 [tool.ruff]
 line-length = 120
@@ -116,4 +97,24 @@ exclude_lines = [
     '@overload',
     '@typing.overload',
     '\(Protocol\):$',
+]
+
+[tool.rye]
+managed = true
+dev-dependencies = [
+    "playwright>=1.43.0",
+    "rich==13.7.0",
+    "pytest-pretty==1.2.0",
+    "pytest-asyncio==0.23.4",
+    "anyio==4.2.0",
+    "coverage==7.4.1",
+    "dirty-equals==0.7.1.post0",
+    "markdown-it-py==3.0.0",
+    "pytest==7.4.4",
+    "pyright==1.1.335",
+    "httpx==0.26.0",
+    "fastapi>=0.110.2",
+    "pyjwt>=2.8.0",
+    "ruff==0.2.1",
+    "mypy~=1.1.1",
 ]

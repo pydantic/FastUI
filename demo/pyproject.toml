@@ -6,7 +6,6 @@ allow-direct-references = true
 name = 'src'
 description = 'FastUI demo project'
 authors = [{ name = 'Samuel Colvin', email = 's@muelcolvin.com' }]
-license = 'MIT'
 classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Programming Language :: Python',
@@ -22,7 +21,6 @@ classifiers = [
     'Intended Audience :: Developers',
     'Intended Audience :: Information Technology',
     'Intended Audience :: System Administrators',
-    'License :: OSI Approved :: MIT License',
     'Operating System :: Unix',
     'Operating System :: POSIX :: Linux',
     'Environment :: Console',
@@ -34,34 +32,18 @@ classifiers = [
 ]
 requires-python = '>=3.8'
 dependencies = [
-    "fastui @ file:///${PROJECT_ROOT}/../src/python-fastui",
     "fastapi>=0.110.2",
     "httpx>=0.27.0",
     "openai==1.10.0",
     "PYjwt>=2.8.0",
     "pydantic[email]>=2.7.1",
 ]
-dynamic = ['version', 'readme']
+dynamic = ['version']
 
 
 [tool.pdm]
 distribution = false
 
-[tool.pdm.dev-dependencies]
-dev = [
-    "pyright>=1.1.360",
-    "dirty-equals>=0.7.1.post0",
-    "coverage==7.4.1",
-    "rich==13.7.0",
-    "pytest-pretty==1.2.0",
-    "pytest-asyncio==0.23.4",
-    "dirty-equals==0.7.1.post0",
-    "markdown-it-py==3.0.0",
-    "pytest==7.4.4",
-    "pyright==1.1.335",
-    "ruff==0.2.1",
-    "mypy~=1.1.1",
-]
 
 [tool.ruff]
 line-length = 120
@@ -105,3 +87,21 @@ quote-style = 'single'
 source = ['pydantic']
 branch = true
 context = '${CONTEXT}'
+
+
+[tool.rye]
+managed = true
+dev-dependencies = [
+    "fastui @ file:///${PROJECT_ROOT}/../src/python-fastui",
+    "dirty-equals>=0.7.1.post0",
+    "coverage==7.4.1",
+    "rich==13.7.0",
+    "pytest-pretty==1.2.0",
+    "pytest-asyncio==0.23.4",
+    "dirty-equals==0.7.1.post0",
+    "markdown-it-py==3.0.0",
+    "pytest==7.4.4",
+    "pyright==1.1.335",
+    "ruff==0.2.1",
+    "mypy~=1.1.1",
+]

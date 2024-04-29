@@ -40,3 +40,6 @@ __pycache__/
 .pdm-python
 .pdm-build/
 __pypackages__/
+
+# rye
+.python-version

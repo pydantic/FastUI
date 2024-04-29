@@ -4,18 +4,15 @@
 [tool.ruff]
 line-length = 120
 extend-select = ["Q", "RUF100", "UP", "I"]
-flake8-quotes = {inline-quotes = "single", multiline-quotes = "double"}
-format.quote-style="single"
+flake8-quotes = { inline-quotes = "single", multiline-quotes = "double" }
+format.quote-style = "single"
 target-version = "py38"
 
 [tool.pyright]
 include = ["src/python-fastui/fastui"]
 
 [tool.pytest.ini_options]
-testpaths = [
-    "src/python-fastui/tests",
-    "demo/tests.py",
-]
+testpaths = ["src/python-fastui/tests", "demo/tests"]
 xfail_strict = true
 filterwarnings = ["error"]
 asyncio_mode = "auto"

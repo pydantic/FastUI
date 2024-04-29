@@ -3,8 +3,8 @@ path = src/python-fastui
 
 .PHONY: install
 install:
-	cd src/python-fastui && pdm install
-	cd demo && pdm install
+	cd src/python-fastui && rye sync
+	cd demo && rye sync
 
 
 .PHONY: install-docs
@@ -17,50 +17,50 @@ install-docs:
 
 .PHONY: update-lockfiles
 update-lockfiles:
-	cd src/python-fastui && pdm sync
-	cd demo && pdm sync
+	cd src/python-fastui && rye lock
+	cd demo && rye lock
 
 .PHONY: format
 format:
-	cd src/python-fastui && pdm run ruff check --fix-only .
-	cd demo && pdm run ruff check --fix-only .
+	cd src/python-fastui && rye run ruff check --fix-only .
+	cd demo && rye run ruff check --fix-only .
 
 .PHONY: lint
 lint:
-	cd src/python-fastui && pdm run ruff check .
+	cd src/python-fastui && rye run ruff check .
 
 .PHONY: lint-demo
 lint-demo:
-	cd demo && pdm run ruff check .
+	cd demo && rye run ruff check .
 
 
 .PHONY: typecheck
 typecheck:
-	cd src/python-fastui && pdm run pyright fastui
+	cd src/python-fastui && rye run pyright fastui
 
 .PHONY: typecheck-demo
 typecheck-demo:
-	cd demo && pdm run pyright src
+	cd demo && rye run pyright src
 
 
 .PHONY: test
 test:
-	cd src/python-fastui && pdm run coverage run -m pytest tests
+	cd src/python-fastui && rye run coverage run -m pytest tests
 
 .PHONY: test-demo
 test-demo:
-	cd demo && pdm run pytest tests
+	cd demo && rye run pytest tests
 
 .PHONY: testcov
 testcov: test
-	cd src/python-fastui && pdm run coverage html
+	cd src/python-fastui && rye run coverage html
 
 .PHONY: testcov-report
 testcov-report:
-	cd src/python-fastui && pdm run coverage report --fail-under=80
+	cd src/python-fastui && rye run coverage report --fail-under=80
 
 testcov-xml:
-	cd src/python-fastui && pdm run coverage xml
+	cd src/python-fastui && rye run coverage xml
 
 .PHONY: typescript-models
 typescript-models:
