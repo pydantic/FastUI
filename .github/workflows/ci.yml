@@ -25,7 +25,8 @@ jobs:
         with:
           node-version: 18
 
-      - run: pip install pdm==2.12.4
+      - name: Install the latest version of rye
+        uses: eifinger/setup-rye@v2
 
       - run: make install
 
@@ -101,7 +102,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - run: pip install pdm==2.12.4
+      - name: Install the latest version of rye
+        uses: eifinger/setup-rye@v2
 
       - run: make install
 
