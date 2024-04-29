@@ -7,10 +7,11 @@ on:
     tags:
       - '**'
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
   lint:
+    if: github.event.pull_request.draft != true
     runs-on: ubuntu-latest
 
     steps:
@@ -85,6 +86,7 @@ jobs:
           - os: macos-latest
             python-version: '3.9'
 
+    if: github.event.pull_request.draft != true
     runs-on: ${{ matrix.os }}
 
     env:
@@ -127,6 +129,7 @@ jobs:
           env_vars: PYTHON,OS
 
   npm-build:
+    if: github.event.pull_request.draft != true
     runs-on: ubuntu-latest
 
     steps:
@@ -141,7 +144,7 @@ jobs:
       - run: tree src
 
   check: # This job does nothing and is only used for the branch protection
-    if: always()
+    if: github.event.pull_request.draft != true
     needs: [lint, test, npm-build]
     runs-on: ubuntu-latest
 
@@ -154,7 +157,7 @@ jobs:
 
   release:
     needs: [check]
-    if: "success() && startsWith(github.ref, 'refs/tags/')"
+    if: "success() && startsWith(github.ref, 'refs/tags/') && github.event.pull_request.draft != true"
     runs-on: ubuntu-latest
     environment: release
 
