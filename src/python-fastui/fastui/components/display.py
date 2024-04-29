@@ -15,6 +15,8 @@ __all__ = 'DisplayMode', 'DisplayLookup', 'Display', 'Details'
 
 
 class DisplayMode(str, enum.Enum):
+    """Display mode for a value."""
+
     auto = 'auto'  # default, same as None below
     plain = 'plain'
     datetime = 'datetime'
@@ -27,37 +29,54 @@ class DisplayMode(str, enum.Enum):
 
 
 class DisplayBase(pydantic.BaseModel, ABC, defer_build=True):
+    """Base class for display components."""
+
     mode: _t.Union[DisplayMode, None] = None
+    """Display mode for the value."""
+
     title: _t.Union[str, None] = None
+    """Title to display for the value."""
+
     on_click: _t.Union[events.AnyEvent, None] = pydantic.Field(default=None, serialization_alias='onClick')
+    """Event to trigger when the value is clicked."""
 
 
 class DisplayLookup(DisplayBase, extra='forbid'):
-    """
-    Description of how to display a value looked up from data, either in a table or detail view.
-    """
+    """Description of how to display a value looked up from data, either in a table or detail view."""
 
     field: str
-    # percentage width - 0 to 100, specific to tables
+    """Field to display."""
+
     table_width_percent: _t.Union[_te.Annotated[int, _at.Interval(ge=0, le=100)], None] = pydantic.Field(
         default=None, serialization_alias='tableWidthPercent'
     )
+    """Percentage width - 0 to 100, specific to tables."""
 
 
 class Display(DisplayBase, extra='forbid'):
-    """
-    Description of how to display a value, either in a table or detail view.
-    """
+    """Description of how to display a value, either in a table or detail view."""
 
     value: _types.JsonData
+    """Value to display."""
+
     type: _t.Literal['Display'] = 'Display'
+    """The type of the component. Always 'Display'."""
 
 
 class Details(pydantic.BaseModel, extra='forbid'):
+    """Details associated with displaying a data model."""
+
     data: pydantic.SerializeAsAny[_types.DataModel]
+    """Data model to display."""
+
     fields: _t.Union[_t.List[DisplayLookup], None] = None
+    """Fields to display."""
+
     class_name: _class_name.ClassNameField = None
+    """Optional class name to apply to the details component."""
+
     type: _t.Literal['Details'] = 'Details'
+    """The type of the component. Always 'Details'."""
 
     @pydantic.model_validator(mode='after')
     def _fill_fields(self) -> _te.Self:

@@ -46,5 +46,13 @@ typescript-models:
 dev:
 	uvicorn demo:app --reload --reload-dir .
 
+.PHONY: docs
+docs:
+	mkdocs build
+
+.PHONY: serve
+serve:
+	mkdocs serve
+
 .PHONY: all
 all: testcov lint
