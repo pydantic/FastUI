@@ -120,8 +120,6 @@ jobs:
         env:
           PPPR_TOKEN: ${{ secrets.PPPR_TOKEN }}
 
-      - run: python -c 'import docs.plugins.main'
-
       - name: Set git credentials
         run: |
           git config --global user.name "${{ github.actor }}"
