@@ -105,13 +105,20 @@ jobs:
       - name: Install the latest version of rye
         uses: eifinger/setup-rye@v2
 
-      - run: make install
+      - name: Pin python-version ${{ matrix.python-version }}
+        run: rye pin ${{ matrix.python-version }}
 
-      - run: make testcov
+      - name: Install dependencies
+        run: make install
 
-      - run: make testcov-report
+      - name: Run test, with generating coverage on FastUI source
+        run: make testcov
 
-      - run: make typecheck
+      - name: Run cov report generator
+        run: make testcov-report
+
+      - name: Run type check on FastUI source
+        run: make typecheck
 
       # ci on demo for 3.11 and 3.12, these ops are intentionally omitted, reason is that it's using 3.11 and 3.12 syntax
       - if: matrix.python-version == '3.11' || matrix.python-version == '3.12'
@@ -123,9 +130,11 @@ jobs:
       - if: matrix.python-version == '3.11' || matrix.python-version == '3.12'
         run: make test-demo
 
-      - run: make testcov-xml
+      - name: Run XML coverage report generator
+        run: make testcov-xml
 
-      - uses: codecov/codecov-action@v4
+      - name: Upload coverage report from XML
+        uses: codecov/codecov-action@v4
         with:
           file: ./src/python-fastui/coverage.xml
           env_vars: PYTHON,OS
