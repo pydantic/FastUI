@@ -40,7 +40,7 @@ class Table(pydantic.BaseModel, extra='forbid'):
             try:
                 data_model_type = type(self.data[0])
             except IndexError:
-                raise ValueError('Cannot infer model from empty data, please set `Table(..., model=MyModel)`')
+                raise ValueError('Cannot infer model from empty data, please set `Table(..., data_model=MyModel)`')
 
         if self.columns is None:
             self.columns = [
