@@ -10,7 +10,7 @@ from pydantic_core import core_schema as _core_schema
 from .. import class_name as _class_name
 from .. import events
 from .. import types as _types
-from .shared_base import BaseModel
+from ..base import BaseModel
 
 __all__ = 'DisplayMode', 'DisplayLookup', 'Display', 'Details'
 

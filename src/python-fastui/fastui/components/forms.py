@@ -7,7 +7,7 @@ import typing_extensions as _te
 from .. import class_name as _class_name
 from .. import events, forms
 from .. import types as _types
-from .shared_base import BaseModel
+from ..base import BaseModel
 
 if _t.TYPE_CHECKING:
     from . import AnyComponent

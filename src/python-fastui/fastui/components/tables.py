@@ -6,8 +6,8 @@ from pydantic_core import core_schema as _core_schema
 
 from .. import class_name as _class_name
 from .. import types as _types
+from ..base import BaseModel
 from . import display
-from .shared_base import BaseModel
 
 # TODO allow dataclasses and typed dicts here too
 
