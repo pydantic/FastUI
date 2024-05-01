@@ -9,7 +9,7 @@ install:
 	pre-commit install
 
 
-.PHONY install-docs
+.PHONY: install-docs
 install-docs:
 	pip install -r requirements/docs.txt
 
