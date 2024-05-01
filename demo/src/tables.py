@@ -76,7 +76,7 @@ def cities_view(page: int = 1, country: str | None = None) -> list[AnyComponent]
                 DisplayLookup(field='population', table_width_percent=33),
             ],
         ),
-        c.Pagination(page=page, page_size=page_size, total=len(cities)),  # type: ignore
+        c.Pagination(page=page, page_size=page_size, total=len(cities), page_query_param='page'),
         title='Cities',
     )
 
@@ -147,17 +147,24 @@ def tabs() -> list[AnyComponent]:
 
 @router.get('/users/{id}/', response_model=FastUI, response_model_exclude_none=True)
 def user_profile(id: int) -> list[AnyComponent]:
-    user: User | None = users[id - 1] if id <= len(users) else None
+    user = users[id - 1] if id <= len(users) else None
+    if user is None:
+        return demo_page(
+            *tabs(),
+            c.Text(text='User not found.'),
+            title='User not found',
+        )
+
     return demo_page(
         *tabs(),
         c.Link(components=[c.Text(text='Back')], on_click=BackEvent()),
         c.Details(
-            data=user,  # type: ignore
+            data=user,
             fields=[
                 DisplayLookup(field='name'),
                 DisplayLookup(field='dob', mode=DisplayMode.date),
                 DisplayLookup(field='enabled'),
             ],
         ),
-        title=user.name,  # type: ignore
+        title=user.name,
     )

@@ -45,7 +45,7 @@ def test_root_model():
 
 def test_root_model_single():
     # fixed by validator
-    m = FastUI(root=components.Text(text='hello world'))  # type: ignore
+    m = FastUI(root=[components.Text(text='hello world')])
     assert m.model_dump(by_alias=True, exclude_none=True) == [
         {
             'text': 'hello world',
@@ -55,7 +55,7 @@ def test_root_model_single():
 
 
 def test_iframe():
-    iframe = components.Iframe(src='https://www.example.com', srcdoc='<p>hello world</p>', sandbox='allow-scripts')  # type: ignore
+    iframe = components.Iframe(src=Url('https://www.example.com'), srcdoc='<p>hello world</p>', sandbox='allow-scripts')
     assert iframe.model_dump(by_alias=True, exclude_none=True) == {
         'src': Url('https://www.example.com'),
         'type': 'Iframe',

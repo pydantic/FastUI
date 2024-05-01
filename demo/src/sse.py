@@ -29,16 +29,19 @@ async def run_openai():
     from time import perf_counter
 
     from openai import AsyncOpenAI
+    from openai.types.chat import ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam
 
     messages = [
-        {'role': 'system', 'content': 'please response in markdown only.'},
-        {'role': 'user', 'content': 'What is SSE? Please include a javascript code example.'},
+        ChatCompletionSystemMessageParam({'role': 'system', 'content': 'please response in markdown only.'}),
+        ChatCompletionUserMessageParam(
+            {'role': 'user', 'content': 'What is SSE? Please include a javascript code example.'}
+        ),
     ]
     chunks = await AsyncOpenAI().chat.completions.create(
         model='gpt-4',
-        messages=messages,  # type: ignore
+        messages=messages,
         stream=True,
-    )  # type: ignore
+    )
 
     last = None
     result_chunks = []
@@ -48,7 +51,8 @@ async def run_openai():
             t = now - last
         else:
             t = 0
-        text: str = chunk.choices[0].delta.content
+        text = chunk.choices[0].delta.content
+        assert text is None
         print(repr(text), t)
         if text is not None:
             result_chunks.append((t, text))

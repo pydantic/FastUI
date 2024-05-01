@@ -214,7 +214,7 @@ def json_schema_array_to_fields(
         items_schema, required = deference_json_schema(items_schema, defs, required)
         for field_name in 'search_url', 'placeholder', 'description':
             if value := schema.get(field_name):
-                items_schema[field_name] = value  # type: ignore
+                items_schema[field_name] = value  # type: ignore (Could not assign item in TypedDict)
         if field := special_string_field(items_schema, loc_to_name(loc), title, required, True):
             yield field
             return
@@ -319,7 +319,7 @@ def deference_json_schema(
 
             # copy everything except `anyOf` across to the new schema
             # TODO is this right?
-            for key, value in schema.items():  # type: ignore
+            for key, value in schema.items():  # type: ignore (schema type is union of unknwon and JsonSchemaAny)
                 if key not in {'anyOf'}:
                     not_null_schema[key] = value  # type: ignore
 

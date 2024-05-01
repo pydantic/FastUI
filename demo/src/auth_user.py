@@ -49,7 +49,7 @@ class User:
 
 
 class CustomJsonEncoder(json.JSONEncoder):
-    def default(self, obj: Any) -> Any:  # type: ignore
+    def default(self, obj: Any) -> Any:
         if isinstance(obj, datetime):
             return obj.isoformat()
         else:

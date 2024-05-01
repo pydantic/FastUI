@@ -3,7 +3,7 @@ path = "src/__init__.py"
 allow-direct-references = true
 
 [project]
-name = 'src'
+name = 'demo'
 description = 'FastUI demo project'
 authors = [{ name = 'Samuel Colvin', email = 's@muelcolvin.com' }]
 classifiers = [

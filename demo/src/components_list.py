@@ -6,6 +6,7 @@ from fastapi import APIRouter
 from fastui import AnyComponent, FastUI
 from fastui import components as c
 from fastui.events import GoToEvent, PageEvent
+from pydantic_core import Url
 
 from .shared import demo_page
 
@@ -222,7 +223,7 @@ print(m.dimensions)
             components=[
                 c.Heading(text='Iframe', level=2),
                 c.Markdown(text='`Iframe` can be used to embed external content.'),
-                c.Iframe(src='https://pydantic.dev', width='100%', height=400),  # type: ignore
+                c.Iframe(src=Url('https://pydantic.dev'), width='100%', height=400),
             ],
             class_name='border-top mt-3 pt-1',
         ),
@@ -260,7 +261,7 @@ print(m.dimensions)
                 c.Heading(text='Video', level=2),
                 c.Paragraph(text='A video component.'),
                 c.Video(
-                    sources=['https://www.w3schools.com/html/mov_bbb.mp4'],  # type: ignore
+                    sources=[Url('https://www.w3schools.com/html/mov_bbb.mp4')],
                     autoplay=False,
                     controls=True,
                     loop=False,

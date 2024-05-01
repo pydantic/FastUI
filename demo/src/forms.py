@@ -40,7 +40,7 @@ async def search_view(request: Request, q: str) -> SelectSearchResponse:
         for co in data:
             regions[co['region']].append({'value': co['cca3'], 'label': co['name']['common']})
         options = [{'label': k, 'options': v} for k, v in regions.items()]
-    return SelectSearchResponse(options=options)  # type: ignore
+    return SelectSearchResponse(options=options)  # type: ignore (needs to be SelectOptions type)
 
 
 FormKind: TypeAlias = Literal['login', 'select', 'big']
