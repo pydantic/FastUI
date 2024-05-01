@@ -35,11 +35,5 @@ __pycache__/
 .coverage
 /users.db
 
-# pdm
-.pdm.toml
-.pdm-python
-.pdm-build/
-__pypackages__/
-
 # rye
 .python-version

@@ -41,10 +41,6 @@ dependencies = [
 dynamic = ['version']
 
 
-[tool.pdm]
-distribution = false
-
-
 [tool.ruff]
 line-length = 120
 target-version = 'py38'

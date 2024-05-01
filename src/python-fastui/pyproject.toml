@@ -42,10 +42,6 @@ path = "fastui/__init__.py"
 fastui = "fastui.__main__:cli"
 
 
-[tool.pdm]
-distribution = false
-
-
 [tool.ruff]
 line-length = 120
 target-version = 'py38'
