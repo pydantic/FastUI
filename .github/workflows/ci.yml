@@ -45,13 +45,17 @@ jobs:
         with:
           python-version: '3.11'
 
+      # note: PPPR_TOKEN is not available on PRs sourced from forks, but the necessary
+      # dependencies are also listed in docs.txt :)
       - name: install
         run: |
           pip install --upgrade pip
+          pip install --extra-index-url https://pydantic:${PPPR_TOKEN}@pppr.pydantic.dev/simple/ mkdocs-material mkdocstrings-python
           pip install -r requirements/docs.txt
-          pip install --extra-index-url https://pydantic:${PPPR_TOKEN}@pppr.pydantic.dev/simple/ mkdocs-material mkdocstrings-python griffe-typedoc mkdocstrings-typescript
-          npm install
-          npm install -g typedoc
+        # note -- we can use these in the future when mkdocstrings-typescript and griffe-typedoc beocome publicly available
+        # pip install --extra-index-url https://pydantic:${PPPR_TOKEN}@pppr.pydantic.dev/simple/ mkdocs-material mkdocstrings-python griffe-typedoc mkdocstrings-typescript
+        # npm install
+        # npm install -g typedoc
         env:
           PPPR_TOKEN: ${{ secrets.PPPR_TOKEN }}
 
