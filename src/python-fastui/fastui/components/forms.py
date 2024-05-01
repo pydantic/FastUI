@@ -7,6 +7,7 @@ import typing_extensions as _te
 from .. import class_name as _class_name
 from .. import events, forms
 from .. import types as _types
+from .shared_base import BaseModel
 
 if _t.TYPE_CHECKING:
     from . import AnyComponent
@@ -14,7 +15,7 @@ if _t.TYPE_CHECKING:
 InputHtmlType = _t.Literal['text', 'date', 'datetime-local', 'time', 'email', 'url', 'number', 'password', 'hidden']
 
 
-class BaseFormField(pydantic.BaseModel, ABC, defer_build=True):
+class BaseFormField(BaseModel, ABC, defer_build=True):
     """Base class for form fields."""
 
     name: str
@@ -35,9 +36,7 @@ class BaseFormField(pydantic.BaseModel, ABC, defer_build=True):
     description: _t.Union[str, None] = None
     """Description of the field."""
 
-    display_mode: _t.Union[_t.Literal['default', 'inline'], None] = pydantic.Field(
-        default=None, serialization_alias='displayMode'
-    )
+    display_mode: _t.Union[_t.Literal['default', 'inline'], None] = pydantic.Field(default=None)
     """Display mode for the field."""
 
     class_name: _class_name.ClassNameField = None
@@ -47,7 +46,7 @@ class BaseFormField(pydantic.BaseModel, ABC, defer_build=True):
 class FormFieldInput(BaseFormField):
     """Form field for basic input."""
 
-    html_type: InputHtmlType = pydantic.Field(default='text', serialization_alias='htmlType')
+    html_type: InputHtmlType = pydantic.Field(default='text')
     """HTML input type for the field."""
 
     initial: _t.Union[str, float, None] = None
@@ -139,7 +138,7 @@ class FormFieldSelect(BaseFormField):
 class FormFieldSelectSearch(BaseFormField):
     """Form field for searchable select input."""
 
-    search_url: str = pydantic.Field(serialization_alias='searchUrl')
+    search_url: str
     """URL to search for options."""
 
     multiple: _t.Union[bool, None] = None
@@ -164,10 +163,10 @@ FormField = _t.Union[
 """Union of all form field types."""
 
 
-class BaseForm(pydantic.BaseModel, ABC, defer_build=True, extra='forbid'):
+class BaseForm(BaseModel, ABC, defer_build=True, extra='forbid'):
     """Base class for forms."""
 
-    submit_url: str = pydantic.Field(serialization_alias='submitUrl')
+    submit_url: str
     """URL to submit the form data to."""
 
     initial: _t.Union[_t.Dict[str, _types.JsonData], None] = None
@@ -176,15 +175,13 @@ class BaseForm(pydantic.BaseModel, ABC, defer_build=True, extra='forbid'):
     method: _t.Literal['POST', 'GOTO', 'GET'] = 'POST'
     """HTTP method to use for the form submission."""
 
-    display_mode: _t.Union[_t.Literal['default', 'page', 'inline'], None] = pydantic.Field(
-        default=None, serialization_alias='displayMode'
-    )
+    display_mode: _t.Union[_t.Literal['default', 'page', 'inline'], None] = pydantic.Field(default=None)
     """Display mode for the form."""
 
-    submit_on_change: _t.Union[bool, None] = pydantic.Field(default=None, serialization_alias='submitOnChange')
+    submit_on_change: _t.Union[bool, None] = pydantic.Field(default=None)
     """Whether to submit the form on change."""
 
-    submit_trigger: _t.Union[events.PageEvent, None] = pydantic.Field(default=None, serialization_alias='submitTrigger')
+    submit_trigger: _t.Union[events.PageEvent, None] = pydantic.Field(default=None)
     """Event to trigger form submission."""
 
     loading: '_t.Union[_t.List[AnyComponent], None]' = None
@@ -206,20 +203,20 @@ class BaseForm(pydantic.BaseModel, ABC, defer_build=True, extra='forbid'):
 class Form(BaseForm):
     """Form component."""
 
-    form_fields: _t.List[FormField] = pydantic.Field(serialization_alias='formFields')
+    form_fields: _t.List[FormField]
     """List of form fields."""
 
     type: _t.Literal['Form'] = 'Form'
     """The type of the component. Always 'Form'."""
 
 
-FormFieldsModel = _t.TypeVar('FormFieldsModel', bound=pydantic.BaseModel)
+FormFieldsModel = _t.TypeVar('FormFieldsModel', bound=BaseModel)
 
 
 class ModelForm(BaseForm):
     """Form component generated from a Pydantic model."""
 
-    model: _t.Type[pydantic.BaseModel] = pydantic.Field(exclude=True)
+    model: _t.Type[BaseModel] = pydantic.Field(exclude=True)
     """Pydantic model from which to generate the form."""
 
     type: _t.Literal['ModelForm'] = 'ModelForm'

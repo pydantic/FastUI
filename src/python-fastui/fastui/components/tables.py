@@ -7,11 +7,12 @@ from pydantic_core import core_schema as _core_schema
 from .. import class_name as _class_name
 from .. import types as _types
 from . import display
+from .shared_base import BaseModel
 
 # TODO allow dataclasses and typed dicts here too
 
 
-class Table(pydantic.BaseModel, extra='forbid'):
+class Table(BaseModel, extra='forbid'):
     """Table component."""
 
     data: _t.Sequence[pydantic.SerializeAsAny[_types.DataModel]]
@@ -20,10 +21,10 @@ class Table(pydantic.BaseModel, extra='forbid'):
     columns: _t.Union[_t.List[display.DisplayLookup], None] = None
     """List of columns to display in the table. If not provided, columns will be inferred from the data model."""
 
-    data_model: _t.Union[_t.Type[pydantic.BaseModel], None] = pydantic.Field(default=None, exclude=True)
+    data_model: _t.Union[_t.Type[BaseModel], None] = pydantic.Field(default=None, exclude=True)
     """Data model to use for the table. If not provided, the model will be inferred from the first data item."""
 
-    no_data_message: _t.Union[str, None] = pydantic.Field(default=None, serialization_alias='noDataMessage')
+    no_data_message: _t.Union[str, None] = None
     """Message to display when there is no data."""
 
     class_name: _class_name.ClassNameField = None
@@ -66,19 +67,19 @@ class Table(pydantic.BaseModel, extra='forbid'):
         return json_schema
 
 
-class Pagination(pydantic.BaseModel):
+class Pagination(BaseModel):
     """Pagination component to use with tables."""
 
     page: int
     """The current page number."""
 
-    page_size: int = pydantic.Field(serialization_alias='pageSize')
+    page_size: int
     """The number of items per page."""
 
     total: int
     """The total number of items."""
 
-    page_query_param: str = pydantic.Field('page', serialization_alias='pageQueryParam')
+    page_query_param: str = 'page'
     """The query parameter to use for the page number."""
 
     class_name: _class_name.ClassNameField = None
