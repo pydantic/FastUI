@@ -35,3 +35,6 @@ exclude_lines = [
     '@typing.overload',
     '\(Protocol\):$',
 ]
+
+[tool.behavior]
+use-uv = true

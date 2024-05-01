@@ -105,3 +105,6 @@ dev-dependencies = [
     "ruff==0.2.1",
     "mypy~=1.1.1",
 ]
+
+[tool.behavior]
+use-uv = true
