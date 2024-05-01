@@ -21,7 +21,7 @@ class Table(BaseModel, extra='forbid'):
     columns: _t.Union[_t.List[display.DisplayLookup], None] = None
     """List of columns to display in the table. If not provided, columns will be inferred from the data model."""
 
-    data_model: _t.Union[_t.Type[BaseModel], None] = pydantic.Field(default=None, exclude=True)
+    data_model: _t.Union[_t.Type[pydantic.BaseModel], None] = pydantic.Field(default=None, exclude=True)
     """Data model to use for the table. If not provided, the model will be inferred from the first data item."""
 
     no_data_message: _t.Union[str, None] = None

@@ -210,13 +210,13 @@ class Form(BaseForm):
     """The type of the component. Always 'Form'."""
 
 
-FormFieldsModel = _t.TypeVar('FormFieldsModel', bound=BaseModel)
+FormFieldsModel = _t.TypeVar('FormFieldsModel', bound=pydantic.BaseModel)
 
 
 class ModelForm(BaseForm):
     """Form component generated from a Pydantic model."""
 
-    model: _t.Type[BaseModel] = pydantic.Field(exclude=True)
+    model: _t.Type[pydantic.BaseModel] = pydantic.Field(exclude=True)
     """Pydantic model from which to generate the form."""
 
     type: _t.Literal['ModelForm'] = 'ModelForm'
