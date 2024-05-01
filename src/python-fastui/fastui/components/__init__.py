@@ -138,7 +138,7 @@ class Heading(BaseModel, extra='forbid'):
     level: _t.Literal[1, 2, 3, 4, 5, 6] = 1
     """The level of the heading. 1 is the largest, 6 is the smallest."""
 
-    html_id: _t.Union[str, None] = _p.Field(default=None)
+    html_id: _t.Union[str, None] = None
     """Optional HTML ID to apply to the heading's HTML component."""
 
     class_name: _class_name.ClassNameField = None
@@ -224,10 +224,10 @@ class Button(BaseModel, extra='forbid'):
     text: str
     """The text to display on the button."""
 
-    on_click: _t.Union[events.AnyEvent, None] = _p.Field(default=None)
+    on_click: _t.Union[events.AnyEvent, None] = None
     """Optional event to trigger when the button is clicked."""
 
-    html_type: _t.Union[_t.Literal['button', 'reset', 'submit'], None] = _p.Field(default=None)
+    html_type: _t.Union[_t.Literal['button', 'reset', 'submit'], None] = None
     """Optional HTML type of the button. If None, defaults to 'button'."""
 
     named_style: _class_name.NamedStyleField = None
@@ -246,7 +246,7 @@ class Link(BaseModel, extra='forbid'):
     components: '_t.List[AnyComponent]'
     """List of components to render attached to the link."""
 
-    on_click: _t.Union[events.AnyEvent, None] = _p.Field(default=None)
+    on_click: _t.Union[events.AnyEvent, None] = None
     """Optional event to trigger when the link is clicked."""
 
     mode: _t.Union[_t.Literal['navbar', 'footer', 'tabs', 'vertical', 'pagination'], None] = None
@@ -287,13 +287,13 @@ class Navbar(BaseModel, extra='forbid'):
     title: _t.Union[str, None] = None
     """Optional title to display in the navbar."""
 
-    title_event: _t.Union[events.AnyEvent, None] = _p.Field(default=None)
+    title_event: _t.Union[events.AnyEvent, None] = None
     """Optional event to trigger when the title is clicked. Often used to navigate to the home page."""
 
-    start_links: _t.List[Link] = _p.Field(default=[])
+    start_links: _t.List[Link] = []
     """List of links to render at the start of the navbar."""
 
-    end_links: _t.List[Link] = _p.Field(default=[])
+    end_links: _t.List[Link] = []
     """List of links to render at the end of the navbar."""
 
     class_name: _class_name.ClassNameField = None
@@ -318,7 +318,7 @@ class Footer(BaseModel, extra='forbid'):
     links: _t.List[Link]
     """List of links to render in the footer."""
 
-    extra_text: _t.Union[str, None] = _p.Field(default=None)
+    extra_text: _t.Union[str, None] = None
     """Optional extra text to display in the footer."""
 
     class_name: _class_name.ClassNameField = None
@@ -340,10 +340,10 @@ class Modal(BaseModel, extra='forbid'):
     footer: '_t.Union[_t.List[AnyComponent], None]' = None
     """Optional list of components to render in the modal footer."""
 
-    open_trigger: _t.Union[events.PageEvent, None] = _p.Field(default=None)
+    open_trigger: _t.Union[events.PageEvent, None] = None
     """Optional event to trigger when the modal is opened."""
 
-    open_context: _t.Union[events.ContextType, None] = _p.Field(default=None)
+    open_context: _t.Union[events.ContextType, None] = None
     """Optional context to pass to the open trigger event."""
 
     class_name: _class_name.ClassNameField = None
@@ -359,7 +359,7 @@ class ServerLoad(BaseModel, extra='forbid'):
     path: str
     """The URL to load the component from."""
 
-    load_trigger: _t.Union[events.PageEvent, None] = _p.Field(default=None)
+    load_trigger: _t.Union[events.PageEvent, None] = None
     """Optional event to trigger when the component is loaded."""
 
     components: '_t.Union[_t.List[AnyComponent], None]' = None
@@ -368,7 +368,7 @@ class ServerLoad(BaseModel, extra='forbid'):
     sse: _t.Union[bool, None] = None
     """Optional flag to enable server-sent events (SSE) for the server load."""
 
-    sse_retry: _t.Union[int, None] = _p.Field(default=None)
+    sse_retry: _t.Union[int, None] = None
     """Optional time in milliseconds to retry the SSE connection."""
 
     method: _t.Union[_t.Literal['GET', 'POST', 'PATCH', 'PUT', 'DELETE'], None] = None
@@ -405,7 +405,7 @@ class Image(BaseModel, extra='forbid'):
             'unsafe-url',
         ],
         None,
-    ] = _p.Field(None)
+    ] = None
     """Optional referrer policy for the image. Specifies what information to send when fetching the image.
 
     For more info, see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy."""
@@ -413,7 +413,7 @@ class Image(BaseModel, extra='forbid'):
     loading: _t.Union[_t.Literal['eager', 'lazy'], None] = None
     """Optional loading strategy for the image."""
 
-    on_click: _t.Union[events.AnyEvent, None] = _p.Field(default=None)
+    on_click: _t.Union[events.AnyEvent, None] = None
     """Optional event to trigger when the image is clicked."""
 
     class_name: _class_name.ClassNameField = None
@@ -507,7 +507,7 @@ class Error(BaseModel, extra='forbid'):
     description: str
     """The description of the error."""
 
-    status_code: _t.Union[int, None] = _p.Field(None)
+    status_code: _t.Union[int, None] = None
     """Optional status code of the error."""
 
     class_name: _class_name.ClassNameField = None
@@ -565,10 +565,10 @@ class Toast(BaseModel, extra='forbid'):
     ] = None
     """Optional position of the toast."""
 
-    open_trigger: _t.Union[events.PageEvent, None] = _p.Field(default=None)
+    open_trigger: _t.Union[events.PageEvent, None] = None
     """Optional event to trigger when the toast is opened."""
 
-    open_context: _t.Union[events.ContextType, None] = _p.Field(default=None)
+    open_context: _t.Union[events.ContextType, None] = None
     """Optional context to pass to the open trigger event."""
 
     class_name: _class_name.ClassNameField = None

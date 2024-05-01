@@ -36,7 +36,7 @@ class BaseFormField(BaseModel, ABC, defer_build=True):
     description: _t.Union[str, None] = None
     """Description of the field."""
 
-    display_mode: _t.Union[_t.Literal['default', 'inline'], None] = pydantic.Field(default=None)
+    display_mode: _t.Union[_t.Literal['default', 'inline'], None] = None
     """Display mode for the field."""
 
     class_name: _class_name.ClassNameField = None
@@ -46,7 +46,7 @@ class BaseFormField(BaseModel, ABC, defer_build=True):
 class FormFieldInput(BaseFormField):
     """Form field for basic input."""
 
-    html_type: InputHtmlType = pydantic.Field(default='text')
+    html_type: InputHtmlType = 'text'
     """HTML input type for the field."""
 
     initial: _t.Union[str, float, None] = None
@@ -175,13 +175,13 @@ class BaseForm(BaseModel, ABC, defer_build=True, extra='forbid'):
     method: _t.Literal['POST', 'GOTO', 'GET'] = 'POST'
     """HTTP method to use for the form submission."""
 
-    display_mode: _t.Union[_t.Literal['default', 'page', 'inline'], None] = pydantic.Field(default=None)
+    display_mode: _t.Union[_t.Literal['default', 'page', 'inline'], None] = None
     """Display mode for the form."""
 
-    submit_on_change: _t.Union[bool, None] = pydantic.Field(default=None)
+    submit_on_change: _t.Union[bool, None] = None
     """Whether to submit the form on change."""
 
-    submit_trigger: _t.Union[events.PageEvent, None] = pydantic.Field(default=None)
+    submit_trigger: _t.Union[events.PageEvent, None] = None
     """Event to trigger form submission."""
 
     loading: '_t.Union[_t.List[AnyComponent], None]' = None

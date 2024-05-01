@@ -38,7 +38,7 @@ class DisplayBase(BaseModel, ABC, defer_build=True):
     title: _t.Union[str, None] = None
     """Title to display for the value."""
 
-    on_click: _t.Union[events.AnyEvent, None] = pydantic.Field(default=None)
+    on_click: _t.Union[events.AnyEvent, None] = None
     """Event to trigger when the value is clicked."""
 
 
@@ -48,7 +48,7 @@ class DisplayLookup(DisplayBase, extra='forbid'):
     field: str
     """Field to display."""
 
-    table_width_percent: _t.Union[_te.Annotated[int, _at.Interval(ge=0, le=100)], None] = pydantic.Field(default=None)
+    table_width_percent: _t.Union[_te.Annotated[int, _at.Interval(ge=0, le=100)], None] = None
     """Percentage width - 0 to 100, specific to tables."""
 
 
