@@ -16,6 +16,8 @@ def api_index() -> list[AnyComponent]:
 This site provides a demo of [FastUI](https://github.com/pydantic/FastUI), the code for the demo
 is [here](https://github.com/pydantic/FastUI/tree/main/demo).
 
+You can find the documentation for FastUI [here](https://docs.pydantic.dev/fastui/).
+
 The following components are demonstrated:
 
 * `Markdown` — that's me :-)

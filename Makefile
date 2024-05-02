@@ -8,6 +8,15 @@ install:
 	pip install -e $(path)
 	pre-commit install
 
+
+.PHONY: install-docs
+install-docs:
+	pip install -r requirements/docs.txt
+
+# note -- mkdocstrings-typescript and griffe-typedoc are not yet publicly available
+# but the following can be added above the pip install -r requirements/docs.txt line in the future
+# pip install mkdocstrings-python mkdocstrings-typescript griffe-typedoc
+
 .PHONY: update-lockfiles
 update-lockfiles:
 	@echo "Updating requirements files using pip-compile"
