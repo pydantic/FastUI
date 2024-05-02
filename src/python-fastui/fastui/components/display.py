@@ -10,6 +10,7 @@ from pydantic_core import core_schema as _core_schema
 from .. import class_name as _class_name
 from .. import events
 from .. import types as _types
+from ..base import BaseModel
 
 __all__ = 'DisplayMode', 'DisplayLookup', 'Display', 'Details'
 
@@ -28,7 +29,7 @@ class DisplayMode(str, enum.Enum):
     inline_code = 'inline_code'
 
 
-class DisplayBase(pydantic.BaseModel, ABC, defer_build=True):
+class DisplayBase(BaseModel, ABC, defer_build=True):
     """Base class for display components."""
 
     mode: _t.Union[DisplayMode, None] = None
@@ -37,7 +38,7 @@ class DisplayBase(pydantic.BaseModel, ABC, defer_build=True):
     title: _t.Union[str, None] = None
     """Title to display for the value."""
 
-    on_click: _t.Union[events.AnyEvent, None] = pydantic.Field(default=None, serialization_alias='onClick')
+    on_click: _t.Union[events.AnyEvent, None] = None
     """Event to trigger when the value is clicked."""
 
 
@@ -47,9 +48,7 @@ class DisplayLookup(DisplayBase, extra='forbid'):
     field: str
     """Field to display."""
 
-    table_width_percent: _t.Union[_te.Annotated[int, _at.Interval(ge=0, le=100)], None] = pydantic.Field(
-        default=None, serialization_alias='tableWidthPercent'
-    )
+    table_width_percent: _t.Union[_te.Annotated[int, _at.Interval(ge=0, le=100)], None] = None
     """Percentage width - 0 to 100, specific to tables."""
 
 
@@ -63,7 +62,7 @@ class Display(DisplayBase, extra='forbid'):
     """The type of the component. Always 'Display'."""
 
 
-class Details(pydantic.BaseModel, extra='forbid'):
+class Details(BaseModel, extra='forbid'):
     """Details associated with displaying a data model."""
 
     data: pydantic.SerializeAsAny[_types.DataModel]

@@ -12,6 +12,7 @@ from pydantic_core import core_schema as _core_schema
 from .. import class_name as _class_name
 from .. import events
 from .. import types as _types
+from ..base import BaseModel
 from .display import Details, Display
 from .forms import (
     Form,
@@ -69,7 +70,7 @@ __all__ = (
 )
 
 
-class Text(_p.BaseModel, extra='forbid'):
+class Text(BaseModel, extra='forbid'):
     """Text component that displays a string."""
 
     text: str
@@ -79,7 +80,7 @@ class Text(_p.BaseModel, extra='forbid'):
     """The type of the component. Always 'Text'."""
 
 
-class Paragraph(_p.BaseModel, extra='forbid'):
+class Paragraph(BaseModel, extra='forbid'):
     """Paragraph component that displays a string as a paragraph."""
 
     text: str
@@ -92,7 +93,7 @@ class Paragraph(_p.BaseModel, extra='forbid'):
     """The type of the component. Always 'Paragraph'."""
 
 
-class PageTitle(_p.BaseModel, extra='forbid'):
+class PageTitle(BaseModel, extra='forbid'):
     """Sets the title of the HTML page via the `document.title` property."""
 
     text: str
@@ -102,7 +103,7 @@ class PageTitle(_p.BaseModel, extra='forbid'):
     """The type of the component. Always 'PageTitle'."""
 
 
-class Div(_p.BaseModel, extra='forbid'):
+class Div(BaseModel, extra='forbid'):
     """A generic container component."""
 
     components: '_t.List[AnyComponent]'
@@ -115,7 +116,7 @@ class Div(_p.BaseModel, extra='forbid'):
     """The type of the component. Always 'Div'."""
 
 
-class Page(_p.BaseModel, extra='forbid'):
+class Page(BaseModel, extra='forbid'):
     """Similar to `container` in many UI frameworks, this acts as a root component for most pages."""
 
     components: '_t.List[AnyComponent]'
@@ -128,7 +129,7 @@ class Page(_p.BaseModel, extra='forbid'):
     """The type of the component. Always 'Page'."""
 
 
-class Heading(_p.BaseModel, extra='forbid'):
+class Heading(BaseModel, extra='forbid'):
     """Heading component."""
 
     text: str
@@ -137,7 +138,7 @@ class Heading(_p.BaseModel, extra='forbid'):
     level: _t.Literal[1, 2, 3, 4, 5, 6] = 1
     """The level of the heading. 1 is the largest, 6 is the smallest."""
 
-    html_id: _t.Union[str, None] = _p.Field(default=None, serialization_alias='htmlId')
+    html_id: _t.Union[str, None] = None
     """Optional HTML ID to apply to the heading's HTML component."""
 
     class_name: _class_name.ClassNameField = None
@@ -169,7 +170,7 @@ See Also:
 """
 
 
-class Markdown(_p.BaseModel, extra='forbid'):
+class Markdown(BaseModel, extra='forbid'):
     """Markdown component that renders markdown text."""
 
     text: str
@@ -185,7 +186,7 @@ class Markdown(_p.BaseModel, extra='forbid'):
     """The type of the component. Always 'Markdown'."""
 
 
-class Code(_p.BaseModel, extra='forbid'):
+class Code(BaseModel, extra='forbid'):
     """Code component that renders code with syntax highlighting."""
 
     text: str
@@ -204,7 +205,7 @@ class Code(_p.BaseModel, extra='forbid'):
     """The type of the component. Always 'Code'."""
 
 
-class Json(_p.BaseModel, extra='forbid'):
+class Json(BaseModel, extra='forbid'):
     """JSON component that renders JSON data."""
 
     value: _types.JsonData
@@ -217,18 +218,16 @@ class Json(_p.BaseModel, extra='forbid'):
     """The type of the component. Always 'JSON'."""
 
 
-class Button(_p.BaseModel, extra='forbid'):
+class Button(BaseModel, extra='forbid'):
     """Button component."""
 
     text: str
     """The text to display on the button."""
 
-    on_click: _t.Union[events.AnyEvent, None] = _p.Field(default=None, serialization_alias='onClick')
+    on_click: _t.Union[events.AnyEvent, None] = None
     """Optional event to trigger when the button is clicked."""
 
-    html_type: _t.Union[_t.Literal['button', 'reset', 'submit'], None] = _p.Field(
-        default=None, serialization_alias='htmlType'
-    )
+    html_type: _t.Union[_t.Literal['button', 'reset', 'submit'], None] = None
     """Optional HTML type of the button. If None, defaults to 'button'."""
 
     named_style: _class_name.NamedStyleField = None
@@ -241,13 +240,13 @@ class Button(_p.BaseModel, extra='forbid'):
     """The type of the component. Always 'Button'."""
 
 
-class Link(_p.BaseModel, extra='forbid'):
+class Link(BaseModel, extra='forbid'):
     """Link component."""
 
     components: '_t.List[AnyComponent]'
     """List of components to render attached to the link."""
 
-    on_click: _t.Union[events.AnyEvent, None] = _p.Field(default=None, serialization_alias='onClick')
+    on_click: _t.Union[events.AnyEvent, None] = None
     """Optional event to trigger when the link is clicked."""
 
     mode: _t.Union[_t.Literal['navbar', 'footer', 'tabs', 'vertical', 'pagination'], None] = None
@@ -266,7 +265,7 @@ class Link(_p.BaseModel, extra='forbid'):
     """The type of the component. Always 'Link'."""
 
 
-class LinkList(_p.BaseModel, extra='forbid'):
+class LinkList(BaseModel, extra='forbid'):
     """List of Link components."""
 
     links: _t.List[Link]
@@ -282,19 +281,19 @@ class LinkList(_p.BaseModel, extra='forbid'):
     """The type of the component. Always 'LinkList'."""
 
 
-class Navbar(_p.BaseModel, extra='forbid'):
+class Navbar(BaseModel, extra='forbid'):
     """Navbar component used for moving between pages."""
 
     title: _t.Union[str, None] = None
     """Optional title to display in the navbar."""
 
-    title_event: _t.Union[events.AnyEvent, None] = _p.Field(default=None, serialization_alias='titleEvent')
+    title_event: _t.Union[events.AnyEvent, None] = None
     """Optional event to trigger when the title is clicked. Often used to navigate to the home page."""
 
-    start_links: _t.List[Link] = _p.Field(default=[], serialization_alias='startLinks')
+    start_links: _t.List[Link] = []
     """List of links to render at the start of the navbar."""
 
-    end_links: _t.List[Link] = _p.Field(default=[], serialization_alias='endLinks')
+    end_links: _t.List[Link] = []
     """List of links to render at the end of the navbar."""
 
     class_name: _class_name.ClassNameField = None
@@ -313,13 +312,13 @@ class Navbar(_p.BaseModel, extra='forbid'):
         return json_schema
 
 
-class Footer(_p.BaseModel, extra='forbid'):
+class Footer(BaseModel, extra='forbid'):
     """Footer component."""
 
     links: _t.List[Link]
     """List of links to render in the footer."""
 
-    extra_text: _t.Union[str, None] = _p.Field(default=None, serialization_alias='extraText')
+    extra_text: _t.Union[str, None] = None
     """Optional extra text to display in the footer."""
 
     class_name: _class_name.ClassNameField = None
@@ -329,7 +328,7 @@ class Footer(_p.BaseModel, extra='forbid'):
     """The type of the component. Always 'Footer'."""
 
 
-class Modal(_p.BaseModel, extra='forbid'):
+class Modal(BaseModel, extra='forbid'):
     """Modal component that displays a modal dialog."""
 
     title: str
@@ -341,10 +340,10 @@ class Modal(_p.BaseModel, extra='forbid'):
     footer: '_t.Union[_t.List[AnyComponent], None]' = None
     """Optional list of components to render in the modal footer."""
 
-    open_trigger: _t.Union[events.PageEvent, None] = _p.Field(default=None, serialization_alias='openTrigger')
+    open_trigger: _t.Union[events.PageEvent, None] = None
     """Optional event to trigger when the modal is opened."""
 
-    open_context: _t.Union[events.ContextType, None] = _p.Field(default=None, serialization_alias='openContext')
+    open_context: _t.Union[events.ContextType, None] = None
     """Optional context to pass to the open trigger event."""
 
     class_name: _class_name.ClassNameField = None
@@ -354,13 +353,13 @@ class Modal(_p.BaseModel, extra='forbid'):
     """The type of the component. Always 'Modal'."""
 
 
-class ServerLoad(_p.BaseModel, extra='forbid'):
+class ServerLoad(BaseModel, extra='forbid'):
     """A component that will be replaced by the server with the component returned by the given URL."""
 
     path: str
     """The URL to load the component from."""
 
-    load_trigger: _t.Union[events.PageEvent, None] = _p.Field(default=None, serialization_alias='loadTrigger')
+    load_trigger: _t.Union[events.PageEvent, None] = None
     """Optional event to trigger when the component is loaded."""
 
     components: '_t.Union[_t.List[AnyComponent], None]' = None
@@ -369,7 +368,7 @@ class ServerLoad(_p.BaseModel, extra='forbid'):
     sse: _t.Union[bool, None] = None
     """Optional flag to enable server-sent events (SSE) for the server load."""
 
-    sse_retry: _t.Union[int, None] = _p.Field(default=None, serialization_alias='sseRetry')
+    sse_retry: _t.Union[int, None] = None
     """Optional time in milliseconds to retry the SSE connection."""
 
     method: _t.Union[_t.Literal['GET', 'POST', 'PATCH', 'PUT', 'DELETE'], None] = None
@@ -379,7 +378,7 @@ class ServerLoad(_p.BaseModel, extra='forbid'):
     """The type of the component. Always 'ServerLoad'."""
 
 
-class Image(_p.BaseModel, extra='forbid'):
+class Image(BaseModel, extra='forbid'):
     """Image container component."""
 
     src: str
@@ -406,7 +405,7 @@ class Image(_p.BaseModel, extra='forbid'):
             'unsafe-url',
         ],
         None,
-    ] = _p.Field(None, serialization_alias='referrerPolicy')
+    ] = None
     """Optional referrer policy for the image. Specifies what information to send when fetching the image.
 
     For more info, see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy."""
@@ -414,7 +413,7 @@ class Image(_p.BaseModel, extra='forbid'):
     loading: _t.Union[_t.Literal['eager', 'lazy'], None] = None
     """Optional loading strategy for the image."""
 
-    on_click: _t.Union[events.AnyEvent, None] = _p.Field(default=None, serialization_alias='onClick')
+    on_click: _t.Union[events.AnyEvent, None] = None
     """Optional event to trigger when the image is clicked."""
 
     class_name: _class_name.ClassNameField = None
@@ -424,7 +423,7 @@ class Image(_p.BaseModel, extra='forbid'):
     """The type of the component. Always 'Image'."""
 
 
-class Iframe(_p.BaseModel, extra='forbid'):
+class Iframe(BaseModel, extra='forbid'):
     """Iframe component that displays content from a URL."""
 
     src: _p.HttpUrl
@@ -452,7 +451,7 @@ class Iframe(_p.BaseModel, extra='forbid'):
     """The type of the component. Always 'Iframe'."""
 
 
-class Video(_p.BaseModel, extra='forbid'):
+class Video(BaseModel, extra='forbid'):
     """Video component that displays a video or multiple videos."""
 
     sources: _t.List[_p.AnyUrl]
@@ -486,7 +485,7 @@ class Video(_p.BaseModel, extra='forbid'):
     """The type of the component. Always 'Video'."""
 
 
-class FireEvent(_p.BaseModel, extra='forbid'):
+class FireEvent(BaseModel, extra='forbid'):
     """Fire an event."""
 
     event: events.AnyEvent
@@ -499,7 +498,7 @@ class FireEvent(_p.BaseModel, extra='forbid'):
     """The type of the component. Always 'FireEvent'."""
 
 
-class Error(_p.BaseModel, extra='forbid'):
+class Error(BaseModel, extra='forbid'):
     """Utility component used to display an error."""
 
     title: str
@@ -508,7 +507,7 @@ class Error(_p.BaseModel, extra='forbid'):
     description: str
     """The description of the error."""
 
-    status_code: _t.Union[int, None] = _p.Field(None, serialization_alias='statusCode')
+    status_code: _t.Union[int, None] = None
     """Optional status code of the error."""
 
     class_name: _class_name.ClassNameField = None
@@ -527,7 +526,7 @@ class Error(_p.BaseModel, extra='forbid'):
         return json_schema
 
 
-class Spinner(_p.BaseModel, extra='forbid'):
+class Spinner(BaseModel, extra='forbid'):
     """Spinner component that displays a loading spinner."""
 
     text: _t.Union[str, None] = None
@@ -540,7 +539,7 @@ class Spinner(_p.BaseModel, extra='forbid'):
     """The type of the component. Always 'Spinner'."""
 
 
-class Toast(_p.BaseModel, extra='forbid'):
+class Toast(BaseModel, extra='forbid'):
     """Toast component that displays a toast message (small temporary message)."""
 
     title: str
@@ -566,10 +565,10 @@ class Toast(_p.BaseModel, extra='forbid'):
     ] = None
     """Optional position of the toast."""
 
-    open_trigger: _t.Union[events.PageEvent, None] = _p.Field(default=None, serialization_alias='openTrigger')
+    open_trigger: _t.Union[events.PageEvent, None] = None
     """Optional event to trigger when the toast is opened."""
 
-    open_context: _t.Union[events.ContextType, None] = _p.Field(default=None, serialization_alias='openContext')
+    open_context: _t.Union[events.ContextType, None] = None
     """Optional context to pass to the open trigger event."""
 
     class_name: _class_name.ClassNameField = None
@@ -579,13 +578,13 @@ class Toast(_p.BaseModel, extra='forbid'):
     """The type of the component. Always 'Toast'."""
 
 
-class Custom(_p.BaseModel, extra='forbid'):
+class Custom(BaseModel, extra='forbid'):
     """Custom component that allows for special data to be rendered."""
 
     data: _types.JsonData
     """The data to render in the custom component."""
 
-    sub_type: str = _p.Field(serialization_alias='subType')
+    sub_type: str
     """The sub-type of the custom component."""
 
     library: _t.Union[str, None] = None
