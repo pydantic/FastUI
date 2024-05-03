@@ -1,9 +1,11 @@
 import { FC } from 'react'
 
-import type { AnyEvent, DisplayMode, Display, JsonData } from '../models'
+import type { AnyEvent, DisplayMode, Display, JsonData, FastProps } from '../models'
 
 import { useCustomRender } from '../hooks/config'
 import { unreachable, asTitle } from '../tools'
+
+import { AnyComp } from '.'
 
 import { JsonComp } from './Json'
 import { LinkRender } from './link'
@@ -26,6 +28,10 @@ export const DisplayComp: FC<Display> = (props) => {
   }
 }
 
+const isCompProps = (obj: any): obj is FastProps => {
+  return 'type' in obj
+}
+
 const DisplayRender: FC<Display> = (props) => {
   const mode = props.mode ?? 'auto'
   const value = props.value ?? null
@@ -34,6 +40,9 @@ const DisplayRender: FC<Display> = (props) => {
   } else if (Array.isArray(value)) {
     return <DisplayArray mode={mode} value={value} />
   } else if (typeof value === 'object' && value !== null) {
+    if (isCompProps(value)) {
+      return <AnyComp {...value} />
+    }
     return <DisplayObject mode={mode} value={value} />
   } else {
     return <DisplayPrimitive mode={mode} value={value} />
