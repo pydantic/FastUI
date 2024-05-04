@@ -522,3 +522,28 @@ def test_form_description_leakage():
         'submitUrl': '/foobar/',
         'type': 'ModelForm',
     }
+
+
+class RichForm(BaseModel):
+    repo: str = Field(json_schema_extra={'placeholder': '{org}/{repo}'}, title='GitHub repository')
+
+
+def test_form_fields():
+    m = components.ModelForm(model=RichForm, submit_url='/foobar/')
+
+    assert m.model_dump(by_alias=True, exclude_none=True) == {
+        'formFields': [
+            {
+                'htmlType': 'text',
+                'locked': False,
+                'name': 'repo',
+                'placeholder': '{org}/{repo}',
+                'required': True,
+                'title': ['GitHub repository'],
+                'type': 'FormFieldInput',
+            }
+        ],
+        'method': 'POST',
+        'submitUrl': '/foobar/',
+        'type': 'ModelForm',
+    }
