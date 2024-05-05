@@ -86,7 +86,11 @@ def test_display_no_fields():
     # insert_assert(d.model_dump(by_alias=True, exclude_none=True))
     assert d.model_dump(by_alias=True, exclude_none=True) == {
         'data': {'id': 1, 'name': 'john', 'representation': '1: john'},
-        'fields': [{'field': 'id'}, {'title': 'Name', 'field': 'name'}],
+        'fields': [
+            {'field': 'id'},
+            {'title': 'Name', 'field': 'name'},
+            {'title': 'Representation', 'field': 'representation'},
+        ],
         'type': 'Details',
     }
 
@@ -100,5 +104,43 @@ def test_display_fields():
     assert d.model_dump(by_alias=True, exclude_none=True) == {
         'data': {'id': 1, 'name': 'john', 'representation': '1: john'},
         'fields': [{'title': 'ID', 'field': 'id'}, {'title': 'Name', 'field': 'name'}],
+        'type': 'Details',
+    }
+
+
+def test_table_respect_computed_field_title():
+    class Foo(BaseModel):
+        id: int
+
+        @computed_field(title='Foo Name')
+        def name(self) -> str:
+            return f'foo{self.id}'
+
+    foos = [Foo(id=1)]
+    table = components.Table(data=foos)
+
+    # insert_assert(table.model_dump(by_alias=True, exclude_none=True))
+    assert table.model_dump(by_alias=True, exclude_none=True) == {
+        'data': [{'id': 1, 'name': 'foo1'}],
+        'columns': [{'field': 'id'}, {'title': 'Foo Name', 'field': 'name'}],
+        'type': 'Table',
+    }
+
+
+def test_details_respect_computed_field_title():
+    class Foo(BaseModel):
+        id: int
+
+        @computed_field(title='Foo Name')
+        def name(self) -> str:
+            return f'foo{self.id}'
+
+    foos = Foo(id=1)
+    details = components.Details(data=foos)
+
+    # insert_assert(table.model_dump(by_alias=True, exclude_none=True))
+    assert details.model_dump(by_alias=True, exclude_none=True) == {
+        'data': {'id': 1, 'name': 'foo1'},
+        'fields': [{'field': 'id'}, {'title': 'Foo Name', 'field': 'name'}],
         'type': 'Details',
     }
