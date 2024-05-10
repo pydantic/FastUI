@@ -68,7 +68,7 @@ class Details(BaseModel, extra='forbid'):
     data: pydantic.SerializeAsAny[_types.DataModel]
     """Data model to display."""
 
-    fields: _t.Union[_t.List[DisplayLookup], None] = None
+    fields: _t.Union[_t.List[_t.Union[DisplayLookup, Display]], None] = None
     """Fields to display."""
 
     class_name: _class_name.ClassNameField = None
@@ -86,9 +86,12 @@ class Details(BaseModel, extra='forbid'):
         else:
             # add pydantic titles to fields that don't have them
             for field in (c for c in self.fields if c.title is None):
-                pydantic_field = self.data.model_fields.get(field.field)
-                if pydantic_field and pydantic_field.title:
-                    field.title = pydantic_field.title
+                if isinstance(field, DisplayLookup):
+                    pydantic_field = self.data.model_fields.get(field.field)
+                    if pydantic_field and pydantic_field.title:
+                        field.title = pydantic_field.title
+                elif isinstance(field, Display):
+                    field.title = field.title
         return self
 
     @classmethod
