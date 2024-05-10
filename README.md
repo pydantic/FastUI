@@ -1,6 +1,7 @@
 # FastUI
 
 Find the documentation [here](https://docs.pydantic.dev/fastui/).
+Join the discussion in the #fastui slack channel [here](https://pydanticlogfire.slack.com/archives/C0720M7D31S)
 
 [![CI](https://github.com/pydantic/FastUI/actions/workflows/ci.yml/badge.svg)](https://github.com/pydantic/FastUI/actions?query=event%3Apush+branch%3Amain+workflow%3ACI)
 [![pypi](https://img.shields.io/pypi/v/fastui.svg)](https://pypi.python.org/pypi/fastui)
