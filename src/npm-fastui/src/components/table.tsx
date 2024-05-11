@@ -2,7 +2,7 @@ import { FC, CSSProperties } from 'react'
 
 import type { Table } from '../models'
 
-import { asTitle } from '../tools'
+import { asTitle, deepLookup } from '../tools'
 import { useClassName } from '../hooks/className'
 
 import { DisplayComp, DisplayLookupProps, DataModel, renderEvent } from './display'
@@ -40,7 +40,7 @@ const colWidth = (w: number | undefined): CSSProperties | undefined => (w ? { wi
 
 const Cell: FC<{ row: DataModel; column: DisplayLookupProps }> = ({ row, column }) => {
   const { field, onClick, ...rest } = column
-  const value = row[field]
+  const value = deepLookup(row, field)
   const renderedOnClick = renderEvent(onClick, row)
   return (
     <td>
