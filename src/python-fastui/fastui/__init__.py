@@ -33,6 +33,7 @@ def prebuilt_html(
     api_root_url: _t.Union[str, None] = None,
     api_path_mode: _t.Union[_t.Literal['append', 'query'], None] = None,
     api_path_strip: _t.Union[str, None] = None,
+    meta_extra: _t.List[str] = [],
 ) -> str:
     """
     Returns a simple HTML page which includes the FastUI react frontend, loaded from https://www.jsdelivr.com/.
@@ -47,7 +48,6 @@ def prebuilt_html(
     Returns:
         HTML string which can be returned by an endpoint to serve the FastUI frontend.
     """
-    meta_extra = []
     if api_root_url is not None:
         meta_extra.append(f'<meta name="fastui:APIRootUrl" content="{api_root_url}" />')
     if api_path_mode is not None:
