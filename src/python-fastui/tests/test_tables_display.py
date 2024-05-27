@@ -26,11 +26,7 @@ def test_table_no_columns():
             {'id': 1, 'name': 'john', 'representation': '1: john'},
             {'id': 2, 'name': 'jack', 'representation': '2: jack'}
         ],
-        'columns': [
-            {'field': 'id'},
-            {'field': 'name', 'title': 'Name'},
-            {'field': 'representation'}
-        ],
+        'columns': [{'field': 'id'}, {'field': 'name', 'title': 'Name'}, {'field': 'representation'}],
         'type': 'Table',
     }
 
