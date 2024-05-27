@@ -8,7 +8,7 @@ class User(BaseModel):
     id: int
     name: str = Field(title='Name')
 
-    @computed_field
+    @computed_field(title='Representation')
     @property
     def representation(self) -> str:
         return f'{self.id}: {self.name}'
@@ -26,7 +26,11 @@ def test_table_no_columns():
             {'id': 1, 'name': 'john', 'representation': '1: john'},
             {'id': 2, 'name': 'jack', 'representation': '2: jack'},
         ],
-        'columns': [{'field': 'id'}, {'field': 'name', 'title': 'Name'}, {'field': 'representation'}],
+        'columns': [
+            {'field': 'id'},
+            {'field': 'name', 'title': 'Name'},
+            {'field': 'representation', 'title': 'Representation'},
+        ],
         'type': 'Table',
     }
 
@@ -50,7 +54,7 @@ def test_table_columns():
         'columns': [
             {'title': 'ID', 'field': 'id'},
             {'title': 'Name', 'field': 'name'},
-            {'field': 'representation'},
+            {'title': 'Representation', 'field': 'representation'},
         ],
         'type': 'Table',
     }
@@ -70,7 +74,7 @@ def test_table_empty_data_model():
         'columns': [
             {'field': 'id'},
             {'title': 'Name', 'field': 'name'},
-            {'field': 'representation'},
+            {'title': 'Representation', 'field': 'representation'},
         ],
         'type': 'Table',
     }
