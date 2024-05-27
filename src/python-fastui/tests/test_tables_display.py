@@ -23,7 +23,7 @@ def test_table_no_columns():
     # insert_assert(table.model_dump(by_alias=True, exclude_none=True))
     assert table.model_dump(by_alias=True, exclude_none=True) == {
         'data': [
-            {'id': 1, 'name': 'john', 'representation': '1: john'}, 
+            {'id': 1, 'name': 'john', 'representation': '1: john'},
             {'id': 2, 'name': 'jack', 'representation': '2: jack'}
         ],
         'columns': [
