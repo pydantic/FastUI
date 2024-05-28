@@ -2,8 +2,11 @@ import json
 import re
 import typing as _t
 
+import pydantic_core
 import typing_extensions as _ta
 from pydantic import BaseModel
+from pydantic.json_schema import GenerateJsonSchema, JsonSchemaValue
+from pydantic_core import core_schema
 
 from .components.forms import (
     FormField,
@@ -24,8 +27,49 @@ else:
 __all__ = 'model_json_schema_to_fields', 'SchemeLocation'
 
 
+class GenerateJsonSchemaWithDefaultFactory(GenerateJsonSchema):
+    """Custom JSON schema including default_factory value as in
+    https://github.com/pydantic/pydantic/blob/main/pydantic/json_schema.py#L1046
+    """
+
+    def default_schema(self, schema: core_schema.WithDefaultSchema) -> JsonSchemaValue:
+        """Generates a JSON schema that matches a schema with a default value.
+
+        Args:
+            schema: The core schema.
+
+        Returns:
+            The generated JSON schema.
+        """
+        json_schema = self.generate_inner(schema['schema'])
+
+        if 'default' in schema:
+            default = schema['default']
+        elif 'default_factory' in schema:
+            default = schema['default_factory']()
+        else:
+            return json_schema
+
+        try:
+            encoded_default = self.encode_default(default)
+        except pydantic_core.PydanticSerializationError:
+            self.emit_warning(
+                'non-serializable-default',
+                f'Default value {default} is not JSON serializable; excluding default from JSON schema',
+            )
+            # Return the inner schema, as though there was no default
+            return json_schema
+
+        if '$ref' in json_schema:
+            # Since reference schemas do not support child keys, we wrap the reference schema in a single-case allOf:
+            return {'allOf': [json_schema], 'default': encoded_default}
+        else:
+            json_schema['default'] = encoded_default
+            return json_schema
+
+
 def model_json_schema_to_fields(model: _t.Type[BaseModel]) -> _t.List[FormField]:
-    schema = _t.cast(JsonSchemaObject, model.model_json_schema())
+    schema = _t.cast(JsonSchemaObject, model.model_json_schema(schema_generator=GenerateJsonSchemaWithDefaultFactory))
     defs = schema.get('$defs', {})
     return list(json_schema_obj_to_fields(schema, [], [], defs))
 

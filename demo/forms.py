@@ -2,7 +2,7 @@ from __future__ import annotations as _annotations
 
 import enum
 from collections import defaultdict
-from datetime import date
+from datetime import date, timedelta
 from typing import Annotated, Literal, TypeAlias
 
 from fastapi import APIRouter, Request, UploadFile
@@ -160,6 +160,7 @@ class BigModel(BaseModel):
         Annotated[int, Field(description='X Coordinate')],
         Annotated[int, Field(description='Y Coordinate')],
     ]
+    start_data: date = Field(default_factory=lambda: date.today() + timedelta(days=1), title='Start Date')
 
     @field_validator('name')
     def name_validator(cls, v: str | None) -> str:
