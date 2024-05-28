@@ -522,3 +522,37 @@ def test_form_description_leakage():
         'submitUrl': '/foobar/',
         'type': 'ModelForm',
     }
+
+
+class FormFieldsBool(BaseModel):
+    human: bool = Field(title='Is human', description='Are you human?', json_schema_extra={'mode': 'switch'})
+    is_foo: bool
+
+
+def test_form_description_leakage():
+    m = components.ModelForm(model=FormFieldsBool, submit_url='/foobar/')
+
+    assert m.model_dump(by_alias=True, exclude_none=True) == {
+        'formFields': [
+            {
+                'description': 'Are you human?',
+                'locked': False,
+                'mode': 'switch',
+                'name': 'human',
+                'required': False,
+                'title': ['Is human'],
+                'type': 'FormFieldBoolean',
+            },
+            {
+                'locked': False,
+                'mode': 'checkbox',
+                'name': 'is_foo',
+                'required': False,
+                'title': ['Is Foo'],
+                'type': 'FormFieldBoolean',
+            },
+        ],
+        'method': 'POST',
+        'submitUrl': '/foobar/',
+        'type': 'ModelForm',
+    }

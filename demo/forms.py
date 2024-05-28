@@ -122,10 +122,12 @@ class ToolEnum(str, enum.Enum):
 
 
 class SelectForm(BaseModel):
-    select_single: ToolEnum = Field(title='Select Single')
-    select_multiple: list[ToolEnum] = Field(title='Select Multiple')
-    search_select_single: str = Field(json_schema_extra={'search_url': '/api/forms/search'})
-    search_select_multiple: list[str] = Field(json_schema_extra={'search_url': '/api/forms/search'})
+    human: bool = Field(title='Is human', description='Are you human?', json_schema_extra={'mode': 'switch'})
+    is_foo: bool = Field(title='some check box')
+    # select_single: ToolEnum = Field(title='Select Single')
+    # select_multiple: list[ToolEnum] = Field(title='Select Multiple')
+    # search_select_single: str = Field(json_schema_extra={'search_url': '/api/forms/search'})
+    # search_select_multiple: list[str] = Field(json_schema_extra={'search_url': '/api/forms/search'})
 
 
 @router.post('/select', response_model=FastUI, response_model_exclude_none=True)
@@ -151,9 +153,7 @@ class BigModel(BaseModel):
         None, description='Upload multiple images'
     )
     dob: date = Field(title='Date of Birth', description='Your date of birth, this is required hence bold')
-    human: bool | None = Field(
-        None, title='Is human', description='Are you human?', json_schema_extra={'mode': 'switch'}
-    )
+    human: bool = Field(title='Is human', description='Are you human?', json_schema_extra={'mode': 'switch'})
     size: SizeModel
 
     position: tuple[
