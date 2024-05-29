@@ -43,22 +43,17 @@ class Table(BaseModel, extra='forbid'):
             except IndexError:
                 raise ValueError('Cannot infer model from empty data, please set `Table(..., model=MyModel)`')
 
+        all_model_fields = {**data_model_type.model_fields, **data_model_type.model_computed_fields}
         if self.columns is None:
-            self.columns = []
-            for name, field in data_model_type.model_fields.items():
-                self.columns.append(display.DisplayLookup(field=name, title=field.title))
-            for name, field in data_model_type.model_computed_fields.items():
-                self.columns.append(display.DisplayLookup(field=name, title=field.title))
-
+            self.columns = [
+                display.DisplayLookup(field=name, title=field.title) for name, field in all_model_fields.items()
+            ]
         else:
             # add pydantic titles to columns that don't have them
             for column in (c for c in self.columns if c.title is None):
-                model_field = data_model_type.model_fields.get(column.field)
-                computed_field = data_model_type.model_computed_fields.get(column.field)
-                if model_field and model_field.title:
-                    column.title = model_field.title
-                elif computed_field and computed_field.title:
-                    column.title = computed_field.title
+                field = all_model_fields.get(column.field)
+                if field and field.title:
+                    column.title = field.title
         return self
 
     @classmethod
