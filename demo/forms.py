@@ -144,6 +144,7 @@ class BigModel(BaseModel):
         None, description='This field is not required, it must start with a capital letter if provided'
     )
     info: Annotated[str | None, Textarea(rows=5)] = Field(None, description='Optional free text information about you.')
+    repo: str = Field(json_schema_extra={'placeholder': '{org}/{repo}'}, title='GitHub repository')
     profile_pic: Annotated[UploadFile, FormFile(accept='image/*', max_size=16_000)] = Field(
         description='Upload a profile picture, must not be more than 16kb'
     )

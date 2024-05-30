@@ -197,6 +197,7 @@ def json_schema_field_to_field(
             initial=schema.get('default'),
             autocomplete=schema.get('autocomplete'),
             description=schema.get('description'),
+            placeholder=schema.get('placeholder'),
         )
 
 
