@@ -33,6 +33,7 @@ def prebuilt_html(
     api_root_url: _t.Union[str, None] = None,
     api_path_mode: _t.Union[_t.Literal['append', 'query'], None] = None,
     api_path_strip: _t.Union[str, None] = None,
+    meta_extra: _t.Dict[str, str] = {},
 ) -> str:
     """
     Returns a simple HTML page which includes the FastUI react frontend, loaded from https://www.jsdelivr.com/.
@@ -43,18 +44,21 @@ def prebuilt_html(
         api_path_mode: whether to append the page path to the root API request URL, or use it as a query parameter,
             default is 'append'.
         api_path_strip: string to remove from the start of the page path before making the API request.
+        meta_extra: dictionary where the key is the name of the meta tag and the value is the content.
 
     Returns:
         HTML string which can be returned by an endpoint to serve the FastUI frontend.
     """
-    meta_extra = []
     if api_root_url is not None:
-        meta_extra.append(f'<meta name="fastui:APIRootUrl" content="{api_root_url}" />')
+        meta_extra['fastui:APIRootUrl'] = api_root_url
     if api_path_mode is not None:
-        meta_extra.append(f'<meta name="fastui:APIPathMode" content="{api_path_mode}" />')
+        meta_extra['fastui:APIPathMode'] = api_path_mode
     if api_path_strip is not None:
-        meta_extra.append(f'<meta name="fastui:APIPathStrip" content="{api_path_strip}" />')
-    meta_extra_str = '\n    '.join(meta_extra)
+        meta_extra['fastui:APIPathStrip'] = api_path_strip
+
+    meta_extra_str = '\n    '.join(
+        f'<meta name="{name}" content="{content}" />' for name, content in meta_extra.items()
+    )
     # language=HTML
     return f"""\
 <!doctype html>
