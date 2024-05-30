@@ -127,6 +127,14 @@ class SelectForm(BaseModel):
     search_select_single: str = Field(json_schema_extra={'search_url': '/api/forms/search'})
     search_select_multiple: list[str] = Field(json_schema_extra={'search_url': '/api/forms/search'})
 
+    @field_validator('select_multiple', 'search_select_multiple', mode='before')
+    @classmethod
+    def correct_select_multiple(cls, v: list[str]) -> list[str]:
+        if isinstance(v, list):
+            return v
+        else:
+            return [v]
+
 
 @router.post('/select', response_model=FastUI, response_model_exclude_none=True)
 async def select_form_post(form: Annotated[SelectForm, fastui_form(SelectForm)]):
@@ -144,6 +152,7 @@ class BigModel(BaseModel):
         None, description='This field is not required, it must start with a capital letter if provided'
     )
     info: Annotated[str | None, Textarea(rows=5)] = Field(None, description='Optional free text information about you.')
+    repo: str = Field(json_schema_extra={'placeholder': '{org}/{repo}'}, title='GitHub repository')
     profile_pic: Annotated[UploadFile, FormFile(accept='image/*', max_size=16_000)] = Field(
         description='Upload a profile picture, must not be more than 16kb'
     )
