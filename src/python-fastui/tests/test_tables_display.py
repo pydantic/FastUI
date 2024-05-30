@@ -126,6 +126,8 @@ def test_details_with_display_lookup_and_display():
             {'title': 'Name', 'field': 'name'},
             {'title': 'Display Title', 'value': 'display value', 'type': 'Display'},
         ],
+        'type': 'Details',
+    }
 
 
 def test_table_respect_computed_field_title():
