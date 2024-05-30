@@ -1,9 +1,11 @@
 import enum
 from contextlib import asynccontextmanager
+from datetime import date
 from io import BytesIO
 from typing import List, Tuple, Union
 
 import pytest
+from dirty_equals import IsDate
 from fastapi import HTTPException
 from fastui import components
 from fastui.forms import FormFile, Textarea, fastui_form
@@ -517,6 +519,31 @@ def test_form_description_leakage():
                 'title': ['Select Multiple'],
                 'type': 'FormFieldSelect',
             },
+        ],
+        'method': 'POST',
+        'submitUrl': '/foobar/',
+        'type': 'ModelForm',
+    }
+
+
+class FormFieldsDefaultFactory(BaseModel):
+    start_date: date = Field(title='Start Date', default_factory=lambda: date.today())
+
+
+def test_form_fields_default_factory():
+    m = components.ModelForm(model=FormFieldsDefaultFactory, submit_url='/foobar/')
+
+    assert m.model_dump(by_alias=True, exclude_none=True) == {
+        'formFields': [
+            {
+                'htmlType': 'date',
+                'initial': IsDate(approx=date.today(), iso_string=True),
+                'locked': False,
+                'name': 'start_date',
+                'required': False,
+                'title': ['Start Date'],
+                'type': 'FormFieldInput',
+            }
         ],
         'method': 'POST',
         'submitUrl': '/foobar/',
