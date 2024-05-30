@@ -151,9 +151,7 @@ class BigModel(BaseModel):
         None, description='Upload multiple images'
     )
     dob: date = Field(title='Date of Birth', description='Your date of birth, this is required hence bold')
-    human: bool | None = Field(
-        None, title='Is human', description='Are you human?', json_schema_extra={'mode': 'switch'}
-    )
+    human: bool = Field(title='Is human', description='Are you human?', json_schema_extra={'mode': 'switch'})
     size: SizeModel
 
     position: tuple[

@@ -154,7 +154,8 @@ def json_schema_obj_to_fields(
     required = set(schema.get('required', []))
     if properties := schema.get('properties'):
         for key, value in properties.items():
-            yield from json_schema_any_to_fields(value, loc + [key], title, key in required, defs)
+            is_bool = value.get('type') == 'boolean'
+            yield from json_schema_any_to_fields(value, loc + [key], title, key in required and not is_bool, defs)
 
 
 def json_schema_any_to_fields(
