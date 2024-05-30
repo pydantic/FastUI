@@ -388,7 +388,7 @@ export interface Display {
  */
 export interface Details {
   data: DataModel
-  fields: DisplayLookup[]
+  fields: (DisplayLookup | Display)[]
   className?: ClassName
   type: 'Details'
 }

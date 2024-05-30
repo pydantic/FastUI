@@ -108,6 +108,28 @@ def test_display_fields():
     }
 
 
+def test_details_with_display_lookup_and_display():
+    d = components.Details(
+        data=users[0],
+        fields=[
+            display.DisplayLookup(field='id', title='ID'),
+            display.DisplayLookup(field='name'),
+            display.Display(value='display value', title='Display Title'),
+        ],
+    )
+
+    # insert_assert(d.model_dump(by_alias=True, exclude_none=True))
+    assert d.model_dump(by_alias=True, exclude_none=True) == {
+        'data': {'id': 1, 'name': 'john', 'representation': '1: john'},
+        'fields': [
+            {'title': 'ID', 'field': 'id'},
+            {'title': 'Name', 'field': 'name'},
+            {'title': 'Display Title', 'value': 'display value', 'type': 'Display'},
+        ],
+        'type': 'Details',
+    }
+
+
 def test_table_respect_computed_field_title():
     class Foo(BaseModel):
         id: int
