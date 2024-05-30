@@ -75,9 +75,8 @@ def test_menu_links(client: TestClient, url: str):
     assert isinstance(data, list)
 
 
-def test_forms_validate_correct_select_multiple():
-    with client as _client:
-        countries = _client.get('api/forms/search', params={'q': None})
+def test_forms_validate_correct_select_multiple(client: TestClient):
+    countries = client.get('api/forms/search', params={'q': None})
     countries_options = countries.json()['options']
     r = client.post(
         'api/forms/select',
