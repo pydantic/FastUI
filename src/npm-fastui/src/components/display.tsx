@@ -9,6 +9,7 @@ import { AnyComp } from '.'
 
 import { JsonComp } from './Json'
 import { LinkRender } from './link'
+import MarkdownComp from './MarkdownLazy'
 
 export const DisplayComp: FC<Display> = (props) => {
   const CustomRenderComp = useCustomRender(props)
@@ -206,8 +207,7 @@ const DisplayMarkdown: FC<{ value: JSONPrimitive }> = ({ value }) => {
   if (value === null) {
     return <DisplayNull />
   } else {
-    // TODO
-    return <>{value.toString()}</>
+    return <MarkdownComp text={value.toString()} type="Markdown" />
   }
 }
 
