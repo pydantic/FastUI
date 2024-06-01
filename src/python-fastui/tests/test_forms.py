@@ -586,7 +586,7 @@ def test_form_numbers_default_step():
                 'required': True,
                 'locked': False,
                 'htmlType': 'number',
-                'step': '0.01',
+                'step': 0.01,
                 'type': 'FormFieldInput',
             },
         ],
