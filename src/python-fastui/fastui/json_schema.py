@@ -198,6 +198,7 @@ def json_schema_field_to_field(
             autocomplete=schema.get('autocomplete'),
             description=schema.get('description'),
             placeholder=schema.get('placeholder'),
+            step=schema.get('step', _get_default_step(schema)),
         )
 
 
@@ -371,6 +372,14 @@ def input_html_type(schema: JsonSchemaField) -> InputHtmlType:
         return type_lookup[key]
     except KeyError as e:
         raise ValueError(f'Unknown schema: {schema}') from e
+
+
+def _get_default_step(schema: JsonSchemaField) -> _t.Union[_t.Literal['any'], None]:
+    key = schema['type']
+    if key == 'integer':
+        return None
+    if key == 'number':
+        return 'any'
 
 
 def schema_is_field(schema: JsonSchemaConcrete) -> _ta.TypeGuard[JsonSchemaField]:

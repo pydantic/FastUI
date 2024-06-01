@@ -58,6 +58,9 @@ class FormFieldInput(BaseFormField):
     autocomplete: _t.Union[str, None] = None
     """Autocomplete value for the field."""
 
+    step: _t.Union[float, _t.Literal['any'], None] = None
+    """Step value for the field."""
+
     type: _t.Literal['FormFieldInput'] = 'FormFieldInput'
     """The type of the component. Always 'FormFieldInput'."""
 

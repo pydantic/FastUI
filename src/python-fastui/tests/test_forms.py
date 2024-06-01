@@ -547,3 +547,47 @@ def test_form_fields():
         'submitUrl': '/foobar/',
         'type': 'ModelForm',
     }
+
+
+class FormNumbersDefaultStep(BaseModel):
+    size: int
+    cost: float
+    fees: float = Field(json_schema_extra={'step': '0.01'})
+
+
+def test_form_numbers_default_step():
+    m = components.ModelForm(model=FormNumbersDefaultStep, submit_url='/foobar')
+
+    assert m.model_dump(by_alias=True, exclude_none=True) == {
+        'submitUrl': '/foobar',
+        'method': 'POST',
+        'type': 'ModelForm',
+        'formFields': [
+            {
+                'name': 'size',
+                'title': ['Size'],
+                'required': True,
+                'locked': False,
+                'htmlType': 'number',
+                'type': 'FormFieldInput',
+            },
+            {
+                'name': 'cost',
+                'title': ['Cost'],
+                'required': True,
+                'locked': False,
+                'htmlType': 'number',
+                'step': 'any',
+                'type': 'FormFieldInput',
+            },
+            {
+                'name': 'fees',
+                'title': ['Fees'],
+                'required': True,
+                'locked': False,
+                'htmlType': 'number',
+                'step': 0.01,
+                'type': 'FormFieldInput',
+            },
+        ],
+    }

@@ -433,6 +433,7 @@ export interface FormFieldInput {
   initial?: string | number
   placeholder?: string
   autocomplete?: string
+  step?: number | 'any'
   type: 'FormFieldInput'
 }
 /**
