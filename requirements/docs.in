@@ -1,0 +1,6 @@
+mkdocs
+mkdocs-material
+mkdocs-simple-hooks
+mkdocstrings[python]
+mkdocs-redirects
+mkdocs-material-extensions

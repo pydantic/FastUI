@@ -35,15 +35,54 @@ jobs:
         env:
           SKIP: no-commit-to-branch
 
+  docs-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # note: PPPR_TOKEN is not available on PRs sourced from forks, but the necessary
+      # dependencies are also listed in docs.txt :)
+      - name: install
+        run: |
+          pip install --upgrade pip
+          pip install --extra-index-url https://pydantic:${PPPR_TOKEN}@pppr.pydantic.dev/simple/ mkdocs-material mkdocstrings-python
+          pip install -r requirements/docs.txt
+        # note -- we can use these in the future when mkdocstrings-typescript and griffe-typedoc beocome publicly available
+        # pip install --extra-index-url https://pydantic:${PPPR_TOKEN}@pppr.pydantic.dev/simple/ mkdocs-material mkdocstrings-python griffe-typedoc mkdocstrings-typescript
+        # npm install
+        # npm install -g typedoc
+        env:
+          PPPR_TOKEN: ${{ secrets.PPPR_TOKEN }}
+
+      - name: build site
+        run: mkdocs build --strict
+
   test:
     name: test ${{ matrix.python-version }} on ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu, macos]
+        os: [ubuntu-latest, macos-13, macos-latest]
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        exclude:
+          # Python 3.8 and 3.9 are not available on macOS 14
+          - os: macos-13
+            python-version: '3.10'
+          - os: macos-13
+            python-version: '3.11'
+          - os: macos-13
+            python-version: '3.12'
+          - os: macos-latest
+            python-version: '3.8'
+          - os: macos-latest
+            python-version: '3.9'
 
-    runs-on: ${{ matrix.os }}-latest
+    runs-on: ${{ matrix.os }}
 
     env:
       PYTHON: ${{ matrix.python-version }}

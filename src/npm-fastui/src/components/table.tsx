@@ -44,7 +44,7 @@ const Cell: FC<{ row: DataModel; column: DisplayLookupProps }> = ({ row, column 
   const renderedOnClick = renderEvent(onClick, row)
   return (
     <td>
-      <DisplayComp type="Display" onClick={renderedOnClick} value={value || null} {...rest} />
+      <DisplayComp type="Display" onClick={renderedOnClick} value={value !== undefined ? value : null} {...rest} />
     </td>
   )
 }

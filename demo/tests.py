@@ -74,4 +74,19 @@ def test_menu_links(client: TestClient, url: str):
     assert isinstance(data, list)
 
 
+# def test_forms_validate_correct_select_multiple(client: TestClient):
+#     countries = client.get('api/forms/search', params={'q': None})
+#     countries_options = countries.json()['options']
+#     r = client.post(
+#         'api/forms/select',
+#         data={
+#             'select_single': ToolEnum._member_names_[0],
+#             'select_multiple': ToolEnum._member_names_[0],
+#             'search_select_single': countries_options[0]['options'][0]['value'],
+#             'search_select_multiple': countries_options[0]['options'][0]['value'],
+#         },
+#     )
+#     assert r.status_code == 200
+
+
 # TODO tests for forms, including submission

@@ -1,0 +1,8 @@
+// TODO: we really want the entryPoint to be src, but mkdocstrings-typescript doesn't fully support this option yet,
+// as we can't specify the path within the package from which we want to pull docs, so right now
+// we resort to more specific entryPoints
+{
+  "extends": ["../../typedoc.base.json"],
+  "entryPointStrategy": "expand",
+  "entryPoints": ["src/models.d.ts"]
+}

@@ -41,6 +41,7 @@ import { FireEventComp } from './FireEvent'
 import { ErrorComp } from './error'
 import { SpinnerComp } from './spinner'
 import { CustomComp } from './Custom'
+import { ToastComp } from './toast'
 
 // TODO some better way to export components
 export {
@@ -77,6 +78,7 @@ export {
   SpinnerComp,
   CustomComp,
   LinkRender,
+  ToastComp,
 }
 
 export type FastClassNameProps = Exclude<FastProps, Text | Display | ServerLoad | PageTitle | FireEvent>
@@ -166,6 +168,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <SpinnerComp {...props} />
       case 'Custom':
         return <CustomComp {...props} />
+      case 'Toast':
+        return <ToastComp {...props} />
       default:
         unreachable('Unexpected component type', type, props)
         return <DisplayError title="Invalid Server Response" description={`Unknown component type: "${type}"`} />

@@ -198,6 +198,7 @@ def json_schema_field_to_field(
             autocomplete=schema.get('autocomplete'),
             description=schema.get('description'),
             step=schema.get('step', get_default_step(schema)),
+            placeholder=schema.get('placeholder'),
         )
 
 
@@ -211,7 +212,7 @@ def json_schema_array_to_fields(
     items_schema = schema.get('items')
     if items_schema:
         items_schema, required = deference_json_schema(items_schema, defs, required)
-        for field_name in 'search_url', 'placeholder':
+        for field_name in 'search_url', 'placeholder', 'description':
             if value := schema.get(field_name):
                 items_schema[field_name] = value  # type: ignore
         if field := special_string_field(items_schema, loc_to_name(loc), title, required, True):
@@ -313,7 +314,7 @@ def deference_json_schema(
         if def_schema is None:
             raise ValueError(f'Invalid $ref "{ref}", not found in {defs}')
         else:
-            return def_schema, required
+            return def_schema.copy(), required  # clone dict to avoid attribute leakage via shared schema.
     elif any_of := schema.get('anyOf'):
         if len(any_of) == 2 and sum(s.get('type') == 'null' for s in any_of) == 1:
             # If anyOf is a single type and null, then it is optional
