@@ -552,6 +552,7 @@ def test_form_fields():
 class FormNumbersDefaultStep(BaseModel):
     size: int
     cost: float
+    fees: float = Field(json_schema_extra={'step': '0.01'})
 
 
 def test_form_numbers_default_step():
@@ -577,6 +578,15 @@ def test_form_numbers_default_step():
                 'locked': False,
                 'htmlType': 'number',
                 'step': 'any',
+                'type': 'FormFieldInput',
+            },
+            {
+                'name': 'fees',
+                'title': ['Fees'],
+                'required': True,
+                'locked': False,
+                'htmlType': 'number',
+                'step': '0.01',
                 'type': 'FormFieldInput',
             },
         ],
