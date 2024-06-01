@@ -58,6 +58,9 @@ export type JsonData =
     }
 export type AnyEvent = PageEvent | GoToEvent | BackEvent | AuthEvent
 export type NamedStyle = 'primary' | 'secondary' | 'warning'
+/**
+ * Display mode for a value.
+ */
 export type DisplayMode =
   | 'auto'
   | 'plain'
@@ -70,35 +73,47 @@ export type DisplayMode =
   | 'inline_code'
 export type SelectOptions = SelectOption[] | SelectGroup[]
 
+/**
+ * Text component that displays a string.
+ */
 export interface Text {
   text: string
   type: 'Text'
 }
+/**
+ * Paragraph component that displays a string as a paragraph.
+ */
 export interface Paragraph {
   text: string
   className?: ClassName
   type: 'Paragraph'
 }
 /**
- * This sets the title of the HTML page via the `document.title` property.
+ * Sets the title of the HTML page via the `document.title` property.
  */
 export interface PageTitle {
   text: string
   type: 'PageTitle'
 }
+/**
+ * A generic container component.
+ */
 export interface Div {
   components: FastProps[]
   className?: ClassName
   type: 'Div'
 }
 /**
- * Similar to `container` in many UI frameworks, this should be a reasonable root component for most pages.
+ * Similar to `container` in many UI frameworks, this acts as a root component for most pages.
  */
 export interface Page {
   components: FastProps[]
   className?: ClassName
   type: 'Page'
 }
+/**
+ * Heading component.
+ */
 export interface Heading {
   text: string
   level: 1 | 2 | 3 | 4 | 5 | 6
@@ -106,12 +121,18 @@ export interface Heading {
   className?: ClassName
   type: 'Heading'
 }
+/**
+ * Markdown component that renders markdown text.
+ */
 export interface Markdown {
   text: string
   codeStyle?: string
   className?: ClassName
   type: 'Markdown'
 }
+/**
+ * Code component that renders code with syntax highlighting.
+ */
 export interface Code {
   text: string
   language?: string
@@ -119,11 +140,17 @@ export interface Code {
   className?: ClassName
   type: 'Code'
 }
+/**
+ * JSON component that renders JSON data.
+ */
 export interface Json {
   value: JsonData
   className?: ClassName
   type: 'JSON'
 }
+/**
+ * Button component.
+ */
 export interface Button {
   text: string
   onClick?: AnyEvent
@@ -159,6 +186,9 @@ export interface AuthEvent {
   url?: string
   type: 'auth'
 }
+/**
+ * Link component.
+ */
 export interface Link {
   components: FastProps[]
   onClick?: PageEvent | GoToEvent | BackEvent | AuthEvent
@@ -168,12 +198,18 @@ export interface Link {
   className?: ClassName
   type: 'Link'
 }
+/**
+ * List of Link components.
+ */
 export interface LinkList {
   links: Link[]
   mode?: 'tabs' | 'vertical' | 'pagination'
   className?: ClassName
   type: 'LinkList'
 }
+/**
+ * Navbar component used for moving between pages.
+ */
 export interface Navbar {
   title?: string
   titleEvent?: PageEvent | GoToEvent | BackEvent | AuthEvent
@@ -182,12 +218,18 @@ export interface Navbar {
   className?: ClassName
   type: 'Navbar'
 }
+/**
+ * Footer component.
+ */
 export interface Footer {
   links: Link[]
   extraText?: string
   className?: ClassName
   type: 'Footer'
 }
+/**
+ * Modal component that displays a modal dialog.
+ */
 export interface Modal {
   title: string
   body: FastProps[]
@@ -209,6 +251,9 @@ export interface ServerLoad {
   method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE'
   type: 'ServerLoad'
 }
+/**
+ * Image container component.
+ */
 export interface Image {
   src: string
   alt?: string
@@ -228,6 +273,9 @@ export interface Image {
   className?: ClassName
   type: 'Image'
 }
+/**
+ * Iframe component that displays content from a URL.
+ */
 export interface Iframe {
   src: string
   title?: string
@@ -238,6 +286,9 @@ export interface Iframe {
   sandbox?: string
   type: 'Iframe'
 }
+/**
+ * Video component that displays a video or multiple videos.
+ */
 export interface Video {
   sources: string[]
   autoplay?: boolean
@@ -247,14 +298,20 @@ export interface Video {
   poster?: string
   width?: string | number
   height?: string | number
-  type: 'Video'
   className?: ClassName
+  type: 'Video'
 }
+/**
+ * Fire an event.
+ */
 export interface FireEvent {
   event: AnyEvent
   message?: string
   type: 'FireEvent'
 }
+/**
+ * Utility component used to display an error.
+ */
 export interface Error {
   title: string
   description: string
@@ -263,11 +320,17 @@ export interface Error {
   type: 'Error'
   children?: ReactNode
 }
+/**
+ * Spinner component that displays a loading spinner.
+ */
 export interface Spinner {
   text?: string
   className?: ClassName
   type: 'Spinner'
 }
+/**
+ * Custom component that allows for special data to be rendered.
+ */
 export interface Custom {
   data: JsonData
   subType: string
@@ -275,6 +338,9 @@ export interface Custom {
   className?: ClassName
   type: 'Custom'
 }
+/**
+ * Table component.
+ */
 export interface Table {
   data: DataModel[]
   columns: DisplayLookup[]
@@ -295,13 +361,16 @@ export interface DisplayLookup {
   field: string
   tableWidthPercent?: number
 }
+/**
+ * Pagination component to use with tables.
+ */
 export interface Pagination {
   page: number
   pageSize: number
   total: number
+  pageQueryParam?: string
   className?: ClassName
   type: 'Pagination'
-  pageQueryParam?: string
   pageCount: number
 }
 /**
@@ -314,12 +383,18 @@ export interface Display {
   value: JsonData
   type: 'Display'
 }
+/**
+ * Details associated with displaying a data model.
+ */
 export interface Details {
   data: DataModel
-  fields: DisplayLookup[]
+  fields: (DisplayLookup | Display)[]
   className?: ClassName
   type: 'Details'
 }
+/**
+ * Form component.
+ */
 export interface Form {
   submitUrl: string
   initial?: {
@@ -342,6 +417,9 @@ export interface Form {
   )[]
   type: 'Form'
 }
+/**
+ * Form field for basic input.
+ */
 export interface FormFieldInput {
   name: string
   title: string[] | string
@@ -358,6 +436,9 @@ export interface FormFieldInput {
   step?: number | 'any'
   type: 'FormFieldInput'
 }
+/**
+ * Form field for text area input.
+ */
 export interface FormFieldTextarea {
   name: string
   title: string[] | string
@@ -374,6 +455,9 @@ export interface FormFieldTextarea {
   autocomplete?: string
   type: 'FormFieldTextarea'
 }
+/**
+ * Form field for boolean input.
+ */
 export interface FormFieldBoolean {
   name: string
   title: string[] | string
@@ -387,6 +471,9 @@ export interface FormFieldBoolean {
   mode?: 'checkbox' | 'switch'
   type: 'FormFieldBoolean'
 }
+/**
+ * Form field for file input.
+ */
 export interface FormFieldFile {
   name: string
   title: string[] | string
@@ -400,6 +487,9 @@ export interface FormFieldFile {
   accept?: string
   type: 'FormFieldFile'
 }
+/**
+ * Form field for select input.
+ */
 export interface FormFieldSelect {
   name: string
   title: string[] | string
@@ -425,6 +515,9 @@ export interface SelectGroup {
   label: string
   options: SelectOption[]
 }
+/**
+ * Form field for searchable select input.
+ */
 export interface FormFieldSelectSearch {
   name: string
   title: string[] | string
@@ -441,6 +534,9 @@ export interface FormFieldSelectSearch {
   placeholder?: string
   type: 'FormFieldSelectSearch'
 }
+/**
+ * Form component generated from a Pydantic model.
+ */
 export interface ModelForm {
   submitUrl: string
   initial?: {
@@ -463,6 +559,9 @@ export interface ModelForm {
     | FormFieldSelectSearch
   )[]
 }
+/**
+ * Toast component that displays a toast message (small temporary message).
+ */
 export interface Toast {
   title: string
   body: FastProps[]
