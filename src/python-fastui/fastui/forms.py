@@ -1,5 +1,6 @@
 import json
 import typing as _t
+from contextlib import asynccontextmanager
 from itertools import groupby
 from mimetypes import MimeTypes
 from operator import itemgetter
@@ -34,17 +35,18 @@ class FastUIForm(_t.Generic[FormModel]):
 
 
 def fastui_form(model: _t.Type[FormModel]) -> fastapi_params.Depends:
+    @asynccontextmanager
     async def run_fastui_form(request: fastapi.Request):
         async with request.form() as form_data:
             model_data = unflatten(form_data)
 
-        try:
-            return model.model_validate(model_data)
-        except pydantic.ValidationError as e:
-            raise fastapi.HTTPException(
-                status_code=422,
-                detail={'form': e.errors(include_input=False, include_url=False, include_context=False)},
-            )
+            try:
+                yield model.model_validate(model_data)
+            except pydantic.ValidationError as e:
+                raise fastapi.HTTPException(
+                    status_code=422,
+                    detail={'form': e.errors(include_input=False, include_url=False, include_context=False)},
+                )
 
     return fastapi.Depends(run_fastui_form)
 
