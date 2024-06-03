@@ -4,8 +4,9 @@ from typing import List, Optional
 import httpx
 import pytest
 from fastapi import FastAPI
+
 from fastui.auth import AuthError, GitHubAuthProvider, GitHubEmail
-from fastui.auth.github import EXCHANGE_CACHE
+from fastui.auth.github import EXCHANGE_CACHE, GitHubExchange
 from pydantic import SecretStr
 
 
@@ -214,7 +215,10 @@ async def test_exchange_cached_purge(fake_github_app: FastAPI, httpx_client: htt
     assert len(EXCHANGE_CACHE) == 1
 
     # manually add an old entry
-    EXCHANGE_CACHE._data['old'] = (datetime(2020, 1, 1), 'old_token')
+    EXCHANGE_CACHE._data['old'] = (
+        datetime(2020, 1, 1),
+        GitHubExchange(access_token='old_token', token_type='bearer', scope=[]),
+    )
     assert len(EXCHANGE_CACHE) == 2
 
     await github_auth_provider.exchange_code('good')

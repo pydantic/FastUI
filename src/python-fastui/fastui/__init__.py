@@ -9,9 +9,7 @@ __all__ = 'AnyComponent', 'FastUI', 'prebuilt_html'
 
 
 class FastUI(pydantic.RootModel):
-    """
-    The root component of a FastUI application.
-    """
+    """The root component of a FastUI application."""
 
     root: _t.List[AnyComponent]
 
@@ -34,8 +32,7 @@ def prebuilt_html(
     api_path_mode: _t.Union[_t.Literal['append', 'query'], None] = None,
     api_path_strip: _t.Union[str, None] = None,
 ) -> str:
-    """
-    Returns a simple HTML page which includes the FastUI react frontend, loaded from https://www.jsdelivr.com/.
+    """Returns a simple HTML page which includes the FastUI react frontend, loaded from https://www.jsdelivr.com/.
 
     Arguments:
         title: page title

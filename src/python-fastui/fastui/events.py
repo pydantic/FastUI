@@ -1,7 +1,8 @@
 from typing import Dict, Literal, Union
 
-from pydantic import Field
 from typing_extensions import Annotated, TypeAliasType
+
+from pydantic import Field
 
 from .base import BaseModel
 

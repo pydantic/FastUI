@@ -2,12 +2,13 @@ from datetime import date
 from functools import cache
 from pathlib import Path
 
-import pydantic
 from fastapi import APIRouter
 from fastui import AnyComponent, FastUI
 from fastui import components as c
 from fastui.components.display import DisplayLookup, DisplayMode
 from fastui.events import BackEvent, GoToEvent
+
+import pydantic
 from pydantic import BaseModel, Field, TypeAdapter
 
 from .shared import demo_page
@@ -39,7 +40,7 @@ def cities_list() -> list[City]:
 
 
 @cache
-def cities_lookup() -> dict[id, City]:
+def cities_lookup() -> dict[int, City]:
     return {city.id: city for city in cities_list()}
 
 
@@ -75,7 +76,7 @@ def cities_view(page: int = 1, country: str | None = None) -> list[AnyComponent]
                 DisplayLookup(field='population', table_width_percent=33),
             ],
         ),
-        c.Pagination(page=page, page_size=page_size, total=len(cities)),
+        c.Pagination(page=page, page_size=page_size, total=len(cities), page_query_param='page'),
         title='Cities',
     )
 
@@ -146,7 +147,14 @@ def tabs() -> list[AnyComponent]:
 
 @router.get('/users/{id}/', response_model=FastUI, response_model_exclude_none=True)
 def user_profile(id: int) -> list[AnyComponent]:
-    user: User | None = users[id - 1] if id <= len(users) else None
+    user = users[id - 1] if id <= len(users) else None
+    if user is None:
+        return demo_page(
+            *tabs(),
+            c.Text(text='User not found.'),
+            title='User not found',
+        )
+
     return demo_page(
         *tabs(),
         c.Link(components=[c.Text(text='Back')], on_click=BackEvent()),

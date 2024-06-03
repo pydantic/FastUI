@@ -7,10 +7,11 @@ on:
     tags:
       - '**'
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
   lint:
+    if: github.event.pull_request.draft != true
     runs-on: ubuntu-latest
 
     steps:
@@ -24,8 +25,12 @@ jobs:
         with:
           node-version: 18
 
-      - run: pip install -r src/python-fastui/requirements/all.txt
-      - run: pip install src/python-fastui
+      - name: Install the latest version of rye
+        uses: eifinger/setup-rye@v2
+
+      - run: make install
+
+      - run: make lint
 
       - run: npm install
 
@@ -82,6 +87,7 @@ jobs:
           - os: macos-latest
             python-version: '3.9'
 
+    if: github.event.pull_request.draft != true
     runs-on: ${{ matrix.os }}
 
     env:
@@ -96,26 +102,45 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - run: pip install -r src/python-fastui/requirements/test.txt
-      - run: pip install -r src/python-fastui/requirements/pyproject.txt
-      - run: pip install -e src/python-fastui
+      - name: Install the latest version of rye
+        uses: eifinger/setup-rye@v2
 
-      - run: coverage run -m pytest src
-      # display coverage and fail if it's below 80%, which shouldn't happen
-      - run: coverage report --fail-under=80
+      - name: Pin python-version ${{ matrix.python-version }}
+        run: rye pin ${{ matrix.python-version }}
 
-      # test demo on 3.11 and 3.12, these tests are intentionally omitted from coverage
+      - name: Install dependencies
+        run: make install
+
+      - name: Run test, with generating coverage on FastUI source
+        run: make testcov
+
+      - name: Run cov report generator
+        run: make testcov-report
+
+      - name: Run type check on FastUI source
+        run: make typecheck
+
+      # ci on demo for 3.11 and 3.12, these ops are intentionally omitted, reason is that it's using 3.11 and 3.12 syntax
       - if: matrix.python-version == '3.11' || matrix.python-version == '3.12'
-        run: pytest demo/tests.py
+        run: make lint-demo
 
-      - run: coverage xml
+      - if: matrix.python-version == '3.11' || matrix.python-version == '3.12'
+        run: make typecheck-demo
 
-      - uses: codecov/codecov-action@v4
+      - if: matrix.python-version == '3.11' || matrix.python-version == '3.12'
+        run: make test-demo
+
+      - name: Run XML coverage report generator
+        run: make testcov-xml
+
+      - name: Upload coverage report from XML
+        uses: codecov/codecov-action@v4
         with:
-          file: ./coverage.xml
+          file: ./src/python-fastui/coverage.xml
           env_vars: PYTHON,OS
 
   npm-build:
+    if: github.event.pull_request.draft != true
     runs-on: ubuntu-latest
 
     steps:
@@ -130,7 +155,7 @@ jobs:
       - run: tree src
 
   check: # This job does nothing and is only used for the branch protection
-    if: always()
+    if: github.event.pull_request.draft != true
     needs: [lint, test, npm-build]
     runs-on: ubuntu-latest
 
@@ -143,7 +168,7 @@ jobs:
 
   release:
     needs: [check]
-    if: "success() && startsWith(github.ref, 'refs/tags/')"
+    if: "success() && startsWith(github.ref, 'refs/tags/') && github.event.pull_request.draft != true"
     runs-on: ubuntu-latest
     environment: release
 
