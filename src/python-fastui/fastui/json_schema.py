@@ -320,9 +320,9 @@ def deference_json_schema(
         if def_schema is None:
             raise ValueError(f'Invalid $ref "{ref}", not found in {defs}')
         else:
-            def_schema.update({k: v for k, v in schema.items() if k != '$ref'})  # type: ignore
-            return def_schema, required
-            return def_schema.copy(), required  # clone dict to avoid attribute leakage via shared schema.
+            def_schema_new = def_schema.copy()  # clone dict to avoid attribute leakage via shared schema.
+            def_schema_new.update({k: v for k, v in schema.items() if k != '$ref'})  # type: ignore
+            return def_schema_new, required
     elif any_of := schema.get('anyOf'):
         if len(any_of) == 2 and sum(s.get('type') == 'null' for s in any_of) == 1:
             # If anyOf is a single type and null, then it is optional
