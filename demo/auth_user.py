@@ -40,8 +40,8 @@ class User:
             payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
         except jwt.ExpiredSignatureError:
             return None
-        except jwt.DecodeError:
-            raise HTTPException(status_code=401, detail='Invalid token')
+        except jwt.DecodeError as exc:
+            raise HTTPException(status_code=401, detail='Invalid token') from exc
         else:
             # existing token might not have 'exp' field
             payload.pop('exp', None)

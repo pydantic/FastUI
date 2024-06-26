@@ -40,8 +40,8 @@ class Table(BaseModel, extra='forbid'):
         else:
             try:
                 data_model_type = type(self.data[0])
-            except IndexError:
-                raise ValueError('Cannot infer model from empty data, please set `Table(..., model=MyModel)`')
+            except IndexError as exc:
+                raise ValueError('Cannot infer model from empty data, please set `Table(..., model=MyModel)`)') from exc
 
         all_model_fields = {**data_model_type.model_fields, **data_model_type.model_computed_fields}
         if self.columns is None:
