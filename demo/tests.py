@@ -32,7 +32,7 @@ def test_api_root(client: TestClient):
         {
             'title': 'FastUI Demo',
             'titleEvent': {'url': '/', 'type': 'go-to'},
-            'startLinks': IsList(length=4),
+            'startLinks': IsList(length=5),
             'endLinks': [],
             'type': 'Navbar',
         },
@@ -61,9 +61,19 @@ def get_menu_links():
         r = client.get('/api/')
         assert r.status_code == 200
         data = r.json()
-        for link in data[1]['startLinks']:
-            url = link['onClick']['url']
-            yield pytest.param(f'/api{url}', id=url)
+        for navitem in data[1]['startLinks']:
+            if navitem['type'] == 'Link':
+                url = navitem['onClick']['url']
+                yield pytest.param(f'/api{url}', id=url)
+            elif navitem['type'] == 'LinkListDropdown':
+                for link in navitem['links']:
+                    if isinstance(link, list):
+                        for inner_link in link:
+                            url = inner_link['onClick']['url']
+                            yield pytest.param(f'/api{url}', id=url)
+                    else:
+                        url = link['onClick']['url']
+                        yield pytest.param(f'/api{url}', id=url)
 
 
 @pytest.mark.parametrize('url', get_menu_links())

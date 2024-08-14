@@ -212,11 +212,21 @@ export interface LinkList {
  */
 export interface Navbar {
   title?: string
-  titleEvent?: PageEvent | GoToEvent | BackEvent | AuthEvent
-  startLinks: Link[]
-  endLinks: Link[]
+  titleEvent?: AnyEvent
+  startLinks: (Link | LinkListDropdown)[]
+  endLinks: (Link | LinkListDropdown)[]
   className?: ClassName
   type: 'Navbar'
+}
+/**
+ * List of Link components for dropdowns used in the `Navbar` component.
+ */
+export interface LinkListDropdown {
+  name: string
+  links: (Link | Link[])[]
+  mode: 'navbar'
+  className?: ClassName
+  type: 'LinkListDropdown'
 }
 /**
  * Footer component.

@@ -32,6 +32,43 @@ def demo_page(*components: AnyComponent, title: str | None = None) -> list[AnyCo
                     on_click=GoToEvent(url='/forms/login'),
                     active='startswith:/forms',
                 ),
+                c.LinkListDropdown(
+                    name='All',
+                    links=[
+                        c.Link(
+                            components=[c.Text(text='Components')],
+                            on_click=GoToEvent(url='/components'),
+                            active='startswith:/components',
+                        ),
+                        c.Link(
+                            components=[c.Text(text='Tables')],
+                            on_click=GoToEvent(url='/table/cities'),
+                            active='startswith:/table',
+                        ),
+                        c.Link(
+                            components=[c.Text(text='Auth')],
+                            on_click=GoToEvent(url='/auth/login/password'),
+                            active='startswith:/auth',
+                        ),
+                        [
+                            c.Link(
+                                components=[c.Text(text='Forms Login')],
+                                on_click=GoToEvent(url='/forms/login'),
+                                active='startswith:/forms',
+                            ),
+                            c.Link(
+                                components=[c.Text(text='Forms Select')],
+                                on_click=GoToEvent(url='/forms/select'),
+                                active='startswith:/forms',
+                            ),
+                            c.Link(
+                                components=[c.Text(text='Forms Big')],
+                                on_click=GoToEvent(url='/forms/big'),
+                                active='startswith:/forms',
+                            ),
+                        ],
+                    ],
+                ),
             ],
         ),
         c.Page(
