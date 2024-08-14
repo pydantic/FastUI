@@ -287,7 +287,7 @@ class LinkListDropdown(BaseModel, extra='forbid'):
     name: str
     """Name of the link list."""
 
-    links: _t.List[Link | _t.List[Link]]
+    links: _t.List[_t.Union[Link, _t.List[Link]]]
     """List of links to render."""
 
     mode: _t.Literal['navbar'] = 'navbar'
