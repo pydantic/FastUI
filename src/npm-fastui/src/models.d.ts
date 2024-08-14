@@ -212,7 +212,7 @@ export interface LinkList {
  */
 export interface Navbar {
   title?: string
-  titleEvent?: AnyEvent
+  titleEvent?: PageEvent | GoToEvent | BackEvent | AuthEvent
   startLinks: (Link | LinkListDropdown)[]
   endLinks: (Link | LinkListDropdown)[]
   className?: ClassName
