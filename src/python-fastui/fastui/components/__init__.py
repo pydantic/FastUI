@@ -309,10 +309,10 @@ class Navbar(BaseModel, extra='forbid'):
     title_event: _t.Union[events.AnyEvent, None] = None
     """Optional event to trigger when the title is clicked. Often used to navigate to the home page."""
 
-    start_links: _t.List[Link | LinkListDropdown] = []
+    start_links: _t.List[_t.Union[Link, LinkListDropdown]] = []
     """List of links to render at the start of the navbar."""
 
-    end_links: _t.List[Link | LinkListDropdown] = []
+    end_links: _t.List[_t.Union[Link, LinkListDropdown]] = []
     """List of links to render at the end of the navbar."""
 
     class_name: _class_name.ClassNameField = None
