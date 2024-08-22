@@ -135,6 +135,8 @@ export const DisplayPrimitive: FC<DisplayPrimitiveProps> = (props) => {
     case 'json':
     case 'inline_code':
       return <DisplayInlineCode value={value} />
+    case 'currency':
+      return <DisplayCurrency value={value} />
     default:
       unreachable('Unexpected display type', mode, props)
   }
@@ -216,6 +218,18 @@ const DisplayInlineCode: FC<{ value: JSONPrimitive }> = ({ value }) => {
     return <DisplayNull />
   } else {
     return <code className="fu-inline-code">{value.toString()}</code>
+  }
+}
+
+const DisplayCurrency: FC<{ value: JSONPrimitive }> = ({ value }) => {
+  if (typeof value === 'boolean') {
+    return value.toString()
+  } else if (value === null) {
+    return <DisplayNull />
+  } else {
+    return Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
+      typeof value === 'string' ? parseFloat(value) : value,
+    )
   }
 }
 
