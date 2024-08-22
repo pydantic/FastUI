@@ -4,7 +4,7 @@ import pydantic
 
 from .components import AnyComponent
 
-__version__ = '0.6.1'
+__version__ = '0.7.0'
 __all__ = 'AnyComponent', 'FastUI', 'prebuilt_html'
 
 
