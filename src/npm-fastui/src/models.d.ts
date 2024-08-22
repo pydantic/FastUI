@@ -71,6 +71,7 @@ export type DisplayMode =
   | 'markdown'
   | 'json'
   | 'inline_code'
+  | 'currency'
 export type SelectOptions = SelectOption[] | SelectGroup[]
 
 /**

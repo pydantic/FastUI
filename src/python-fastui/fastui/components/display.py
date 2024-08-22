@@ -27,6 +27,7 @@ class DisplayMode(str, enum.Enum):
     markdown = 'markdown'
     json = 'json'
     inline_code = 'inline_code'
+    currency = 'currency'
 
 
 class DisplayBase(BaseModel, ABC, defer_build=True):
