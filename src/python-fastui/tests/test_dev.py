@@ -1,7 +1,8 @@
 from unittest.mock import patch
 
-from fastui.dev import dev_fastapi_app
 from httpx import AsyncClient
+
+from fastui.dev import dev_fastapi_app
 
 
 def mock_signal(_sig, on_signal):

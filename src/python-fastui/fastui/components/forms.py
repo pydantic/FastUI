@@ -1,8 +1,9 @@
 import typing as _t
 from abc import ABC
 
-import pydantic
 import typing_extensions as _te
+
+import pydantic
 
 from .. import class_name as _class_name
 from .. import events, forms

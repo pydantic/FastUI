@@ -12,9 +12,7 @@ __all__ = 'AuthError', 'AuthRedirect', 'fastapi_auth_exception_handling'
 
 
 class AuthException(ABC, Exception):
-    """
-    Base exception for all auth-related errors.
-    """
+    """Base exception for all auth-related errors."""
 
     @abstractmethod
     def response_data(self) -> Tuple[int, str]:
@@ -31,8 +29,7 @@ class AuthError(AuthException):
 
 
 class AuthRedirect(AuthException):
-    """
-    Special exception which should cause a 345 HTTP response with a body containing
+    """Special exception which should cause a 345 HTTP response with a body containing
     FastUI components to redirect the user to a new page.
     """
 
@@ -47,9 +44,7 @@ class AuthRedirect(AuthException):
 
 
 def fastapi_auth_exception_handling(app: 'FastAPI') -> None:
-    """
-    Register an exception handler for any `AuthException` in a FastAPI app.
-    """
+    """Register an exception handler for any `AuthException` in a FastAPI app."""
     from fastapi import Request, Response
 
     @app.exception_handler(AuthException)

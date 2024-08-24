@@ -32,5 +32,8 @@ __pycache__/
 /frontend-dist/
 /scratch/
 /packages-dist/
-/.coverage
+.coverage
 /users.db
+
+# rye
+.python-version

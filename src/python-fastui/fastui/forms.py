@@ -4,10 +4,11 @@ from itertools import groupby
 from mimetypes import MimeTypes
 from operator import itemgetter
 
-import pydantic
 import pydantic_core
 import typing_extensions as _te
 from pydantic_core import core_schema
+
+import pydantic
 
 try:
     import fastapi
@@ -25,9 +26,7 @@ FormModel = _t.TypeVar('FormModel', bound=pydantic.BaseModel)
 
 
 class FastUIForm(_t.Generic[FormModel]):
-    """
-    TODO mypy, pyright and pycharm don't understand the model type if this is used, is there a way to get it to work?
-    """
+    """TODO mypy, pyright and pycharm don't understand the model type if this is used, is there a way to get it to work?"""
 
     def __class_getitem__(cls, model: _t.Type[FormModel]) -> fastapi_params.Depends:
         return fastui_form(model)
@@ -71,8 +70,7 @@ class FormFile:
             return [self.validate_single(input_value)]
 
     def _validate_file(self, file: ds.UploadFile) -> None:
-        """
-        See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#unique_file_type_specifiers
+        """See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#unique_file_type_specifiers
         for details on what's allowed.
         """
         if file.size == 0:
@@ -174,8 +172,7 @@ NestedDict: _te.TypeAlias = 'dict[str | int, NestedDict | str | list[str] | ds.U
 
 
 def unflatten(form_data: ds.FormData) -> NestedDict:
-    """
-    Unflatten a `FormData` dict into a nested dict.
+    """Unflatten a `FormData` dict into a nested dict.
 
     Also omit empty strings, this might be a bit controversial, but it helps in many scenarios, e.g. a select
     which hasn't been updated. It also avoids empty values for string inputs that haven't been fill in.
