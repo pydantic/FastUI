@@ -50,6 +50,7 @@ __all__ = (
     'Spinner',
     'Toast',
     'Custom',
+    'DarkMode',
     # then we include components from other files
     'Table',
     'Pagination',
@@ -597,7 +598,9 @@ class Custom(BaseModel, extra='forbid'):
     """The type of the component. Always 'Custom'."""
 
 
-class DarkMode(_p.BaseModel, extra='forbid'):
+class DarkMode(BaseModel, extra='forbid'):
+    """DarkMode component"""
+
     class_name: _class_name.ClassNameField = None
     type: _t.Literal['DarkMode'] = 'DarkMode'
 

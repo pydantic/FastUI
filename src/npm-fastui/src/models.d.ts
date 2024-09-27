@@ -341,7 +341,7 @@ export interface Custom {
   type: 'Custom'
 }
 /**
- * DarkMode Component.
+ * DarkMode component
  */
 export interface DarkMode {
   className?: ClassName
