@@ -12,6 +12,7 @@ from .components.forms import (
     FormFieldInput,
     FormFieldSelect,
     FormFieldSelectSearch,
+    FormFieldTextarea,
     InputHtmlType,
 )
 
@@ -30,7 +31,7 @@ def model_json_schema_to_fields(model: _t.Type[BaseModel]) -> _t.List[FormField]
 
 
 JsonSchemaInput: _ta.TypeAlias = (
-    'JsonSchemaString | JsonSchemaStringEnum | JsonSchemaFile | JsonSchemaInt | JsonSchemaNumber'
+    'JsonSchemaString | JsonSchemaStringEnum | JsonSchemaFile | JsonSchemaTextarea | JsonSchemaInt | JsonSchemaNumber'
 )
 JsonSchemaField: _ta.TypeAlias = 'JsonSchemaInput | JsonSchemaBool'
 JsonSchemaConcrete: _ta.TypeAlias = 'JsonSchemaField | JsonSchemaArray | JsonSchemaObject'
@@ -67,6 +68,15 @@ class JsonSchemaFile(JsonSchemaBase, total=False):
     type: _ta.Required[_t.Literal['string']]
     format: _ta.Required[_t.Literal['binary']]
     accept: str
+
+
+class JsonSchemaTextarea(JsonSchemaBase, total=False):
+    type: _ta.Required[_t.Literal['string']]
+    format: _ta.Required[_t.Literal['textarea']]
+    rows: int
+    cols: int
+    default: str
+    placeholder: str
 
 
 class JsonSchemaBool(JsonSchemaBase, total=False):
@@ -185,7 +195,9 @@ def json_schema_field_to_field(
             html_type=input_html_type(schema),
             required=required,
             initial=schema.get('default'),
+            autocomplete=schema.get('autocomplete'),
             description=schema.get('description'),
+            placeholder=schema.get('placeholder'),
         )
 
 
@@ -199,7 +211,7 @@ def json_schema_array_to_fields(
     items_schema = schema.get('items')
     if items_schema:
         items_schema, required = deference_json_schema(items_schema, defs, required)
-        for field_name in 'search_url', 'placeholder':
+        for field_name in 'search_url', 'placeholder', 'description':
             if value := schema.get(field_name):
                 items_schema[field_name] = value  # type: ignore
         if field := special_string_field(items_schema, loc_to_name(loc), title, required, True):
@@ -236,6 +248,18 @@ def special_string_field(
                 accept=schema.get('accept'),
                 description=schema.get('description'),
             )
+        elif schema.get('format') == 'textarea':
+            return FormFieldTextarea(
+                name=name,
+                title=title,
+                required=required,
+                rows=schema.get('rows'),
+                cols=schema.get('cols'),
+                placeholder=schema.get('placeholder'),
+                initial=schema.get('initial'),
+                description=schema.get('description'),
+                autocomplete=schema.get('autocomplete'),
+            )
         elif enum := schema.get('enum'):
             enum_labels = schema.get('enum_labels', {})
             return FormFieldSelect(
@@ -247,6 +271,7 @@ def special_string_field(
                 options=[SelectOption(value=v, label=enum_labels.get(v) or as_title(v)) for v in enum],
                 initial=schema.get('default'),
                 description=schema.get('description'),
+                autocomplete=schema.get('autocomplete'),
             )
         elif search_url := schema.get('search_url'):
             return FormFieldSelectSearch(
@@ -288,7 +313,7 @@ def deference_json_schema(
         if def_schema is None:
             raise ValueError(f'Invalid $ref "{ref}", not found in {defs}')
         else:
-            return def_schema, required
+            return def_schema.copy(), required  # clone dict to avoid attribute leakage via shared schema.
     elif any_of := schema.get('anyOf'):
         if len(any_of) == 2 and sum(s.get('type') == 'null' for s in any_of) == 1:
             # If anyOf is a single type and null, then it is optional

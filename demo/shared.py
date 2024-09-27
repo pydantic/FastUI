@@ -11,7 +11,7 @@ def demo_page(*components: AnyComponent, title: str | None = None) -> list[AnyCo
         c.Navbar(
             title='FastUI Demo',
             title_event=GoToEvent(url='/'),
-            links=[
+            start_links=[
                 c.Link(
                     components=[c.Text(text='Components')],
                     on_click=GoToEvent(url='/components'),
@@ -24,7 +24,7 @@ def demo_page(*components: AnyComponent, title: str | None = None) -> list[AnyCo
                 ),
                 c.Link(
                     components=[c.Text(text='Auth')],
-                    on_click=GoToEvent(url='/auth/login'),
+                    on_click=GoToEvent(url='/auth/login/password'),
                     active='startswith:/auth',
                 ),
                 c.Link(
@@ -38,6 +38,16 @@ def demo_page(*components: AnyComponent, title: str | None = None) -> list[AnyCo
             components=[
                 *((c.Heading(text=title),) if title else ()),
                 *components,
+            ],
+        ),
+        c.Footer(
+            extra_text='FastUI Demo',
+            links=[
+                c.Link(
+                    components=[c.Text(text='Github')], on_click=GoToEvent(url='https://github.com/pydantic/FastUI')
+                ),
+                c.Link(components=[c.Text(text='PyPI')], on_click=GoToEvent(url='https://pypi.org/project/fastui/')),
+                c.Link(components=[c.Text(text='NPM')], on_click=GoToEvent(url='https://www.npmjs.com/org/pydantic/')),
             ],
         ),
     ]

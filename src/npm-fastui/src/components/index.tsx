@@ -1,8 +1,8 @@
-import { useContext, FC } from 'react'
+import { FC } from 'react'
 
 import type { FastProps, Display, Text, ServerLoad, PageTitle, FireEvent } from '../models'
 
-import { ErrorContext } from '../hooks/error'
+import { DisplayError } from '../hooks/error'
 import { useCustomRender } from '../hooks/config'
 import { unreachable } from '../tools'
 
@@ -16,6 +16,7 @@ import { CodeComp } from './Code'
 import { FormComp } from './form'
 import {
   FormFieldInputComp,
+  FormFieldTextareaComp,
   FormFieldBooleanComp,
   FormFieldSelectComp,
   FormFieldSelectSearchComp,
@@ -31,13 +32,17 @@ import { PaginationComp } from './pagination'
 import { DetailsComp } from './details'
 import { DisplayComp } from './display'
 import { JsonComp } from './Json'
+import { FooterComp } from './footer'
 import { ServerLoadComp } from './ServerLoad'
 import { ImageComp } from './image'
 import { IframeComp } from './Iframe'
 import { VideoComp } from './video'
 import { FireEventComp } from './FireEvent'
+import { ErrorComp } from './error'
+import { SpinnerComp } from './spinner'
 import { CustomComp } from './Custom'
 import { DarkModeComp } from './DarkMode'
+import { ToastComp } from './toast'
 
 // TODO some better way to export components
 export {
@@ -65,13 +70,17 @@ export {
   DisplayComp,
   DarkModeComp,
   JsonComp,
+  FooterComp,
   ServerLoadComp,
   ImageComp,
   IframeComp,
   VideoComp,
   FireEventComp,
+  ErrorComp,
+  SpinnerComp,
   CustomComp,
   LinkRender,
+  ToastComp,
 }
 
 export type FastClassNameProps = Exclude<FastProps, Text | Display | ServerLoad | PageTitle | FireEvent>
@@ -85,8 +94,6 @@ export const AnyCompList: FC<{ propsList: FastProps[] }> = ({ propsList }) => (
 )
 
 export const AnyComp: FC<FastProps> = (props) => {
-  const { DisplayError } = useContext(ErrorContext)
-
   const CustomRenderComp = useCustomRender(props)
   if (CustomRenderComp) {
     return <CustomRenderComp />
@@ -118,11 +125,15 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <LinkListComp {...props} />
       case 'Navbar':
         return <NavbarComp {...props} />
+      case 'Footer':
+        return <FooterComp {...props} />
       case 'Form':
       case 'ModelForm':
         return <FormComp {...props} />
       case 'FormFieldInput':
         return <FormFieldInputComp {...props} />
+      case 'FormFieldTextarea':
+        return <FormFieldTextareaComp {...props} />
       case 'FormFieldBoolean':
         return <FormFieldBooleanComp {...props} />
       case 'FormFieldFile':
@@ -153,10 +164,16 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <VideoComp {...props} />
       case 'FireEvent':
         return <FireEventComp {...props} />
+      case 'Error':
+        return <ErrorComp {...props} />
+      case 'Spinner':
+        return <SpinnerComp {...props} />
       case 'Custom':
         return <CustomComp {...props} />
       case 'DarkMode':
         return <DarkModeComp {...props} />
+      case 'Toast':
+        return <ToastComp {...props} />
       default:
         unreachable('Unexpected component type', type, props)
         return <DisplayError title="Invalid Server Response" description={`Unknown component type: "${type}"`} />

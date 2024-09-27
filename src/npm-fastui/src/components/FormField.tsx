@@ -4,6 +4,7 @@ import Select, { StylesConfig } from 'react-select'
 
 import type {
   FormFieldInput,
+  FormFieldTextarea,
   FormFieldBoolean,
   FormFieldFile,
   FormFieldSelect,
@@ -23,7 +24,7 @@ interface FormFieldInputProps extends FormFieldInput {
 }
 
 export const FormFieldInputComp: FC<FormFieldInputProps> = (props) => {
-  const { name, placeholder, required, htmlType, locked } = props
+  const { name, placeholder, required, htmlType, locked, autocomplete, onChange } = props
 
   return (
     <div className={useClassName(props)}>
@@ -37,7 +38,36 @@ export const FormFieldInputComp: FC<FormFieldInputProps> = (props) => {
         required={required}
         disabled={locked}
         placeholder={placeholder}
+        autoComplete={autocomplete}
         aria-describedby={descId(props)}
+        onChange={onChange}
+      />
+      <ErrorDescription {...props} />
+    </div>
+  )
+}
+
+interface FormFieldTextareaProps extends FormFieldTextarea {
+  onChange?: PrivateOnChange
+}
+
+export const FormFieldTextareaComp: FC<FormFieldTextareaProps> = (props) => {
+  const { name, placeholder, required, locked, rows, cols, autocomplete } = props
+  return (
+    <div className={useClassName(props)}>
+      <Label {...props} />
+      <textarea
+        className={useClassName(props, { el: 'textarea' })}
+        defaultValue={props.initial}
+        id={inputId(props)}
+        rows={rows}
+        cols={cols}
+        name={name}
+        required={required}
+        disabled={locked}
+        placeholder={placeholder}
+        aria-describedby={descId(props)}
+        autoComplete={autocomplete}
       />
       <ErrorDescription {...props} />
     </div>
@@ -49,7 +79,7 @@ interface FormFieldBooleanProps extends FormFieldBoolean {
 }
 
 export const FormFieldBooleanComp: FC<FormFieldBooleanProps> = (props) => {
-  const { name, required, locked } = props
+  const { name, required, locked, onChange } = props
 
   return (
     <div className={useClassName(props)}>
@@ -63,6 +93,7 @@ export const FormFieldBooleanComp: FC<FormFieldBooleanProps> = (props) => {
         required={required}
         disabled={locked}
         aria-describedby={descId(props)}
+        onChange={onChange}
       />
       <ErrorDescription {...props} />
     </div>
@@ -113,7 +144,7 @@ export const FormFieldSelectComp: FC<FormFieldSelectProps> = (props) => {
 }
 
 export const FormFieldSelectVanillaComp: FC<FormFieldSelectProps> = (props) => {
-  const { name, required, locked, options, multiple, initial, placeholder, onChange } = props
+  const { name, required, locked, options, multiple, initial, placeholder, onChange, autocomplete } = props
 
   const className = useClassName(props)
   const classNameSelect = useClassName(props, { el: 'select' })
@@ -131,6 +162,7 @@ export const FormFieldSelectVanillaComp: FC<FormFieldSelectProps> = (props) => {
         aria-describedby={descId(props)}
         placeholder={placeholder}
         onChange={() => onChange && onChange()}
+        autoComplete={autocomplete}
       >
         {multiple ? null : <option></option>}
         {options.map((option, i) => (
@@ -147,6 +179,12 @@ export const FormFieldSelectReactComp: FC<FormFieldSelectProps> = (props) => {
 
   const className = useClassName(props)
   const classNameSelectReact = useClassName(props, { el: 'select-react' })
+  let value
+  if (Array.isArray(initial)) {
+    value = findDefaultArray(options, initial)
+  } else {
+    value = findDefault(options, initial)
+  }
 
   const reactSelectOnChanged = () => {
     // TODO this is a hack to wait for the input to be updated, can we do better?
@@ -164,7 +202,7 @@ export const FormFieldSelectReactComp: FC<FormFieldSelectProps> = (props) => {
         className={classNameSelectReact}
         isMulti={multiple ?? false}
         isClearable
-        defaultValue={findDefault(options, initial)}
+        defaultValue={value}
         name={name}
         required={required}
         isDisabled={locked}
@@ -191,6 +229,11 @@ const SelectOptionComp: FC<{ option: SelectOption | SelectGroup }> = ({ option }
   } else {
     return <option value={option.value}>{option.label}</option>
   }
+}
+
+function findDefaultArray(options: SelectOptions, value: string[]): SelectOption[] {
+  const foundValues = value.map((v) => findDefault(options, v))
+  return foundValues.filter((v) => v) as SelectOption[]
 }
 
 function findDefault(options: SelectOptions, value?: string): SelectOption | undefined {
@@ -284,6 +327,7 @@ const Label: FC<FormFieldProps> = (props) => {
 
 export type FormFieldProps =
   | FormFieldInputProps
+  | FormFieldTextareaProps
   | FormFieldBooleanProps
   | FormFieldFileProps
   | FormFieldSelectProps

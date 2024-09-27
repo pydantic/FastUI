@@ -4,17 +4,20 @@ import { FC, ReactNode } from 'react'
 
 export default function App() {
   return (
-    <div className="top-offset">
-      <FastUI
-        rootUrl="/api"
-        classNameGenerator={bootstrap.classNameGenerator}
-        customRender={customRender}
-        NotFound={NotFound}
-        Spinner={Spinner}
-        Transition={Transition}
-      />
-    </div>
+    <FastUI
+      APIRootUrl={getMetaContent('fastui:APIRootUrl') || '/api'}
+      APIPathMode={getMetaContent('fastui:APIPathMode') as undefined | 'append' | 'query'}
+      APIPathStrip={getMetaContent('fastui:APIPathStrip')}
+      classNameGenerator={bootstrap.classNameGenerator}
+      customRender={customRender}
+      NotFound={NotFound}
+      Transition={Transition}
+    />
   )
+}
+
+function getMetaContent(name: string): string | undefined {
+  return document.querySelector(`meta[name="${name}"]`)?.getAttribute('content') || undefined
 }
 
 const NotFound = ({ url }: { url: string }) => (
@@ -26,17 +29,11 @@ const NotFound = ({ url }: { url: string }) => (
   </div>
 )
 
-const Spinner = () => (
-  <div className="container d-flex justify-content-center my-3" role="status">
-    <div className="spinner" />
-  </div>
-)
-
 const Transition: FC<{ children: ReactNode; transitioning: boolean }> = ({ children, transitioning }) => (
-  <div>
+  <>
     <div className={renderClassName({ 'transition-overlay': true, transitioning })} />
     {children}
-  </div>
+  </>
 )
 
 const customRender: CustomRender = (props) => {

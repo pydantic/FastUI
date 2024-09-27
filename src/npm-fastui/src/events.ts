@@ -31,11 +31,18 @@ export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
         }
         const detail: PageEventDetail = { clear: event.clear || false, context: event.context }
         document.dispatchEvent(new CustomEvent(pageEventType(event), { detail }))
+        if (event.nextEvent) {
+          fireEventImpl(event.nextEvent)
+        }
         break
       }
       case 'go-to':
         if (event.url) {
-          location.goto(event.url)
+          if (event.target) {
+            window.open(event.url, event.target)
+          } else {
+            location.goto(event.url)
+          }
         }
         if (event.query) {
           location.setQuery(event.query)
@@ -43,9 +50,9 @@ export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
         break
       case 'auth':
         if (event.token) {
-          sessionStorage.setItem(AUTH_TOKEN_KEY, event.token)
+          localStorage.setItem(AUTH_TOKEN_KEY, event.token)
         } else {
-          sessionStorage.removeItem(AUTH_TOKEN_KEY)
+          localStorage.removeItem(AUTH_TOKEN_KEY)
         }
         if (event.url) {
           location.goto(event.url)
@@ -57,6 +64,8 @@ export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
     }
   }
 
+  // fireEventImpl is recursive, but it doesn't make sense for fireEvent to have fireEventImpl as a dep
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fireEvent = useCallback(fireEventImpl, [location])
 
   return { fireEvent }
@@ -93,7 +102,6 @@ export function usePageEventListen(event?: PageEvent, initialContext: ContextTyp
     }
 
     const onEvent = (e: Event) => {
-      console.log('event:', e)
       const event = e as CustomEvent<PageEventDetail>
       const { context, clear } = event.detail
       if (clear) {
@@ -112,6 +120,9 @@ export function usePageEventListen(event?: PageEvent, initialContext: ContextTyp
   return {
     eventContext,
     fireId,
-    clear: useCallback(() => setEventContext(null), []),
+    clear: useCallback(() => {
+      setEventContext(null)
+      setFireId(null)
+    }, []),
   }
 }

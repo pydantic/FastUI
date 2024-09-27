@@ -5,7 +5,7 @@ import type { FastProps } from '../models'
 
 type Config = Omit<FastUIProps, 'DisplayError' | 'classNameGenerator' | 'devMode'>
 
-export const ConfigContext = createContext<Config>({ rootUrl: '' })
+export const ConfigContext = createContext<Config>({ APIRootUrl: '' })
 
 export const useCustomRender = (props: FastProps): FC | void => {
   const { customRender } = useContext(ConfigContext)

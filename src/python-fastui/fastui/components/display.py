@@ -10,11 +10,14 @@ from pydantic_core import core_schema as _core_schema
 from .. import class_name as _class_name
 from .. import events
 from .. import types as _types
+from ..base import BaseModel
 
 __all__ = 'DisplayMode', 'DisplayLookup', 'Display', 'Details'
 
 
 class DisplayMode(str, enum.Enum):
+    """Display mode for a value."""
+
     auto = 'auto'  # default, same as None below
     plain = 'plain'
     datetime = 'datetime'
@@ -24,53 +27,72 @@ class DisplayMode(str, enum.Enum):
     markdown = 'markdown'
     json = 'json'
     inline_code = 'inline_code'
+    currency = 'currency'
 
 
-class DisplayBase(pydantic.BaseModel, ABC, defer_build=True):
+class DisplayBase(BaseModel, ABC, defer_build=True):
+    """Base class for display components."""
+
     mode: _t.Union[DisplayMode, None] = None
+    """Display mode for the value."""
+
     title: _t.Union[str, None] = None
-    on_click: _t.Union[events.AnyEvent, None] = pydantic.Field(default=None, serialization_alias='onClick')
+    """Title to display for the value."""
+
+    on_click: _t.Union[events.AnyEvent, None] = None
+    """Event to trigger when the value is clicked."""
 
 
 class DisplayLookup(DisplayBase, extra='forbid'):
-    """
-    Description of how to display a value looked up from data, either in a table or detail view.
-    """
+    """Description of how to display a value looked up from data, either in a table or detail view."""
 
     field: str
-    # percentage width - 0 to 100, specific to tables
-    table_width_percent: _t.Union[_te.Annotated[int, _at.Interval(ge=0, le=100)], None] = pydantic.Field(
-        default=None, serialization_alias='tableWidthPercent'
-    )
+    """Field to display."""
+
+    table_width_percent: _t.Union[_te.Annotated[int, _at.Interval(ge=0, le=100)], None] = None
+    """Percentage width - 0 to 100, specific to tables."""
 
 
 class Display(DisplayBase, extra='forbid'):
-    """
-    Description of how to display a value, either in a table or detail view.
-    """
+    """Description of how to display a value, either in a table or detail view."""
 
     value: _types.JsonData
+    """Value to display."""
+
     type: _t.Literal['Display'] = 'Display'
+    """The type of the component. Always 'Display'."""
 
 
-class Details(pydantic.BaseModel, extra='forbid'):
+class Details(BaseModel, extra='forbid'):
+    """Details associated with displaying a data model."""
+
     data: pydantic.SerializeAsAny[_types.DataModel]
-    fields: _t.Union[_t.List[DisplayLookup], None] = None
+    """Data model to display."""
+
+    fields: _t.Union[_t.List[_t.Union[DisplayLookup, Display]], None] = None
+    """Fields to display."""
+
     class_name: _class_name.ClassNameField = None
+    """Optional class name to apply to the details component."""
+
     type: _t.Literal['Details'] = 'Details'
+    """The type of the component. Always 'Details'."""
 
     @pydantic.model_validator(mode='after')
     def _fill_fields(self) -> _te.Self:
+        fields = {**self.data.model_fields, **self.data.model_computed_fields}
+
         if self.fields is None:
-            self.fields = [
-                DisplayLookup(field=name, title=field.title) for name, field in self.data.model_fields.items()
-            ]
+            self.fields = [DisplayLookup(field=name, title=field.title) for name, field in fields.items()]
         else:
             # add pydantic titles to fields that don't have them
             for field in (c for c in self.fields if c.title is None):
-                pydantic_field = self.data.model_fields.get(field.field)
-                if pydantic_field and pydantic_field.title:
-                    field.title = pydantic_field.title
+                if isinstance(field, DisplayLookup):
+                    pydantic_field = self.data.model_fields.get(field.field)
+                    if pydantic_field and pydantic_field.title:
+                        field.title = pydantic_field.title
+                elif isinstance(field, Display):
+                    field.title = field.title
         return self
 
     @classmethod

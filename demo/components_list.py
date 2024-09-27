@@ -78,6 +78,10 @@ print(m.dimensions)
                             components=[c.Text(text='Pydantic (External link)')],
                             on_click=GoToEvent(url='https://pydantic.dev'),
                         ),
+                        c.Link(
+                            components=[c.Text(text='FastUI repo (New tab)')],
+                            on_click=GoToEvent(url='https://github.com/pydantic/FastUI', target='_blank'),
+                        ),
                     ],
                 ),
             ],
@@ -88,6 +92,8 @@ print(m.dimensions)
                 c.Heading(text='Button and Modal', level=2),
                 c.Paragraph(text='The button below will open a modal with static content.'),
                 c.Button(text='Show Static Modal', on_click=PageEvent(name='static-modal')),
+                c.Button(text='Secondary Button', named_style='secondary', class_name='+ ms-2'),
+                c.Button(text='Warning Button', named_style='warning', class_name='+ ms-2'),
                 c.Modal(
                     title='Static Modal',
                     body=[c.Paragraph(text='This is some static content that was set when the modal was defined.')],
@@ -116,6 +122,56 @@ print(m.dimensions)
                         c.Button(text='Close', on_click=PageEvent(name='dynamic-modal', clear=True)),
                     ],
                     open_trigger=PageEvent(name='dynamic-modal'),
+                ),
+            ],
+            class_name='border-top mt-3 pt-1',
+        ),
+        c.Div(
+            components=[
+                c.Heading(text='Modal Form / Confirm prompt', level=2),
+                c.Markdown(text='The button below will open a modal with a form.'),
+                c.Button(text='Show Modal Form', on_click=PageEvent(name='modal-form')),
+                c.Modal(
+                    title='Modal Form',
+                    body=[
+                        c.Paragraph(text='Form inside a modal!'),
+                        c.Form(
+                            form_fields=[
+                                c.FormFieldInput(name='foobar', title='Foobar', required=True),
+                            ],
+                            submit_url='/api/components/modal-form',
+                            footer=[],
+                            submit_trigger=PageEvent(name='modal-form-submit'),
+                        ),
+                    ],
+                    footer=[
+                        c.Button(
+                            text='Cancel', named_style='secondary', on_click=PageEvent(name='modal-form', clear=True)
+                        ),
+                        c.Button(text='Submit', on_click=PageEvent(name='modal-form-submit')),
+                    ],
+                    open_trigger=PageEvent(name='modal-form'),
+                ),
+                c.Button(text='Show Modal Prompt', on_click=PageEvent(name='modal-prompt'), class_name='+ ms-2'),
+                c.Modal(
+                    title='Form Prompt',
+                    body=[
+                        c.Paragraph(text='Are you sure you want to do whatever?'),
+                        c.Form(
+                            form_fields=[],
+                            submit_url='/api/components/modal-prompt',
+                            loading=[c.Spinner(text='Okay, good luck...')],
+                            footer=[],
+                            submit_trigger=PageEvent(name='modal-form-submit'),
+                        ),
+                    ],
+                    footer=[
+                        c.Button(
+                            text='Cancel', named_style='secondary', on_click=PageEvent(name='modal-prompt', clear=True)
+                        ),
+                        c.Button(text='Submit', on_click=PageEvent(name='modal-form-submit')),
+                    ],
+                    open_trigger=PageEvent(name='modal-prompt'),
                 ),
             ],
             class_name='border-top mt-3 pt-1',
@@ -188,6 +244,19 @@ print(m.dimensions)
         ),
         c.Div(
             components=[
+                c.Heading(text='Spinner', level=2),
+                c.Paragraph(
+                    text=(
+                        'A component displayed while waiting for content to load, '
+                        'this is also used automatically while loading server content.'
+                    )
+                ),
+                c.Spinner(text='Content incoming...'),
+            ],
+            class_name='border-top mt-3 pt-1',
+        ),
+        c.Div(
+            components=[
                 c.Heading(text='Video', level=2),
                 c.Paragraph(text='A video component.'),
                 c.Video(
@@ -221,6 +290,20 @@ The statement spoken by the famous cow is provided by the backend."""
             ],
             class_name='border-top mt-3 pt-1',
         ),
+        c.Div(
+            components=[
+                c.Heading(text='Button and Toast', level=2),
+                c.Paragraph(text='The button below will open a toast.'),
+                c.Button(text='Show Toast', on_click=PageEvent(name='show-toast')),
+                c.Toast(
+                    title='Toast',
+                    body=[c.Paragraph(text='This is a toast.')],
+                    open_trigger=PageEvent(name='show-toast'),
+                    position='bottom-end',
+                ),
+            ],
+            class_name='border-top mt-3 pt-1',
+        ),
         title='Components',
     )
 
@@ -229,3 +312,15 @@ The statement spoken by the famous cow is provided by the backend."""
 async def modal_view() -> list[AnyComponent]:
     await asyncio.sleep(0.5)
     return [c.Paragraph(text='This is some dynamic content. Open devtools to see me being fetched from the server.')]
+
+
+@router.post('/modal-form', response_model=FastUI, response_model_exclude_none=True)
+async def modal_form_submit() -> list[AnyComponent]:
+    await asyncio.sleep(0.5)
+    return [c.FireEvent(event=PageEvent(name='modal-form', clear=True))]
+
+
+@router.post('/modal-prompt', response_model=FastUI, response_model_exclude_none=True)
+async def modal_prompt_submit() -> list[AnyComponent]:
+    await asyncio.sleep(0.5)
+    return [c.FireEvent(event=PageEvent(name='modal-prompt', clear=True))]
