@@ -575,6 +575,7 @@ export interface Toast {
     | 'bottom-start'
     | 'bottom-center'
     | 'bottom-end'
+  delay?: number
   openTrigger?: PageEvent
   openContext?: ContextType
   className?: ClassName

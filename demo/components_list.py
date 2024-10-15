@@ -292,6 +292,7 @@ The statement spoken by the famous cow is provided by the backend."""
                     body=[c.Paragraph(text='This is a toast.')],
                     open_trigger=PageEvent(name='show-toast'),
                     position='bottom-end',
+                    delay=5000,
                 ),
             ],
             class_name='border-top mt-3 pt-1',

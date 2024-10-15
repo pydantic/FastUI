@@ -565,6 +565,9 @@ class Toast(BaseModel, extra='forbid'):
     ] = None
     """Optional position of the toast."""
 
+    delay: _t.Union[int, None] = None
+    """Optional delay of the toast."""
+
     open_trigger: _t.Union[events.PageEvent, None] = None
     """Optional event to trigger when the toast is opened."""
 
