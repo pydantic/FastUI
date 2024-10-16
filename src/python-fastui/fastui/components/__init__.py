@@ -3,6 +3,7 @@ Component definitions.
 
 All CamelCase names in the namespace should be components.
 """
+
 import typing as _t
 
 import pydantic as _p

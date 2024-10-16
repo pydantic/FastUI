@@ -4,6 +4,7 @@ Simple tests of component creation.
 NOTE: we do NOT want to exhaustively construct every component just for the same of it -
 that's just testing pydantic!
 """
+
 from fastui import FastUI, components
 from pydantic_core import Url
 

@@ -3,8 +3,8 @@
 
 [tool.ruff]
 line-length = 120
-extend-select = ["Q", "RUF100", "UP", "I"]
-flake8-quotes = {inline-quotes = "single", multiline-quotes = "double"}
+lint.extend-select = ["Q", "RUF100", "UP", "I"]
+lint.flake8-quotes = {inline-quotes = "single", multiline-quotes = "double"}
 format.quote-style="single"
 target-version = "py38"
 

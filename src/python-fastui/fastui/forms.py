@@ -219,7 +219,7 @@ def name_to_loc(name: str) -> 'json_schema.SchemeLocation':
     if name.startswith('['):
         return json.loads(name)
     else:
-        loc: 'json_schema.SchemeLocation' = []
+        loc: json_schema.SchemeLocation = []
         for part in name.split('.'):
             if part.isdigit():
                 loc.append(int(part))
