@@ -2,15 +2,11 @@ import typing as _t
 from abc import ABC
 
 import pydantic
-import typing_extensions as _te
 
 from .. import class_name as _class_name
-from .. import events, forms
-from .. import types as _types
+from .. import forms
 from ..base import BaseModel
-
-if _t.TYPE_CHECKING:
-    from . import AnyComponent
+from .containers import BaseForm
 
 InputHtmlType = _t.Literal['text', 'date', 'datetime-local', 'time', 'email', 'url', 'number', 'password', 'hidden']
 
@@ -161,43 +157,6 @@ FormField = _t.Union[
     FormFieldInput, FormFieldTextarea, FormFieldBoolean, FormFieldFile, FormFieldSelect, FormFieldSelectSearch
 ]
 """Union of all form field types."""
-
-
-class BaseForm(BaseModel, ABC, defer_build=True, extra='forbid'):
-    """Base class for forms."""
-
-    submit_url: str
-    """URL to submit the form data to."""
-
-    initial: _t.Union[_t.Dict[str, _types.JsonData], None] = None
-    """Initial values for the form fields, mapping field names to values."""
-
-    method: _t.Literal['POST', 'GOTO', 'GET'] = 'POST'
-    """HTTP method to use for the form submission."""
-
-    display_mode: _t.Union[_t.Literal['default', 'page', 'inline'], None] = None
-    """Display mode for the form."""
-
-    submit_on_change: _t.Union[bool, None] = None
-    """Whether to submit the form on change."""
-
-    submit_trigger: _t.Union[events.PageEvent, None] = None
-    """Event to trigger form submission."""
-
-    loading: '_t.Union[_t.List[AnyComponent], None]' = None
-    """Components to display while the form is submitting."""
-
-    footer: '_t.Union[_t.List[AnyComponent], None]' = None
-    """Components to display in the form footer."""
-
-    class_name: _class_name.ClassNameField = None
-    """Optional class name to apply to the form's HTML component."""
-
-    @pydantic.model_validator(mode='after')
-    def default_footer(self) -> _te.Self:
-        if self.footer is None and self.display_mode == 'inline':
-            self.footer = []
-        return self
 
 
 class Form(BaseForm):
