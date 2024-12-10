@@ -5,10 +5,11 @@ import typing_extensions as _te
 from pydantic_core import core_schema as _core_schema
 
 from fastui import class_name as _class_name
-from fastui import events
 from fastui import types as _types
-from fastui.base import BaseModel
-from fastui.components.containers import Link
+
+from .. import events
+from ..base import BaseModel
+from .containers import Link
 
 
 class Text(BaseModel, extra='forbid'):
