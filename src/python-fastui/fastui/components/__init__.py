@@ -15,6 +15,7 @@ from .. import types as _types
 from ..base import BaseModel
 from .display import Details, Display
 from .forms import (
+    BaseForm,
     Form,
     FormField,
     FormFieldBoolean,
@@ -103,7 +104,7 @@ class PageTitle(BaseModel, extra='forbid'):
     """The type of the component. Always 'PageTitle'."""
 
 
-class Div(BaseModel, extra='forbid'):
+class Div(BaseModel, defer_build=True, extra='forbid'):
     """A generic container component."""
 
     components: '_t.List[AnyComponent]'
@@ -116,7 +117,7 @@ class Div(BaseModel, extra='forbid'):
     """The type of the component. Always 'Div'."""
 
 
-class Page(BaseModel, extra='forbid'):
+class Page(BaseModel, defer_build=True, extra='forbid'):
     """Similar to `container` in many UI frameworks, this acts as a root component for most pages."""
 
     components: '_t.List[AnyComponent]'
@@ -240,7 +241,7 @@ class Button(BaseModel, extra='forbid'):
     """The type of the component. Always 'Button'."""
 
 
-class Link(BaseModel, extra='forbid'):
+class Link(BaseModel, defer_build=True, extra='forbid'):
     """Link component."""
 
     components: '_t.List[AnyComponent]'
@@ -328,7 +329,7 @@ class Footer(BaseModel, extra='forbid'):
     """The type of the component. Always 'Footer'."""
 
 
-class Modal(BaseModel, extra='forbid'):
+class Modal(BaseModel, defer_build=True, extra='forbid'):
     """Modal component that displays a modal dialog."""
 
     title: str
@@ -353,7 +354,7 @@ class Modal(BaseModel, extra='forbid'):
     """The type of the component. Always 'Modal'."""
 
 
-class ServerLoad(BaseModel, extra='forbid'):
+class ServerLoad(BaseModel, defer_build=True, extra='forbid'):
     """A component that will be replaced by the server with the component returned by the given URL."""
 
     path: str
@@ -539,7 +540,7 @@ class Spinner(BaseModel, extra='forbid'):
     """The type of the component. Always 'Spinner'."""
 
 
-class Toast(BaseModel, extra='forbid'):
+class Toast(BaseModel, defer_build=True, extra='forbid'):
     """Toast component that displays a toast message (small temporary message)."""
 
     title: str
@@ -636,3 +637,14 @@ AnyComponent = _te.Annotated[
 """Union of all components.
 
 Pydantic discriminator field is set to 'type' to allow for efficient serialization and deserialization of the components."""
+
+# Rebuild models:
+BaseForm.model_rebuild(_types_namespace={'AnyComponent': AnyComponent})
+Form.model_rebuild(_types_namespace={'AnyComponent': AnyComponent})
+ModelForm.model_rebuild(_types_namespace={'AnyComponent': AnyComponent})
+Div.model_rebuild(_types_namespace={'AnyComponent': AnyComponent})
+Page.model_rebuild(_types_namespace={'AnyComponent': AnyComponent})
+Link.model_rebuild(_types_namespace={'AnyComponent': AnyComponent})
+Modal.model_rebuild(_types_namespace={'AnyComponent': AnyComponent})
+ServerLoad.model_rebuild(_types_namespace={'AnyComponent': AnyComponent})
+Toast.model_rebuild(_types_namespace={'AnyComponent': AnyComponent})
