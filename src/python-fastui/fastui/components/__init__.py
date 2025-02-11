@@ -154,7 +154,8 @@ class Heading(BaseModel, extra='forbid'):
     ) -> _t.Any:
         # until https://github.com/pydantic/pydantic/issues/8413 is fixed
         json_schema = handler(core_schema)
-        json_schema['required'].append('level')
+        schema_def = handler.resolve_ref_schema(json_schema)
+        schema_def['required'].append('level')
         return json_schema
 
 
@@ -309,7 +310,8 @@ class Navbar(BaseModel, extra='forbid'):
     ) -> _t.Any:
         # until https://github.com/pydantic/pydantic/issues/8413 is fixed
         json_schema = handler(core_schema)
-        json_schema.setdefault('required', []).extend(['startLinks', 'endLinks'])
+        schema_def = handler.resolve_ref_schema(json_schema)
+        schema_def.setdefault('required', []).extend(['startLinks', 'endLinks'])
         return json_schema
 
 
@@ -523,7 +525,8 @@ class Error(BaseModel, extra='forbid'):
     ) -> _t.Any:
         # add `children` to the schema so it can be used in the client
         json_schema = handler(core_schema)
-        json_schema['properties']['children'] = {'tsType': 'ReactNode'}
+        schema_def = handler.resolve_ref_schema(json_schema)
+        schema_def['properties']['children'] = {'tsType': 'ReactNode'}
         return json_schema
 
 
