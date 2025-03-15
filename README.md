@@ -1,3 +1,5 @@
+# NOTE: this project is inactive, see [#368](https://github.com/pydantic/FastUI/issues/368)
+
 # FastUI
 
 Find the documentation [here](https://docs.pydantic.dev/fastui/).
