@@ -41,6 +41,7 @@ import { FireEventComp } from './FireEvent'
 import { ErrorComp } from './error'
 import { SpinnerComp } from './spinner'
 import { CustomComp } from './Custom'
+import { DarkModeComp } from './DarkMode'
 import { ToastComp } from './toast'
 
 // TODO some better way to export components
@@ -67,6 +68,7 @@ export {
   PaginationComp,
   DetailsComp,
   DisplayComp,
+  DarkModeComp,
   JsonComp,
   FooterComp,
   ServerLoadComp,
@@ -168,6 +170,8 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <SpinnerComp {...props} />
       case 'Custom':
         return <CustomComp {...props} />
+      case 'DarkMode':
+        return <DarkModeComp {...props} />
       case 'Toast':
         return <ToastComp {...props} />
       default:

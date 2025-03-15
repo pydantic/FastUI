@@ -28,6 +28,7 @@
         - Error
         - Spinner
         - Toast
+        - DarkMode
         - Custom
         - Table
         - Pagination

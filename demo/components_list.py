@@ -270,6 +270,14 @@ print(m.dimensions)
         ),
         c.Div(
             components=[
+                c.Heading(text='DarkMode', level=2),
+                c.Markdown(text='`DarkMode` can be used to toggle dark mode on and off.'),
+                c.DarkMode(),
+            ],
+            class_name='border-top mt-3 pt-1',
+        ),
+        c.Div(
+            components=[
                 c.Heading(text='Custom', level=2),
                 c.Markdown(
                     text="""\
