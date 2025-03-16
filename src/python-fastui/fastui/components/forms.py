@@ -200,7 +200,7 @@ class BaseForm(BaseModel, ABC, defer_build=True, extra='forbid'):
         return self
 
 
-class Form(BaseForm):
+class Form(BaseForm, defer_build=True):
     """Form component."""
 
     form_fields: _t.List[FormField]
@@ -213,7 +213,7 @@ class Form(BaseForm):
 FormFieldsModel = _t.TypeVar('FormFieldsModel', bound=pydantic.BaseModel)
 
 
-class ModelForm(BaseForm):
+class ModelForm(BaseForm, defer_build=True):
     """Form component generated from a Pydantic model."""
 
     model: _t.Type[pydantic.BaseModel] = pydantic.Field(exclude=True)

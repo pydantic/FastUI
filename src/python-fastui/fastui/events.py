@@ -8,7 +8,7 @@ from .base import BaseModel
 ContextType = TypeAliasType('ContextType', Dict[str, Union[str, int]])
 
 
-class PageEvent(BaseModel):
+class PageEvent(BaseModel, defer_build=True):
     name: str
     push_path: Union[str, None] = None
     context: Union[ContextType, None] = None
@@ -37,3 +37,5 @@ class AuthEvent(BaseModel):
 
 
 AnyEvent = Annotated[Union[PageEvent, GoToEvent, BackEvent, AuthEvent], Field(discriminator='type')]
+
+PageEvent.model_rebuild(_types_namespace={'AnyEvent': AnyEvent})

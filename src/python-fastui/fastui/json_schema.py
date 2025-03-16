@@ -160,21 +160,26 @@ def json_schema_obj_to_fields(
 def json_schema_any_to_fields(
     schema: JsonSchemaAny, loc: SchemeLocation, title: _t.List[str], required: bool, defs: JsonSchemaDefs
 ) -> _t.Iterable[FormField]:
-    schema, required = deference_json_schema(schema, defs, required)
-    title = title + [schema.get('title') or loc_to_title(loc)]
+    dereferenced, required = deference_json_schema(schema, defs, required)
+    title = title + [schema.get('title', dereferenced.get('title', loc_to_title(loc)))]
+    description = schema.get('description', dereferenced.get('description'))
 
-    if schema_is_field(schema):
-        yield json_schema_field_to_field(schema, loc, title, required)
-    elif schema_is_array(schema):
-        yield from json_schema_array_to_fields(schema, loc, title, required, defs)
+    if schema_is_field(dereferenced):
+        yield json_schema_field_to_field(dereferenced, loc, title, description, required)
+    elif schema_is_array(dereferenced):
+        yield from json_schema_array_to_fields(dereferenced, loc, title, description, required, defs)
     else:
-        assert schema_is_object(schema), f'Unexpected schema type {schema}'
+        assert schema_is_object(dereferenced), f'Unexpected schema type {dereferenced}'
 
-        yield from json_schema_obj_to_fields(schema, loc, title, defs)
+        yield from json_schema_obj_to_fields(dereferenced, loc, title, defs)
 
 
 def json_schema_field_to_field(
-    schema: JsonSchemaField, loc: SchemeLocation, title: _t.List[str], required: bool
+    schema: JsonSchemaField,
+    loc: SchemeLocation,
+    title: _t.List[str],
+    description: _t.Union[str, None],
+    required: bool,
 ) -> FormField:
     name = loc_to_name(loc)
     if schema['type'] == 'boolean':
@@ -183,10 +188,10 @@ def json_schema_field_to_field(
             title=title,
             required=required,
             initial=schema.get('default'),
-            description=schema.get('description'),
+            description=description,
             mode=schema.get('mode', 'checkbox'),
         )
-    elif field := special_string_field(schema, name, title, required, False):
+    elif field := special_string_field(schema, name, title, description, required, False):
         return field
     else:
         return FormFieldInput(
@@ -206,15 +211,20 @@ def loc_to_title(loc: SchemeLocation) -> str:
 
 
 def json_schema_array_to_fields(
-    schema: JsonSchemaArray, loc: SchemeLocation, title: _t.List[str], required: bool, defs: JsonSchemaDefs
+    schema: JsonSchemaArray,
+    loc: SchemeLocation,
+    title: _t.List[str],
+    description: _t.Union[str, None],
+    required: bool,
+    defs: JsonSchemaDefs,
 ) -> _t.Iterable[FormField]:
     items_schema = schema.get('items')
     if items_schema:
         items_schema, required = deference_json_schema(items_schema, defs, required)
-        for field_name in 'search_url', 'placeholder', 'description':
+        for field_name in 'search_url', 'placeholder':
             if value := schema.get(field_name):
                 items_schema[field_name] = value  # type: ignore
-        if field := special_string_field(items_schema, loc_to_name(loc), title, required, True):
+        if field := special_string_field(items_schema, loc_to_name(loc), title, description, required, True):
             yield field
             return
 
@@ -236,7 +246,12 @@ def json_schema_array_to_fields(
 
 
 def special_string_field(
-    schema: JsonSchemaConcrete, name: str, title: _t.List[str], required: bool, multiple: bool
+    schema: JsonSchemaConcrete,
+    name: str,
+    title: _t.List[str],
+    description: _t.Union[str, None],
+    required: bool,
+    multiple: bool,
 ) -> _t.Union[FormField, None]:
     if schema['type'] == 'string':
         if schema.get('format') == 'binary':
@@ -246,7 +261,7 @@ def special_string_field(
                 required=required,
                 multiple=multiple,
                 accept=schema.get('accept'),
-                description=schema.get('description'),
+                description=description,
             )
         elif schema.get('format') == 'textarea':
             return FormFieldTextarea(
@@ -257,7 +272,7 @@ def special_string_field(
                 cols=schema.get('cols'),
                 placeholder=schema.get('placeholder'),
                 initial=schema.get('initial'),
-                description=schema.get('description'),
+                description=description,
                 autocomplete=schema.get('autocomplete'),
             )
         elif enum := schema.get('enum'):
@@ -270,7 +285,7 @@ def special_string_field(
                 multiple=multiple,
                 options=[SelectOption(value=v, label=enum_labels.get(v) or as_title(v)) for v in enum],
                 initial=schema.get('default'),
-                description=schema.get('description'),
+                description=description,
                 autocomplete=schema.get('autocomplete'),
             )
         elif search_url := schema.get('search_url'):
@@ -282,7 +297,7 @@ def special_string_field(
                 required=required,
                 multiple=multiple,
                 initial=schema.get('initial'),
-                description=schema.get('description'),
+                description=description,
             )
 
 
