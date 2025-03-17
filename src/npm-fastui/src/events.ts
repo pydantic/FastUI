@@ -89,6 +89,11 @@ interface EventDetails {
 }
 
 export function usePageEventListen(event?: PageEvent, initialContext: ContextType | null = null): EventDetails {
+  if (initialContext === null) {
+    if (event?.context !== null) {
+      initialContext = event?.context ?? null
+    }
+  }
   const [eventContext, setEventContext] = useState<ContextType | null>(initialContext)
   const [fireId, setFireId] = useState<string | null>(null)
 
