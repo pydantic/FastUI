@@ -17,12 +17,24 @@ export const NavbarComp = (props: Navbar) => {
     <nav className={useClassName(props)}>
       <div className={useClassName(props, { el: 'contents' })}>
         <NavbarTitle {...props} />
-        {startLinks.map((link, i) => (
-          <LinkComp key={i} {...link} />
-        ))}
-        {endLinks.map((link, i) => (
-          <LinkComp key={i} {...link} />
-        ))}
+        {startLinks.map((link, i) =>
+          link.type === 'LinkListDropdown' ? (
+            <div key={i} className="alert-message">
+              {'`Note: dropdowns for Navbars are not implemented by pure FastUI.`'}
+            </div>
+          ) : (
+            <LinkComp key={i} {...link} />
+          ),
+        )}
+        {endLinks.map((link, i) =>
+          link.type === 'LinkListDropdown' ? (
+            <div key={i} className="alert-message">
+              {'`Note: dropdowns for Navbars are not implemented by pure FastUI.`'}
+            </div>
+          ) : (
+            <LinkComp key={i} {...link} />
+          ),
+        )}
       </div>
     </nav>
   )

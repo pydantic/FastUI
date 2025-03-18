@@ -281,6 +281,25 @@ class LinkList(BaseModel, extra='forbid'):
     """The type of the component. Always 'LinkList'."""
 
 
+class LinkListDropdown(BaseModel, extra='forbid'):
+    """List of Link components for dropdowns used in the `Navbar` component."""
+
+    name: str
+    """Name of the link list."""
+
+    links: _t.List[_t.Union[Link, _t.List[Link]]]
+    """List of links to render."""
+
+    mode: _t.Literal['navbar'] = 'navbar'
+    """Mode can only be navbar due its sole purpose of serving as dropdown."""
+
+    class_name: _class_name.ClassNameField = None
+    """Optional class name to apply to the link list's HTML component."""
+
+    type: _t.Literal['LinkListDropdown'] = 'LinkListDropdown'
+    """The type of the component. Always 'LinkListDropdown'."""
+
+
 class Navbar(BaseModel, extra='forbid'):
     """Navbar component used for moving between pages."""
 
@@ -290,10 +309,10 @@ class Navbar(BaseModel, extra='forbid'):
     title_event: _t.Union[events.AnyEvent, None] = None
     """Optional event to trigger when the title is clicked. Often used to navigate to the home page."""
 
-    start_links: _t.List[Link] = []
+    start_links: _t.List[_t.Union[Link, LinkListDropdown]] = []
     """List of links to render at the start of the navbar."""
 
-    end_links: _t.List[Link] = []
+    end_links: _t.List[_t.Union[Link, LinkListDropdown]] = []
     """List of links to render at the end of the navbar."""
 
     class_name: _class_name.ClassNameField = None

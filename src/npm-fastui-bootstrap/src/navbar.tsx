@@ -1,6 +1,7 @@
-import { FC } from 'react'
+import { FC, Fragment } from 'react'
 import { components, useClassName, models } from 'fastui'
 import BootstrapNavbar from 'react-bootstrap/Navbar'
+import NavDropdown from 'react-bootstrap/NavDropdown'
 
 export const Navbar: FC<models.Navbar> = (props) => {
   const startLinks = props.startLinks.map((link) => {
@@ -18,16 +19,16 @@ export const Navbar: FC<models.Navbar> = (props) => {
         <BootstrapNavbar.Toggle aria-controls="navbar-collapse" />
         <BootstrapNavbar.Collapse id="navbar-collapse">
           <ul className="navbar-nav me-auto">
-            {startLinks.map((link, i) => (
+            {startLinks.map((item, i) => (
               <li key={i} className="nav-item">
-                <components.LinkComp {...link} />
+                <NavBarItem {...item} />
               </li>
             ))}
           </ul>
           <ul className="navbar-nav ms-auto">
-            {endLinks.map((link, i) => (
+            {endLinks.map((item, i) => (
               <li key={i} className="nav-item">
-                <components.LinkComp {...link} />
+                <NavBarItem {...item} />
               </li>
             ))}
           </ul>
@@ -35,6 +36,32 @@ export const Navbar: FC<models.Navbar> = (props) => {
       </div>
     </BootstrapNavbar>
   )
+}
+
+const NavBarItem = (props: models.Link | models.LinkListDropdown) => {
+  if (props.type === 'LinkListDropdown') {
+    return (
+      <NavDropdown title={props.name}>
+        {props.links.map((link, j) =>
+          Array.isArray(link) ? (
+            link.map((innerLink, jj) => (
+              <Fragment key={`${j}-${jj}`}>
+                <components.LinkComp {...innerLink} className="dropdown-item" />
+                {j !== props.links.length - 1 && <NavDropdown.Divider />}
+              </Fragment>
+            ))
+          ) : (
+            <Fragment key={`${j}`}>
+              <components.LinkComp {...link} className="dropdown-item" />
+              {j !== props.links.length - 1 && <NavDropdown.Divider />}
+            </Fragment>
+          ),
+        )}
+      </NavDropdown>
+    )
+  } else {
+    return <components.LinkComp {...props} />
+  }
 }
 
 const NavbarTitle = (props: models.Navbar) => {
