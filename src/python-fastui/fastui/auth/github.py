@@ -1,12 +1,12 @@
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, AsyncIterator, Dict, List, Tuple, Union, cast
+from typing import TYPE_CHECKING, AsyncIterator, Dict, List, Union, cast
 from urllib.parse import urlencode
 
 from pydantic import BaseModel, SecretStr, TypeAdapter, field_validator
 
-from .shared import AuthError
+from .shared import AuthError, ExchangeCache, ExchangeData
 
 if TYPE_CHECKING:
     import httpx
@@ -22,7 +22,7 @@ class GitHubExchangeError:
 
 
 @dataclass
-class GitHubExchange:
+class GitHubExchange(ExchangeData):
     access_token: str
     token_type: str
     scope: List[str]
@@ -217,34 +217,6 @@ class GitHubAuthProvider:
             'Authorization': f'Bearer {exchange.access_token}',
             'Accept': 'application/vnd.github+json',
         }
-
-
-class ExchangeCache:
-    def __init__(self):
-        self._data: Dict[str, Tuple[datetime, GitHubExchange]] = {}
-
-    def get(self, key: str, max_age: timedelta) -> Union[GitHubExchange, None]:
-        self._purge(max_age)
-        if v := self._data.get(key):
-            return v[1]
-
-    def set(self, key: str, value: GitHubExchange) -> None:
-        self._data[key] = (datetime.now(), value)
-
-    def _purge(self, max_age: timedelta) -> None:
-        """
-        Remove old items from the exchange cache
-        """
-        min_timestamp = datetime.now() - max_age
-        to_remove = [k for k, (ts, _) in self._data.items() if ts < min_timestamp]
-        for k in to_remove:
-            del self._data[k]
-
-    def __len__(self) -> int:
-        return len(self._data)
-
-    def clear(self) -> None:
-        self._data.clear()
 
 
 # exchange cache is a singleton so instantiating a new GitHubAuthProvider reuse the same cache
