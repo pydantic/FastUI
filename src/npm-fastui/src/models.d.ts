@@ -57,11 +57,24 @@ export type JsonData =
       [k: string]: JsonData
     }
 export type AnyEvent = PageEvent | GoToEvent | BackEvent | AuthEvent
-export type NamedStyle = 'primary' | 'secondary' | 'warning'
 /**
  * Display mode for a value.
  */
 export type DisplayMode =
+  | 'auto'
+  | 'plain'
+  | 'datetime'
+  | 'date'
+  | 'duration'
+  | 'as_title'
+  | 'markdown'
+  | 'json'
+  | 'inline_code'
+  | 'currency'
+/**
+ * Display mode for a value.
+ */
+export type DisplayMode1 =
   | 'auto'
   | 'plain'
   | 'datetime'
@@ -86,7 +99,12 @@ export interface Text {
  */
 export interface Paragraph {
   text: string
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'Paragraph'
 }
 /**
@@ -101,7 +119,12 @@ export interface PageTitle {
  */
 export interface Div {
   components: FastProps[]
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'Div'
 }
 /**
@@ -109,7 +132,12 @@ export interface Div {
  */
 export interface Page {
   components: FastProps[]
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'Page'
 }
 /**
@@ -119,7 +147,12 @@ export interface Heading {
   text: string
   level: 1 | 2 | 3 | 4 | 5 | 6
   htmlId?: string
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'Heading'
 }
 /**
@@ -128,7 +161,12 @@ export interface Heading {
 export interface Markdown {
   text: string
   codeStyle?: string
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'Markdown'
 }
 /**
@@ -138,7 +176,12 @@ export interface Code {
   text: string
   language?: string
   codeStyle?: string
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'Code'
 }
 /**
@@ -146,7 +189,12 @@ export interface Code {
  */
 export interface Json {
   value: JsonData
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'JSON'
 }
 /**
@@ -154,10 +202,15 @@ export interface Json {
  */
 export interface Button {
   text: string
-  onClick?: AnyEvent
+  onClick?: PageEvent | GoToEvent | BackEvent | AuthEvent
   htmlType?: 'button' | 'reset' | 'submit'
-  namedStyle?: NamedStyle
-  className?: ClassName
+  namedStyle?: 'primary' | 'secondary' | 'warning'
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'Button'
 }
 export interface PageEvent {
@@ -196,7 +249,12 @@ export interface Link {
   mode?: 'navbar' | 'footer' | 'tabs' | 'vertical' | 'pagination'
   active?: string | boolean
   locked?: boolean
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'Link'
 }
 /**
@@ -205,7 +263,12 @@ export interface Link {
 export interface LinkList {
   links: Link[]
   mode?: 'tabs' | 'vertical' | 'pagination'
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'LinkList'
 }
 /**
@@ -216,7 +279,12 @@ export interface Navbar {
   titleEvent?: PageEvent | GoToEvent | BackEvent | AuthEvent
   startLinks: Link[]
   endLinks: Link[]
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'Navbar'
 }
 /**
@@ -225,7 +293,12 @@ export interface Navbar {
 export interface Footer {
   links: Link[]
   extraText?: string
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'Footer'
 }
 /**
@@ -235,22 +308,46 @@ export interface Modal {
   title: string
   body: FastProps[]
   footer?: FastProps[]
-  openTrigger?: PageEvent
-  openContext?: ContextType
-  className?: ClassName
+  openTrigger?: PageEvent1
+  openContext?: ContextType1
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'Modal'
+}
+export interface PageEvent1 {
+  name: string
+  pushPath?: string
+  context?: ContextType
+  clear?: boolean
+  nextEvent?: PageEvent | GoToEvent | BackEvent | AuthEvent
+  type: 'page'
+}
+export interface ContextType1 {
+  [k: string]: string | number
 }
 /**
  * A component that will be replaced by the server with the component returned by the given URL.
  */
 export interface ServerLoad {
   path: string
-  loadTrigger?: PageEvent
+  loadTrigger?: PageEvent2
   components?: FastProps[]
   sse?: boolean
   sseRetry?: number
   method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE'
   type: 'ServerLoad'
+}
+export interface PageEvent2 {
+  name: string
+  pushPath?: string
+  context?: ContextType
+  clear?: boolean
+  nextEvent?: PageEvent | GoToEvent | BackEvent | AuthEvent
+  type: 'page'
 }
 /**
  * Image container component.
@@ -270,8 +367,13 @@ export interface Image {
     | 'strict-origin-when-cross-origin'
     | 'unsafe-url'
   loading?: 'eager' | 'lazy'
-  onClick?: AnyEvent
-  className?: ClassName
+  onClick?: PageEvent | GoToEvent | BackEvent | AuthEvent
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'Image'
 }
 /**
@@ -282,7 +384,12 @@ export interface Iframe {
   title?: string
   width?: string | number
   height?: string | number
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   srcdoc?: string
   sandbox?: string
   type: 'Iframe'
@@ -299,7 +406,12 @@ export interface Video {
   poster?: string
   width?: string | number
   height?: string | number
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'Video'
 }
 /**
@@ -317,7 +429,12 @@ export interface Error {
   title: string
   description: string
   statusCode?: number
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'Error'
   children?: ReactNode
 }
@@ -326,7 +443,12 @@ export interface Error {
  */
 export interface Spinner {
   text?: string
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'Spinner'
 }
 /**
@@ -336,7 +458,12 @@ export interface Custom {
   data: JsonData
   subType: string
   library?: string
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'Custom'
 }
 /**
@@ -346,7 +473,12 @@ export interface Table {
   data: DataModel[]
   columns: DisplayLookup[]
   noDataMessage?: string
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'Table'
 }
 export interface DataModel {
@@ -370,7 +502,12 @@ export interface Pagination {
   pageSize: number
   total: number
   pageQueryParam?: string
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'Pagination'
   pageCount: number
 }
@@ -378,7 +515,7 @@ export interface Pagination {
  * Description of how to display a value, either in a table or detail view.
  */
 export interface Display {
-  mode?: DisplayMode
+  mode?: DisplayMode1
   title?: string
   onClick?: PageEvent | GoToEvent | BackEvent | AuthEvent
   value: JsonData
@@ -390,7 +527,12 @@ export interface Display {
 export interface Details {
   data: DataModel
   fields: (DisplayLookup | Display)[]
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'Details'
 }
 /**
@@ -404,10 +546,15 @@ export interface Form {
   method?: 'POST' | 'GOTO' | 'GET'
   displayMode?: 'default' | 'page' | 'inline'
   submitOnChange?: boolean
-  submitTrigger?: PageEvent
+  submitTrigger?: PageEvent3
   loading?: FastProps[]
   footer?: FastProps[]
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   formFields: (
     | FormFieldInput
     | FormFieldTextarea
@@ -417,6 +564,14 @@ export interface Form {
     | FormFieldSelectSearch
   )[]
   type: 'Form'
+}
+export interface PageEvent3 {
+  name: string
+  pushPath?: string
+  context?: ContextType
+  clear?: boolean
+  nextEvent?: PageEvent | GoToEvent | BackEvent | AuthEvent
+  type: 'page'
 }
 /**
  * Form field for basic input.
@@ -429,7 +584,12 @@ export interface FormFieldInput {
   locked?: boolean
   description?: string
   displayMode?: 'default' | 'inline'
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   htmlType?: 'text' | 'date' | 'datetime-local' | 'time' | 'email' | 'url' | 'number' | 'password' | 'hidden'
   initial?: string | number
   placeholder?: string
@@ -447,7 +607,12 @@ export interface FormFieldTextarea {
   locked?: boolean
   description?: string
   displayMode?: 'default' | 'inline'
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   rows?: number
   cols?: number
   initial?: string
@@ -466,7 +631,12 @@ export interface FormFieldBoolean {
   locked?: boolean
   description?: string
   displayMode?: 'default' | 'inline'
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   initial?: boolean
   mode?: 'checkbox' | 'switch'
   type: 'FormFieldBoolean'
@@ -482,7 +652,12 @@ export interface FormFieldFile {
   locked?: boolean
   description?: string
   displayMode?: 'default' | 'inline'
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   multiple?: boolean
   accept?: string
   type: 'FormFieldFile'
@@ -498,7 +673,12 @@ export interface FormFieldSelect {
   locked?: boolean
   description?: string
   displayMode?: 'default' | 'inline'
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   options: SelectOptions
   multiple?: boolean
   initial?: string[] | string
@@ -526,13 +706,22 @@ export interface FormFieldSelectSearch {
   locked?: boolean
   description?: string
   displayMode?: 'default' | 'inline'
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   searchUrl: string
   multiple?: boolean
-  initial?: SelectOption
+  initial?: SelectOption1
   debounce?: number
   placeholder?: string
   type: 'FormFieldSelectSearch'
+}
+export interface SelectOption1 {
+  value: string
+  label: string
 }
 /**
  * Form component generated from a Pydantic model.
@@ -545,10 +734,15 @@ export interface ModelForm {
   method?: 'POST' | 'GOTO' | 'GET'
   displayMode?: 'default' | 'page' | 'inline'
   submitOnChange?: boolean
-  submitTrigger?: PageEvent
+  submitTrigger?: PageEvent4
   loading?: FastProps[]
   footer?: FastProps[]
-  className?: ClassName
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'ModelForm'
   formFields: (
     | FormFieldInput
@@ -558,6 +752,14 @@ export interface ModelForm {
     | FormFieldSelect
     | FormFieldSelectSearch
   )[]
+}
+export interface PageEvent4 {
+  name: string
+  pushPath?: string
+  context?: ContextType
+  clear?: boolean
+  nextEvent?: PageEvent | GoToEvent | BackEvent | AuthEvent
+  type: 'page'
 }
 /**
  * Toast component that displays a toast message (small temporary message).
@@ -575,8 +777,24 @@ export interface Toast {
     | 'bottom-start'
     | 'bottom-center'
     | 'bottom-end'
-  openTrigger?: PageEvent
-  openContext?: ContextType
-  className?: ClassName
+  openTrigger?: PageEvent5
+  openContext?: ContextType2
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
   type: 'Toast'
+}
+export interface PageEvent5 {
+  name: string
+  pushPath?: string
+  context?: ContextType
+  clear?: boolean
+  nextEvent?: PageEvent | GoToEvent | BackEvent | AuthEvent
+  type: 'page'
+}
+export interface ContextType2 {
+  [k: string]: string | number
 }
