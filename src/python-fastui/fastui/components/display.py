@@ -30,7 +30,7 @@ class DisplayMode(str, enum.Enum):
     currency = 'currency'
 
 
-class DisplayBase(BaseModel, ABC, defer_build=True):
+class DisplayBase(BaseModel, ABC):
     """Base class for display components."""
 
     mode: _t.Union[DisplayMode, None] = None
