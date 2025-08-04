@@ -1,6 +1,6 @@
 import asyncio
+from collections.abc import AsyncIterable
 from itertools import chain
-from typing import AsyncIterable
 
 from fastapi import APIRouter
 from fastui import FastUI

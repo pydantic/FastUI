@@ -1,7 +1,7 @@
 import enum
 from contextlib import asynccontextmanager
 from io import BytesIO
-from typing import List, Tuple, Union
+from typing import Annotated, Union
 
 import pytest
 from fastapi import HTTPException
@@ -9,7 +9,6 @@ from fastui import components
 from fastui.forms import FormFile, Textarea, fastui_form
 from pydantic import BaseModel, Field
 from starlette.datastructures import FormData, Headers, UploadFile
-from typing_extensions import Annotated
 
 
 class SimpleForm(BaseModel):
@@ -22,7 +21,7 @@ class FakeRequest:
     TODO replace this with httpx or similar maybe, perhaps this is sufficient
     """
 
-    def __init__(self, form_data_list: List[Tuple[str, Union[str, UploadFile]]]):
+    def __init__(self, form_data_list: list[tuple[str, Union[str, UploadFile]]]):
         self._form_data = FormData(form_data_list)
 
     @asynccontextmanager
@@ -296,7 +295,7 @@ async def test_file_constrained_submit_wrong_type():
 
 
 class FormMultipleFiles(BaseModel):
-    files: Annotated[List[UploadFile], FormFile()]
+    files: Annotated[list[UploadFile], FormFile()]
 
 
 def test_multiple_files():
@@ -338,7 +337,7 @@ async def test_multiple_files_multiple():
 
 
 class FixedTuple(BaseModel):
-    foo: Tuple[str, int, int]
+    foo: tuple[str, int, int]
 
 
 def test_fixed_tuple():
@@ -433,7 +432,7 @@ async def test_fixed_tuple_nested_submit():
 
 def test_variable_tuple():
     class VarTuple(BaseModel):
-        foo: Tuple[str, ...]
+        foo: tuple[str, ...]
 
     m = components.ModelForm(model=VarTuple, submit_url='/foo/')
     with pytest.raises(NotImplementedError, match='Array fields are not fully supported'):
@@ -442,7 +441,7 @@ def test_variable_tuple():
 
 def test_tuple_optional():
     class TupleOptional(BaseModel):
-        foo: Tuple[str, Union[str, None]]
+        foo: tuple[str, Union[str, None]]
 
     m = components.ModelForm(model=TupleOptional, submit_url='/foo/')
     with pytest.raises(NotImplementedError, match='Tuples with optional fields are not yet supported'):
@@ -480,7 +479,7 @@ class SelectEnum(str, enum.Enum):
 class FormSelectMultiple(BaseModel):
     select_single: SelectEnum = Field(title='Select Single', description='first field')
     select_single_2: SelectEnum = Field(title='Select Single')  # unset description to test leakage from prev. field
-    select_multiple: List[SelectEnum] = Field(title='Select Multiple', description='third field')
+    select_multiple: list[SelectEnum] = Field(title='Select Multiple', description='third field')
 
 
 def test_form_description_leakage():

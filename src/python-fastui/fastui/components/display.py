@@ -69,7 +69,7 @@ class Details(BaseModel, extra='forbid'):
     data: pydantic.SerializeAsAny[_types.DataModel]
     """Data model to display."""
 
-    fields: _t.Union[_t.List[_t.Union[DisplayLookup, Display]], None] = None
+    fields: _t.Union[list[_t.Union[DisplayLookup, Display]], None] = None
     """Fields to display."""
 
     class_name: _class_name.ClassNameField = None

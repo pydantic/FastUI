@@ -2,10 +2,11 @@ import typing as _t
 
 import pydantic
 import typing_extensions as _te
-from pydantic.json_schema import GenerateJsonSchema, CoreRef, JsonRef
+from pydantic.json_schema import CoreRef, GenerateJsonSchema, JsonRef
 from pydantic_core import core_schema
 
 IS_PYDANTIC_211_OR_GREATER = tuple(int(v) for v in pydantic.VERSION.split('.')[:2]) >= (2, 11)
+
 
 # TODO: replace with https://docs.pydantic.dev/dev/api/types/#pydantic.types.JsonValue, maybe?
 class JsonDataSchema:
