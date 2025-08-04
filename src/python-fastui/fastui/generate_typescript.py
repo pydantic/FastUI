@@ -15,6 +15,9 @@ def main(python_object_str: str, typescript_output_file: Path):  # pragma: no co
     json_schema = generate_json_schema(root_model)
     json_schema_file = Path('fastui-json-schema.json')
     json_schema_file.write_bytes(to_json(json_schema, indent=2))
+    # NOTE: `json-schema-to-typescript` generates ugly schemas
+    # (https://github.com/bcherny/json-schema-to-typescript/issues/193).
+    # Note sure what the way forward is.
     json2ts(json_schema_file, typescript_output_file)
 
 

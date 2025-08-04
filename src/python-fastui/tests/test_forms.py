@@ -485,7 +485,6 @@ class FormSelectMultiple(BaseModel):
 
 def test_form_description_leakage():
     m = components.ModelForm(model=FormSelectMultiple, submit_url='/foobar/')
-
     assert m.model_dump(by_alias=True, exclude_none=True) == {
         'formFields': [
             {
