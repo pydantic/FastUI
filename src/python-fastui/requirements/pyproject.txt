@@ -18,11 +18,11 @@ idna==3.6
     # via
     #   anyio
     #   email-validator
-pydantic==2.10.6
+pydantic==2.11.7
     # via
     #   fastapi
     #   fastui (src/python-fastui/pyproject.toml)
-pydantic-core==2.27.2
+pydantic-core==2.33.2
     # via pydantic
 python-multipart==0.0.7
     # via fastui (src/python-fastui/pyproject.toml)
@@ -35,3 +35,6 @@ typing-extensions==4.12.2
     #   fastapi
     #   pydantic
     #   pydantic-core
+    #   typing-inspection
+typing-inspection==0.4.1
+    # via pydantic

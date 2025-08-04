@@ -80,7 +80,7 @@ class Details(BaseModel, extra='forbid'):
 
     @pydantic.model_validator(mode='after')
     def _fill_fields(self) -> _te.Self:
-        fields = {**self.data.model_fields, **self.data.model_computed_fields}
+        fields = {**type(self.data).model_fields, **type(self.data).model_computed_fields}
 
         if self.fields is None:
             self.fields = [DisplayLookup(field=name, title=field.title) for name, field in fields.items()]
@@ -88,7 +88,7 @@ class Details(BaseModel, extra='forbid'):
             # add pydantic titles to fields that don't have them
             for field in (c for c in self.fields if c.title is None):
                 if isinstance(field, DisplayLookup):
-                    pydantic_field = self.data.model_fields.get(field.field)
+                    pydantic_field = type(self.data).model_fields.get(field.field)
                     if pydantic_field and pydantic_field.title:
                         field.title = pydantic_field.title
                 elif isinstance(field, Display):

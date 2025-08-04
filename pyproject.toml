@@ -6,7 +6,7 @@ line-length = 120
 extend-select = ["Q", "RUF100", "UP", "I"]
 flake8-quotes = {inline-quotes = "single", multiline-quotes = "double"}
 format.quote-style="single"
-target-version = "py38"
+target-version = "py39"
 
 [tool.pyright]
 include = ["src/python-fastui/fastui"]
