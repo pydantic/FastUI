@@ -21,7 +21,7 @@ class BaseFormField(BaseModel, ABC, defer_build=True):
     name: str
     """Name of the field."""
 
-    title: _t.Union[_t.List[str], str]
+    title: _t.Union[list[str], str]
     """Title of the field to display. Can be a list of strings for multi-line titles."""
 
     required: bool = False
@@ -119,7 +119,7 @@ class FormFieldSelect(BaseFormField):
     multiple: _t.Union[bool, None] = None
     """Whether multiple options can be selected."""
 
-    initial: _t.Union[_t.List[str], str, None] = None
+    initial: _t.Union[list[str], str, None] = None
     """Initial value for the field."""
 
     vanilla: _t.Union[bool, None] = None
@@ -169,7 +169,7 @@ class BaseForm(BaseModel, ABC, defer_build=True, extra='forbid'):
     submit_url: str
     """URL to submit the form data to."""
 
-    initial: _t.Union[_t.Dict[str, _types.JsonData], None] = None
+    initial: _t.Union[dict[str, _types.JsonData], None] = None
     """Initial values for the form fields, mapping field names to values."""
 
     method: _t.Literal['POST', 'GOTO', 'GET'] = 'POST'
@@ -184,10 +184,10 @@ class BaseForm(BaseModel, ABC, defer_build=True, extra='forbid'):
     submit_trigger: _t.Union[events.PageEvent, None] = None
     """Event to trigger form submission."""
 
-    loading: '_t.Union[_t.List[AnyComponent], None]' = None
+    loading: '_t.Union[list[AnyComponent], None]' = None
     """Components to display while the form is submitting."""
 
-    footer: '_t.Union[_t.List[AnyComponent], None]' = None
+    footer: '_t.Union[list[AnyComponent], None]' = None
     """Components to display in the form footer."""
 
     class_name: _class_name.ClassNameField = None
@@ -203,7 +203,7 @@ class BaseForm(BaseModel, ABC, defer_build=True, extra='forbid'):
 class Form(BaseForm, defer_build=True):
     """Form component."""
 
-    form_fields: _t.List[FormField]
+    form_fields: list[FormField]
     """List of form fields."""
 
     type: _t.Literal['Form'] = 'Form'
@@ -216,14 +216,14 @@ FormFieldsModel = _t.TypeVar('FormFieldsModel', bound=pydantic.BaseModel)
 class ModelForm(BaseForm, defer_build=True):
     """Form component generated from a Pydantic model."""
 
-    model: _t.Type[pydantic.BaseModel] = pydantic.Field(exclude=True)
+    model: type[pydantic.BaseModel] = pydantic.Field(exclude=True)
     """Pydantic model from which to generate the form."""
 
     type: _t.Literal['ModelForm'] = 'ModelForm'
     """The type of the component. Always 'ModelForm'."""
 
     @pydantic.computed_field(alias='formFields')
-    def form_fields(self) -> _t.List[FormField]:
+    def form_fields(self) -> list[FormField]:
         from ..json_schema import model_json_schema_to_fields
 
         return model_json_schema_to_fields(self.model)

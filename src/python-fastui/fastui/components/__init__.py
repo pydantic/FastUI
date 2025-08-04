@@ -107,7 +107,7 @@ class PageTitle(BaseModel, extra='forbid'):
 class Div(BaseModel, defer_build=True, extra='forbid'):
     """A generic container component."""
 
-    components: '_t.List[AnyComponent]'
+    components: 'list[AnyComponent]'
     """List of components to render inside the div."""
 
     class_name: _class_name.ClassNameField = None
@@ -120,7 +120,7 @@ class Div(BaseModel, defer_build=True, extra='forbid'):
 class Page(BaseModel, defer_build=True, extra='forbid'):
     """Similar to `container` in many UI frameworks, this acts as a root component for most pages."""
 
-    components: '_t.List[AnyComponent]'
+    components: 'list[AnyComponent]'
     """List of components to render on the page."""
 
     class_name: _class_name.ClassNameField = None
@@ -245,7 +245,7 @@ class Button(BaseModel, extra='forbid'):
 class Link(BaseModel, defer_build=True, extra='forbid'):
     """Link component."""
 
-    components: '_t.List[AnyComponent]'
+    components: 'list[AnyComponent]'
     """List of components to render attached to the link."""
 
     on_click: _t.Union[events.AnyEvent, None] = None
@@ -270,7 +270,7 @@ class Link(BaseModel, defer_build=True, extra='forbid'):
 class LinkList(BaseModel, extra='forbid'):
     """List of Link components."""
 
-    links: _t.List[Link]
+    links: list[Link]
     """List of links to render."""
 
     mode: _t.Union[_t.Literal['tabs', 'vertical', 'pagination'], None] = None
@@ -292,10 +292,10 @@ class Navbar(BaseModel, extra='forbid'):
     title_event: _t.Union[events.AnyEvent, None] = None
     """Optional event to trigger when the title is clicked. Often used to navigate to the home page."""
 
-    start_links: _t.List[Link] = []
+    start_links: list[Link] = []
     """List of links to render at the start of the navbar."""
 
-    end_links: _t.List[Link] = []
+    end_links: list[Link] = []
     """List of links to render at the end of the navbar."""
 
     class_name: _class_name.ClassNameField = None
@@ -318,7 +318,7 @@ class Navbar(BaseModel, extra='forbid'):
 class Footer(BaseModel, extra='forbid'):
     """Footer component."""
 
-    links: _t.List[Link]
+    links: list[Link]
     """List of links to render in the footer."""
 
     extra_text: _t.Union[str, None] = None
@@ -337,10 +337,10 @@ class Modal(BaseModel, defer_build=True, extra='forbid'):
     title: str
     """The text displayed on the modal trigger button."""
 
-    body: '_t.List[AnyComponent]'
+    body: 'list[AnyComponent]'
     """List of components to render in the modal body."""
 
-    footer: '_t.Union[_t.List[AnyComponent], None]' = None
+    footer: '_t.Union[list[AnyComponent], None]' = None
     """Optional list of components to render in the modal footer."""
 
     open_trigger: _t.Union[events.PageEvent, None] = None
@@ -365,7 +365,7 @@ class ServerLoad(BaseModel, defer_build=True, extra='forbid'):
     load_trigger: _t.Union[events.PageEvent, None] = None
     """Optional event to trigger when the component is loaded."""
 
-    components: '_t.Union[_t.List[AnyComponent], None]' = None
+    components: '_t.Union[list[AnyComponent], None]' = None
     """Optional list of components to render while the server is loading the new component(s)."""
 
     sse: _t.Union[bool, None] = None
@@ -457,7 +457,7 @@ class Iframe(BaseModel, extra='forbid'):
 class Video(BaseModel, extra='forbid'):
     """Video component that displays a video or multiple videos."""
 
-    sources: _t.List[_p.AnyUrl]
+    sources: list[_p.AnyUrl]
     """List of URLs to the video sources."""
 
     autoplay: _t.Union[bool, None] = None
@@ -549,7 +549,7 @@ class Toast(BaseModel, defer_build=True, extra='forbid'):
     title: str
     """The title of the toast."""
 
-    body: '_t.List[AnyComponent]'
+    body: 'list[AnyComponent]'
     """List of components to render in the toast body."""
 
     # TODO: change these before the release (top left, center, end, etc). Can be done with the toast bug fix.

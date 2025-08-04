@@ -1,7 +1,8 @@
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, AsyncIterator, Dict, List, Tuple, Union, cast
+from typing import TYPE_CHECKING, Union, cast
 from urllib.parse import urlencode
 
 from pydantic import BaseModel, SecretStr, TypeAdapter, field_validator
@@ -25,10 +26,10 @@ class GitHubExchangeError:
 class GitHubExchange:
     access_token: str
     token_type: str
-    scope: List[str]
+    scope: list[str]
 
     @field_validator('scope', mode='before')
-    def check_scope(cls, v: str) -> List[str]:
+    def check_scope(cls, v: str) -> list[str]:
         return [s for s in v.split(',') if s]
 
 
@@ -61,7 +62,7 @@ class GitHubEmail(BaseModel):
     visibility: Union[str, None]
 
 
-github_emails_ta = TypeAdapter(List[GitHubEmail])
+github_emails_ta = TypeAdapter(list[GitHubEmail])
 
 
 class GitHubAuthProvider:
@@ -76,7 +77,7 @@ class GitHubAuthProvider:
         github_client_secret: SecretStr,
         *,
         redirect_uri: Union[str, None] = None,
-        scopes: Union[List[str], None] = None,
+        scopes: Union[list[str], None] = None,
         state_provider: Union['StateProvider', bool] = True,
         exchange_cache_age: Union[timedelta, None] = timedelta(seconds=30),
     ):
@@ -202,7 +203,7 @@ class GitHubAuthProvider:
         user_response.raise_for_status()
         return GithubUser.model_validate_json(user_response.content)
 
-    async def get_github_user_emails(self, exchange: GitHubExchange) -> List[GitHubEmail]:
+    async def get_github_user_emails(self, exchange: GitHubExchange) -> list[GitHubEmail]:
         """
         See https://docs.github.com/en/rest/users/emails
         """
@@ -212,7 +213,7 @@ class GitHubAuthProvider:
         return github_emails_ta.validate_json(emails_response.content)
 
     @staticmethod
-    def _auth_headers(exchange: GitHubExchange) -> Dict[str, str]:
+    def _auth_headers(exchange: GitHubExchange) -> dict[str, str]:
         return {
             'Authorization': f'Bearer {exchange.access_token}',
             'Accept': 'application/vnd.github+json',
@@ -221,7 +222,7 @@ class GitHubAuthProvider:
 
 class ExchangeCache:
     def __init__(self):
-        self._data: Dict[str, Tuple[datetime, GitHubExchange]] = {}
+        self._data: dict[str, tuple[datetime, GitHubExchange]] = {}
 
     def get(self, key: str, max_age: timedelta) -> Union[GitHubExchange, None]:
         self._purge(max_age)

@@ -17,18 +17,18 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     'Programming Language :: Python :: 3 :: Only',
-    'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
     "Intended Audience :: Developers",
     "Intended Audience :: Information Technology",
     "Framework :: Pydantic :: 2",
     "Framework :: FastAPI",
 ]
-requires-python = ">=3.8"
-dependencies = ["pydantic[email]>=2.5.2"]
+requires-python = ">=3.9"
+dependencies = ["pydantic[email]>=2.8.0"]
 dynamic = ["version"]
 
 [project.optional-dependencies]

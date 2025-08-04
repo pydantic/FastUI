@@ -24,7 +24,7 @@ else:
 __all__ = 'model_json_schema_to_fields', 'SchemeLocation'
 
 
-def model_json_schema_to_fields(model: _t.Type[BaseModel]) -> _t.List[FormField]:
+def model_json_schema_to_fields(model: type[BaseModel]) -> list[FormField]:
     schema = _t.cast(JsonSchemaObject, model.model_json_schema())
     defs = schema.get('$defs', {})
     return list(json_schema_obj_to_fields(schema, [], [], defs))
@@ -51,10 +51,10 @@ class JsonSchemaString(JsonSchemaBase):
 
 class JsonSchemaStringEnum(JsonSchemaBase, total=False):
     type: _ta.Required[_t.Literal['string']]
-    enum: _ta.Required[_t.List[str]]
+    enum: _ta.Required[list[str]]
     default: str
     placeholder: str
-    enum_labels: _t.Dict[str, str]
+    enum_labels: dict[str, str]
 
 
 class JsonSchemaStringSearch(JsonSchemaBase, total=False):
@@ -110,7 +110,7 @@ class JsonSchemaArray(JsonSchemaBase, total=False):
     uniqueItems: bool
     minItems: int
     maxItems: int
-    prefixItems: _t.List[JsonSchemaAny]
+    prefixItems: list[JsonSchemaAny]
     items: JsonSchemaAny
     search_url: str
     placeholder: str
@@ -121,9 +121,9 @@ JsonSchemaObject = _t.TypedDict(
     'JsonSchemaObject',
     {
         'type': _ta.Required[_t.Literal['object']],
-        'properties': _t.Dict[str, JsonSchemaAny],
+        'properties': dict[str, JsonSchemaAny],
         '$defs': JsonSchemaDefs,
-        'required': _t.List[str],
+        'required': list[str],
         'title': str,
         'description': str,
     },
@@ -136,20 +136,20 @@ class JsonSchemaNull(JsonSchemaBase):
 
 
 class JsonSchemaAnyOf(JsonSchemaBase):
-    anyOf: _t.List[JsonSchemaAny]
+    anyOf: list[JsonSchemaAny]
 
 
 class JsonSchemaAllOf(JsonSchemaBase):
-    allOf: _t.List[JsonSchemaAny]
+    allOf: list[JsonSchemaAny]
 
 
 JsonSchemaRef = _t.TypedDict('JsonSchemaRef', {'$ref': str})
 
-SchemeLocation: _ta.TypeAlias = '_t.List[str | int]'
+SchemeLocation: _ta.TypeAlias = 'list[str | int]'
 
 
 def json_schema_obj_to_fields(
-    schema: JsonSchemaObject, loc: SchemeLocation, title: _t.List[str], defs: JsonSchemaDefs
+    schema: JsonSchemaObject, loc: SchemeLocation, title: list[str], defs: JsonSchemaDefs
 ) -> _t.Iterable[FormField]:
     required = set(schema.get('required', []))
     if properties := schema.get('properties'):
@@ -158,7 +158,7 @@ def json_schema_obj_to_fields(
 
 
 def json_schema_any_to_fields(
-    schema: JsonSchemaAny, loc: SchemeLocation, title: _t.List[str], required: bool, defs: JsonSchemaDefs
+    schema: JsonSchemaAny, loc: SchemeLocation, title: list[str], required: bool, defs: JsonSchemaDefs
 ) -> _t.Iterable[FormField]:
     dereferenced, required = deference_json_schema(schema, defs, required)
     title = title + [schema.get('title', dereferenced.get('title', loc_to_title(loc)))]
@@ -177,7 +177,7 @@ def json_schema_any_to_fields(
 def json_schema_field_to_field(
     schema: JsonSchemaField,
     loc: SchemeLocation,
-    title: _t.List[str],
+    title: list[str],
     description: _t.Union[str, None],
     required: bool,
 ) -> FormField:
@@ -213,7 +213,7 @@ def loc_to_title(loc: SchemeLocation) -> str:
 def json_schema_array_to_fields(
     schema: JsonSchemaArray,
     loc: SchemeLocation,
-    title: _t.List[str],
+    title: list[str],
     description: _t.Union[str, None],
     required: bool,
     defs: JsonSchemaDefs,
@@ -248,7 +248,7 @@ def json_schema_array_to_fields(
 def special_string_field(
     schema: JsonSchemaConcrete,
     name: str,
-    title: _t.List[str],
+    title: list[str],
     description: _t.Union[str, None],
     required: bool,
     multiple: bool,
@@ -318,7 +318,7 @@ def loc_to_name(loc: SchemeLocation) -> str:
 
 def deference_json_schema(
     schema: JsonSchemaAny, defs: JsonSchemaDefs, required: bool
-) -> _t.Tuple[JsonSchemaConcrete, bool]:
+) -> tuple[JsonSchemaConcrete, bool]:
     """
     Convert a schema which might be a reference or union to a concrete schema.
     """
@@ -344,7 +344,7 @@ def deference_json_schema(
         else:
             raise NotImplementedError('`anyOf` schemas which are not simply `X | None` are not yet supported')
     elif all_of := schema.get('allOf'):
-        all_of = _t.cast(_t.List[JsonSchemaAny], all_of)
+        all_of = _t.cast(list[JsonSchemaAny], all_of)
         if len(all_of) == 1:
             new_schema, required = deference_json_schema(all_of[0], defs, required)
             new_schema.update({k: v for k, v in schema.items() if k != 'allOf'})  # type: ignore
@@ -359,7 +359,7 @@ def as_title(s: _t.Any) -> str:
     return re.sub(r'[\-_]', ' ', str(s)).title()
 
 
-type_lookup: _t.Dict[str, InputHtmlType] = {
+type_lookup: dict[str, InputHtmlType] = {
     'string': 'text',
     'string-date': 'date',
     'string-date-time': 'datetime-local',

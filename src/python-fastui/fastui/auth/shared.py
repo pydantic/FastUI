@@ -1,6 +1,6 @@
 import json
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, List, Tuple, Union
+from typing import TYPE_CHECKING, Union
 
 from .. import AnyComponent, FastUI, events
 from .. import components as c
@@ -17,7 +17,7 @@ class AuthException(ABC, Exception):
     """
 
     @abstractmethod
-    def response_data(self) -> Tuple[int, str]:
+    def response_data(self) -> tuple[int, str]:
         raise NotImplementedError
 
 
@@ -26,7 +26,7 @@ class AuthError(AuthException):
         super().__init__(message)
         self.code = code
 
-    def response_data(self) -> Tuple[int, str]:
+    def response_data(self) -> tuple[int, str]:
         return 401, json.dumps({'detail': str(self)})
 
 
@@ -41,8 +41,8 @@ class AuthRedirect(AuthException):
         self.path = path
         self.message = message
 
-    def response_data(self) -> Tuple[int, str]:
-        components: List[AnyComponent] = [c.FireEvent(event=events.GoToEvent(url=self.path), message=self.message)]
+    def response_data(self) -> tuple[int, str]:
+        components: list[AnyComponent] = [c.FireEvent(event=events.GoToEvent(url=self.path), message=self.message)]
         return 345, FastUI(root=components).model_dump_json(exclude_none=True)
 
 

@@ -29,11 +29,11 @@ class FastUIForm(_t.Generic[FormModel]):
     TODO mypy, pyright and pycharm don't understand the model type if this is used, is there a way to get it to work?
     """
 
-    def __class_getitem__(cls, model: _t.Type[FormModel]) -> fastapi_params.Depends:
+    def __class_getitem__(cls, model: type[FormModel]) -> fastapi_params.Depends:
         return fastui_form(model)
 
 
-def fastui_form(model: _t.Type[FormModel]) -> fastapi_params.Depends:
+def fastui_form(model: type[FormModel]) -> fastapi_params.Depends:
     async def run_fastui_form(request: fastapi.Request):
         async with request.form() as form_data:
             model_data = unflatten(form_data)
@@ -64,7 +64,7 @@ class FormFile:
         else:
             raise pydantic_core.PydanticCustomError('not_file', 'Input is not a file')
 
-    def validate_multiple(self, input_value: _t.Any) -> _t.List[ds.UploadFile]:
+    def validate_multiple(self, input_value: _t.Any) -> list[ds.UploadFile]:
         if isinstance(input_value, list):
             return [self.validate_single(v) for v in input_value]
         else:
@@ -117,7 +117,7 @@ class FormFile:
             {'filename': file.filename, 'content_type': file.content_type, 'accept': self.accept},
         )
 
-    def __get_pydantic_core_schema__(self, source_type: _t.Type[_t.Any], *_args) -> core_schema.CoreSchema:
+    def __get_pydantic_core_schema__(self, source_type: type[_t.Any], *_args) -> core_schema.CoreSchema:
         if _t.get_origin(source_type) == list:
             args = _t.get_args(source_type)
             if len(args) == 1 and issubclass(args[0], ds.UploadFile):
@@ -160,10 +160,10 @@ class SelectOption(_te.TypedDict):
 
 class SelectGroup(_te.TypedDict):
     label: str
-    options: _t.List[SelectOption]
+    options: list[SelectOption]
 
 
-SelectOptions = _te.TypeAliasType('SelectOptions', _t.Union[_t.List[SelectOption], _t.List[SelectGroup]])
+SelectOptions = _te.TypeAliasType('SelectOptions', _t.Union[list[SelectOption], list[SelectGroup]])
 
 
 class SelectSearchResponse(pydantic.BaseModel):
@@ -186,7 +186,7 @@ def unflatten(form_data: ds.FormData) -> NestedDict:
         if values == ['']:
             continue
 
-        d: _t.Dict[_t.Union[str, int], _t.Any] = result_dict
+        d: dict[_t.Union[str, int], _t.Any] = result_dict
 
         *path, last_key = name_to_loc(key)
         for part in path:

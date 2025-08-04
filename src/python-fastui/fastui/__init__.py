@@ -13,7 +13,7 @@ class FastUI(pydantic.RootModel):
     The root component of a FastUI application.
     """
 
-    root: _t.List[AnyComponent]
+    root: list[AnyComponent]
 
     @pydantic.field_validator('root', mode='before')
     def coerce_to_list(cls, v):

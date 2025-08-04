@@ -1,11 +1,11 @@
-from typing import Dict, Literal, Union
+from typing import Annotated, Literal, Union
 
 from pydantic import Field
-from typing_extensions import Annotated, TypeAliasType
+from typing_extensions import TypeAliasType
 
 from .base import BaseModel
 
-ContextType = TypeAliasType('ContextType', Dict[str, Union[str, int]])
+ContextType = TypeAliasType('ContextType', dict[str, Union[str, int]])
 
 
 class PageEvent(BaseModel, defer_build=True):
@@ -20,7 +20,7 @@ class PageEvent(BaseModel, defer_build=True):
 class GoToEvent(BaseModel):
     # can be a path or a full URL
     url: Union[str, None] = None
-    query: Union[Dict[str, Union[str, float, None]], None] = None
+    query: Union[dict[str, Union[str, float, None]], None] = None
     target: Union[Literal['_blank'], None] = None
     type: Literal['go-to'] = 'go-to'
 
