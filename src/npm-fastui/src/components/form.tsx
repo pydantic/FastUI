@@ -107,7 +107,7 @@ export const FormComp: FC<Form | ModelForm> = (props) => {
     const f = {
       ...formField,
       error: fieldErrors[formField.name],
-      locked,
+      locked: locked || formField.locked,
       displayMode,
       onChange,
     } as FormFieldProps
