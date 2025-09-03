@@ -28,6 +28,7 @@ export type FastProps =
   | Error
   | Spinner
   | Custom
+  | DarkMode
   | Table
   | Pagination
   | Display
@@ -465,6 +466,13 @@ export interface Custom {
         [k: string]: boolean
       }
   type: 'Custom'
+}
+/**
+ * DarkMode component
+ */
+export interface DarkMode {
+  className?: ClassName
+  type: 'DarkMode'
 }
 /**
  * Table component.

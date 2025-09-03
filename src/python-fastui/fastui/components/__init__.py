@@ -51,6 +51,7 @@ __all__ = (
     'Spinner',
     'Toast',
     'Custom',
+    'DarkMode',
     # then we include components from other files
     'Table',
     'Pagination',
@@ -601,6 +602,13 @@ class Custom(BaseModel, extra='forbid'):
     """The type of the component. Always 'Custom'."""
 
 
+class DarkMode(BaseModel, extra='forbid'):
+    """DarkMode component"""
+
+    class_name: _class_name.ClassNameField = None
+    type: _t.Literal['DarkMode'] = 'DarkMode'
+
+
 AnyComponent = _te.Annotated[
     _t.Union[
         Text,
@@ -626,6 +634,7 @@ AnyComponent = _te.Annotated[
         Error,
         Spinner,
         Custom,
+        DarkMode,
         Table,
         Pagination,
         Display,

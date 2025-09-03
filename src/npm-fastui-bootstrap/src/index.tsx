@@ -5,6 +5,7 @@ import type { ClassNameGenerator, CustomRender, models } from 'fastui'
 import { Modal } from './modal'
 import { Navbar } from './navbar'
 import { Pagination } from './pagination'
+import { DarkMode } from './DarkMode'
 import { Footer } from './footer'
 import { Toast } from './toast'
 
@@ -19,6 +20,8 @@ export const customRender: CustomRender = (props) => {
       return () => <Modal {...props} />
     case 'Pagination':
       return () => <Pagination {...props} />
+    case 'DarkMode':
+      return () => <DarkMode {...props} />
     case 'Toast':
       return () => <Toast {...props} />
   }
