@@ -38,10 +38,14 @@ export function useFireEvent(): { fireEvent: (event?: AnyEvent) => void } {
       }
       case 'go-to':
         if (event.url) {
+          let url = event.url
+          if (event.query) {
+            url += '?' + new URLSearchParams(event.query as Record<string, string>).toString()
+          }
           if (event.target) {
-            window.open(event.url, event.target)
+            window.open(url, event.target)
           } else {
-            location.goto(event.url)
+            location.goto(url)
           }
         }
         if (event.query) {
