@@ -1,6 +1,6 @@
 {
   "name": "@pydantic/fastui",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "description": "Build better UIs faster.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
