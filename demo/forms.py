@@ -1,6 +1,7 @@
 from __future__ import annotations as _annotations
 
 import enum
+import uuid
 from collections import defaultdict
 from datetime import date
 from typing import Annotated, Literal, TypeAlias
@@ -164,11 +165,15 @@ class BigModel(BaseModel):
         None, title='Is human', description='Are you human?', json_schema_extra={'mode': 'switch'}
     )
     size: SizeModel
-
     position: tuple[
         Annotated[int, Field(description='X Coordinate')],
         Annotated[int, Field(description='Y Coordinate')],
     ]
+    auto_generated_id: str = Field(
+        str(uuid.uuid4()),
+        description='This field is locked',
+        json_schema_extra={'locked': True},
+    )
 
     @field_validator('name')
     def name_validator(cls, v: str | None) -> str:
