@@ -2,7 +2,7 @@ from dirty_equals import IsPartialDict
 from fastapi import FastAPI
 from fastui import FastUI, components
 from fastui.generate_typescript import generate_json_schema
-from httpx import AsyncClient
+from httpx import ASGITransport, AsyncClient
 
 
 async def test_json_schema():
@@ -23,7 +23,9 @@ async def test_openapi():
     def test_endpoint():
         return [components.Text(text='hello')]
 
-    async with AsyncClient(app=app, base_url='http://test') as client:
+    transport = ASGITransport(app=app)
+
+    async with AsyncClient(transport=transport, base_url='http://test') as client:
         r = await client.get('/openapi.json')
         assert r.status_code == 200
         assert r.headers['content-type'] == 'application/json'

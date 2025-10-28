@@ -12,6 +12,11 @@ from . import display
 # TODO allow dataclasses and typed dicts here too
 
 
+# In Python 3.14, when evaluating the annotation of field `data_model`, `type` would refer
+# to the assigned value to the field `type` (of value `'Table'`):
+type_ = type
+
+
 class Table(BaseModel, extra='forbid'):
     """Table component."""
 
@@ -21,7 +26,7 @@ class Table(BaseModel, extra='forbid'):
     columns: _t.Union[list[display.DisplayLookup], None] = None
     """List of columns to display in the table. If not provided, columns will be inferred from the data model."""
 
-    data_model: _t.Union[type[pydantic.BaseModel], None] = pydantic.Field(default=None, exclude=True)
+    data_model: _t.Union[type_[pydantic.BaseModel], None] = pydantic.Field(default=None, exclude=True)
     """Data model to use for the table. If not provided, the model will be inferred from the first data item."""
 
     no_data_message: _t.Union[str, None] = None

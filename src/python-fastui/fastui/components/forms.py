@@ -212,11 +212,15 @@ class Form(BaseForm, defer_build=True):
 
 FormFieldsModel = _t.TypeVar('FormFieldsModel', bound=pydantic.BaseModel)
 
+# In Python 3.14, when evaluating the annotation of field `model`, `type` would refer
+# to the assigned value to the field `type` (of value `'ModelForm'`):
+type_ = type
+
 
 class ModelForm(BaseForm, defer_build=True):
     """Form component generated from a Pydantic model."""
 
-    model: type[pydantic.BaseModel] = pydantic.Field(exclude=True)
+    model: type_[pydantic.BaseModel] = pydantic.Field(exclude=True)
     """Pydantic model from which to generate the form."""
 
     type: _t.Literal['ModelForm'] = 'ModelForm'

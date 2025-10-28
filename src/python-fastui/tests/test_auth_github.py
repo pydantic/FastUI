@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import Optional
 
-import httpx
 import pytest
 from fastapi import FastAPI
 from fastui.auth import AuthError, GitHubAuthProvider, GitHubEmail
 from fastui.auth.github import EXCHANGE_CACHE
+from httpx import ASGITransport, AsyncClient
 from pydantic import SecretStr
 
 
@@ -69,12 +69,13 @@ def fake_github_app(github_requests: list[str]) -> FastAPI:
 
 @pytest.fixture
 async def httpx_client(fake_github_app: FastAPI):
-    async with httpx.AsyncClient(app=fake_github_app) as client:
+    transport = ASGITransport(app=fake_github_app)
+    async with AsyncClient(transport=transport, base_url='http://test') as client:
         yield client
 
 
 @pytest.fixture
-async def github_auth_provider(httpx_client: httpx.AsyncClient):
+async def github_auth_provider(httpx_client: AsyncClient):
     return GitHubAuthProvider(
         httpx_client=httpx_client,
         github_client_id='1234',
@@ -90,7 +91,7 @@ async def test_get_auth_url(github_auth_provider: GitHubAuthProvider):
     assert url == 'https://github.com/login/oauth/authorize?client_id=1234'
 
 
-async def test_get_auth_url_scopes(httpx_client: httpx.AsyncClient):
+async def test_get_auth_url_scopes(httpx_client: AsyncClient):
     provider = GitHubAuthProvider(
         httpx_client=httpx_client,
         github_client_id='1234',
@@ -131,7 +132,7 @@ async def test_exchange_bad_unexpected(github_auth_provider: GitHubAuthProvider)
 
 
 @pytest.fixture
-async def github_auth_provider_state(fake_github_app: FastAPI, httpx_client: httpx.AsyncClient):
+async def github_auth_provider_state(fake_github_app: FastAPI, httpx_client: AsyncClient):
     return GitHubAuthProvider(
         httpx_client=httpx_client,
         github_client_id='1234',
@@ -182,7 +183,7 @@ async def test_exchange_ok_repeat(github_auth_provider: GitHubAuthProvider, gith
 
 
 async def test_exchange_ok_repeat_cached(
-    fake_github_app: FastAPI, httpx_client: httpx.AsyncClient, github_requests: list[str]
+    fake_github_app: FastAPI, httpx_client: AsyncClient, github_requests: list[str]
 ):
     github_auth_provider = GitHubAuthProvider(
         httpx_client=httpx_client,
@@ -202,7 +203,7 @@ async def test_exchange_ok_repeat_cached(
     assert github_requests == ['/login/oauth/access_token code=good', '/login/oauth/access_token code=good_user']
 
 
-async def test_exchange_cached_purge(fake_github_app: FastAPI, httpx_client: httpx.AsyncClient):
+async def test_exchange_cached_purge(fake_github_app: FastAPI, httpx_client: AsyncClient):
     github_auth_provider = GitHubAuthProvider(
         httpx_client=httpx_client,
         github_client_id='1234',
@@ -221,9 +222,7 @@ async def test_exchange_cached_purge(fake_github_app: FastAPI, httpx_client: htt
     assert len(EXCHANGE_CACHE) == 1
 
 
-async def test_exchange_redirect_url(
-    fake_github_app: FastAPI, httpx_client: httpx.AsyncClient, github_requests: list[str]
-):
+async def test_exchange_redirect_url(fake_github_app: FastAPI, httpx_client: AsyncClient, github_requests: list[str]):
     github_auth_provider = GitHubAuthProvider(
         httpx_client=httpx_client,
         github_client_id='1234',
@@ -265,4 +264,4 @@ async def test_get_github_user_emails(github_auth_provider: GitHubAuthProvider, 
 
 async def test_create():
     async with GitHubAuthProvider.create('foo', SecretStr('bar')) as provider:
-        assert isinstance(provider._httpx_client, httpx.AsyncClient)
+        assert isinstance(provider._httpx_client, AsyncClient)
