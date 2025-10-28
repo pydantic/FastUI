@@ -52,7 +52,7 @@ def fastui_form(model: type[FormModel]) -> fastapi_params.Depends:
 class FormFile:
     __slots__ = 'accept', 'max_size'
 
-    def __init__(self, accept: _t.Union[str, None] = None, max_size: _t.Union[int, None] = None):
+    def __init__(self, accept: str | None = None, max_size: int | None = None):
         self.accept = accept
         self.max_size = max_size
 
@@ -118,7 +118,7 @@ class FormFile:
         )
 
     def __get_pydantic_core_schema__(self, source_type: type[_t.Any], *_args) -> core_schema.CoreSchema:
-        if _t.get_origin(source_type) == list:
+        if _t.get_origin(source_type) is list:
             args = _t.get_args(source_type)
             if len(args) == 1 and issubclass(args[0], ds.UploadFile):
                 return core_schema.no_info_plain_validator_function(self.validate_multiple)
@@ -146,7 +146,7 @@ class FormFile:
 _mime_types = MimeTypes()
 
 
-def get_content_type(file: ds.UploadFile) -> _t.Union[str, None]:
+def get_content_type(file: ds.UploadFile) -> str | None:
     if file.content_type:
         return file.content_type
     elif file.filename:
@@ -163,7 +163,7 @@ class SelectGroup(_te.TypedDict):
     options: list[SelectOption]
 
 
-SelectOptions = _te.TypeAliasType('SelectOptions', _t.Union[list[SelectOption], list[SelectGroup]])
+SelectOptions = _te.TypeAliasType('SelectOptions', list[SelectOption] | list[SelectGroup])
 
 
 class SelectSearchResponse(pydantic.BaseModel):
@@ -186,7 +186,7 @@ def unflatten(form_data: ds.FormData) -> NestedDict:
         if values == ['']:
             continue
 
-        d: dict[_t.Union[str, int], _t.Any] = result_dict
+        d: dict[str | int, _t.Any] = result_dict
 
         *path, last_key = name_to_loc(key)
         for part in path:
@@ -229,5 +229,5 @@ def name_to_loc(name: str) -> 'json_schema.SchemeLocation':
 
 
 # Use uppercase for consistency with pydantic.Field, which is also a function
-def Textarea(rows: _t.Union[int, None] = None, cols: _t.Union[int, None] = None) -> _t.Any:  # N802
+def Textarea(rows: int | None = None, cols: int | None = None) -> _t.Any:  # N802
     return pydantic.Field(json_schema_extra={'format': 'textarea', 'rows': rows, 'cols': cols})

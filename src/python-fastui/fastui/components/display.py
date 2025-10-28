@@ -33,13 +33,13 @@ class DisplayMode(str, enum.Enum):
 class DisplayBase(BaseModel, ABC):
     """Base class for display components."""
 
-    mode: _t.Union[DisplayMode, None] = None
+    mode: DisplayMode | None = None
     """Display mode for the value."""
 
-    title: _t.Union[str, None] = None
+    title: str | None = None
     """Title to display for the value."""
 
-    on_click: _t.Union[events.AnyEvent, None] = None
+    on_click: events.AnyEvent | None = None
     """Event to trigger when the value is clicked."""
 
 
@@ -49,7 +49,7 @@ class DisplayLookup(DisplayBase, extra='forbid'):
     field: str
     """Field to display."""
 
-    table_width_percent: _t.Union[_te.Annotated[int, _at.Interval(ge=0, le=100)], None] = None
+    table_width_percent: _te.Annotated[int, _at.Interval(ge=0, le=100)] | None = None
     """Percentage width - 0 to 100, specific to tables."""
 
 
@@ -69,7 +69,7 @@ class Details(BaseModel, extra='forbid'):
     data: pydantic.SerializeAsAny[_types.DataModel]
     """Data model to display."""
 
-    fields: _t.Union[list[_t.Union[DisplayLookup, Display]], None] = None
+    fields: list[DisplayLookup | Display] | None = None
     """Fields to display."""
 
     class_name: _class_name.ClassNameField = None

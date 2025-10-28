@@ -2,7 +2,7 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Union, cast
+from typing import TYPE_CHECKING, cast
 from urllib.parse import urlencode
 
 from pydantic import BaseModel, SecretStr, TypeAdapter, field_validator
@@ -19,7 +19,7 @@ __all__ = 'GitHubAuthProvider', 'GitHubExchange', 'GithubUser', 'GitHubEmail'
 @dataclass
 class GitHubExchangeError:
     error: str
-    error_description: Union[str, None] = None
+    error_description: str | None = None
 
 
 @dataclass
@@ -33,13 +33,13 @@ class GitHubExchange:
         return [s for s in v.split(',') if s]
 
 
-github_exchange_type = TypeAdapter(Union[GitHubExchange, GitHubExchangeError])
+github_exchange_type = TypeAdapter(GitHubExchange | GitHubExchangeError)
 
 
 class GithubUser(BaseModel):
     login: str
-    name: Union[str, None]
-    email: Union[str, None]
+    name: str | None
+    email: str | None
     avatar_url: str
     created_at: datetime
     updated_at: datetime
@@ -47,19 +47,19 @@ class GithubUser(BaseModel):
     public_gists: int
     followers: int
     following: int
-    company: Union[str, None]
-    blog: Union[str, None]
-    location: Union[str, None]
-    hireable: Union[bool, None]
-    bio: Union[str, None]
-    twitter_username: Union[str, None] = None
+    company: str | None
+    blog: str | None
+    location: str | None
+    hireable: bool | None
+    bio: str | None
+    twitter_username: str | None = None
 
 
 class GitHubEmail(BaseModel):
     email: str
     primary: bool
     verified: bool
-    visibility: Union[str, None]
+    visibility: str | None
 
 
 github_emails_ta = TypeAdapter(list[GitHubEmail])
@@ -76,10 +76,10 @@ class GitHubAuthProvider:
         github_client_id: str,
         github_client_secret: SecretStr,
         *,
-        redirect_uri: Union[str, None] = None,
-        scopes: Union[list[str], None] = None,
-        state_provider: Union['StateProvider', bool] = True,
-        exchange_cache_age: Union[timedelta, None] = timedelta(seconds=30),
+        redirect_uri: str | None = None,
+        scopes: list[str] | None = None,
+        state_provider: 'StateProvider | bool' = True,
+        exchange_cache_age: timedelta | None = timedelta(seconds=30),
     ):
         """
         Arguments:
@@ -114,9 +114,9 @@ class GitHubAuthProvider:
         client_id: str,
         client_secret: SecretStr,
         *,
-        redirect_uri: Union[str, None] = None,
-        state_provider: Union['StateProvider', bool] = True,
-        exchange_cache_age: Union[timedelta, None] = timedelta(seconds=10),
+        redirect_uri: str | None = None,
+        state_provider: 'StateProvider | bool' = True,
+        exchange_cache_age: timedelta | None = timedelta(seconds=10),
     ) -> AsyncIterator['GitHubAuthProvider']:
         """
         Async context manager to create a GitHubAuth instance with a new `httpx.AsyncClient`.
@@ -146,7 +146,7 @@ class GitHubAuthProvider:
             params['state'] = await self._state_provider.new_state()
         return f'https://github.com/login/oauth/authorize?{urlencode(params)}'
 
-    async def exchange_code(self, code: str, state: Union[str, None] = None) -> GitHubExchange:
+    async def exchange_code(self, code: str, state: str | None = None) -> GitHubExchange:
         """
         Exchange a code for an access token.
 
@@ -164,7 +164,7 @@ class GitHubAuthProvider:
         else:
             return await self._exchange_code(code, state)
 
-    async def _exchange_code(self, code: str, state: Union[str, None] = None) -> GitHubExchange:
+    async def _exchange_code(self, code: str, state: str | None = None) -> GitHubExchange:
         if self._state_provider:
             if state is None:
                 raise AuthError('Missing GitHub auth state', code='missing_state')
@@ -224,7 +224,7 @@ class ExchangeCache:
     def __init__(self):
         self._data: dict[str, tuple[datetime, GitHubExchange]] = {}
 
-    def get(self, key: str, max_age: timedelta) -> Union[GitHubExchange, None]:
+    def get(self, key: str, max_age: timedelta) -> GitHubExchange | None:
         self._purge(max_age)
         if v := self._data.get(key):
             return v[1]

@@ -178,7 +178,7 @@ def json_schema_field_to_field(
     schema: JsonSchemaField,
     loc: SchemeLocation,
     title: list[str],
-    description: _t.Union[str, None],
+    description: str | None,
     required: bool,
 ) -> FormField:
     name = loc_to_name(loc)
@@ -214,7 +214,7 @@ def json_schema_array_to_fields(
     schema: JsonSchemaArray,
     loc: SchemeLocation,
     title: list[str],
-    description: _t.Union[str, None],
+    description: str | None,
     required: bool,
     defs: JsonSchemaDefs,
 ) -> _t.Iterable[FormField]:
@@ -249,10 +249,10 @@ def special_string_field(
     schema: JsonSchemaConcrete,
     name: str,
     title: list[str],
-    description: _t.Union[str, None],
+    description: str | None,
     required: bool,
     multiple: bool,
-) -> _t.Union[FormField, None]:
+) -> FormField | None:
     if schema['type'] == 'string':
         if schema.get('format') == 'binary':
             return FormFieldFile(

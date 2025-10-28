@@ -23,13 +23,13 @@ class Table(BaseModel, extra='forbid'):
     data: _t.Sequence[pydantic.SerializeAsAny[_types.DataModel]]
     """Sequence of data models to display in the table."""
 
-    columns: _t.Union[list[display.DisplayLookup], None] = None
+    columns: list[display.DisplayLookup] | None = None
     """List of columns to display in the table. If not provided, columns will be inferred from the data model."""
 
-    data_model: _t.Union[type_[pydantic.BaseModel], None] = pydantic.Field(default=None, exclude=True)
+    data_model: type_[pydantic.BaseModel] | None = pydantic.Field(default=None, exclude=True)
     """Data model to use for the table. If not provided, the model will be inferred from the first data item."""
 
-    no_data_message: _t.Union[str, None] = None
+    no_data_message: str | None = None
     """Message to display when there is no data."""
 
     class_name: _class_name.ClassNameField = None

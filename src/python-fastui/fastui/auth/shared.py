@@ -1,6 +1,6 @@
 import json
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 from .. import AnyComponent, FastUI, events
 from .. import components as c
@@ -36,7 +36,7 @@ class AuthRedirect(AuthException):
     FastUI components to redirect the user to a new page.
     """
 
-    def __init__(self, path: str, message: Union[str, None] = None):
+    def __init__(self, path: str, message: str | None = None):
         super().__init__(f'Auth redirect to `{path}`' + (f': {message}' if message else ''))
         self.path = path
         self.message = message

@@ -1,7 +1,7 @@
 import enum
 from contextlib import asynccontextmanager
 from io import BytesIO
-from typing import Annotated, Union
+from typing import Annotated
 
 import pytest
 from fastapi import HTTPException
@@ -21,7 +21,7 @@ class FakeRequest:
     TODO replace this with httpx or similar maybe, perhaps this is sufficient
     """
 
-    def __init__(self, form_data_list: list[tuple[str, Union[str, UploadFile]]]):
+    def __init__(self, form_data_list: list[tuple[str, str | UploadFile]]):
         self._form_data = FormData(form_data_list)
 
     @asynccontextmanager
@@ -441,7 +441,7 @@ def test_variable_tuple():
 
 def test_tuple_optional():
     class TupleOptional(BaseModel):
-        foo: tuple[str, Union[str, None]]
+        foo: tuple[str, str | None]
 
     m = components.ModelForm(model=TupleOptional, submit_url='/foo/')
     with pytest.raises(NotImplementedError, match='Tuples with optional fields are not yet supported'):

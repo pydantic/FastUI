@@ -139,7 +139,7 @@ class Heading(BaseModel, extra='forbid'):
     level: _t.Literal[1, 2, 3, 4, 5, 6] = 1
     """The level of the heading. 1 is the largest, 6 is the smallest."""
 
-    html_id: _t.Union[str, None] = None
+    html_id: str | None = None
     """Optional HTML ID to apply to the heading's HTML component."""
 
     class_name: _class_name.ClassNameField = None
@@ -159,7 +159,7 @@ class Heading(BaseModel, extra='forbid'):
         return json_schema
 
 
-CodeStyle = _te.Annotated[_t.Union[str, None], _p.Field(serialization_alias='codeStyle')]
+CodeStyle = _te.Annotated[str | None, _p.Field(serialization_alias='codeStyle')]
 """
 Code style to apply to a `Code` component.
 
@@ -194,7 +194,7 @@ class Code(BaseModel, extra='forbid'):
     text: str
     """The code to render."""
 
-    language: _t.Union[str, None] = None
+    language: str | None = None
     """Optional language of the code. If None, no syntax highlighting is applied."""
 
     code_style: CodeStyle = None
@@ -226,10 +226,10 @@ class Button(BaseModel, extra='forbid'):
     text: str
     """The text to display on the button."""
 
-    on_click: _t.Union[events.AnyEvent, None] = None
+    on_click: events.AnyEvent | None = None
     """Optional event to trigger when the button is clicked."""
 
-    html_type: _t.Union[_t.Literal['button', 'reset', 'submit'], None] = None
+    html_type: _t.Literal['button', 'reset', 'submit'] | None = None
     """Optional HTML type of the button. If None, defaults to 'button'."""
 
     named_style: _class_name.NamedStyleField = None
@@ -248,16 +248,16 @@ class Link(BaseModel, defer_build=True, extra='forbid'):
     components: 'list[AnyComponent]'
     """List of components to render attached to the link."""
 
-    on_click: _t.Union[events.AnyEvent, None] = None
+    on_click: events.AnyEvent | None = None
     """Optional event to trigger when the link is clicked."""
 
-    mode: _t.Union[_t.Literal['navbar', 'footer', 'tabs', 'vertical', 'pagination'], None] = None
+    mode: _t.Literal['navbar', 'footer', 'tabs', 'vertical', 'pagination'] | None = None
     """Optional mode of the link."""
 
-    active: _t.Union[str, bool, None] = None
+    active: str | bool | None = None
     """Optional active state of the link."""
 
-    locked: _t.Union[bool, None] = None
+    locked: bool | None = None
     """Optional locked state of the link."""
 
     class_name: _class_name.ClassNameField = None
@@ -273,7 +273,7 @@ class LinkList(BaseModel, extra='forbid'):
     links: list[Link]
     """List of links to render."""
 
-    mode: _t.Union[_t.Literal['tabs', 'vertical', 'pagination'], None] = None
+    mode: _t.Literal['tabs', 'vertical', 'pagination'] | None = None
     """Optional mode of the link list."""
 
     class_name: _class_name.ClassNameField = None
@@ -286,10 +286,10 @@ class LinkList(BaseModel, extra='forbid'):
 class Navbar(BaseModel, extra='forbid'):
     """Navbar component used for moving between pages."""
 
-    title: _t.Union[str, None] = None
+    title: str | None = None
     """Optional title to display in the navbar."""
 
-    title_event: _t.Union[events.AnyEvent, None] = None
+    title_event: events.AnyEvent | None = None
     """Optional event to trigger when the title is clicked. Often used to navigate to the home page."""
 
     start_links: list[Link] = []
@@ -321,7 +321,7 @@ class Footer(BaseModel, extra='forbid'):
     links: list[Link]
     """List of links to render in the footer."""
 
-    extra_text: _t.Union[str, None] = None
+    extra_text: str | None = None
     """Optional extra text to display in the footer."""
 
     class_name: _class_name.ClassNameField = None
@@ -340,13 +340,13 @@ class Modal(BaseModel, defer_build=True, extra='forbid'):
     body: 'list[AnyComponent]'
     """List of components to render in the modal body."""
 
-    footer: '_t.Union[list[AnyComponent], None]' = None
+    footer: 'list[AnyComponent] | None' = None
     """Optional list of components to render in the modal footer."""
 
-    open_trigger: _t.Union[events.PageEvent, None] = None
+    open_trigger: events.PageEvent | None = None
     """Optional event to trigger when the modal is opened."""
 
-    open_context: _t.Union[events.ContextType, None] = None
+    open_context: events.ContextType | None = None
     """Optional context to pass to the open trigger event."""
 
     class_name: _class_name.ClassNameField = None
@@ -362,19 +362,19 @@ class ServerLoad(BaseModel, defer_build=True, extra='forbid'):
     path: str
     """The URL to load the component from."""
 
-    load_trigger: _t.Union[events.PageEvent, None] = None
+    load_trigger: events.PageEvent | None = None
     """Optional event to trigger when the component is loaded."""
 
-    components: '_t.Union[list[AnyComponent], None]' = None
+    components: 'list[AnyComponent] | None' = None
     """Optional list of components to render while the server is loading the new component(s)."""
 
-    sse: _t.Union[bool, None] = None
+    sse: bool | None = None
     """Optional flag to enable server-sent events (SSE) for the server load."""
 
-    sse_retry: _t.Union[int, None] = None
+    sse_retry: int | None = None
     """Optional time in milliseconds to retry the SSE connection."""
 
-    method: _t.Union[_t.Literal['GET', 'POST', 'PATCH', 'PUT', 'DELETE'], None] = None
+    method: _t.Literal['GET', 'POST', 'PATCH', 'PUT', 'DELETE'] | None = None
     """Optional HTTP method to use when loading the component."""
 
     type: _t.Literal['ServerLoad'] = 'ServerLoad'
@@ -387,36 +387,33 @@ class Image(BaseModel, extra='forbid'):
     src: str
     """The URL of the image to display."""
 
-    alt: _t.Union[str, None] = None
+    alt: str | None = None
     """Optional alt text for the image."""
 
-    width: _t.Union[str, int, None] = None
+    width: str | int | None = None
     """Optional width used to display the image."""
 
-    height: _t.Union[str, int, None] = None
+    height: str | int | None = None
     """Optional height used to display the image."""
 
-    referrer_policy: _t.Union[
-        _t.Literal[
-            'no-referrer',
-            'no-referrer-when-downgrade',
-            'origin',
-            'origin-when-cross-origin',
-            'same-origin',
-            'strict-origin',
-            'strict-origin-when-cross-origin',
-            'unsafe-url',
-        ],
-        None,
-    ] = None
+    referrer_policy: _t.Literal[
+        'no-referrer',
+        'no-referrer-when-downgrade',
+        'origin',
+        'origin-when-cross-origin',
+        'same-origin',
+        'strict-origin',
+        'strict-origin-when-cross-origin',
+        'unsafe-url',
+    ] | None = None
     """Optional referrer policy for the image. Specifies what information to send when fetching the image.
 
     For more info, see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy."""
 
-    loading: _t.Union[_t.Literal['eager', 'lazy'], None] = None
+    loading: _t.Literal['eager', 'lazy'] | None = None
     """Optional loading strategy for the image."""
 
-    on_click: _t.Union[events.AnyEvent, None] = None
+    on_click: events.AnyEvent | None = None
     """Optional event to trigger when the image is clicked."""
 
     class_name: _class_name.ClassNameField = None
@@ -432,22 +429,22 @@ class Iframe(BaseModel, extra='forbid'):
     src: _p.HttpUrl
     """The URL of the content to display."""
 
-    title: _t.Union[str, None] = None
+    title: str | None = None
     """Optional title for the iframe."""
 
-    width: _t.Union[str, int, None] = None
+    width: str | int | None = None
     """Optional width used to display the iframe."""
 
-    height: _t.Union[str, int, None] = None
+    height: str | int | None = None
     """Optional height used to display the iframe."""
 
     class_name: _class_name.ClassNameField = None
     """Optional class name to apply to the iframe's HTML component."""
 
-    srcdoc: _t.Union[str, None] = None
+    srcdoc: str | None = None
     """Optional HTML content to display in the iframe."""
 
-    sandbox: _t.Union[str, None] = None
+    sandbox: str | None = None
     """Optional sandbox policy for the iframe. Specifies restrictions on the HTML content in the iframe."""
 
     type: _t.Literal['Iframe'] = 'Iframe'
@@ -460,25 +457,25 @@ class Video(BaseModel, extra='forbid'):
     sources: list[_p.AnyUrl]
     """List of URLs to the video sources."""
 
-    autoplay: _t.Union[bool, None] = None
+    autoplay: bool | None = None
     """Optional flag to enable autoplay for the video."""
 
-    controls: _t.Union[bool, None] = None
+    controls: bool | None = None
     """Optional flag to enable controls (pause, play, etc) for the video."""
 
-    loop: _t.Union[bool, None] = None
+    loop: bool | None = None
     """Optional flag to enable looping for the video."""
 
-    muted: _t.Union[bool, None] = None
+    muted: bool | None = None
     """Optional flag to mute the video."""
 
-    poster: _t.Union[_p.AnyUrl, None] = None
+    poster: _p.AnyUrl | None = None
     """Optional URL to an image to display as the video poster (what is shown when the video is loading or until the user plays it)."""
 
-    width: _t.Union[str, int, None] = None
+    width: str | int | None = None
     """Optional width used to display the video."""
 
-    height: _t.Union[str, int, None] = None
+    height: str | int | None = None
     """Optional height used to display the video."""
 
     class_name: _class_name.ClassNameField = None
@@ -494,7 +491,7 @@ class FireEvent(BaseModel, extra='forbid'):
     event: events.AnyEvent
     """The event to fire."""
 
-    message: _t.Union[str, None] = None
+    message: str | None = None
     """Optional message to display when the event is fired. Defaults to a blank message."""
 
     type: _t.Literal['FireEvent'] = 'FireEvent'
@@ -510,7 +507,7 @@ class Error(BaseModel, extra='forbid'):
     description: str
     """The description of the error."""
 
-    status_code: _t.Union[int, None] = None
+    status_code: int | None = None
     """Optional status code of the error."""
 
     class_name: _class_name.ClassNameField = None
@@ -533,7 +530,7 @@ class Error(BaseModel, extra='forbid'):
 class Spinner(BaseModel, extra='forbid'):
     """Spinner component that displays a loading spinner."""
 
-    text: _t.Union[str, None] = None
+    text: str | None = None
     """Optional text to display with the spinner."""
 
     class_name: _class_name.ClassNameField = None
@@ -553,26 +550,23 @@ class Toast(BaseModel, defer_build=True, extra='forbid'):
     """List of components to render in the toast body."""
 
     # TODO: change these before the release (top left, center, end, etc). Can be done with the toast bug fix.
-    position: _t.Union[
-        _t.Literal[
-            'top-start',
-            'top-center',
-            'top-end',
-            'middle-start',
-            'middle-center',
-            'middle-end',
-            'bottom-start',
-            'bottom-center',
-            'bottom-end',
-        ],
-        None,
-    ] = None
+    position: _t.Literal[
+        'top-start',
+        'top-center',
+        'top-end',
+        'middle-start',
+        'middle-center',
+        'middle-end',
+        'bottom-start',
+        'bottom-center',
+        'bottom-end',
+    ] | None = None
     """Optional position of the toast."""
 
-    open_trigger: _t.Union[events.PageEvent, None] = None
+    open_trigger: events.PageEvent | None = None
     """Optional event to trigger when the toast is opened."""
 
-    open_context: _t.Union[events.ContextType, None] = None
+    open_context: events.ContextType | None = None
     """Optional context to pass to the open trigger event."""
 
     class_name: _class_name.ClassNameField = None
@@ -591,7 +585,7 @@ class Custom(BaseModel, extra='forbid'):
     sub_type: str
     """The sub-type of the custom component."""
 
-    library: _t.Union[str, None] = None
+    library: str | None = None
     """Optional library to use for the custom component."""
 
     class_name: _class_name.ClassNameField = None
@@ -602,39 +596,37 @@ class Custom(BaseModel, extra='forbid'):
 
 
 AnyComponent = _te.Annotated[
-    _t.Union[
-        Text,
-        Paragraph,
-        PageTitle,
-        Div,
-        Page,
-        Heading,
-        Markdown,
-        Code,
-        Json,
-        Button,
-        Link,
-        LinkList,
-        Navbar,
-        Footer,
-        Modal,
-        ServerLoad,
-        Image,
-        Iframe,
-        Video,
-        FireEvent,
-        Error,
-        Spinner,
-        Custom,
-        Table,
-        Pagination,
-        Display,
-        Details,
-        Form,
-        FormField,
-        ModelForm,
-        Toast,
-    ],
+    Text
+    | Paragraph
+    | PageTitle
+    | Div
+    | Page
+    | Heading
+    | Markdown
+    | Code
+    | Json
+    | Button
+    | Link
+    | LinkList
+    | Navbar
+    | Footer
+    | Modal
+    | ServerLoad
+    | Image
+    | Iframe
+    | Video
+    | FireEvent
+    | Error
+    | Spinner
+    | Custom
+    | Table
+    | Pagination
+    | Display
+    | Details
+    | Form
+    | FormField
+    | ModelForm
+    | Toast,
     _p.Field(discriminator='type'),
 ]
 """Union of all components.

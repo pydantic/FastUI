@@ -21,7 +21,7 @@ def dev_fastapi_app(reload_path: str = '/api/__dev__/reload', **fastapi_kwargs) 
 
 
 class DevReload:
-    def __init__(self, default_lifespan: _t.Union[types.Lifespan[FastAPI], None]):
+    def __init__(self, default_lifespan: types.Lifespan[FastAPI] | None):
         self.default_lifespan = default_lifespan
         self.stop = asyncio.Event()
 

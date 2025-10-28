@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 import pytest
 from fastapi import FastAPI
@@ -19,7 +18,7 @@ def fake_github_app(github_requests: list[str]) -> FastAPI:
     app = FastAPI()
 
     @app.post('/login/oauth/access_token')
-    async def access_token(code: str, client_id: str, client_secret: str, redirect_uri: Optional[str] = None):
+    async def access_token(code: str, client_id: str, client_secret: str, redirect_uri: str | None = None):
         r = f'/login/oauth/access_token code={code}'
         if redirect_uri:
             r += f' redirect_uri={redirect_uri}'

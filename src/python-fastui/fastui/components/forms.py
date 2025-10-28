@@ -21,22 +21,22 @@ class BaseFormField(BaseModel, ABC, defer_build=True):
     name: str
     """Name of the field."""
 
-    title: _t.Union[list[str], str]
+    title: list[str] | str
     """Title of the field to display. Can be a list of strings for multi-line titles."""
 
     required: bool = False
     """Whether the field is required. Defaults to False."""
 
-    error: _t.Union[str, None] = None
+    error: str | None = None
     """Error message to display if the field is invalid."""
 
     locked: bool = False
     """Whether the field is locked. Defaults to False."""
 
-    description: _t.Union[str, None] = None
+    description: str | None = None
     """Description of the field."""
 
-    display_mode: _t.Union[_t.Literal['default', 'inline'], None] = None
+    display_mode: _t.Literal['default', 'inline'] | None = None
     """Display mode for the field."""
 
     class_name: _class_name.ClassNameField = None
@@ -49,13 +49,13 @@ class FormFieldInput(BaseFormField):
     html_type: InputHtmlType = 'text'
     """HTML input type for the field."""
 
-    initial: _t.Union[str, float, None] = None
+    initial: str | float | None = None
     """Initial value for the field."""
 
-    placeholder: _t.Union[str, None] = None
+    placeholder: str | None = None
     """Placeholder text for the field."""
 
-    autocomplete: _t.Union[str, None] = None
+    autocomplete: str | None = None
     """Autocomplete value for the field."""
 
     type: _t.Literal['FormFieldInput'] = 'FormFieldInput'
@@ -65,19 +65,19 @@ class FormFieldInput(BaseFormField):
 class FormFieldTextarea(BaseFormField):
     """Form field for text area input."""
 
-    rows: _t.Union[int, None] = None
+    rows: int | None = None
     """Number of rows for the text area."""
 
-    cols: _t.Union[int, None] = None
+    cols: int | None = None
     """Number of columns for the text area."""
 
-    initial: _t.Union[str, None] = None
+    initial: str | None = None
     """Initial value for the text area."""
 
-    placeholder: _t.Union[str, None] = None
+    placeholder: str | None = None
     """Placeholder text for the text area."""
 
-    autocomplete: _t.Union[str, None] = None
+    autocomplete: str | None = None
     """Autocomplete value for the text area."""
 
     type: _t.Literal['FormFieldTextarea'] = 'FormFieldTextarea'
@@ -87,7 +87,7 @@ class FormFieldTextarea(BaseFormField):
 class FormFieldBoolean(BaseFormField):
     """Form field for boolean input."""
 
-    initial: _t.Union[bool, None] = None
+    initial: bool | None = None
     """Initial value for the field."""
 
     mode: _t.Literal['checkbox', 'switch'] = 'checkbox'
@@ -100,10 +100,10 @@ class FormFieldBoolean(BaseFormField):
 class FormFieldFile(BaseFormField):
     """Form field for file input."""
 
-    multiple: _t.Union[bool, None] = None
+    multiple: bool | None = None
     """Whether multiple files can be selected."""
 
-    accept: _t.Union[str, None] = None
+    accept: str | None = None
     """Accepted file types."""
 
     type: _t.Literal['FormFieldFile'] = 'FormFieldFile'
@@ -116,19 +116,19 @@ class FormFieldSelect(BaseFormField):
     options: forms.SelectOptions
     """Options for the select field."""
 
-    multiple: _t.Union[bool, None] = None
+    multiple: bool | None = None
     """Whether multiple options can be selected."""
 
-    initial: _t.Union[list[str], str, None] = None
+    initial: list[str] | str | None = None
     """Initial value for the field."""
 
-    vanilla: _t.Union[bool, None] = None
+    vanilla: bool | None = None
     """Whether to use a vanilla (plain) select element."""
 
-    placeholder: _t.Union[str, None] = None
+    placeholder: str | None = None
     """Placeholder text for the field."""
 
-    autocomplete: _t.Union[str, None] = None
+    autocomplete: str | None = None
     """Autocomplete value for the field."""
 
     type: _t.Literal['FormFieldSelect'] = 'FormFieldSelect'
@@ -141,25 +141,26 @@ class FormFieldSelectSearch(BaseFormField):
     search_url: str
     """URL to search for options."""
 
-    multiple: _t.Union[bool, None] = None
+    multiple: bool | None = None
     """Whether multiple options can be selected."""
 
-    initial: _t.Union[forms.SelectOption, None] = None
+    initial: forms.SelectOption | None = None
     """Initial value for the field."""
 
-    debounce: _t.Union[int, None] = None
+    debounce: int | None = None
     """Time in milliseconds to debounce requests by. Defaults to 300ms."""
 
-    placeholder: _t.Union[str, None] = None
+    placeholder: str | None = None
     """Placeholder text for the field."""
 
     type: _t.Literal['FormFieldSelectSearch'] = 'FormFieldSelectSearch'
     """The type of the component. Always 'FormFieldSelectSearch'."""
 
 
-FormField = _t.Union[
-    FormFieldInput, FormFieldTextarea, FormFieldBoolean, FormFieldFile, FormFieldSelect, FormFieldSelectSearch
-]
+FormField = (
+    FormFieldInput | FormFieldTextarea | FormFieldBoolean | FormFieldFile | FormFieldSelect | FormFieldSelectSearch
+)
+
 """Union of all form field types."""
 
 
@@ -169,25 +170,25 @@ class BaseForm(BaseModel, ABC, defer_build=True, extra='forbid'):
     submit_url: str
     """URL to submit the form data to."""
 
-    initial: _t.Union[dict[str, _types.JsonData], None] = None
+    initial: dict[str, _types.JsonData] | None = None
     """Initial values for the form fields, mapping field names to values."""
 
     method: _t.Literal['POST', 'GOTO', 'GET'] = 'POST'
     """HTTP method to use for the form submission."""
 
-    display_mode: _t.Union[_t.Literal['default', 'page', 'inline'], None] = None
+    display_mode: _t.Literal['default', 'page', 'inline'] | None = None
     """Display mode for the form."""
 
-    submit_on_change: _t.Union[bool, None] = None
+    submit_on_change: bool | None = None
     """Whether to submit the form on change."""
 
-    submit_trigger: _t.Union[events.PageEvent, None] = None
+    submit_trigger: events.PageEvent | None = None
     """Event to trigger form submission."""
 
-    loading: '_t.Union[list[AnyComponent], None]' = None
+    loading: 'list[AnyComponent] | None' = None
     """Components to display while the form is submitting."""
 
-    footer: '_t.Union[list[AnyComponent], None]' = None
+    footer: 'list[AnyComponent] | None' = None
     """Components to display in the form footer."""
 
     class_name: _class_name.ClassNameField = None

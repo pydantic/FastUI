@@ -30,9 +30,9 @@ _PREBUILT_CDN_URL = f'https://cdn.jsdelivr.net/npm/@pydantic/fastui-prebuilt@{_P
 def prebuilt_html(
     *,
     title: str = '',
-    api_root_url: _t.Union[str, None] = None,
-    api_path_mode: _t.Union[_t.Literal['append', 'query'], None] = None,
-    api_path_strip: _t.Union[str, None] = None,
+    api_root_url: str | None = None,
+    api_path_mode: _t.Literal['append', 'query'] | None = None,
+    api_path_strip: str | None = None,
 ) -> str:
     """
     Returns a simple HTML page which includes the FastUI react frontend, loaded from https://www.jsdelivr.com/.
