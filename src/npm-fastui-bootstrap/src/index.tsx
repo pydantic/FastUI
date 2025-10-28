@@ -84,15 +84,14 @@ export const classNameGenerator: ClassNameGenerator = ({
       switch (subElement) {
         case 'textarea':
         case 'input':
+        case 'select-react':
           return {
-            'form-control': type !== 'FormFieldBoolean',
+            'form-control': !['FormFieldBoolean', 'FormFieldSelect'].includes(type),
             'is-invalid': props.error != null,
             'form-check-input': type === 'FormFieldBoolean',
           }
         case 'select':
           return 'form-select'
-        case 'select-react':
-          return ''
         case 'label':
           if (props.displayMode === 'inline') {
             return 'visually-hidden'
