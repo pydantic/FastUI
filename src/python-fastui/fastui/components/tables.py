@@ -20,13 +20,13 @@ type_ = type
 class Table(BaseModel, extra='forbid'):
     """Table component."""
 
-    data: _t.Sequence[pydantic.SerializeAsAny[_types.DataModel]]
+    data: pydantic.SkipValidation[_t.Sequence[pydantic.SerializeAsAny[_types.DataModel]]]
     """Sequence of data models to display in the table."""
 
     columns: list[display.DisplayLookup] | None = None
     """List of columns to display in the table. If not provided, columns will be inferred from the data model."""
 
-    data_model: type_[pydantic.BaseModel] | None = pydantic.Field(default=None, exclude=True)
+    data_model: _t.Any = pydantic.Field(default=None, exclude=True)
     """Data model to use for the table. If not provided, the model will be inferred from the first data item."""
 
     no_data_message: str | None = None
@@ -48,17 +48,65 @@ class Table(BaseModel, extra='forbid'):
             except IndexError:
                 raise ValueError('Cannot infer model from empty data, please set `Table(..., model=MyModel)`')
 
-        all_model_fields = {**data_model_type.model_fields, **data_model_type.model_computed_fields}
         if self.columns is None:
-            self.columns = [
-                display.DisplayLookup(field=name, title=field.title) for name, field in all_model_fields.items()
-            ]
+            self.columns = []
+            # use TypeAdapter to get the json schema for the model, then extract properties
+            # this works for pydantic models, dataclasses and typed dicts
+            # mode='serialization' is needed to include computed fields
+            json_schema = pydantic.TypeAdapter(data_model_type).json_schema(mode='serialization')
+            # if the model is a reference, we need to look it up in $defs
+            if '$ref' in json_schema:
+                ref = json_schema['$ref'].split('/')[-1]
+                properties = json_schema.get('$defs', {}).get(ref, {}).get('properties', {})
+            else:
+                properties = json_schema.get('properties', {})
+
+            for name, prop in properties.items():
+                title = prop.get('title')
+                # If it's a Pydantic model, we only want to use the title if it was explicitly set
+                # otherwise we let the frontend decide (or use the field name)
+                # TypeAdapter generates titles automatically (e.g. 'id' -> 'Id'), which we don't want for Pydantic models
+                # to maintain backward compatibility
+                if isinstance(data_model_type, type) and issubclass(data_model_type, pydantic.BaseModel):
+                    field = data_model_type.model_fields.get(name)
+                    if field:
+                        if field.title is None:
+                            title = None
+                    else:
+                        # check computed fields
+                        computed = data_model_type.model_computed_fields.get(name)
+                        if computed:
+                            if computed.title is None:
+                                title = None
+                
+                self.columns.append(display.DisplayLookup(field=name, title=title))
         else:
             # add pydantic titles to columns that don't have them
+            # for pydantic models, we can use model_fields to get the title
+            # but for dataclasses and typed dicts, we need to use the json schema
+            # so we just use the json schema for everything
+            json_schema = pydantic.TypeAdapter(data_model_type).json_schema(mode='serialization')
+            if '$ref' in json_schema:
+                ref = json_schema['$ref'].split('/')[-1]
+                properties = json_schema.get('$defs', {}).get(ref, {}).get('properties', {})
+            else:
+                properties = json_schema.get('properties', {})
+
             for column in (c for c in self.columns if c.title is None):
-                field = all_model_fields.get(column.field)
-                if field and field.title:
-                    column.title = field.title
+                prop = properties.get(column.field)
+                if prop and 'title' in prop:
+                    # Same logic for existing columns: only use title if explicit for BaseModel
+                    if isinstance(data_model_type, type) and issubclass(data_model_type, pydantic.BaseModel):
+                        field = data_model_type.model_fields.get(column.field)
+                        if field:
+                            if field.title is None:
+                                continue
+                        else:
+                            computed = data_model_type.model_computed_fields.get(column.field)
+                            if computed:
+                                if computed.title is None:
+                                    continue
+                    column.title = prop['title']
         return self
 
     @classmethod
