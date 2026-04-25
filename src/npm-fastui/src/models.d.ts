@@ -36,6 +36,8 @@ export type FastProps =
   | FormFieldInput
   | FormFieldTextarea
   | FormFieldBoolean
+  | FormFieldToggle
+  | FormFieldRadio
   | FormFieldFile
   | FormFieldSelect
   | FormFieldSelectSearch
@@ -559,6 +561,8 @@ export interface Form {
     | FormFieldInput
     | FormFieldTextarea
     | FormFieldBoolean
+    | FormFieldToggle
+    | FormFieldRadio
     | FormFieldFile
     | FormFieldSelect
     | FormFieldSelectSearch
@@ -640,6 +644,50 @@ export interface FormFieldBoolean {
   initial?: boolean
   mode?: 'checkbox' | 'switch'
   type: 'FormFieldBoolean'
+}
+/**
+ * Form field for an on/off toggle (switch) input.
+ */
+export interface FormFieldToggle {
+  name: string
+  title: string[] | string
+  required?: boolean
+  error?: string
+  locked?: boolean
+  description?: string
+  displayMode?: 'default' | 'inline'
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
+  initial?: boolean
+  onLabel?: string
+  offLabel?: string
+  type: 'FormFieldToggle'
+}
+/**
+ * Form field for a radio button group.
+ */
+export interface FormFieldRadio {
+  name: string
+  title: string[] | string
+  required?: boolean
+  error?: string
+  locked?: boolean
+  description?: string
+  displayMode?: 'default' | 'inline'
+  className?:
+    | string
+    | ClassName[]
+    | {
+        [k: string]: boolean
+      }
+  options: SelectOptions
+  initial?: string
+  inline?: boolean
+  type: 'FormFieldRadio'
 }
 /**
  * Form field for file input.
@@ -748,6 +796,8 @@ export interface ModelForm {
     | FormFieldInput
     | FormFieldTextarea
     | FormFieldBoolean
+    | FormFieldToggle
+    | FormFieldRadio
     | FormFieldFile
     | FormFieldSelect
     | FormFieldSelectSearch

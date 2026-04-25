@@ -19,7 +19,16 @@ except ImportError as _e:
 if _t.TYPE_CHECKING:
     from . import json_schema
 
-__all__ = 'FastUIForm', 'fastui_form', 'FormFile', 'Textarea', 'SelectSearchResponse', 'SelectOption'
+__all__ = (
+    'FastUIForm',
+    'fastui_form',
+    'FormFile',
+    'Textarea',
+    'Radio',
+    'Toggle',
+    'SelectSearchResponse',
+    'SelectOption',
+)
 
 FormModel = _t.TypeVar('FormModel', bound=pydantic.BaseModel)
 
@@ -110,10 +119,7 @@ class FormFile:
 
         raise pydantic_core.PydanticCustomError(
             'accept_mismatch',
-            (
-                'Uploaded file "{filename}" with content type "{content_type}" '
-                'does not match accept criteria "{accept}"'
-            ),
+            ('Uploaded file "{filename}" with content type "{content_type}" does not match accept criteria "{accept}"'),
             {'filename': file.filename, 'content_type': file.content_type, 'accept': self.accept},
         )
 
@@ -231,3 +237,38 @@ def name_to_loc(name: str) -> 'json_schema.SchemeLocation':
 # Use uppercase for consistency with pydantic.Field, which is also a function
 def Textarea(rows: int | None = None, cols: int | None = None) -> _t.Any:  # N802
     return pydantic.Field(json_schema_extra={'format': 'textarea', 'rows': rows, 'cols': cols})
+
+
+# Use uppercase for consistency with pydantic.Field, which is also a function
+def Radio(*, inline: bool | None = None) -> _t.Any:  # N802
+    """Render a string-`Enum`/`Literal` field as a radio button group.
+
+    Use as the `Field(...)` value of a Pydantic field, e.g.::
+
+        class Form(BaseModel):
+            choice: MyEnum = Radio()
+
+    By default the radios stack vertically; pass `inline=True` to render them on a
+    single row. Multi-value fields (`list[MyEnum]`) fall back to the standard
+    select component because radios can only express a single selected value.
+    """
+    extra: dict[str, _t.Any] = {'format': 'radio'}
+    if inline is not None:
+        extra['inline'] = inline
+    return pydantic.Field(json_schema_extra=extra)
+
+
+# Use uppercase for consistency with pydantic.Field, which is also a function
+def Toggle(*, on_label: str | None = None, off_label: str | None = None) -> _t.Any:  # N802
+    """Render a `bool` field as a dedicated on/off toggle (switch).
+
+    Unlike `mode='switch'` on `FormFieldBoolean`, this emits the standalone
+    `FormFieldToggle` component so backends and renderers can treat toggles
+    as a first-class field type.
+    """
+    extra: dict[str, _t.Any] = {'format': 'toggle'}
+    if on_label is not None:
+        extra['on_label'] = on_label
+    if off_label is not None:
+        extra['off_label'] = off_label
+    return pydantic.Field(json_schema_extra=extra)

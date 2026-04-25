@@ -97,6 +97,48 @@ class FormFieldBoolean(BaseFormField):
     """The type of the component. Always 'FormFieldBoolean'."""
 
 
+class FormFieldToggle(BaseFormField):
+    """Form field for an on/off toggle (switch) input.
+
+    `FormFieldToggle` is a thin wrapper around the boolean form field that always
+    renders as a switch. It is provided so backends and templates that want a
+    dedicated toggle component do not need to set `mode='switch'` on every field.
+    """
+
+    initial: bool | None = None
+    """Initial value for the field."""
+
+    on_label: str | None = None
+    """Optional label to show next to the toggle when it is on."""
+
+    off_label: str | None = None
+    """Optional label to show next to the toggle when it is off."""
+
+    type: _t.Literal['FormFieldToggle'] = 'FormFieldToggle'
+    """The type of the component. Always 'FormFieldToggle'."""
+
+
+class FormFieldRadio(BaseFormField):
+    """Form field for a radio button group.
+
+    Renders as a list of mutually-exclusive radio buttons rather than a `<select>`
+    drop-down. Useful for short option lists where surfacing every choice up front
+    is preferable to a drop-down.
+    """
+
+    options: forms.SelectOptions
+    """Options for the radio group."""
+
+    initial: str | None = None
+    """Initial value for the field."""
+
+    inline: bool | None = None
+    """Whether to render the radio buttons in a single inline row."""
+
+    type: _t.Literal['FormFieldRadio'] = 'FormFieldRadio'
+    """The type of the component. Always 'FormFieldRadio'."""
+
+
 class FormFieldFile(BaseFormField):
     """Form field for file input."""
 
@@ -158,7 +200,14 @@ class FormFieldSelectSearch(BaseFormField):
 
 
 FormField = (
-    FormFieldInput | FormFieldTextarea | FormFieldBoolean | FormFieldFile | FormFieldSelect | FormFieldSelectSearch
+    FormFieldInput
+    | FormFieldTextarea
+    | FormFieldBoolean
+    | FormFieldToggle
+    | FormFieldRadio
+    | FormFieldFile
+    | FormFieldSelect
+    | FormFieldSelectSearch
 )
 
 """Union of all form field types."""

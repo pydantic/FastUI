@@ -124,7 +124,7 @@ def json2ts(input_file: Path, output_file: Path):  # pragma: no cover
     except (subprocess.CalledProcessError, FileNotFoundError) as e:
         raise RuntimeError(
             "Failed to run json2ts, you'll need to install `npx` and `json-schema-to-typescript`, "
-            f"then run the command:\n\n    {' '.join(args)}\n\n"
+            f'then run the command:\n\n    {" ".join(args)}\n\n'
         ) from e
     else:
         assert output_file.is_file()

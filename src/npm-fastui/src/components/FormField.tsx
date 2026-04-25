@@ -6,6 +6,8 @@ import type {
   FormFieldInput,
   FormFieldTextarea,
   FormFieldBoolean,
+  FormFieldToggle,
+  FormFieldRadio,
   FormFieldFile,
   FormFieldSelect,
   FormFieldSelectSearch,
@@ -95,6 +97,106 @@ export const FormFieldBooleanComp: FC<FormFieldBooleanProps> = (props) => {
         aria-describedby={descId(props)}
         onChange={onChange}
       />
+      <ErrorDescription {...props} />
+    </div>
+  )
+}
+
+interface FormFieldToggleProps extends FormFieldToggle {
+  onChange?: PrivateOnChange
+}
+
+export const FormFieldToggleComp: FC<FormFieldToggleProps> = (props) => {
+  const { name, required, locked, onChange, onLabel, offLabel } = props
+  // hooks must be called unconditionally; precompute every class name before render.
+  const containerClass = useClassName(props)
+  const inputClass = useClassName(props, { el: 'input' })
+  const labelsClass = useClassName(props, { el: 'toggle-labels' })
+  const onClass = useClassName(props, { el: 'toggle-on' })
+  const offClass = useClassName(props, { el: 'toggle-off' })
+
+  return (
+    <div className={containerClass}>
+      <Label {...props} />
+      <input
+        type="checkbox"
+        role="switch"
+        className={inputClass}
+        defaultChecked={!!props.initial}
+        id={inputId(props)}
+        name={name}
+        required={required}
+        disabled={locked}
+        aria-describedby={descId(props)}
+        onChange={onChange}
+      />
+      {/* Optional on/off labels render after the switch so screen readers announce them
+          alongside the standard label. They are visual hints, not separate inputs. */}
+      {(onLabel || offLabel) && (
+        <span className={labelsClass}>
+          {offLabel && <span className={offClass}>{offLabel}</span>}
+          {onLabel && <span className={onClass}>{onLabel}</span>}
+        </span>
+      )}
+      <ErrorDescription {...props} />
+    </div>
+  )
+}
+
+interface FormFieldRadioProps extends FormFieldRadio {
+  onChange?: PrivateOnChange
+}
+
+export const FormFieldRadioComp: FC<FormFieldRadioProps> = (props) => {
+  const { name, required, locked, options, initial, onChange, inline } = props
+  const groupId = inputId(props)
+  // hooks must be called unconditionally; precompute every class name before render.
+  const containerClass = useClassName(props)
+  const radioGroupClass = useClassName(props, { el: 'radio-group' })
+  const radioGroupInlineClass = useClassName(props, { el: 'radio-group-inline' })
+  const radioClass = useClassName(props, { el: 'radio' })
+  const inputClass = useClassName(props, { el: 'input' })
+  const radioLabelClass = useClassName(props, { el: 'radio-label' })
+
+  // Flatten any select groups so we can render a flat list of <input type="radio"> rows.
+  // We don't currently render group separators because the radio control isn't a great
+  // place to display section headings — the maintainer can add that later if needed.
+  const flatOptions: SelectOption[] = []
+  for (const opt of options) {
+    if ('options' in opt) {
+      flatOptions.push(...opt.options)
+    } else {
+      flatOptions.push(opt)
+    }
+  }
+
+  return (
+    <div className={containerClass} role="radiogroup" aria-labelledby={`${groupId}-label`}>
+      <Label {...props} />
+      <div className={inline ? radioGroupInlineClass : radioGroupClass}>
+        {flatOptions.map((opt, i) => {
+          const optionId = `${groupId}-${i}`
+          return (
+            <div key={opt.value} className={radioClass}>
+              <input
+                type="radio"
+                className={inputClass}
+                id={optionId}
+                name={name}
+                value={opt.value}
+                defaultChecked={initial === opt.value}
+                required={required && i === 0}
+                disabled={locked}
+                aria-describedby={descId(props)}
+                onChange={onChange}
+              />
+              <label htmlFor={optionId} className={radioLabelClass}>
+                {opt.label}
+              </label>
+            </div>
+          )
+        })}
+      </div>
       <ErrorDescription {...props} />
     </div>
   )
@@ -329,6 +431,8 @@ export type FormFieldProps =
   | FormFieldInputProps
   | FormFieldTextareaProps
   | FormFieldBooleanProps
+  | FormFieldToggleProps
+  | FormFieldRadioProps
   | FormFieldFileProps
   | FormFieldSelectProps
   | FormFieldSelectSearchProps

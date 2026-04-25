@@ -10,9 +10,11 @@ from .components.forms import (
     FormFieldBoolean,
     FormFieldFile,
     FormFieldInput,
+    FormFieldRadio,
     FormFieldSelect,
     FormFieldSelectSearch,
     FormFieldTextarea,
+    FormFieldToggle,
     InputHtmlType,
 )
 
@@ -183,6 +185,18 @@ def json_schema_field_to_field(
 ) -> FormField:
     name = loc_to_name(loc)
     if schema['type'] == 'boolean':
+        # `format='toggle'` opts boolean fields into the dedicated `FormFieldToggle`
+        # type instead of the boolean+switch mode, which keeps the discriminator clean.
+        if schema.get('format') == 'toggle':
+            return FormFieldToggle(
+                name=name,
+                title=title,
+                required=required,
+                initial=schema.get('default'),
+                description=description,
+                on_label=schema.get('on_label'),
+                off_label=schema.get('off_label'),
+            )
         return FormFieldBoolean(
             name=name,
             title=title,
@@ -277,13 +291,27 @@ def special_string_field(
             )
         elif enum := schema.get('enum'):
             enum_labels = schema.get('enum_labels', {})
+            options = [SelectOption(value=v, label=enum_labels.get(v) or as_title(v)) for v in enum]
+            # `format='radio'` opts a string-enum field into a radio button group instead
+            # of a select drop-down. Multi-select can't be represented as radios, so we
+            # fall back to the regular select component when `multiple` is set.
+            if schema.get('format') == 'radio' and not multiple:
+                return FormFieldRadio(
+                    name=name,
+                    title=title,
+                    required=required,
+                    options=options,
+                    initial=schema.get('default'),
+                    description=description,
+                    inline=schema.get('inline'),
+                )
             return FormFieldSelect(
                 name=name,
                 title=title,
                 placeholder=schema.get('placeholder'),
                 required=required,
                 multiple=multiple,
-                options=[SelectOption(value=v, label=enum_labels.get(v) or as_title(v)) for v in enum],
+                options=options,
                 initial=schema.get('default'),
                 description=description,
                 autocomplete=schema.get('autocomplete'),
@@ -328,7 +356,14 @@ def deference_json_schema(
         if def_schema is None:
             raise ValueError(f'Invalid $ref "{ref}", not found in {defs}')
         else:
-            return def_schema.copy(), required  # clone dict to avoid attribute leakage via shared schema.
+            # clone dict to avoid attribute leakage via shared schema, then layer in any
+            # sibling keys from the outer schema (e.g. `format` / `description` set via
+            # `Field(json_schema_extra=...)`) so per-field overrides survive deref.
+            merged = def_schema.copy()
+            for key, value in schema.items():  # type: ignore[union-attr]
+                if key != '$ref':
+                    merged[key] = value  # type: ignore[index]
+            return merged, required
     elif any_of := schema.get('anyOf'):
         if len(any_of) == 2 and sum(s.get('type') == 'null' for s in any_of) == 1:
             # If anyOf is a single type and null, then it is optional

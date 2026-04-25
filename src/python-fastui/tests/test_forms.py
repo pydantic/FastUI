@@ -6,7 +6,7 @@ from typing import Annotated
 import pytest
 from fastapi import HTTPException
 from fastui import components
-from fastui.forms import FormFile, Textarea, fastui_form
+from fastui.forms import FormFile, Radio, Textarea, Toggle, fastui_form
 from pydantic import BaseModel, Field
 from starlette.datastructures import FormData, Headers, UploadFile
 
@@ -545,3 +545,111 @@ def test_form_fields():
         'submitUrl': '/foobar/',
         'type': 'ModelForm',
     }
+
+
+class Color(str, enum.Enum):
+    red = 'red'
+    green = 'green'
+    blue = 'blue'
+
+
+class RadioForm(BaseModel):
+    color: Color = Radio()
+    size: Color = Radio(inline=True)
+
+
+def test_radio_form_fields():
+    m = components.ModelForm(model=RadioForm, submit_url='/foobar/')
+
+    assert m.model_dump(by_alias=True, exclude_none=True) == {
+        'submitUrl': '/foobar/',
+        'method': 'POST',
+        'type': 'ModelForm',
+        'formFields': [
+            {
+                'name': 'color',
+                'title': ['Color'],
+                'required': True,
+                'locked': False,
+                'options': [
+                    {'value': 'red', 'label': 'Red'},
+                    {'value': 'green', 'label': 'Green'},
+                    {'value': 'blue', 'label': 'Blue'},
+                ],
+                'type': 'FormFieldRadio',
+            },
+            {
+                'name': 'size',
+                'title': ['Color'],
+                'required': True,
+                'locked': False,
+                'options': [
+                    {'value': 'red', 'label': 'Red'},
+                    {'value': 'green', 'label': 'Green'},
+                    {'value': 'blue', 'label': 'Blue'},
+                ],
+                'inline': True,
+                'type': 'FormFieldRadio',
+            },
+        ],
+    }
+
+
+async def test_radio_form_submit():
+    form_dep = fastui_form(RadioForm)
+    request = FakeRequest([('color', 'red'), ('size', 'blue')])
+    m = await form_dep.dependency(request)
+    assert isinstance(m, RadioForm)
+    assert m.color is Color.red
+    assert m.size is Color.blue
+
+
+def test_radio_form_invalid_value():
+    # ensure validation surfaces a normal pydantic error for unknown radio values
+    with pytest.raises(ValueError):
+        RadioForm(color='magenta', size='red')
+
+
+class ToggleForm(BaseModel):
+    notify: bool = Toggle()
+    archive: bool = Toggle(on_label='On', off_label='Off')
+
+
+def test_toggle_form_fields():
+    m = components.ModelForm(model=ToggleForm, submit_url='/foobar/')
+
+    assert m.model_dump(by_alias=True, exclude_none=True) == {
+        'submitUrl': '/foobar/',
+        'method': 'POST',
+        'type': 'ModelForm',
+        'formFields': [
+            {
+                'name': 'notify',
+                'title': ['Notify'],
+                'required': True,
+                'locked': False,
+                'type': 'FormFieldToggle',
+            },
+            {
+                'name': 'archive',
+                'title': ['Archive'],
+                'required': True,
+                'locked': False,
+                'onLabel': 'On',
+                'offLabel': 'Off',
+                'type': 'FormFieldToggle',
+            },
+        ],
+    }
+
+
+def test_radio_multiple_falls_back_to_select():
+    # radios can't represent multi-select, so a `list[Enum]` annotated with `Radio()`
+    # should fall back to the regular select field (multiple=True).
+    class MultiRadioForm(BaseModel):
+        colors: list[Color] = Radio()
+
+    m = components.ModelForm(model=MultiRadioForm, submit_url='/foobar/')
+    fields = m.model_dump(by_alias=True, exclude_none=True)['formFields']
+    assert fields[0]['type'] == 'FormFieldSelect'
+    assert fields[0]['multiple'] is True
