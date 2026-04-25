@@ -78,6 +78,8 @@ export const classNameGenerator: ClassNameGenerator = ({
     case 'FormFieldInput':
     case 'FormFieldTextarea':
     case 'FormFieldBoolean':
+    case 'FormFieldToggle':
+    case 'FormFieldRadio':
     case 'FormFieldSelect':
     case 'FormFieldSelectSearch':
     case 'FormFieldFile':
@@ -85,9 +87,9 @@ export const classNameGenerator: ClassNameGenerator = ({
         case 'textarea':
         case 'input':
           return {
-            'form-control': type !== 'FormFieldBoolean',
+            'form-control': type !== 'FormFieldBoolean' && type !== 'FormFieldToggle' && type !== 'FormFieldRadio',
             'is-invalid': props.error != null,
-            'form-check-input': type === 'FormFieldBoolean',
+            'form-check-input': type === 'FormFieldBoolean' || type === 'FormFieldToggle' || type === 'FormFieldRadio',
           }
         case 'select':
           return 'form-select'
@@ -97,17 +99,35 @@ export const classNameGenerator: ClassNameGenerator = ({
           if (props.displayMode === 'inline') {
             return 'visually-hidden'
           } else {
-            return { 'form-label': true, 'fw-bold': !!props.required, 'form-check-label': type === 'FormFieldBoolean' }
+            return {
+              'form-label': true,
+              'fw-bold': !!props.required,
+              'form-check-label': type === 'FormFieldBoolean' || type === 'FormFieldToggle',
+            }
           }
         case 'error':
           return 'invalid-feedback'
         case 'description':
           return 'form-text'
+        case 'radio':
+          return 'form-check'
+        case 'radio-group':
+          return ''
+        case 'radio-group-inline':
+          return 'd-flex gap-3 flex-wrap'
+        case 'radio-label':
+          return 'form-check-label'
+        case 'toggle-labels':
+          return 'ms-2 small text-muted'
+        case 'toggle-on':
+          return 'ms-1'
+        case 'toggle-off':
+          return 'me-1'
         default:
           return {
             'mb-3': true,
-            'form-check': type === 'FormFieldBoolean',
-            'form-switch': type === 'FormFieldBoolean' && props.mode === 'switch',
+            'form-check': type === 'FormFieldBoolean' || type === 'FormFieldToggle',
+            'form-switch': type === 'FormFieldToggle' || (type === 'FormFieldBoolean' && props.mode === 'switch'),
           }
       }
     case 'Navbar':

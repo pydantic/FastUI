@@ -18,6 +18,8 @@ import {
   FormFieldInputComp,
   FormFieldTextareaComp,
   FormFieldBooleanComp,
+  FormFieldToggleComp,
+  FormFieldRadioComp,
   FormFieldSelectComp,
   FormFieldSelectSearchComp,
   FormFieldFileComp,
@@ -55,6 +57,8 @@ export {
   FormComp,
   FormFieldInputComp,
   FormFieldBooleanComp,
+  FormFieldToggleComp,
+  FormFieldRadioComp,
   FormFieldSelectComp,
   FormFieldSelectSearchComp,
   FormFieldFileComp,
@@ -134,6 +138,10 @@ export const AnyComp: FC<FastProps> = (props) => {
         return <FormFieldTextareaComp {...props} />
       case 'FormFieldBoolean':
         return <FormFieldBooleanComp {...props} />
+      case 'FormFieldToggle':
+        return <FormFieldToggleComp {...props} />
+      case 'FormFieldRadio':
+        return <FormFieldRadioComp {...props} />
       case 'FormFieldFile':
         return <FormFieldFileComp {...props} />
       case 'FormFieldSelect':

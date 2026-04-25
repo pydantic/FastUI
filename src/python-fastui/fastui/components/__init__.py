@@ -3,6 +3,7 @@ Component definitions.
 
 All CamelCase names in the namespace should be components.
 """
+
 import typing as _t
 
 import pydantic as _p
@@ -21,8 +22,10 @@ from .forms import (
     FormFieldBoolean,
     FormFieldFile,
     FormFieldInput,
+    FormFieldRadio,
     FormFieldSelect,
     FormFieldSelectSearch,
+    FormFieldToggle,
     ModelForm,
 )
 from .tables import Pagination, Table
@@ -66,8 +69,10 @@ __all__ = (
     'FormFieldBoolean',
     'FormFieldFile',
     'FormFieldInput',
+    'FormFieldRadio',
     'FormFieldSelect',
     'FormFieldSelectSearch',
+    'FormFieldToggle',
 )
 
 
@@ -396,16 +401,19 @@ class Image(BaseModel, extra='forbid'):
     height: str | int | None = None
     """Optional height used to display the image."""
 
-    referrer_policy: _t.Literal[
-        'no-referrer',
-        'no-referrer-when-downgrade',
-        'origin',
-        'origin-when-cross-origin',
-        'same-origin',
-        'strict-origin',
-        'strict-origin-when-cross-origin',
-        'unsafe-url',
-    ] | None = None
+    referrer_policy: (
+        _t.Literal[
+            'no-referrer',
+            'no-referrer-when-downgrade',
+            'origin',
+            'origin-when-cross-origin',
+            'same-origin',
+            'strict-origin',
+            'strict-origin-when-cross-origin',
+            'unsafe-url',
+        ]
+        | None
+    ) = None
     """Optional referrer policy for the image. Specifies what information to send when fetching the image.
 
     For more info, see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy."""
@@ -550,17 +558,20 @@ class Toast(BaseModel, defer_build=True, extra='forbid'):
     """List of components to render in the toast body."""
 
     # TODO: change these before the release (top left, center, end, etc). Can be done with the toast bug fix.
-    position: _t.Literal[
-        'top-start',
-        'top-center',
-        'top-end',
-        'middle-start',
-        'middle-center',
-        'middle-end',
-        'bottom-start',
-        'bottom-center',
-        'bottom-end',
-    ] | None = None
+    position: (
+        _t.Literal[
+            'top-start',
+            'top-center',
+            'top-end',
+            'middle-start',
+            'middle-center',
+            'middle-end',
+            'bottom-start',
+            'bottom-center',
+            'bottom-end',
+        ]
+        | None
+    ) = None
     """Optional position of the toast."""
 
     open_trigger: events.PageEvent | None = None
